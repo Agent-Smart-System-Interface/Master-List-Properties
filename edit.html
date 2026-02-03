@@ -3,204 +3,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FULL PROPERTY EDITOR - MASTER HUB</title>
+    <title>FULL PROPERTY EDITOR - MASTER SYSTEM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: 'Kanit', sans-serif; background: #f4f7f9; color: #1e293b; }
-        .input-field { width: 100%; padding: 1rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 1rem; outline: none; font-weight: 600; font-size: 0.875rem; transition: all 0.3s; }
-        .input-field:focus { border-color: #3b82f6; ring: 2px; ring-color: #dbeafe; }
-        .label-text { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-left: 0.5rem; margin-bottom: 0.25rem; display: block; letter-spacing: 0.05em; }
+        .input-group { background: #ffffff; padding: 1.25rem; border-radius: 1.5rem; border: 1px solid #e2e8f0; transition: all 0.3s; }
+        .input-group:focus-within { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+        .label-text { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-left: 0.5rem; margin-bottom: 0.5rem; display: block; letter-spacing: 0.1em; }
+        .field-input { width: 100%; background: transparent; outline: none; font-weight: 600; font-size: 0.9rem; color: #334155; }
+        .preview-box { width: 100%; height: 160px; border-radius: 1.5rem; background: #f8fafc; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        .preview-box img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
-<body class="p-4 md:p-10 italic">
+<body class="p-3 md:p-10 italic">
 
-    <div class="max-w-4xl mx-auto bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-slate-100">
-        <div class="bg-[#0f172a] p-8 md:p-12 text-white flex justify-between items-center relative overflow-hidden">
+    <div class="max-w-4xl mx-auto bg-white rounded-[3.5rem] shadow-2xl overflow-hidden border border-slate-50">
+        <div class="bg-[#0f172a] p-8 md:p-12 text-white flex justify-between items-center relative">
             <div class="relative z-10">
-                <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-1">Editing Master Unit</p>
+                <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-1">Master Property Editor</p>
                 <h1 id="displayId" class="text-4xl font-bold tracking-tighter italic">HP-XXXX</h1>
-                <p id="displayProject" class="text-[10px] font-bold text-slate-400 uppercase mt-2 italic tracking-[0.2em]"></p>
+                <p id="displayProject" class="text-[9px] font-bold text-slate-500 uppercase mt-2 italic"></p>
             </div>
-            <button onclick="window.history.back()" class="relative z-10 bg-white/10 hover:bg-white/20 px-6 py-3 rounded-2xl transition-all font-bold text-xs uppercase backdrop-blur-md border border-white/10">
-                <i class="fa-solid fa-arrow-left-long mr-2"></i> Back to Dashboard
+            <button onclick="window.history.back()" class="bg-white/10 hover:bg-white/20 px-6 py-3 rounded-2xl transition-all font-bold text-[10px] uppercase backdrop-blur-md border border-white/10">
+                <i class="fa-solid fa-xmark mr-2"></i> Cancel
             </button>
-            <i class="fa-solid fa-pen-nib absolute -bottom-10 -right-10 text-[15rem] text-white/5 rotate-12"></i>
         </div>
 
-        <div id="statusArea" class="p-20 text-center">
-            <div id="loadingSpinner">
-                <i class="fa-solid fa-circle-notch fa-spin text-4xl text-blue-600 mb-4"></i>
-                <p class="text-slate-400 font-bold italic">กำลังซิงค์ข้อมูลจาก Master Hub...</p>
-            </div>
-            <div id="errorMessage" class="hidden text-rose-500 font-bold italic">
-                <i class="fa-solid fa-triangle-exclamation text-4xl mb-4"></i>
-                <p id="errorText">ไม่สามารถดึงข้อมูลได้</p>
-            </div>
+        <div id="statusArea" class="p-20 text-center font-bold italic text-slate-400">
+            <i class="fa-solid fa-spinner fa-spin text-3xl mb-4 text-blue-500"></i><br>ซิงค์ข้อมูล Master...
         </div>
 
-        <div id="editForm" class="hidden p-8 md:p-14 space-y-12">
+        <div id="mainForm" class="hidden p-6 md:p-12 space-y-10">
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="space-y-2">
-                    <label class="label-text">Thumbnail Cover (URL)</label>
-                    <input type="text" id="Thumbnail_Image" class="input-field border-blue-100" placeholder="https://image-url.com/cover.jpg">
-                    <p class="text-[8px] text-slate-400 italic mt-1 px-2">* ใส่ลิงก์รูปภาพหลักที่จะแสดงผลหน้าแคตตาล็อก</p>
+                <div class="space-y-3">
+                    <label class="label-text">Main Cover Image (Main_Thumbnails)</label>
+                    <div id="thumbPreview" class="preview-box">
+                        <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-300"></i>
+                    </div>
+                    <input type="file" id="file_thumb" accept="image/*" class="hidden" onchange="previewImg(this, 'thumbPreview')">
+                    <button onclick="document.getElementById('file_thumb').click()" class="w-full py-3 bg-blue-50 text-blue-600 rounded-xl text-[10px] font-bold uppercase hover:bg-blue-100 transition-all">Change Cover Photo</button>
                 </div>
-                <div class="space-y-2">
-                    <label class="label-text">Gallery Images (Comma Separated)</label>
-                    <textarea id="Gallery_Images" class="input-field h-24 text-[10px]" placeholder="url1, url2, url3..."></textarea>
+                <div class="space-y-3">
+                    <label class="label-text">Gallery Album (Project_Gallery_Final)</label>
+                    <div id="galleryPreview" class="preview-box grid grid-cols-3 gap-1 p-2 overflow-y-auto">
+                        <i class="fa-solid fa-images text-3xl text-slate-300 col-span-full self-center"></i>
+                    </div>
+                    <input type="file" id="file_gallery" multiple accept="image/*" class="hidden" onchange="previewGallery(this)">
+                    <button onclick="document.getElementById('file_gallery').click()" class="w-full py-3 bg-purple-50 text-purple-600 rounded-xl text-[10px] font-bold uppercase hover:bg-purple-100 transition-all">Upload Gallery Files</button>
                 </div>
             </div>
 
-            <hr class="border-slate-50">
+            <hr class="border-slate-100">
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div class="col-span-full space-y-2">
-                    <label class="label-text">Property Display Name</label>
-                    <input type="text" id="ID_NAME" class="input-field text-xl text-blue-600 font-bold" placeholder="ชื่อบ้านหรือหัวข้อโฆษณา">
+                    <label class="label-text">Display Heading / Name</label>
+                    <div class="input-group">
+                        <input type="text" id="id_name" class="field-input text-xl text-blue-600">
+                    </div>
                 </div>
-                
+
                 <div class="space-y-2">
                     <label class="label-text">Sale Price (฿)</label>
-                    <input type="number" id="Price" class="input-field bg-blue-50/50 text-blue-700 text-lg border-blue-200" placeholder="0.00">
+                    <div class="input-group bg-blue-50/50">
+                        <input type="number" id="price" class="field-input text-blue-700 text-lg">
+                    </div>
                 </div>
 
                 <div class="space-y-2">
                     <label class="label-text">Sale Status</label>
-                    <select id="Sale_Status" class="input-field appearance-none cursor-pointer">
-                        <option value="AVAILABLE">🟢 AVAILABLE</option>
-                        <option value="SOLD">🔴 SOLD</option>
-                        <option value="RESERVED">🟣 RESERVED</option>
-                        <option value="UNDER CON">🟠 UNDER CON</option>
-                    </select>
+                    <div class="input-group">
+                        <select id="sale_status" class="field-input appearance-none bg-transparent">
+                            <option value="AVAILABLE">🟢 AVAILABLE</option>
+                            <option value="SOLD">🔴 SOLD</option>
+                            <option value="RESERVED">🟣 RESERVED</option>
+                            <option value="UNDER CON">🟠 UNDER CON</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="space-y-2">
-                    <label class="label-text">System Status</label>
-                    <select id="System_Status" class="input-field appearance-none cursor-pointer">
-                        <option value="Live">✅ Online (Live)</option>
-                        <option value="Offline">❌ Offline (Hidden)</option>
-                        <option value="Pending">⚠️ Pending Review</option>
-                    </select>
+                    <label class="label-text">System Online</label>
+                    <div class="input-group">
+                        <select id="sys_status" class="field-input appearance-none bg-transparent">
+                            <option value="Live">✅ Online (Live)</option>
+                            <option value="Offline">❌ Offline</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="space-y-2">
-                    <label class="label-text">Property Type</label>
-                    <input type="text" id="Type" class="input-field" placeholder="เช่น Villa, House">
+                    <label class="label-text">Type</label>
+                    <div class="input-group"><input type="text" id="type" class="field-input"></div>
                 </div>
 
                 <div class="space-y-2">
-                    <label class="label-text">Plot / Zone</label>
-                    <input type="text" id="Plot" class="input-field" placeholder="ระบุเลขแปลง">
+                    <label class="label-text">Plot / Plot Name</label>
+                    <div class="input-group"><input type="text" id="plot" class="field-input"></div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="label-text">Bedrooms</label>
+                    <div class="input-group"><input type="number" id="bedrooms" class="field-input"></div>
                 </div>
             </div>
 
             <div class="space-y-2">
-                <label class="label-text">Full Description & Key Details</label>
-                <textarea id="Description" rows="8" class="input-field font-normal text-slate-600" placeholder="ระบุรายละเอียดเชิงลึกทั้งหมดของบ้านหลังนี้..."></textarea>
+                <label class="label-text">Property Details & Description</label>
+                <div class="input-group">
+                    <textarea id="description" rows="6" class="field-input font-normal"></textarea>
+                </div>
             </div>
 
-            <div class="pt-10">
-                <button onclick="saveChanges()" id="saveBtn" class="w-full bg-[#0f172a] text-white py-7 rounded-[2.5rem] font-bold uppercase tracking-[0.4em] shadow-2xl hover:bg-blue-600 transition-all active:scale-95 flex items-center justify-center">
-                    <i class="fa-solid fa-cloud-arrow-up mr-4 text-xl"></i> Update Master Database
-                </button>
-            </div>
+            <button onclick="updateData()" id="saveBtn" class="w-full bg-[#0f172a] text-white py-7 rounded-[2.5rem] font-bold uppercase tracking-[0.4em] shadow-2xl hover:bg-blue-600 transition-all active:scale-95 italic mt-10">
+                <i class="fa-solid fa-cloud-arrow-up mr-4 text-xl"></i> Sync & Update Master Hub
+            </button>
         </div>
     </div>
 
-    <div id="successModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
-        <div class="bg-white rounded-[3.5rem] p-12 text-center shadow-2xl scale-in max-w-sm w-full border-t-8 border-green-500">
-            <div class="w-20 h-20 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-                <i class="fa-solid fa-check-double text-3xl"></i>
+    <div id="successPop" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+        <div class="bg-white rounded-[3rem] p-10 text-center shadow-2xl max-w-sm w-full border-t-8 border-green-500">
+            <div class="w-20 h-20 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner text-3xl">
+                <i class="fa-solid fa-check"></i>
             </div>
-            <h2 class="text-2xl font-bold italic mb-2 uppercase">Success!</h2>
-            <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-10">ข้อมูลของคุณถูกอัปเดตลง <br>Master Hub เรียบร้อยแล้ว</p>
-            <button onclick="window.history.back()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase tracking-widest text-[10px]">Back to Dashboard</button>
+            <h2 class="text-2xl font-bold italic mb-2">อัปเดตสำเร็จ!</h2>
+            <p class="text-slate-400 text-[10px] font-bold uppercase mb-8">ข้อมูลและรูปภาพถูกส่งเข้า <br>Master Hub และ Drive เรียบร้อย</p>
+            <button onclick="window.history.back()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest">Done</button>
         </div>
     </div>
 
     <script>
-        // 🛑 ขั้นตอนสำคัญ: ใส่ URL Apps Script ของพี่ตรงนี้
+        // 🛑 ตั้งค่า URL ของพี่ตรงนี้
         const API_URL = "https://script.google.com/macros/s/AKfycbwe5Sfa4aN_17nmtgekfP4CpHXVmlL4NOpzc7cG2zvffnrgpA5u9tUNmKGnZNUpz29u/exec"; 
 
         const urlParams = new URLSearchParams(window.location.search);
         const HP_ID = urlParams.get('id');
         const PROJECT = urlParams.get('project');
 
-        async function loadData() {
-            if (!HP_ID || !PROJECT) {
-                showError("⚠️ Missing ID or Project parameters");
-                return;
-            }
-            
+        async function init() {
+            if(!HP_ID || !PROJECT) return alert("Missing ID or Project");
             document.getElementById('displayId').innerText = HP_ID;
             document.getElementById('displayProject').innerText = `Source: ${PROJECT}`;
 
             try {
-                // ดึงข้อมูลรายหลังแบบระบุ Project และ HP_ID
-                const response = await fetch(`${API_URL}?mode=getUnitDetail&hpId=${HP_ID}&project=${PROJECT}&cache=${new Date().getTime()}`);
-                const data = await response.json();
-
-                if (data && !data.error) {
-                    // แมพข้อมูลเข้าสู่ช่องกรอกตามชื่อตัวแปรที่ดึงจาก Sheets
-                    const fields = ['ID_NAME', 'Type', 'Plot', 'Price', 'Sale_Status', 'System_Status', 'Description', 'Thumbnail_Image', 'Gallery_Images'];
-                    fields.forEach(f => {
-                        const el = document.getElementById(f);
-                        if (el) el.value = data[f] || "";
-                    });
-
+                const res = await fetch(`${API_URL}?mode=getUnitDetail&hpId=${HP_ID}&project=${PROJECT}&t=${Date.now()}`);
+                const d = await res.json();
+                
+                if(!d.error) {
+                    document.getElementById('id_name').value = d.ID_NAME || "";
+                    document.getElementById('price').value = d.Price || "";
+                    document.getElementById('sale_status').value = d.Sale_Status || "AVAILABLE";
+                    document.getElementById('sys_status').value = d.System_Status || "Live";
+                    document.getElementById('type').value = d.Type || "";
+                    document.getElementById('plot').value = d.Plot || "";
+                    document.getElementById('bedrooms').value = d.Bedrooms || "";
+                    document.getElementById('description').value = d.Description || "";
+                    
+                    if(d.Thumbnail_Image) document.getElementById('thumbPreview').innerHTML = `<img src="${d.Thumbnail_Image}">`;
+                    
                     document.getElementById('statusArea').classList.add('hidden');
-                    document.getElementById('editForm').classList.remove('hidden');
-                } else {
-                    throw new Error(data.error || "Unit not found");
+                    document.getElementById('mainForm').classList.remove('hidden');
                 }
-            } catch (e) {
-                showError(`⚠️ ดึงข้อมูลจาก ${PROJECT} ไม่สำเร็จ<br><span class='text-[8px] uppercase mt-2 block'>โปรดเช็คชื่อแท็บและ HP-ID ในชีท</span>`);
+            } catch (e) { document.getElementById('statusArea').innerText = "⚠️ ไม่สามารถโหลดข้อมูลได้"; }
+        }
+
+        // 🛠️ ระบบจัดการรูปภาพ
+        function previewImg(input, id) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => document.getElementById(id).innerHTML = `<img src="${e.target.result}">`;
+                reader.readAsDataURL(input.files[0]);
             }
         }
 
-        async function saveChanges() {
-            const btn = document.getElementById('saveBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-3"></i> Syncing to Master...';
+        function previewGallery(input) {
+            const container = document.getElementById('galleryPreview');
+            container.innerHTML = "";
+            Array.from(input.files).forEach(f => {
+                const reader = new FileReader();
+                reader.onload = e => container.innerHTML += `<img src="${e.target.result}" class="w-full h-12 object-cover rounded-lg">`;
+                reader.readAsDataURL(f);
+            });
+        }
 
-            // รวบรวมข้อมูลทั้งหมดส่งกลับไปบันทึก
+        async function updateData() {
+            const btn = document.getElementById('saveBtn');
+            btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-3"></i> Uploading to Drive...';
+
             const payload = {
                 mode: "updateUnit",
                 project: PROJECT,
                 hpId: HP_ID,
-                idName: document.getElementById('ID_NAME').value,
-                price: document.getElementById('Price').value,
-                type: document.getElementById('Type').value,
-                plot: document.getElementById('Plot').value,
-                saleStatus: document.getElementById('Sale_Status').value,
-                sysStatus: document.getElementById('System_Status').value,
-                description: document.getElementById('Description').value,
-                thumbnail: document.getElementById('Thumbnail_Image').value,
-                gallery: document.getElementById('Gallery_Images').value
+                idName: document.getElementById('id_name').value,
+                price: document.getElementById('price').value,
+                saleStatus: document.getElementById('sale_status').value,
+                sysStatus: document.getElementById('sys_status').value,
+                description: document.getElementById('description').value,
+                type: document.getElementById('type').value,
+                plot: document.getElementById('plot').value,
+                file_thumb: null,
+                files_gallery: []
             };
 
+            const thumbFile = document.getElementById('file_thumb').files[0];
+            if(thumbFile) payload.file_thumb = await toBase64(thumbFile);
+
+            const galleryFiles = document.getElementById('file_gallery').files;
+            for(let f of galleryFiles) payload.files_gallery.push(await toBase64(f));
+
             try {
-                // ส่งแบบ POST ไปที่ Apps Script
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-                document.getElementById('successModal').classList.remove('hidden');
-            } catch (e) {
-                alert("บันทึกไม่สำเร็จ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ต");
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-4"></i> Retry Update';
-            }
+                await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                document.getElementById('successPop').classList.remove('hidden');
+            } catch (e) { alert("Error!"); btn.disabled = false; btn.innerText = "Retry"; }
         }
 
-        function showError(msg) {
-            document.getElementById('loadingSpinner').classList.add('hidden');
-            const err = document.getElementById('errorMessage');
-            err.classList.remove('hidden');
-            document.getElementById('errorText').innerHTML = msg;
-        }
+        const toBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve({ data: reader.result.split(',')[1], type: file.type });
+            reader.onerror = error => reject(error);
+        });
 
-        window.onload = loadData;
+        window.onload = init;
     </script>
 </body>
 </html>
