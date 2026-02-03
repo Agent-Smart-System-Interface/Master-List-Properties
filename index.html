@@ -16,157 +16,86 @@
   </style>
 </head>
 
-<body class="min-h-screen">
-  <!-- Header (คุณคงของเดิมได้ ถ้าอยาก) -->
-  <header class="max-w-6xl mx-auto px-4 pt-6 pb-3">
-    <div class="flex items-start justify-between">
-      <div>
-        <h1 class="text-4xl font-extrabold italic tracking-tight text-slate-900">DIRECT HUB</h1>
-        <p class="text-lg font-bold italic text-blue-700 mt-1">ศูนย์รวมบ้านฝากขายตรงจากเจ้าของ</p>
-      </div>
-      <button id="profileBtn" class="w-12 h-12 rounded-2xl bg-white card-shadow flex items-center justify-center text-2xl" title="Profile">
-        👤
-      </button>
-    </div>
-  </header>
-
-  <!-- List -->
-  <main class="max-w-6xl mx-auto px-4 pb-10">
-    <div id="list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-
-    <div id="loading" class="text-center py-10 text-slate-500 font-bold">Loading...</div>
-    <div id="error" class="hidden text-center py-10 text-red-600 font-bold"></div>
-  </main>
+<body>
+<main class="max-w-6xl mx-auto px-4 py-10">
+  <div id="list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+</main>
 
 <script>
-  // ✅ ใส่ API ตัวเดียวกับที่คุณใช้
-  const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
+const PROJECT = new URLSearchParams(location.search).get("project") || "Project_0";
 
-  // ✅ ใช้ project จาก URL เหมือนเดิม: dashboard.html?project=Project_0
-  const urlParams = new URLSearchParams(location.search);
-  const PROJECT = urlParams.get("project") || "Project_0";
+function fmtPrice(n){
+  const x = Number(String(n || "").replace(/,/g,""));
+  if (!Number.isFinite(x) || x <= 0) return "";
+  return "฿ " + x.toLocaleString("en-US");
+}
 
-  // แปลงสถานะให้เป็นไทย + สี
-  function statusMeta(raw){
-    const s = String(raw || "").trim();
+function statusMeta(raw){
+  const map = {
+    "Available": ["ว่าง","bg-emerald-100 text-emerald-700"],
+    "Under Con": ["กำลังก่อสร้าง","bg-sky-100 text-sky-700"],
+    "Under Construction": ["กำลังก่อสร้าง","bg-sky-100 text-sky-700"],
+    "Reserved": ["จองแล้ว","bg-amber-100 text-amber-700"],
+    "Sold": ["ขายแล้ว","bg-rose-100 text-rose-700"]
+  };
+  return map[raw] || ["","bg-slate-100 text-slate-600"];
+}
 
-    // รองรับทั้งค่าเดิม/ค่าใหม่
-    const map = {
-      "Available": {th:"ว่าง", cls:"bg-emerald-100 text-emerald-700"},
-      "Under Con": {th:"กำลังก่อสร้าง", cls:"bg-sky-100 text-sky-700"},
-      "Under Construction": {th:"กำลังก่อสร้าง", cls:"bg-sky-100 text-sky-700"},
-      "Reserved": {th:"จองแล้ว", cls:"bg-amber-100 text-amber-700"},
-      "Sold": {th:"ขายแล้ว", cls:"bg-rose-100 text-rose-700"},
-      "": {th:"-", cls:"bg-slate-100 text-slate-600"}
-    };
+function cardTemplate(item){
+  const price = fmtPrice(item.price);
+  const [statusTH,statusCls] = statusMeta(item.unitStatus || "");
+  return `
+  <article class="rounded-[2.5rem] bg-white card-shadow overflow-hidden">
+    <div class="relative">
+      <div class="aspect-[4/3] bg-slate-100 overflow-hidden">
+        ${item.thumbnail
+          ? `<img src="${item.thumbnail}" class="w-full h-full object-cover">`
+          : `<div class="w-full h-full flex items-center justify-center text-5xl text-slate-300">🖼️</div>`
+        }
+      </div>
 
-    return map[s] || {th:s, cls:"bg-slate-100 text-slate-700"};
-  }
+      <!-- Z-1 / Z-2 / Z-3 -->
+      <div class="absolute top-4 left-4 glass pill px-4 py-2 font-extrabold italic">
+        ${item.plot || "-"}
+      </div>
+    </div>
 
-  function fmtPrice(n){
-    const x = Number(String(n || "").replace(/,/g,""));
-    if (Number.isFinite(x)) return x.toLocaleString("en-US");
-    return String(n || "-");
-  }
+    <div class="p-5">
+      <!-- Info line -->
+      <div class="flex flex-wrap gap-2 text-sm font-bold text-slate-700">
+        <span class="px-3 py-1 rounded-xl bg-slate-100">🛏 ${item.bedrooms || "-"}</span>
+        <span class="px-3 py-1 rounded-xl bg-slate-100">🛁 ${item.bathrooms || "-"}</span>
+        <span class="px-3 py-1 rounded-xl bg-slate-100">📐 ${item.landSqw || "-"} sq.w</span>
+        <span class="px-3 py-1 rounded-xl bg-slate-100">🏠 ${item.livingSqm || "-"} sqm</span>
 
-  // ✅ สร้างลิงก์ไปหน้า details
-  function detailsLink(id){
-    // ปรับชื่อไฟล์ปลายทางได้ตามของคุณ
-    return `details.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(PROJECT)}`;
-  }
+        ${statusTH
+          ? `<span class="ml-auto px-3 py-1 rounded-xl ${statusCls}">${statusTH}</span>`
+          : ""
+        }
+      </div>
 
-  function cardTemplate(item){
-    const id = item.id || "";
-    const plot = String(item.plot || "").trim();     // ✅ ใช้ plot มาแสดงเป็น Z-3 (ข้อ 1)
-    const thumb = item.thumbnail || "";
-    const status = statusMeta(item.unitStatus);
+      <!-- Price (hide if 0) -->
+      ${price
+        ? `<div class="mt-4 text-3xl font-extrabold italic text-slate-900">${price}</div>`
+        : ""
+      }
 
-    // ✅ จุดที่ 2: info line ใต้รูป (Bed/Bath/Land/Living + Status)
-    // หมายเหตุ: ต้องมีฟิลด์เหล่านี้จาก API. ถ้าใน API ยังไม่ส่งมา
-    // คุณสามารถเพิ่มใน Apps Script mode=getUnitList ให้ส่ง bedrooms/bathrooms/land_sqw/living_sqm ได้
-    const bedrooms = item.bedrooms ?? item.Bedrooms ?? "";
-    const bathrooms = item.bathrooms ?? item.Bathrooms ?? "";
-    const landSqw = item.landSqw ?? item.Land_Area_sqw ?? "";
-    const livingSqm = item.livingSqm ?? item.Living_Area_sqm ?? "";
+      <!-- Button -->
+      <a href="details.html?id=${item.id}&project=${PROJECT}"
+        class="mt-5 block w-full text-center py-4 rounded-[2rem] bg-slate-900 text-white font-extrabold italic tracking-widest hover:bg-blue-600 transition-all">
+        VIEW FULL DETAILS
+      </a>
+    </div>
+  </article>`;
+}
 
-    // ✅ จุดที่ 4: ราคา
-    const price = fmtPrice(item.price ?? item.Price);
-
-    return `
-      <article class="rounded-[2.5rem] bg-white card-shadow overflow-hidden">
-        <div class="relative">
-          <div class="aspect-[4/3] bg-slate-100 overflow-hidden">
-            ${thumb
-              ? `<img src="${thumb}" class="w-full h-full object-cover" alt="${id}">`
-              : `<div class="w-full h-full flex items-center justify-center text-5xl text-slate-300">🖼️</div>`
-            }
-          </div>
-
-          <!-- ✅ (1) มุมซ้ายบน: เปลี่ยนเป็น Z-3 และไม่มีคำว่า Plot -->
-          <div class="absolute top-4 left-4 glass pill px-4 py-2 font-extrabold italic text-slate-900">
-            ${plot ? plot : "-"}
-          </div>
-
-          <!-- ✅ (3) ป้ายแดงวันที่: เอาออกแล้ว (ไม่มี element นี้) -->
-        </div>
-
-        <div class="p-5">
-          <!-- ✅ (2) แถวข้อมูลใต้รูป + สถานะท้ายสุด -->
-          <div class="flex flex-wrap items-center gap-2 text-sm font-bold text-slate-700">
-            <span class="px-3 py-1 rounded-xl bg-slate-100">🛏 ${bedrooms || "-"}</span>
-            <span class="px-3 py-1 rounded-xl bg-slate-100">🛁 ${bathrooms || "-"}</span>
-            <span class="px-3 py-1 rounded-xl bg-slate-100">📐 ${landSqw || "-"} sq.w</span>
-            <span class="px-3 py-1 rounded-xl bg-slate-100">🏠 ${livingSqm || "-"} sqm</span>
-
-            <span class="ml-auto px-3 py-1 rounded-xl ${status.cls}">
-              ${status.th}
-            </span>
-          </div>
-
-          <!-- ✅ (4) ราคา -->
-          <div class="mt-4 text-3xl font-extrabold italic text-slate-900">
-            ฿ ${price}
-          </div>
-          <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
-            Unit: ${id}
-          </div>
-
-          <!-- ✅ ปุ่มลิงก์ไป details -->
-          <a href="${detailsLink(id)}"
-             class="mt-5 block w-full text-center py-4 rounded-[2rem] bg-slate-900 text-white font-extrabold italic tracking-widest hover:bg-blue-600 transition-all active:scale-95">
-            VIEW FULL DETAILS
-          </a>
-        </div>
-      </article>
-    `;
-  }
-
-  async function loadList(){
-    const listEl = document.getElementById("list");
-    const loadingEl = document.getElementById("loading");
-    const errorEl = document.getElementById("error");
-
-    try{
-      loadingEl.classList.remove("hidden");
-      errorEl.classList.add("hidden");
-
-      const res = await fetch(`${API_URL}?mode=getUnitList&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`);
-      const data = await res.json();
-      if(data && data.error) throw new Error(data.error);
-      if(!Array.isArray(data)) throw new Error("Invalid list response");
-
-      // Render
-      listEl.innerHTML = data.map(cardTemplate).join("");
-
-      loadingEl.classList.add("hidden");
-    }catch(err){
-      loadingEl.classList.add("hidden");
-      errorEl.classList.remove("hidden");
-      errorEl.textContent = "Load failed: " + err.message;
-    }
-  }
-
-  window.onload = loadList;
+async function load(){
+  const res = await fetch(`${API_URL}?mode=getUnitList&project=${PROJECT}`);
+  const data = await res.json();
+  document.getElementById("list").innerHTML = data.map(cardTemplate).join("");
+}
+load();
 </script>
 </body>
 </html>
