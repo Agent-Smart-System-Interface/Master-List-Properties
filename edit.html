@@ -85,7 +85,17 @@
           <input id="Price" class="field-input border-blue-200 font-bold">
         </div>
         <div><span class="field-label">Price/SQM</span><input id="Price_SQM" class="field-input"></div>
-        <div><span class="field-label">Status Badge</span><input id="StatusBadge" class="field-input"></div>
+
+        <!-- ✅ แก้เฉพาะจุดที่คุณสั่ง: เปลี่ยนเป็น STATUS 4 ตัวเลือก -->
+        <div>
+          <span class="field-label">Status</span>
+          <select id="Status" class="field-input font-bold bg-slate-50">
+            <option value="Available">Available</option>
+            <option value="Under Con">Under Con</option>
+            <option value="Reserved">Reserved</option>
+            <option value="Sold">Sold</option>
+          </select>
+        </div>
 
         <div class="col-span-full"><span class="field-label">Description</span><textarea id="Description" rows="4" class="field-input"></textarea></div>
 
@@ -224,7 +234,10 @@
       Furnishing: document.getElementById("Furnishing").value,
       Price: document.getElementById("Price").value,
       Price_SQM: document.getElementById("Price_SQM").value,
-      StatusBadge: document.getElementById("StatusBadge").value,
+
+      // ✅ แก้เฉพาะจุดที่คุณสั่ง: ส่งค่า Status ไปอัปเดตคอลัมน์ Status
+      Status: document.getElementById("Status").value,
+
       Description: document.getElementById("Description").value,
       Parking: document.getElementById("Parking").value,
       Extras: (document.getElementById("Extras")||{}).value,
