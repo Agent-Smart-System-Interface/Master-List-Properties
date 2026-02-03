@@ -176,7 +176,11 @@
       tbody.innerHTML = units.map(u => {
         const id = u.id || "-";
         const plot = u.plot || "-";
-        const unitStatus = u.unitStatus || "-";
+
+        // ✅ FIX: ใช้ "status" จาก API (Apps Script ส่งมาเป็น status)
+        const unitStatus = u.status || "-";
+
+        // ✅ sysStatus ยังใช้เดิม
         const sysStatus = u.sysStatus || "-";
 
         return `
@@ -207,11 +211,13 @@
         return;
       }
 
-      // การ์ดเตี้ยลง (ไม่สูง)
       list.innerHTML = units.map(u => {
         const id = u.id || "-";
         const plot = u.plot || "-";
-        const unitStatus = u.unitStatus || "-";
+
+        // ✅ FIX: ใช้ "status" จาก API
+        const unitStatus = u.status || "-";
+
         const sysStatus = u.sysStatus || "-";
 
         return `
@@ -260,18 +266,14 @@
         const res = await fetch(`${API_URL}?mode=getUnitList&project=${encodeURIComponent(PROJECT_ID)}&t=${Date.now()}`);
         const data = await res.json();
 
-        // 1) ดึง "ชื่อโปรเจค" จากคอลัมน์ Project Name
-        // ในระบบเดิมของคุณ data แต่ละแถวมี u.name = Project Name
-        // เราจะใช้ตัวแรกที่เจอเป็นชื่อบนแถบดำ
+        // ✅ FIX: ชื่อโปรเจคจาก API คือ projectName (ไม่ใช่ name)
         let projectName = "";
         if (Array.isArray(data) && data.length > 0) {
-          projectName = (data.find(x => x && x.name && String(x.name).trim() !== "")?.name) || "";
+          projectName = (data.find(x => x && x.projectName && String(x.projectName).trim() !== "")?.projectName) || "";
         }
 
-        // ถ้าไม่เจอจาก list ให้ fallback เป็น PROJECT_ID
         document.getElementById("projectTitle").innerText = projectName ? projectName : PROJECT_ID;
 
-        // 2) แสดงผลรายการ (ไม่ต้องเลื่อนซ้าย-ขวาในมือถือ)
         document.getElementById("loadingBlock").classList.add("hidden");
 
         if (isMobile()) {
@@ -289,10 +291,7 @@
       }
     }
 
-    // re-render when resize (มือถือ/คอม)
     window.addEventListener("resize", () => {
-      // รีเฟรชง่ายๆ โดยโหลดใหม่
-      // (ถ้าไม่อยากโหลดใหม่ บอกผม เดี๋ยวทำเป็น cache ให้)
       location.reload();
     });
 
