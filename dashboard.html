@@ -66,7 +66,6 @@
     const urlParams = new URLSearchParams(window.location.search);
     const PROJECT_ID = urlParams.get("project") || "Project_0";
 
-    // ถ้าหน้าแรกของคุณชื่ออื่น ให้เปลี่ยนตรงนี้ได้
     const HOME_URL = "index.html";
     document.getElementById("homeBtn").href = HOME_URL;
 
@@ -107,7 +106,6 @@
                 </span>`;
       }
 
-      // default
       return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-50 text-slate-700">
                 <span class="w-2 h-2 rounded-full bg-slate-400"></span> ${escapeHtml(raw)}
               </span>`;
@@ -160,18 +158,16 @@
     }
 
     // ================================
-    // ✅ THUMBNAIL HELPERS (แนวตั้งเล็ก ๆ)
+    // THUMBNAIL HELPERS
     // ================================
     function pickThumb(u) {
-      // รองรับหลายชื่อ key (กันพัง)
       return (u.Thumbnail_Image || u.thumbnail || u.thumb || u.thumbUrl || "").toString().trim();
     }
 
     function thumbTag(url, size = "mobile") {
-      // แนวตั้ง (9:12) ดูเหมือนการ์ดบ้าน
       const base = (size === "desktop")
-        ? "w-10 h-14 rounded-xl"   // desktop: เล็ก
-        : "w-16 h-20 rounded-2xl"; // mobile: เด่นขึ้นนิดนึง
+        ? "w-10 h-14 rounded-xl"
+        : "w-16 h-20 rounded-2xl";
 
       if (!url) {
         return `<div class="${base} bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-300 font-bold">🏠</div>`;
@@ -204,10 +200,9 @@
               ${thumbTag(thumb, "desktop")}
             </td>
 
-            <!-- ✅ ลดขนาด HP-xxx ลง -->
-            <td class="text-left font-bold text-slate-900 text-[12px]">${escapeHtml(id)}</td>
+            <!-- ✅ FIX: ให้ HP-xxx เล็กลงเท่ากับ label (11px) -->
+            <td class="text-left font-bold text-slate-900 text-[11px]">${escapeHtml(id)}</td>
 
-            <!-- ✅ เพิ่มขนาด Z-1 ให้เด่น -->
             <td class="text-left font-extrabold text-slate-800 text-[15px]">${escapeHtml(plot)}</td>
 
             <td>${statusBadge(unitStatus)}</td>
@@ -243,10 +238,8 @@
 
         return `
           <div class="bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-4">
-            <!-- HEADER -->
             <div class="flex items-start justify-between gap-3">
               <div class="flex gap-4 min-w-0">
-                <!-- ✅ รูปแนวตั้ง 1 รูป -->
                 <div class="shrink-0">
                   ${thumbTag(thumb, "mobile")}
                 </div>
@@ -254,10 +247,9 @@
                 <div class="min-w-0">
                   <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Unit ID</div>
 
-                  <!-- ✅ ลดขนาด HP-xxx ลง -->
-                  <div class="text-[18px] font-bold text-slate-900 italic truncate">${escapeHtml(id)}</div>
+                  <!-- ✅ FIX: ให้ HP-xxx เท่ากับ UNIT ID / PLOT (11px) -->
+                  <div class="text-[11px] font-bold text-slate-900 italic truncate">${escapeHtml(id)}</div>
 
-                  <!-- ✅ เพิ่มขนาด Z-1 ให้เด่น -->
                   <div class="mt-2">
                     <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Plot</div>
                     <div class="text-[22px] font-extrabold text-slate-900 italic leading-tight">${escapeHtml(plot)}</div>
@@ -274,7 +266,6 @@
               </button>
             </div>
 
-            <!-- STATUS GRID (คงเดิมครบถ้วน) -->
             <div class="grid grid-cols-2 gap-3 mt-4">
               <div class="bg-slate-50 rounded-2xl p-3">
                 <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Visibility</div>
@@ -346,7 +337,6 @@
       }
     }
 
-    // ✅ FIX: do NOT reload on resize (mobile browsers trigger resize while scrolling)
     window.addEventListener("resize", () => {
       const nowMobile = isMobile();
       if (nowMobile !== CURRENT_MOBILE) {
