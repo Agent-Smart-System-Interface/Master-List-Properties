@@ -10,125 +10,163 @@
     <style>body { font-family: 'Kanit', sans-serif; background: #fdfdfd; }</style>
 </head>
 <body class="p-4 md:p-10 italic">
-    <div class="max-w-3xl mx-auto bg-white rounded-[3rem] shadow-2xl border border-slate-50 overflow-hidden fade-in">
+    <div class="max-w-4xl mx-auto bg-white rounded-[3rem] shadow-2xl border border-slate-50 overflow-hidden">
         <div class="bg-[#0f172a] p-8 text-white flex justify-between items-center">
             <div>
-                <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-1">Editing Unit</p>
-                <h1 id="displayId" class="text-3xl font-bold italic underline">HP-XXXX</h1>
+                <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-1">Editing Unit Details</p>
+                <h1 id="displayId" class="text-3xl font-bold italic underline">HP-A001</h1>
             </div>
-            <button onclick="window.history.back()" class="bg-white/10 hover:bg-white/20 p-3 rounded-2xl transition-all">
+            <button onclick="window.history.back()" class="bg-white/10 hover:bg-white/20 p-3 rounded-2xl transition-all font-bold text-xs uppercase">
                 <i class="fa-solid fa-chevron-left mr-2"></i> กลับหน้าหลัก
             </button>
         </div>
 
-        <div id="loading" class="p-20 text-center text-slate-400 animate-pulse font-bold italic">
-            🔄 กำลังดึงข้อมูลเชิงลึกจากฐานข้อมูล...
+        <div id="statusMessage" class="p-20 text-center text-slate-400 font-bold italic">
+            <i class="fa-solid fa-spinner fa-spin text-2xl mb-4 text-blue-500"></i><br>
+            กำลังเชื่อมต่อฐานข้อมูล Master...
         </div>
 
-        <div id="mainForm" class="hidden p-8 md:p-12 space-y-10">
+        <div id="fullForm" class="hidden p-8 md:p-12 space-y-10">
+            
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <label class="flex flex-col items-center p-8 bg-blue-50/50 border-2 border-dashed border-blue-200 rounded-[2rem] cursor-pointer">
-                    <i class="fa-solid fa-image text-2xl text-blue-600 mb-2"></i>
-                    <span class="text-[10px] font-bold text-blue-600 uppercase">รูปหน้าปก (1 รูป)</span>
-                    <input type="file" id="inThumb" class="hidden" onchange="updateLabel('inThumb', 'tLab')">
-                    <span id="tLab" class="text-[9px] text-blue-400 mt-2">ยังไม่ได้เลือก</span>
-                </label>
-                <label class="flex flex-col items-center p-8 bg-purple-50/50 border-2 border-dashed border-purple-200 rounded-[2rem] cursor-pointer">
-                    <i class="fa-solid fa-images text-2xl text-purple-600 mb-2"></i>
-                    <span class="text-[10px] font-bold text-purple-600 uppercase">รูปอัลบั้ม (15 รูป)</span>
-                    <input type="file" id="inGall" multiple class="hidden" onchange="updateLabel('inGall', 'gLab')">
-                    <span id="gLab" class="text-[9px] text-purple-400 mt-2">ยังไม่ได้เลือก</span>
-                </label>
+                <div class="space-y-4">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4 italic">Main Cover Image (URL)</label>
+                    <input type="text" id="thumbnail_image" class="w-full p-4 bg-slate-50 rounded-xl outline-none text-xs border border-slate-100" placeholder="ลิงก์รูปภาพหน้าปก">
+                    <label class="flex flex-col items-center p-6 bg-blue-50/50 border-2 border-dashed border-blue-200 rounded-2xl cursor-pointer">
+                        <i class="fa-solid fa-cloud-arrow-up text-blue-600 mb-2"></i>
+                        <span class="text-[9px] font-bold text-blue-600">UPLOAD NEW COVER</span>
+                        <input type="file" id="file_thumb" class="hidden">
+                    </label>
+                </div>
+                <div class="space-y-4">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4 italic">Gallery Album (URLs Separated by Comma)</label>
+                    <textarea id="gallery_images" class="w-full p-4 bg-slate-50 rounded-xl outline-none text-[10px] border border-slate-100 h-28" placeholder="ลิงก์รูปภาพในอัลบั้ม แยกด้วยเครื่องหมายคอมม่า"></textarea>
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 italic">
-                <div class="col-span-full space-y-2">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4">Property Name / Title</label>
-                    <input type="text" id="idName" class="w-full p-5 bg-slate-50 rounded-2xl outline-none font-bold text-slate-800">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 italic">
+                <div class="space-y-2 col-span-full">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4 italic">Property Name / Heading</label>
+                    <input type="text" id="id_name" class="w-full p-5 bg-white border border-slate-100 rounded-2xl outline-none font-bold text-slate-800 text-lg shadow-sm">
                 </div>
+
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4">ประเภทบ้าน (Type)</label>
-                    <input type="text" id="type" class="w-full p-4 bg-slate-50 rounded-xl outline-none text-sm">
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4">เลขที่แปลง (Plot)</label>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4">Plot Name</label>
                     <input type="text" id="plot" class="w-full p-4 bg-slate-50 rounded-xl outline-none text-sm">
                 </div>
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4">ห้องนอน</label>
-                    <input type="number" id="bedrooms" class="w-full p-4 bg-slate-50 rounded-xl outline-none text-sm">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4">Property Type</label>
+                    <input type="text" id="type" class="w-full p-4 bg-slate-50 rounded-xl outline-none text-sm">
                 </div>
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4">ห้องน้ำ</label>
-                    <input type="number" id="bathrooms" class="w-full p-4 bg-slate-50 rounded-xl outline-none text-sm">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4 italic">Sale Price (฿)</label>
+                    <input type="number" id="price" class="w-full p-4 bg-blue-50 text-blue-700 font-bold rounded-xl outline-none text-xl border border-blue-100">
                 </div>
+
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4">ราคา (฿)</label>
-                    <input type="number" id="price" class="w-full p-5 bg-blue-50 text-blue-700 font-bold rounded-2xl outline-none text-2xl">
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4">System Status</label>
-                    <select id="sysStatus" class="w-full p-5 bg-white border border-slate-100 rounded-2xl font-bold outline-none">
-                        <option value="Live">🟢 Online</option>
-                        <option value="Pending">🟡 Pending</option>
-                        <option value="Sold">🔴 Sold</option>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4 italic">Sale Status</label>
+                    <select id="sale_status" class="w-full p-4 bg-white border border-slate-200 rounded-xl font-bold text-xs uppercase">
+                        <option value="AVAILABLE">🟢 AVAILABLE</option>
+                        <option value="SOLD">🔴 SOLD</option>
+                        <option value="RESERVED">🟣 RESERVED</option>
+                        <option value="UNDER CON">🟠 UNDER CON</option>
                     </select>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4 italic">System Visibility</label>
+                    <select id="system_status" class="w-full p-4 bg-white border border-slate-200 rounded-xl font-bold text-xs uppercase">
+                        <option value="Live">✅ Live (Online)</option>
+                        <option value="Offline">❌ Offline</option>
+                        <option value="Pending">⚠️ Pending</option>
+                    </select>
+                </div>
+                <div class="space-y-2">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4 italic">Project Tab</label>
+                    <input type="text" id="project_tab" class="w-full p-4 bg-slate-200 rounded-xl outline-none text-xs font-bold" readonly>
                 </div>
             </div>
 
-            <textarea id="desc" rows="5" placeholder="รายละเอียดโครงการ..." class="w-full p-6 bg-slate-50 rounded-3xl outline-none text-sm border-none shadow-inner"></textarea>
+            <div class="space-y-4 italic">
+                <label class="text-[10px] font-bold text-slate-400 uppercase ml-4">Detailed Description (Full Details)</label>
+                <textarea id="description" rows="6" class="w-full p-6 bg-slate-50 rounded-[2.5rem] outline-none text-sm border border-slate-100 shadow-inner"></textarea>
+            </div>
 
-            <button onclick="saveData()" id="btnSave" class="w-full bg-[#0f172a] text-white py-6 rounded-[2rem] font-bold uppercase tracking-[0.2em] shadow-xl hover:bg-blue-600 transition-all active:scale-95">
-                <i class="fa-solid fa-cloud-arrow-up mr-3"></i> บันทึกข้อมูลเข้า Master
+            <button onclick="updateMaster()" id="btnSave" class="w-full bg-[#0f172a] text-white py-6 rounded-[2.5rem] font-bold uppercase tracking-[0.3em] shadow-2xl hover:bg-blue-600 transition-all active:scale-95 italic">
+                <i class="fa-solid fa-floppy-disk mr-3 text-xl"></i> Confirm Update to Master Hub
             </button>
         </div>
     </div>
 
-    <div id="popOK" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-[3rem] p-12 text-center shadow-2xl">
-            <i class="fa-solid fa-circle-check text-green-500 text-6xl mb-6"></i>
-            <h2 class="text-2xl font-bold italic mb-8">บันทึกข้อมูลเรียบร้อย!</h2>
-            <button onclick="window.history.back()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase">กลับสู่หน้าหลัก</button>
-        </div>
-    </div>
-
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbwe5Sfa4aN_17nmtgekfP4CpHXVmlL4NOpzc7cG2zvffnrgpA5u9tUNmKGnZNUpz29u/exec";
+        // 🛑 ตั้งค่า URL ของพี่ตรงนี้
+        const API_URL = "https://script.google.com/macros/s/AKfycbwe5Sfa4aN_17nmtgekfP4CpHXVmlL4NOpzc7cG2zvffnrgpA5u9tUNmKGnZNUpz29u/exec"; 
+
         const urlParams = new URLSearchParams(window.location.search);
         const HP_ID = urlParams.get('id');
-        const PROJECT_NAME = urlParams.get('project');
+        const PROJECT = urlParams.get('project');
 
         async function init() {
-            if(!HP_ID) return;
+            if(!HP_ID || !PROJECT) {
+                document.getElementById('statusMessage').innerHTML = "⚠️ ไม่พบข้อมูลรหัสบ้าน หรือ ชื่อโปรเจกต์";
+                return;
+            }
             document.getElementById('displayId').innerText = HP_ID;
+            document.getElementById('project_tab').value = PROJECT;
+
             try {
-                const res = await fetch(`${API_URL}?mode=getUnitDetail&project=${PROJECT_NAME}&hpId=${HP_ID}`);
-                const d = await res.json();
-                document.getElementById('idName').value = d.ID_NAME || "";
-                document.getElementById('price').value = d.Price || 0;
-                document.getElementById('type').value = d.Type || "";
-                document.getElementById('plot').value = d.Plot || "";
-                document.getElementById('bedrooms').value = d.Bedrooms || "";
-                document.getElementById('bathrooms').value = d.Bathrooms || "";
-                document.getElementById('sysStatus').value = d.System_Status || "Pending";
-                document.getElementById('desc').value = d.Description || "";
-                
-                document.getElementById('loading').classList.add('hidden');
-                document.getElementById('mainForm').classList.remove('hidden');
-            } catch (e) { alert("ดึงข้อมูลไม่สำเร็จ"); }
+                // เรียก API โดยใช้พารามิเตอร์ที่ถูกต้องตาม Google Script
+                const response = await fetch(`${API_URL}?mode=getUnitDetail&hpId=${HP_ID}&project=${PROJECT}`);
+                const data = await response.json();
+
+                if(data.HP_ID) {
+                    // แมพข้อมูลเข้าสู่ฟอร์ม (แก้ไขชื่อ ID ให้ตรงกับคอลัมน์ในชีท)
+                    document.getElementById('id_name').value = data.ID_NAME || "";
+                    document.getElementById('plot').value = data.Plot || "";
+                    document.getElementById('type').value = data.Type || "";
+                    document.getElementById('price').value = data.Price || 0;
+                    document.getElementById('sale_status').value = data.Sale_Status || "AVAILABLE";
+                    document.getElementById('system_status').value = data.System_Status || "Live";
+                    document.getElementById('description').value = data.Description || "";
+                    document.getElementById('thumbnail_image').value = data.Thumbnail_Image || "";
+                    document.getElementById('gallery_images').value = data.Gallery_Images || "";
+
+                    document.getElementById('statusMessage').classList.add('hidden');
+                    document.getElementById('fullForm').classList.remove('hidden');
+                } else {
+                    throw new Error("Data Empty");
+                }
+            } catch (e) {
+                document.getElementById('statusMessage').innerHTML = `⚠️ ดึงข้อมูลจาก ${PROJECT} ไม่สำเร็จ<br><span class="text-[10px]">โปรดเช็กชื่อโปรเจกต์ใน Google Sheets</span>`;
+            }
         }
 
-        function updateLabel(id, lId) { document.getElementById(lId).innerText = `เลือกแล้ว ${document.getElementById(id).files.length} ไฟล์`; }
-
-        async function saveData() {
+        async function updateMaster() {
             const btn = document.getElementById('btnSave');
-            btn.disabled = true; btn.innerText = '💾 กำลังบันทึกข้อมูล...';
-            const payload = { project: PROJECT_NAME, hpId: HP_ID, idName: document.getElementById('idName').value, price: document.getElementById('price').value, sysStatus: document.getElementById('sysStatus').value, description: document.getElementById('desc').value, files: [] };
+            btn.disabled = true; btn.innerHTML = "🔄 UPDATING...";
+            
+            const payload = {
+                mode: "updateUnit",
+                project: PROJECT,
+                hpId: HP_ID,
+                idName: document.getElementById('id_name').value,
+                price: document.getElementById('price').value,
+                saleStatus: document.getElementById('sale_status').value,
+                sysStatus: document.getElementById('system_status').value,
+                description: document.getElementById('description').value,
+                thumbnail: document.getElementById('thumbnail_image').value,
+                gallery: document.getElementById('gallery_images').value
+            };
+
             try {
                 await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-                document.getElementById('popOK').classList.remove('hidden');
-            } catch (e) { btn.disabled = false; btn.innerText = 'ERROR'; }
+                alert("✅ อัปเดตข้อมูลสำเร็จ!");
+                window.history.back();
+            } catch (e) {
+                alert("⚠️ เกิดข้อผิดพลาดในการส่งข้อมูล");
+                btn.disabled = false; btn.innerHTML = "RETRY UPDATE";
+            }
         }
+
         window.onload = init;
     </script>
 </body>
