@@ -177,10 +177,8 @@
         const id = u.id || "-";
         const plot = u.plot || "-";
 
-        // ✅ FIX: ใช้ "status" จาก API (Apps Script ส่งมาเป็น status)
+        // ✅ IMPORTANT: use u.status from Apps Script getUnitList()
         const unitStatus = u.status || "-";
-
-        // ✅ sysStatus ยังใช้เดิม
         const sysStatus = u.sysStatus || "-";
 
         return `
@@ -215,9 +213,8 @@
         const id = u.id || "-";
         const plot = u.plot || "-";
 
-        // ✅ FIX: ใช้ "status" จาก API
+        // ✅ IMPORTANT: use u.status from Apps Script getUnitList()
         const unitStatus = u.status || "-";
-
         const sysStatus = u.sysStatus || "-";
 
         return `
@@ -258,44 +255,73 @@
       }).join("");
     }
 
+    function showLoading(on) {
+      const lb = document.getElementById("loadingBlock");
+      if (on) {
+        lb.classList.remove("hidden");
+        lb.classList.add("animate-pulse");
+        lb.innerText = "🔄 Syncing database...";
+      } else {
+        lb.classList.add("hidden");
+      }
+    }
+
     // ================================
-    // LOAD DATA
+    // LOAD + CACHE + SMART RESIZE (NO RELOAD)
     // ================================
+    let CACHE_UNITS = [];
+    let CURRENT_MOBILE = isMobile();
+
+    function renderByViewport() {
+      const nowMobile = isMobile();
+
+      // toggle wrappers
+      document.getElementById("mobileList").classList.toggle("hidden", !nowMobile);
+      document.getElementById("desktopTableWrap").classList.toggle("hidden", nowMobile);
+
+      if (nowMobile) renderMobile(CACHE_UNITS);
+      else renderDesktop(CACHE_UNITS);
+
+      CURRENT_MOBILE = nowMobile;
+    }
+
     async function init() {
       try {
+        showLoading(true);
+
         const res = await fetch(`${API_URL}?mode=getUnitList&project=${encodeURIComponent(PROJECT_ID)}&t=${Date.now()}`);
         const data = await res.json();
 
-        // ✅ FIX: ชื่อโปรเจคจาก API คือ projectName (ไม่ใช่ name)
+        // Title (Project Name)
         let projectName = "";
         if (Array.isArray(data) && data.length > 0) {
           projectName = (data.find(x => x && x.projectName && String(x.projectName).trim() !== "")?.projectName) || "";
         }
-
         document.getElementById("projectTitle").innerText = projectName ? projectName : PROJECT_ID;
 
-        document.getElementById("loadingBlock").classList.add("hidden");
+        CACHE_UNITS = Array.isArray(data) ? data : [];
+        showLoading(false);
 
-        if (isMobile()) {
-          document.getElementById("mobileList").classList.remove("hidden");
-          renderMobile(data);
-        } else {
-          document.getElementById("desktopTableWrap").classList.remove("hidden");
-          renderDesktop(data);
-        }
+        renderByViewport();
 
       } catch (e) {
         document.getElementById("projectTitle").innerText = PROJECT_ID;
-        document.getElementById("loadingBlock").classList.remove("animate-pulse");
-        document.getElementById("loadingBlock").innerText = "⚠️ Connection Error";
+        const lb = document.getElementById("loadingBlock");
+        lb.classList.remove("animate-pulse");
+        lb.innerText = "⚠️ Connection Error";
       }
     }
 
+    // ✅ FIX: do NOT reload on resize (mobile browsers trigger resize while scrolling)
     window.addEventListener("resize", () => {
-      location.reload();
+      const nowMobile = isMobile();
+      // render again only if breakpoint changed (mobile <-> desktop)
+      if (nowMobile !== CURRENT_MOBILE) {
+        renderByViewport();
+      }
     });
 
     window.onload = init;
   </script>
 </body>
-</html> 
+</html>
