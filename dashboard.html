@@ -15,314 +15,120 @@
 </head>
 
 <body class="p-4 md:p-10 italic">
-  <div class="max-w-6xl mx-auto">
+<div class="max-w-6xl mx-auto">
 
-    <!-- TOP BAR: ONLY PROJECT NAME + HOME ICON -->
-    <div class="bg-slate-900 rounded-[2.2rem] px-6 py-6 md:px-10 md:py-7 text-white mb-6 shadow-2xl flex items-center justify-between">
-      <div id="projectTitle" class="text-xl md:text-2xl font-bold tracking-tight italic truncate">
-        Loading...
-      </div>
-
-      <!-- Home Icon (กลับหน้าแรก) -->
-      <a id="homeBtn" href="index.html"
-         class="w-14 h-14 md:w-14 md:h-14 rounded-2xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all active:scale-95"
-         aria-label="Home">
-        <i class="fa-solid fa-house text-xl"></i>
-      </a>
-    </div>
-
-    <!-- LOADING -->
-    <div id="loadingBlock" class="bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-8 text-center text-slate-300 font-bold animate-pulse uppercase">
-      🔄 Syncing database...
-    </div>
-
-    <!-- MOBILE (Cards) -->
-    <div id="mobileList" class="hidden space-y-4"></div>
-
-    <!-- DESKTOP (Table) -->
-    <div id="desktopTableWrap" class="hidden bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100">
-      <table class="w-full text-center">
-        <thead class="bg-slate-900 text-white text-[10px] uppercase">
-          <tr>
-            <th class="py-6 pl-8 text-left">Unit ID</th>
-            <th class="text-left">Plot</th>
-            <th>Status</th>
-            <th>Visibility</th>
-            <th>Manage</th>
-          </tr>
-        </thead>
-        <tbody id="unitTableBody" class="text-xs"></tbody>
-      </table>
-    </div>
-
+  <!-- TOP BAR -->
+  <div class="bg-slate-900 rounded-[2.2rem] px-6 py-6 md:px-10 md:py-7 text-white mb-6 shadow-2xl flex items-center justify-between">
+    <div id="projectTitle" class="text-xl md:text-2xl font-bold italic truncate">Loading...</div>
+    <a href="index.html" class="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center">
+      <i class="fa-solid fa-house"></i>
+    </a>
   </div>
 
-  <script>
-    // ================================
-    // CONFIG
-    // ================================
-    const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
-    const urlParams = new URLSearchParams(window.location.search);
-    const PROJECT_ID = urlParams.get("project") || "Project_0";
+  <div id="loadingBlock" class="bg-white rounded-[2rem] shadow p-8 text-center text-slate-400 font-bold animate-pulse">
+    🔄 Syncing database...
+  </div>
 
-    // ถ้าหน้าแรกของคุณชื่ออื่น ให้เปลี่ยนตรงนี้ได้
-    const HOME_URL = "index.html";
-    document.getElementById("homeBtn").href = HOME_URL;
+  <!-- MOBILE -->
+  <div id="mobileList" class="hidden space-y-4"></div>
 
-    // ================================
-    // HELPERS: Badge Colors
-    // ================================
-    function statusBadge(status) {
-      const raw = (status ?? "").toString().trim();
-      const s = raw.toLowerCase();
+  <!-- DESKTOP -->
+  <div id="desktopTableWrap" class="hidden bg-white rounded-[2.5rem] shadow overflow-hidden">
+    <table class="w-full text-center">
+      <thead class="bg-slate-900 text-white text-[10px] uppercase">
+        <tr>
+          <th class="py-5 pl-6 text-left">Image</th>
+          <th class="text-left">Unit ID</th>
+          <th class="text-left">Plot</th>
+          <th>Status</th>
+          <th>Visibility</th>
+          <th>Manage</th>
+        </tr>
+      </thead>
+      <tbody id="unitTableBody" class="text-xs"></tbody>
+    </table>
+  </div>
 
-      if (!raw || raw === "-") {
-        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-100 text-slate-500">
-                  <span class="w-2 h-2 rounded-full bg-slate-300"></span> -
-                </span>`;
-      }
+</div>
 
-      if (s.includes("available")) {
-        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-emerald-50 text-emerald-700">
-                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Available
-                </span>`;
-      }
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
+const PROJECT_ID = new URLSearchParams(location.search).get("project") || "Project_0";
 
-      if (s.includes("under") || s.includes("construct")) {
-        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-sky-50 text-sky-700">
-                  <span class="w-2 h-2 rounded-full bg-sky-500"></span> Under Construction
-                </span>`;
-      }
+const imgBox = (url) => {
+  if (!url) {
+    return `<div class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center">🏠</div>`;
+  }
+  return `<img src="${url}" class="w-10 h-10 rounded-xl object-cover">`;
+};
 
-      if (s.includes("reserved")) {
-        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-amber-50 text-amber-700">
-                  <span class="w-2 h-2 rounded-full bg-amber-500"></span> Reserved
-                </span>`;
-      }
+const badge = (txt, color) =>
+  `<span class="px-3 py-1 rounded-full text-[11px] font-bold bg-${color}-50 text-${color}-700">${txt}</span>`;
 
-      if (s.includes("sold")) {
-        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-rose-50 text-rose-700">
-                  <span class="w-2 h-2 rounded-full bg-rose-500"></span> Sold
-                </span>`;
-      }
+function renderDesktop(list) {
+  document.getElementById("unitTableBody").innerHTML = list.map(u => `
+    <tr class="border-b hover:bg-slate-50">
+      <td class="pl-6 py-4">${imgBox(u.thumbnail)}</td>
+      <td class="text-left font-bold">${u.id}</td>
+      <td class="text-left">${u.plot || "-"}</td>
+      <td>${badge(u.unitStatus || "-", "emerald")}</td>
+      <td>${badge(u.sysStatus || "-", "amber")}</td>
+      <td>
+        <a href="edit.html?id=${u.id}&project=${PROJECT_ID}" class="text-orange-500">
+          <i class="fa-solid fa-pen"></i>
+        </a>
+      </td>
+    </tr>
+  `).join("");
+}
 
-      // default
-      return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-50 text-slate-700">
-                <span class="w-2 h-2 rounded-full bg-slate-400"></span> ${escapeHtml(raw)}
-              </span>`;
-    }
+function renderMobile(list) {
+  document.getElementById("mobileList").innerHTML = list.map(u => `
+    <div class="bg-white rounded-[2rem] shadow p-4">
+      <div class="flex gap-4 items-center">
+        ${imgBox(u.thumbnail)}
+        <div class="flex-1">
+          <div class="font-bold text-xl">${u.id}</div>
+          <div class="text-sm text-slate-400">${u.plot || "-"}</div>
+        </div>
+        <a href="edit.html?id=${u.id}&project=${PROJECT_ID}" class="text-orange-500">
+          <i class="fa-solid fa-pen"></i>
+        </a>
+      </div>
 
-    function visibilityBadge(v) {
-      const raw = (v ?? "").toString().trim();
-      const s = raw.toLowerCase();
+      <div class="mt-4 flex gap-3">
+        ${badge(u.unitStatus || "-", "emerald")}
+        ${badge(u.sysStatus || "-", "amber")}
+      </div>
+    </div>
+  `).join("");
+}
 
-      if (!raw || raw === "-") {
-        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-100 text-slate-500">
-                  <span class="w-2 h-2 rounded-full bg-slate-300"></span> -
-                </span>`;
-      }
+async function init() {
+  const res = await fetch(`${API_URL}?mode=getUnitList&project=${PROJECT_ID}`);
+  const data = await res.json();
 
-      // Online / Live (แสดงผล)
-      if (s.includes("live") || s.includes("online")) {
-        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-blue-50 text-blue-700">
-                  <span class="w-2 h-2 rounded-full bg-blue-500"></span> Live
-                </span>`;
-      }
+  document.getElementById("projectTitle").innerText = data[0]?.name || PROJECT_ID;
+  document.getElementById("loadingBlock").classList.add("hidden");
 
-      // Pending / Review
-      if (s.includes("pending") || s.includes("review")) {
-        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-amber-50 text-amber-700">
-                  <span class="w-2 h-2 rounded-full bg-amber-500"></span> Pending
-                </span>`;
-      }
+  const list = data.map(d => ({
+    id: d.id,
+    plot: d.plot,
+    unitStatus: d.unitStatus,
+    sysStatus: d.sysStatus,
+    thumbnail: d.Thumbnail_Image || d.thumbnail || ""
+  }));
 
-      // Offline / Off / Hidden
-      if (s.includes("off") || s.includes("offline") || s.includes("hide")) {
-        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-100 text-slate-600">
-                  <span class="w-2 h-2 rounded-full bg-slate-400"></span> Offline
-                </span>`;
-      }
+  if (window.innerWidth < 768) {
+    mobileList.classList.remove("hidden");
+    renderMobile(list);
+  } else {
+    desktopTableWrap.classList.remove("hidden");
+    renderDesktop(list);
+  }
+}
 
-      // default
-      return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-50 text-slate-700">
-                <span class="w-2 h-2 rounded-full bg-slate-400"></span> ${escapeHtml(raw)}
-              </span>`;
-    }
-
-    function escapeHtml(str) {
-      return String(str)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    function isMobile() {
-      return window.matchMedia("(max-width: 768px)").matches;
-    }
-
-    // ================================
-    // RENDERERS
-    // ================================
-    function renderDesktop(units) {
-      const tbody = document.getElementById("unitTableBody");
-
-      if (!units || units.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="py-16 text-slate-400 font-bold">No data</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = units.map(u => {
-        const id = u.id || "-";
-        const plot = u.plot || "-";
-
-        // ✅ IMPORTANT: use u.status from Apps Script getUnitList()
-        const unitStatus = u.status || "-";
-        const sysStatus = u.sysStatus || "-";
-
-        return `
-          <tr class="hover:bg-slate-50 border-b">
-            <td class="py-5 pl-8 text-left font-bold text-slate-900">${escapeHtml(id)}</td>
-            <td class="text-left font-bold text-slate-700">${escapeHtml(plot)}</td>
-            <td>${statusBadge(unitStatus)}</td>
-            <td>${visibilityBadge(sysStatus)}</td>
-            <td>
-              <button
-                onclick="window.location.href='edit.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(PROJECT_ID)}'"
-                class="p-2 text-orange-500 hover:scale-110 transition-all"
-                aria-label="Edit"
-              >
-                <i class="fa-solid fa-pen-to-square"></i>
-              </button>
-            </td>
-          </tr>
-        `;
-      }).join("");
-    }
-
-    function renderMobile(units) {
-      const list = document.getElementById("mobileList");
-
-      if (!units || units.length === 0) {
-        list.innerHTML = `<div class="bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-8 text-center text-slate-400 font-bold">No data</div>`;
-        return;
-      }
-
-      list.innerHTML = units.map(u => {
-        const id = u.id || "-";
-        const plot = u.plot || "-";
-
-        // ✅ IMPORTANT: use u.status from Apps Script getUnitList()
-        const unitStatus = u.status || "-";
-        const sysStatus = u.sysStatus || "-";
-
-        return `
-          <div class="bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-4">
-            <div class="flex items-start justify-between gap-3">
-              <div class="min-w-0">
-                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Unit ID</div>
-                <div class="text-2xl font-bold text-slate-900 italic truncate">${escapeHtml(id)}</div>
-              </div>
-
-              <button
-                onclick="window.location.href='edit.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(PROJECT_ID)}'"
-                class="w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center hover:bg-orange-100 transition-all active:scale-95 shrink-0"
-                aria-label="Edit"
-              >
-                <i class="fa-solid fa-pen"></i>
-              </button>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3 mt-4">
-              <div class="bg-slate-50 rounded-2xl p-3">
-                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Plot</div>
-                <div class="text-xl font-bold text-slate-800 italic">${escapeHtml(plot)}</div>
-              </div>
-
-              <div class="bg-slate-50 rounded-2xl p-3">
-                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Visibility</div>
-                <div class="mt-2">${visibilityBadge(sysStatus)}</div>
-              </div>
-
-              <div class="bg-slate-50 rounded-2xl p-3 col-span-2">
-                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status</div>
-                <div class="mt-2">${statusBadge(unitStatus)}</div>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    function showLoading(on) {
-      const lb = document.getElementById("loadingBlock");
-      if (on) {
-        lb.classList.remove("hidden");
-        lb.classList.add("animate-pulse");
-        lb.innerText = "🔄 Syncing database...";
-      } else {
-        lb.classList.add("hidden");
-      }
-    }
-
-    // ================================
-    // LOAD + CACHE + SMART RESIZE (NO RELOAD)
-    // ================================
-    let CACHE_UNITS = [];
-    let CURRENT_MOBILE = isMobile();
-
-    function renderByViewport() {
-      const nowMobile = isMobile();
-
-      // toggle wrappers
-      document.getElementById("mobileList").classList.toggle("hidden", !nowMobile);
-      document.getElementById("desktopTableWrap").classList.toggle("hidden", nowMobile);
-
-      if (nowMobile) renderMobile(CACHE_UNITS);
-      else renderDesktop(CACHE_UNITS);
-
-      CURRENT_MOBILE = nowMobile;
-    }
-
-    async function init() {
-      try {
-        showLoading(true);
-
-        const res = await fetch(`${API_URL}?mode=getUnitList&project=${encodeURIComponent(PROJECT_ID)}&t=${Date.now()}`);
-        const data = await res.json();
-
-        // Title (Project Name)
-        let projectName = "";
-        if (Array.isArray(data) && data.length > 0) {
-          projectName = (data.find(x => x && x.projectName && String(x.projectName).trim() !== "")?.projectName) || "";
-        }
-        document.getElementById("projectTitle").innerText = projectName ? projectName : PROJECT_ID;
-
-        CACHE_UNITS = Array.isArray(data) ? data : [];
-        showLoading(false);
-
-        renderByViewport();
-
-      } catch (e) {
-        document.getElementById("projectTitle").innerText = PROJECT_ID;
-        const lb = document.getElementById("loadingBlock");
-        lb.classList.remove("animate-pulse");
-        lb.innerText = "⚠️ Connection Error";
-      }
-    }
-
-    // ✅ FIX: do NOT reload on resize (mobile browsers trigger resize while scrolling)
-    window.addEventListener("resize", () => {
-      const nowMobile = isMobile();
-      // render again only if breakpoint changed (mobile <-> desktop)
-      if (nowMobile !== CURRENT_MOBILE) {
-        renderByViewport();
-      }
-    });
-
-    window.onload = init;
-  </script>
+window.onload = init;
+</script>
 </body>
 </html>
- 
