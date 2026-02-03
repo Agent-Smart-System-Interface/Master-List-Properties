@@ -3,171 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FULL EDIT SYSTEM - AGENT SMART</title>
+    <title>FULL PROPERTY EDITOR - MASTER HUB</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>body { font-family: 'Kanit', sans-serif; background: #fdfdfd; }</style>
+    <style>
+        body { font-family: 'Kanit', sans-serif; background: #f4f7f9; color: #1e293b; }
+        .input-field { width: 100%; padding: 1rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 1rem; outline: none; font-weight: 600; font-size: 0.875rem; transition: all 0.3s; }
+        .input-field:focus { border-color: #3b82f6; ring: 2px; ring-color: #dbeafe; }
+        .label-text { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; color: #94a3b8; margin-left: 0.5rem; margin-bottom: 0.25rem; display: block; letter-spacing: 0.05em; }
+    </style>
 </head>
 <body class="p-4 md:p-10 italic">
-    <div class="max-w-4xl mx-auto bg-white rounded-[3rem] shadow-2xl border border-slate-50 overflow-hidden">
-        <div class="bg-[#0f172a] p-8 text-white flex justify-between items-center">
-            <div>
-                <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-1">Editing Unit Details</p>
-                <h1 id="displayId" class="text-3xl font-bold italic underline">HP-A001</h1>
+
+    <div class="max-w-4xl mx-auto bg-white rounded-[3rem] shadow-2xl overflow-hidden border border-slate-100">
+        <div class="bg-[#0f172a] p-8 md:p-12 text-white flex justify-between items-center relative overflow-hidden">
+            <div class="relative z-10">
+                <p class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-1">Editing Master Unit</p>
+                <h1 id="displayId" class="text-4xl font-bold tracking-tighter italic">HP-XXXX</h1>
+                <p id="displayProject" class="text-[10px] font-bold text-slate-400 uppercase mt-2 italic tracking-[0.2em]"></p>
             </div>
-            <button onclick="window.history.back()" class="bg-white/10 hover:bg-white/20 p-3 rounded-2xl transition-all font-bold text-xs uppercase">
-                <i class="fa-solid fa-chevron-left mr-2"></i> กลับหน้าหลัก
+            <button onclick="window.history.back()" class="relative z-10 bg-white/10 hover:bg-white/20 px-6 py-3 rounded-2xl transition-all font-bold text-xs uppercase backdrop-blur-md border border-white/10">
+                <i class="fa-solid fa-arrow-left-long mr-2"></i> Back to Dashboard
             </button>
+            <i class="fa-solid fa-pen-nib absolute -bottom-10 -right-10 text-[15rem] text-white/5 rotate-12"></i>
         </div>
 
-        <div id="statusMessage" class="p-20 text-center text-slate-400 font-bold italic">
-            <i class="fa-solid fa-spinner fa-spin text-2xl mb-4 text-blue-500"></i><br>
-            กำลังเชื่อมต่อฐานข้อมูล Master...
+        <div id="statusArea" class="p-20 text-center">
+            <div id="loadingSpinner">
+                <i class="fa-solid fa-circle-notch fa-spin text-4xl text-blue-600 mb-4"></i>
+                <p class="text-slate-400 font-bold italic">กำลังซิงค์ข้อมูลจาก Master Hub...</p>
+            </div>
+            <div id="errorMessage" class="hidden text-rose-500 font-bold italic">
+                <i class="fa-solid fa-triangle-exclamation text-4xl mb-4"></i>
+                <p id="errorText">ไม่สามารถดึงข้อมูลได้</p>
+            </div>
         </div>
 
-        <div id="fullForm" class="hidden p-8 md:p-12 space-y-10">
+        <div id="editForm" class="hidden p-8 md:p-14 space-y-12">
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-4">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4 italic">Main Cover Image (URL)</label>
-                    <input type="text" id="thumbnail_image" class="w-full p-4 bg-slate-50 rounded-xl outline-none text-xs border border-slate-100" placeholder="ลิงก์รูปภาพหน้าปก">
-                    <label class="flex flex-col items-center p-6 bg-blue-50/50 border-2 border-dashed border-blue-200 rounded-2xl cursor-pointer">
-                        <i class="fa-solid fa-cloud-arrow-up text-blue-600 mb-2"></i>
-                        <span class="text-[9px] font-bold text-blue-600">UPLOAD NEW COVER</span>
-                        <input type="file" id="file_thumb" class="hidden">
-                    </label>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-2">
+                    <label class="label-text">Thumbnail Cover (URL)</label>
+                    <input type="text" id="Thumbnail_Image" class="input-field border-blue-100" placeholder="https://image-url.com/cover.jpg">
+                    <p class="text-[8px] text-slate-400 italic mt-1 px-2">* ใส่ลิงก์รูปภาพหลักที่จะแสดงผลหน้าแคตตาล็อก</p>
                 </div>
-                <div class="space-y-4">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4 italic">Gallery Album (URLs Separated by Comma)</label>
-                    <textarea id="gallery_images" class="w-full p-4 bg-slate-50 rounded-xl outline-none text-[10px] border border-slate-100 h-28" placeholder="ลิงก์รูปภาพในอัลบั้ม แยกด้วยเครื่องหมายคอมม่า"></textarea>
+                <div class="space-y-2">
+                    <label class="label-text">Gallery Images (Comma Separated)</label>
+                    <textarea id="Gallery_Images" class="input-field h-24 text-[10px]" placeholder="url1, url2, url3..."></textarea>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 italic">
-                <div class="space-y-2 col-span-full">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4 italic">Property Name / Heading</label>
-                    <input type="text" id="id_name" class="w-full p-5 bg-white border border-slate-100 rounded-2xl outline-none font-bold text-slate-800 text-lg shadow-sm">
+            <hr class="border-slate-50">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="col-span-full space-y-2">
+                    <label class="label-text">Property Display Name</label>
+                    <input type="text" id="ID_NAME" class="input-field text-xl text-blue-600 font-bold" placeholder="ชื่อบ้านหรือหัวข้อโฆษณา">
+                </div>
+                
+                <div class="space-y-2">
+                    <label class="label-text">Sale Price (฿)</label>
+                    <input type="number" id="Price" class="input-field bg-blue-50/50 text-blue-700 text-lg border-blue-200" placeholder="0.00">
                 </div>
 
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4">Plot Name</label>
-                    <input type="text" id="plot" class="w-full p-4 bg-slate-50 rounded-xl outline-none text-sm">
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4">Property Type</label>
-                    <input type="text" id="type" class="w-full p-4 bg-slate-50 rounded-xl outline-none text-sm">
-                </div>
-                <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4 italic">Sale Price (฿)</label>
-                    <input type="number" id="price" class="w-full p-4 bg-blue-50 text-blue-700 font-bold rounded-xl outline-none text-xl border border-blue-100">
-                </div>
-
-                <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4 italic">Sale Status</label>
-                    <select id="sale_status" class="w-full p-4 bg-white border border-slate-200 rounded-xl font-bold text-xs uppercase">
+                    <label class="label-text">Sale Status</label>
+                    <select id="Sale_Status" class="input-field appearance-none cursor-pointer">
                         <option value="AVAILABLE">🟢 AVAILABLE</option>
                         <option value="SOLD">🔴 SOLD</option>
                         <option value="RESERVED">🟣 RESERVED</option>
                         <option value="UNDER CON">🟠 UNDER CON</option>
                     </select>
                 </div>
+
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4 italic">System Visibility</label>
-                    <select id="system_status" class="w-full p-4 bg-white border border-slate-200 rounded-xl font-bold text-xs uppercase">
-                        <option value="Live">✅ Live (Online)</option>
-                        <option value="Offline">❌ Offline</option>
-                        <option value="Pending">⚠️ Pending</option>
+                    <label class="label-text">System Status</label>
+                    <select id="System_Status" class="input-field appearance-none cursor-pointer">
+                        <option value="Live">✅ Online (Live)</option>
+                        <option value="Offline">❌ Offline (Hidden)</option>
+                        <option value="Pending">⚠️ Pending Review</option>
                     </select>
                 </div>
+
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-4 italic">Project Tab</label>
-                    <input type="text" id="project_tab" class="w-full p-4 bg-slate-200 rounded-xl outline-none text-xs font-bold" readonly>
+                    <label class="label-text">Property Type</label>
+                    <input type="text" id="Type" class="input-field" placeholder="เช่น Villa, House">
+                </div>
+
+                <div class="space-y-2">
+                    <label class="label-text">Plot / Zone</label>
+                    <input type="text" id="Plot" class="input-field" placeholder="ระบุเลขแปลง">
                 </div>
             </div>
 
-            <div class="space-y-4 italic">
-                <label class="text-[10px] font-bold text-slate-400 uppercase ml-4">Detailed Description (Full Details)</label>
-                <textarea id="description" rows="6" class="w-full p-6 bg-slate-50 rounded-[2.5rem] outline-none text-sm border border-slate-100 shadow-inner"></textarea>
+            <div class="space-y-2">
+                <label class="label-text">Full Description & Key Details</label>
+                <textarea id="Description" rows="8" class="input-field font-normal text-slate-600" placeholder="ระบุรายละเอียดเชิงลึกทั้งหมดของบ้านหลังนี้..."></textarea>
             </div>
 
-            <button onclick="updateMaster()" id="btnSave" class="w-full bg-[#0f172a] text-white py-6 rounded-[2.5rem] font-bold uppercase tracking-[0.3em] shadow-2xl hover:bg-blue-600 transition-all active:scale-95 italic">
-                <i class="fa-solid fa-floppy-disk mr-3 text-xl"></i> Confirm Update to Master Hub
-            </button>
+            <div class="pt-10">
+                <button onclick="saveChanges()" id="saveBtn" class="w-full bg-[#0f172a] text-white py-7 rounded-[2.5rem] font-bold uppercase tracking-[0.4em] shadow-2xl hover:bg-blue-600 transition-all active:scale-95 flex items-center justify-center">
+                    <i class="fa-solid fa-cloud-arrow-up mr-4 text-xl"></i> Update Master Database
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="successModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+        <div class="bg-white rounded-[3.5rem] p-12 text-center shadow-2xl scale-in max-w-sm w-full border-t-8 border-green-500">
+            <div class="w-20 h-20 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                <i class="fa-solid fa-check-double text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold italic mb-2 uppercase">Success!</h2>
+            <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-10">ข้อมูลของคุณถูกอัปเดตลง <br>Master Hub เรียบร้อยแล้ว</p>
+            <button onclick="window.history.back()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase tracking-widest text-[10px]">Back to Dashboard</button>
         </div>
     </div>
 
     <script>
-        // 🛑 ตั้งค่า URL ของพี่ตรงนี้
+        // 🛑 ขั้นตอนสำคัญ: ใส่ URL Apps Script ของพี่ตรงนี้
         const API_URL = "https://script.google.com/macros/s/AKfycbwe5Sfa4aN_17nmtgekfP4CpHXVmlL4NOpzc7cG2zvffnrgpA5u9tUNmKGnZNUpz29u/exec"; 
 
         const urlParams = new URLSearchParams(window.location.search);
         const HP_ID = urlParams.get('id');
         const PROJECT = urlParams.get('project');
 
-        async function init() {
-            if(!HP_ID || !PROJECT) {
-                document.getElementById('statusMessage').innerHTML = "⚠️ ไม่พบข้อมูลรหัสบ้าน หรือ ชื่อโปรเจกต์";
+        async function loadData() {
+            if (!HP_ID || !PROJECT) {
+                showError("⚠️ Missing ID or Project parameters");
                 return;
             }
+            
             document.getElementById('displayId').innerText = HP_ID;
-            document.getElementById('project_tab').value = PROJECT;
+            document.getElementById('displayProject').innerText = `Source: ${PROJECT}`;
 
             try {
-                // เรียก API โดยใช้พารามิเตอร์ที่ถูกต้องตาม Google Script
-                const response = await fetch(`${API_URL}?mode=getUnitDetail&hpId=${HP_ID}&project=${PROJECT}`);
+                // ดึงข้อมูลรายหลังแบบระบุ Project และ HP_ID
+                const response = await fetch(`${API_URL}?mode=getUnitDetail&hpId=${HP_ID}&project=${PROJECT}&cache=${new Date().getTime()}`);
                 const data = await response.json();
 
-                if(data.HP_ID) {
-                    // แมพข้อมูลเข้าสู่ฟอร์ม (แก้ไขชื่อ ID ให้ตรงกับคอลัมน์ในชีท)
-                    document.getElementById('id_name').value = data.ID_NAME || "";
-                    document.getElementById('plot').value = data.Plot || "";
-                    document.getElementById('type').value = data.Type || "";
-                    document.getElementById('price').value = data.Price || 0;
-                    document.getElementById('sale_status').value = data.Sale_Status || "AVAILABLE";
-                    document.getElementById('system_status').value = data.System_Status || "Live";
-                    document.getElementById('description').value = data.Description || "";
-                    document.getElementById('thumbnail_image').value = data.Thumbnail_Image || "";
-                    document.getElementById('gallery_images').value = data.Gallery_Images || "";
+                if (data && !data.error) {
+                    // แมพข้อมูลเข้าสู่ช่องกรอกตามชื่อตัวแปรที่ดึงจาก Sheets
+                    const fields = ['ID_NAME', 'Type', 'Plot', 'Price', 'Sale_Status', 'System_Status', 'Description', 'Thumbnail_Image', 'Gallery_Images'];
+                    fields.forEach(f => {
+                        const el = document.getElementById(f);
+                        if (el) el.value = data[f] || "";
+                    });
 
-                    document.getElementById('statusMessage').classList.add('hidden');
-                    document.getElementById('fullForm').classList.remove('hidden');
+                    document.getElementById('statusArea').classList.add('hidden');
+                    document.getElementById('editForm').classList.remove('hidden');
                 } else {
-                    throw new Error("Data Empty");
+                    throw new Error(data.error || "Unit not found");
                 }
             } catch (e) {
-                document.getElementById('statusMessage').innerHTML = `⚠️ ดึงข้อมูลจาก ${PROJECT} ไม่สำเร็จ<br><span class="text-[10px]">โปรดเช็กชื่อโปรเจกต์ใน Google Sheets</span>`;
+                showError(`⚠️ ดึงข้อมูลจาก ${PROJECT} ไม่สำเร็จ<br><span class='text-[8px] uppercase mt-2 block'>โปรดเช็คชื่อแท็บและ HP-ID ในชีท</span>`);
             }
         }
 
-        async function updateMaster() {
-            const btn = document.getElementById('btnSave');
-            btn.disabled = true; btn.innerHTML = "🔄 UPDATING...";
-            
+        async function saveChanges() {
+            const btn = document.getElementById('saveBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-3"></i> Syncing to Master...';
+
+            // รวบรวมข้อมูลทั้งหมดส่งกลับไปบันทึก
             const payload = {
                 mode: "updateUnit",
                 project: PROJECT,
                 hpId: HP_ID,
-                idName: document.getElementById('id_name').value,
-                price: document.getElementById('price').value,
-                saleStatus: document.getElementById('sale_status').value,
-                sysStatus: document.getElementById('system_status').value,
-                description: document.getElementById('description').value,
-                thumbnail: document.getElementById('thumbnail_image').value,
-                gallery: document.getElementById('gallery_images').value
+                idName: document.getElementById('ID_NAME').value,
+                price: document.getElementById('Price').value,
+                type: document.getElementById('Type').value,
+                plot: document.getElementById('Plot').value,
+                saleStatus: document.getElementById('Sale_Status').value,
+                sysStatus: document.getElementById('System_Status').value,
+                description: document.getElementById('Description').value,
+                thumbnail: document.getElementById('Thumbnail_Image').value,
+                gallery: document.getElementById('Gallery_Images').value
             };
 
             try {
+                // ส่งแบบ POST ไปที่ Apps Script
                 await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-                alert("✅ อัปเดตข้อมูลสำเร็จ!");
-                window.history.back();
+                document.getElementById('successModal').classList.remove('hidden');
             } catch (e) {
-                alert("⚠️ เกิดข้อผิดพลาดในการส่งข้อมูล");
-                btn.disabled = false; btn.innerHTML = "RETRY UPDATE";
+                alert("บันทึกไม่สำเร็จ โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ต");
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-4"></i> Retry Update';
             }
         }
 
-        window.onload = init;
+        function showError(msg) {
+            document.getElementById('loadingSpinner').classList.add('hidden');
+            const err = document.getElementById('errorMessage');
+            err.classList.remove('hidden');
+            document.getElementById('errorText').innerHTML = msg;
+        }
+
+        window.onload = loadData;
     </script>
 </body>
 </html>
