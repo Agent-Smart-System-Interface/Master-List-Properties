@@ -8,51 +8,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Kanit', sans-serif;
-            background: #f0f2f5
-        }
-
-        .tab-active {
-            border-bottom: 4px solid #1e293b;
-            color: #1e293b
-        }
-
-        .input-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, .1)
-        }
-
-        .field-label {
-            font-size: .75rem;
-            font-weight: 700;
-            color: #64748b;
-            text-transform: uppercase;
-            margin-bottom: .5rem;
-            display: block
-        }
-
-        .field-input {
-            width: 100%;
-            border: 1px solid #e2e8f0;
-            border-radius: .75rem;
-            padding_toggle: .75rem;
-            padding: .75rem;
-            outline: none;
-            transition: all .2s
-        }
-
-        .field-input:focus {
-            border-color: #3b82f6
-        }
-
-        .field-input[disabled]{
-            background:#f8fafc;
-            cursor:not-allowed;
-            opacity:.9;
-        }
+        body { font-family: 'Kanit', sans-serif; background: #f0f2f5 }
+        .tab-active { border-bottom: 4px solid #1e293b; color: #1e293b }
+        .input-card { background: white; padding: 1.5rem; border-radius: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, .1) }
+        .field-label { font-size: .75rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: .5rem; display: block }
+        .field-input { width: 100%; border: 1px solid #e2e8f0; border-radius: .75rem; padding: .75rem; outline: none; transition: all .2s }
+        .field-input:focus { border-color: #3b82f6 }
+        .field-input[disabled]{ background:#f8fafc; cursor:not-allowed; opacity:.9; }
     </style>
 </head>
 
@@ -63,9 +25,7 @@
                 <p class="text-blue-400 font-bold uppercase tracking-widest text-xs mb-2">Master Database Editor</p>
                 <h1 id="displayId" class="text-3xl sm:text-4xl font-bold tracking-tighter italic">HP-XXXX</h1>
             </div>
-            <button onclick="history.back()" class="bg-white/10 hover:bg-white/20 p-4 rounded-2xl transition-all" title="Close">
-                ✕
-            </button>
+            <button onclick="history.back()" class="bg-white/10 hover:bg-white/20 p-4 rounded-2xl transition-all" title="Close">✕</button>
         </div>
 
         <div class="flex gap-8 mb-6 border-b border-slate-200">
@@ -85,6 +45,7 @@
                         Upload Cover
                     </button>
                 </div>
+
                 <div class="input-card">
                     <span class="field-label">Project Gallery Album</span>
                     <div id="galleryPreview" class="h-48 bg-slate-50 rounded-2xl border-2 border-dashed p-2 grid grid-cols-4 gap-2 overflow-y-auto mb-4">
@@ -106,23 +67,29 @@
                 <div><span class="field-label">Bedrooms</span><input type="number" id="Bedrooms" class="field-input"></div>
                 <div><span class="field-label">Bathrooms</span><input type="number" id="Bathrooms" class="field-input"></div>
                 <div><span class="field-label">Parking</span><input id="Parking" class="field-input"></div>
-                <div><span class="field-label">Land (sq.w)</span><input id="Land_Area_sqw" class="field-input"></div>
-                <div><span class="field-label">Land (sq.m)</span><input id="Land_Area_sqm" class="field-input"></div>
-                <div><span class="field-label">Living (sq.m)</span><input id="Living_Area_sqm" class="field-input"></div>
+
+                <!-- ✅ FIX: เปลี่ยน id ให้ตรงกับคีย์จากชีต -->
+                <div><span class="field-label">Land (sq.w)</span><input id="Land_Area_sq_w" class="field-input"></div>
+                <div><span class="field-label">Land (sq.m)</span><input id="Land_Area_sq_m" class="field-input"></div>
+                <div><span class="field-label">Living (sq.m)</span><input id="Living_Area_sq_m" class="field-input"></div>
+
                 <div><span class="field-label">Pool Size</span><input id="Pool_Size" class="field-input"></div>
                 <div><span class="field-label">Pool Depth</span><input id="Pool_Depth" class="field-input"></div>
                 <div><span class="field-label">Furnishing</span><input id="Furnishing" class="field-input"></div>
                 <div class="col-span-full"><span class="field-label">Address</span><input id="Address" class="field-input"></div>
+
                 <div class="bg-blue-50 p-4 rounded-xl">
                     <span class="field-label text-blue-600">Price (THB)</span>
                     <input id="Price" class="field-input border-blue-200 font-bold">
                 </div>
+
                 <div><span class="field-label">Price/SQM</span><input id="Price_SQM" class="field-input"></div>
                 <div><span class="field-label">Status Badge</span><input id="StatusBadge" class="field-input"></div>
                 <div class="col-span-full"><span class="field-label">Description</span><textarea id="Description" rows="4" class="field-input"></textarea></div>
                 <div><span class="field-label">District</span><input id="District" class="field-input"></div>
                 <div><span class="field-label">Sub-District</span><input id="SubDistrict" class="field-input"></div>
                 <div><span class="field-label">Commission</span><input id="Commission" class="field-input"></div>
+
                 <div class="col-span-full border-t pt-6"><span class="field-label">External Links</span></div>
                 <div><span class="field-label">FB Link</span><input id="FBLink" class="field-input"></div>
                 <div><span class="field-label">Map Link</span><input id="Map_Link" class="field-input"></div>
@@ -169,23 +136,6 @@
             document.getElementById("btn-info").classList.toggle("tab-active", tab === "info");
         }
 
-        /* ✅ helper: ตั้งค่าให้ช่อง input แบบปลอดภัย */
-        function setVal(id, val) {
-            const el = document.getElementById(id);
-            if (!el) return;
-            el.value = (val ?? "") === null ? "" : String(val ?? "");
-        }
-
-        /* ✅ helper: ดึงค่าได้หลายชื่อคีย์ (แก้ปัญหา Land/Living ว่าง) */
-        function pick(data, keys) {
-            for (const k of keys) {
-                if (data && data[k] !== undefined && data[k] !== null && String(data[k]).trim() !== "") {
-                    return data[k];
-                }
-            }
-            return "";
-        }
-
         async function loadData() {
             document.getElementById("displayId").innerText = HP_ID || "HP-XXXX";
             if (!HP_ID || !PROJECT) return alert("Missing id/project in URL");
@@ -195,36 +145,36 @@
                 const data = await res.json();
                 if (data && data.error) throw new Error(data.error);
 
-                /* ✅ ใส่ค่าทั่วไปแบบเดิม */
+                // 1) เติมค่าแบบปกติ
                 Object.keys(data || {}).forEach(k => {
                     const el = document.getElementById(k);
                     if (el) el.value = data[k];
                 });
 
-                /* ✅ FIX สำคัญ: 3 ช่องนี้รองรับได้หลายชื่อคีย์ */
-                setVal("Land_Area_sqw", pick(data, ["Land_Area_sqw", "landSqw", "LandSqw", "Land_SQW", "Land (sq.w)", "LAND_SQW", "Land_sq_w"]));
-                setVal("Land_Area_sqm", pick(data, ["Land_Area_sqm", "landSqm", "LandSqm", "Land_SQM", "Land (sq.m)", "LAND_SQM", "Land_sq_m"]));
-                setVal("Living_Area_sqm", pick(data, ["Living_Area_sqm", "livingSqm", "LivingSqm", "Living_SQM", "Living (sq.m)", "LIVING_SQM", "Living_sq_m"]));
-
-                /* ✅ normalize System_Status */
-                const rawSys = (data.System_Status ?? "").toString().trim();
-                const mapSys = {
-                    "Live": "Online",
-                    "Online (Live)": "Online",
-                    "Online": "Online",
-                    "Pending": "Pending",
-                    "Offline": "Offline"
+                // 2) ✅ กันพลาด: ถ้าชีตส่งชื่อคีย์แบบอื่น (รุ่นเก่า) ให้แมพเข้าช่องใหม่ด้วย
+                const setVal = (id, v) => {
+                    const el = document.getElementById(id);
+                    if (el && (v !== undefined && v !== null)) el.value = v;
                 };
-                const normalized = mapSys[rawSys] || (rawSys ? rawSys : "Pending");
-                document.getElementById("System_Status").value = normalized;
+                setVal("Land_Area_sq_w", data.Land_Area_sq_w ?? data.Land_Area_sqw ?? data.Land_sq_w);
+                setVal("Land_Area_sq_m", data.Land_Area_sq_m ?? data.Land_Area_sqm ?? data.Land_sq_m);
+                setVal("Living_Area_sq_m", data.Living_Area_sq_m ?? data.Living_Area_sqm ?? data.Living_sq_m);
+
+                // ✅ normalize System_Status
+                const rawSys = (data.System_Status ?? "").toString().trim();
+                const mapSys = { "Live":"Online", "Online (Live)":"Online", "Online":"Online", "Pending":"Pending", "Offline":"Offline" };
+                document.getElementById("System_Status").value = mapSys[rawSys] || (rawSys ? rawSys : "Pending");
 
                 if (data.Thumbnail_Image) {
                     document.getElementById("thumbPreview").innerHTML = `<img src="${data.Thumbnail_Image}" class="w-full h-full object-cover">`;
                 }
+
                 if (data.Image_List) {
                     const list = String(data.Image_List).split(",").map(s => s.trim()).filter(Boolean);
                     const box = document.getElementById("galleryPreview");
-                    box.innerHTML = list.length ? list.map(u => `<img src="${u}" class="w-full h-12 object-cover rounded-lg">`).join("") : `<span class="text-4xl text-slate-200 col-span-4 self-center justify-self-center">🗂️</span>`;
+                    box.innerHTML = list.length
+                        ? list.map(u => `<img src="${u}" class="w-full h-12 object-cover rounded-lg">`).join("")
+                        : `<span class="text-4xl text-slate-200 col-span-4 self-center justify-self-center">🗂️</span>`;
                 }
             } catch (e) {
                 alert("Error loading data: " + e.message);
@@ -261,9 +211,9 @@
             const oldText = btn.innerText;
             btn.innerText = "UPDATING DATABASE...";
 
-            const landSqwVal = document.getElementById("Land_Area_sqw").value;
-            const landSqmVal = document.getElementById("Land_Area_sqm").value;
-            const livingSqmVal = document.getElementById("Living_Area_sqm").value;
+            const landSqw = document.getElementById("Land_Area_sq_w").value;
+            const landSqm = document.getElementById("Land_Area_sq_m").value;
+            const livingSqm = document.getElementById("Living_Area_sq_m").value;
 
             const payload = {
                 mode: "updateUnit",
@@ -276,20 +226,14 @@
                 Project_Name: document.getElementById("Project_Name").value,
                 Bedrooms: document.getElementById("Bedrooms").value,
                 Bathrooms: document.getElementById("Bathrooms").value,
-                Parking: document.getElementById("Parking").value,
 
-                /* ✅ ส่งหลายคีย์เพื่อให้ฝั่งชีตรับได้แน่ */
-                Land_Area_sqw: landSqwVal,
-                landSqw: landSqwVal,
-                LandSqw: landSqwVal,
-
-                Land_Area_sqm: landSqmVal,
-                landSqm: landSqmVal,
-                LandSqm: landSqmVal,
-
-                Living_Area_sqm: livingSqmVal,
-                livingSqm: livingSqmVal,
-                LivingSqm: livingSqmVal,
+                // ✅ ส่ง “ชื่อใหม่” (ตรงชีต) + “ชื่อเก่า” เผื่อไฟล์อื่นยังใช้อยู่
+                Land_Area_sq_w: landSqw,
+                Land_Area_sqw: landSqw,
+                Land_Area_sq_m: landSqm,
+                Land_Area_sqm: landSqm,
+                Living_Area_sq_m: livingSqm,
+                Living_Area_sqm: livingSqm,
 
                 Pool_Size: document.getElementById("Pool_Size").value,
                 Pool_Depth: document.getElementById("Pool_Depth").value,
@@ -298,6 +242,9 @@
                 Price_SQM: document.getElementById("Price_SQM").value,
                 StatusBadge: document.getElementById("StatusBadge").value,
                 Description: document.getElementById("Description").value,
+                Parking: document.getElementById("Parking").value,
+                Extras: (document.getElementById("Extras") || {}).value,
+                Electricity: (document.getElementById("Electricity") || {}).value,
                 District: document.getElementById("District").value,
                 SubDistrict: document.getElementById("SubDistrict").value,
                 FBLink: document.getElementById("FBLink").value,
@@ -305,7 +252,6 @@
                 Virtual_Tour: document.getElementById("Virtual_Tour").value,
                 Commission: document.getElementById("Commission").value,
 
-                /* ✅ ไม่ส่ง System_Status */
                 file_thumb: null,
                 files_gallery: []
             };
