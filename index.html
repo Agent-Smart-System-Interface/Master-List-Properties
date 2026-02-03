@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="th">
 <head>
@@ -19,39 +20,47 @@
                 <i class="fa-solid fa-user-shield text-xl"></i>
             </a>
         </header>
-        <div id="catalogGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 text-center uppercase text-[10px] font-bold text-slate-400">
-            🔄 กำลังเชื่อมต่อฐานข้อมูล...
+
+        <div id="catalogGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div class="col-span-full text-center py-20 text-slate-400 font-bold animate-pulse uppercase">🔄 กำลังเชื่อมต่อฐานข้อมูล...</div>
         </div>
     </div>
+
     <script>
-        // 🛑 นำ URL จากข้อ 1 มาวางตรงนี้
         const API_URL = "https://script.google.com/macros/s/AKfycbwe5Sfa4aN_17nmtgekfP4CpHXVmlL4NOpzc7cG2zvffnrgpA5u9tUNmKGnZNUpz29u/exec";
-        const CURRENT_PROJECT = "Project_0"; 
+        const CURRENT_PROJECT = "Project_0"; // เปลี่ยนเป็นชื่อแท็บที่ต้องการดึงข้อมูล
 
         async function loadCatalog() {
             try {
+                // เพิ่ม t=${Date.now()} เพื่อป้องกันการจำค่าเก่า (Cache)
                 const res = await fetch(`${API_URL}?mode=getUnitList&project=${CURRENT_PROJECT}&t=${Date.now()}`);
                 const data = await res.json();
-                renderCards(data.filter(u => u.sysStatus === 'Online'));
+                
+                // กรองเฉพาะรายการที่สถานะ System เป็น Online (หรือ 'Live')
+                const onlineUnits = data.filter(u => u.sysStatus === 'Online' || u.sysStatus === 'Live');
+                renderCards(onlineUnits);
             } catch (e) {
-                document.getElementById('catalogGrid').innerHTML = "<p class='col-span-full py-20 text-rose-500 font-bold italic underline'>เชื่อมต่อฐานข้อมูลล้มเหลว - โปรดเช็คสิทธิ์ Anyone</p>";
+                document.getElementById('catalogGrid').innerHTML = "<div class='col-span-full text-center text-rose-500 font-bold'>⚠️ เชื่อมต่อฐานข้อมูลล้มเหลว - โปรดตรวจสอบ Deployment สิทธิ์เป็น Anyone</div>";
             }
         }
+
         function renderCards(units) {
+            const grid = document.getElementById('catalogGrid');
             if(!units || units.length === 0) {
-                document.getElementById('catalogGrid').innerHTML = "<p class='col-span-full py-20 text-slate-400 italic font-bold'>ยังไม่มีรายการบ้านที่เปิดการมองเห็น</p>";
+                grid.innerHTML = "<div class='col-span-full text-center py-20 text-slate-400 font-bold'>ยังไม่มีรายการบ้านที่เปิดการมองเห็นในขณะนี้</div>";
                 return;
             }
-            document.getElementById('catalogGrid').innerHTML = units.map(u => `
+
+            grid.innerHTML = units.map(u => `
                 <div class="bg-white rounded-[3.5rem] shadow-2xl p-2 border border-white transition-transform hover:-translate-y-3">
                     <div class="h-64 bg-slate-100 rounded-[3rem] relative overflow-hidden">
-                        <img src="${u.thumbnail || 'https://via.placeholder.com/600x400?text=Direct+Hub'}" class="w-full h-full object-cover">
+                        <img src="${u.thumbnail || 'https://via.placeholder.com/600x400?text=No+Image'}" class="w-full h-full object-cover">
                         <div class="absolute top-6 left-6 px-4 py-2 bg-slate-900/80 text-white rounded-2xl text-[9px] font-bold shadow-lg">${u.id}</div>
-                        <div class="absolute bottom-6 right-6 px-4 py-2 ${u.unitStatus === 'Available' ? 'bg-emerald-500' : 'bg-rose-500'} rounded-2xl text-[9px] font-bold shadow-lg text-white uppercase">${u.unitStatus}</div>
+                        <div class="absolute bottom-6 right-6 px-4 py-2 ${u.unitStatus === 'AVAILABLE' ? 'bg-emerald-500' : 'bg-rose-500'} rounded-2xl text-[9px] font-bold shadow-lg text-white uppercase">${u.unitStatus || 'AVAILABLE'}</div>
                     </div>
                     <div class="p-10 text-left">
-                        <h3 class="text-2xl font-bold text-slate-800 uppercase mb-4 tracking-tighter italic">PLOT: ${u.plot || '-'}</h3>
-                        <a href="detail.html?id=${u.id}" class="block w-full py-5 bg-slate-900 text-white rounded-[1.8rem] text-center font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-blue-600 transition-all shadow-xl shadow-slate-200">View Full Details</a>
+                        <h3 class="text-2xl font-bold text-slate-800 uppercase mb-4 tracking-tighter italic">${u.name || 'PLOT: ' + (u.plot || '-')}</h3>
+                        <a href="detail.html?id=${u.id}" class="block w-full py-5 bg-slate-900 text-white rounded-[1.8rem] text-center font-bold text-[10px] uppercase tracking-[0.2em] hover:bg-blue-600 transition-all shadow-xl">View Details</a>
                     </div>
                 </div>`).join('');
         }
