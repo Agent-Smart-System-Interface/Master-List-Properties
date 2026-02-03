@@ -11,15 +11,13 @@
   <style>
     body { font-family: 'Kanit', sans-serif; }
 
-    /* ราคา: ปรับอัตโนมัติตามหน้าจอ */
     .price-text {
-      font-size: clamp(1.9rem, 5vw, 2.8rem); /* 📱 → 💻 */
+      font-size: clamp(1.9rem, 5vw, 2.8rem);
       font-weight: 500;
       letter-spacing: -0.02em;
       line-height: 1.1;
     }
 
-    /* UNIT */
     .unit-text {
       font-size: 0.9rem;
       font-weight: 400;
@@ -27,14 +25,12 @@
       margin-top: 0.3rem;
     }
 
-    /* Feature badge */
     .feature {
       font-size: 0.85rem;
       font-weight: 400;
       padding: 0.45rem 0.7rem;
     }
 
-    /* Status */
     .status {
       font-size: 0.85rem;
       font-weight: 500;
@@ -54,11 +50,10 @@
       <p class="text-blue-700 text-lg mt-1">ศูนย์รวมบ้านฝากขายตรงจากเจ้าของ</p>
     </div>
 
-    <!-- ✅ แก้เฉพาะจุดนี้: จาก div -> a เพื่อให้กดได้ -->
-    <a id="dashboardLink"
-       class="w-12 h-12 rounded-2xl bg-white shadow flex items-center justify-center text-xl cursor-pointer select-none"
-       href="#"
-       title="Dashboard">
+    <!-- ✅ แก้เฉพาะตรงนี้ -->
+    <a href="https://agent-smart-system-interface.github.io/Master-List-Properties/gateway.html"
+       class="w-12 h-12 rounded-2xl bg-white shadow flex items-center justify-center text-xl cursor-pointer"
+       title="Go to Gateway">
       👤
     </a>
   </div>
@@ -70,10 +65,6 @@
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
 const PROJECT = new URLSearchParams(location.search).get("project") || "Project_0";
-
-/* ✅ เพิ่มเฉพาะส่วนลิงก์ไอคอนให้ไป Dashboard */
-const dashboardUrl = `dashboard.html?project=${encodeURIComponent(PROJECT)}`;
-document.getElementById("dashboardLink").href = dashboardUrl;
 
 const priceFmt = v => {
   const n = Number(v);
@@ -105,7 +96,6 @@ async function load(){
 
       <div class="p-6">
 
-        <!-- Features -->
         <div class="flex flex-wrap gap-2 mb-4">
           <div class="feature bg-slate-100">🛏 ${d.bedrooms}</div>
           <div class="feature bg-slate-100">🛁 ${d.bathrooms}</div>
@@ -117,7 +107,6 @@ async function load(){
           </div>
         </div>
 
-        <!-- Price -->
         <div class="price-text text-slate-900">
           ${priceFmt(d.price)}
         </div>
