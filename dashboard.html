@@ -2,51 +2,122 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>DIRECT HUB - DASHBOARD</title>
+    <title>DIRECT HUB - SITE DASHBOARD</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>body { font-family: 'Kanit', sans-serif; background: #f8fafc; }</style>
+    <style>
+        body { font-family: 'Kanit', sans-serif; background: #f8fafc; color: #334155; }
+        .status-pill { padding: 0.4rem 1rem; border-radius: 1rem; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    </style>
 </head>
-<body class="p-4 md:p-12 italic font-medium">
+<body class="p-4 md:p-12 italic">
     <div class="max-w-7xl mx-auto">
         <header class="mb-12 flex flex-col md:flex-row gap-6 items-center">
-            <div class="bg-slate-900 text-white px-12 py-8 rounded-[3.5rem] shadow-2xl flex items-center gap-6">
-                <i class="fa-solid fa-database text-blue-400 text-3xl"></i>
-                <div class="flex flex-col border-l border-slate-700 pl-6"><h2 class="text-xl font-bold uppercase tracking-tight">Direct Hub Site</h2></div>
+            <div class="bg-slate-900 text-white px-10 py-7 rounded-[3rem] shadow-2xl flex items-center gap-6">
+                <i class="fa-solid fa-database text-blue-400 text-2xl"></i>
+                <div class="flex flex-col border-l border-slate-700 pl-6">
+                    <span class="text-[9px] font-bold uppercase tracking-[0.3em] opacity-40">Local Project Admin</span>
+                    <h2 class="text-lg font-bold uppercase tracking-tight leading-none">Direct Hub Site</h2>
+                </div>
             </div>
-            <input type="text" id="searchInput" oninput="doSearch()" placeholder="ค้นหารหัส HP-ID หรือ แปลง..." class="flex-1 px-16 py-7.5 bg-white rounded-[3.5rem] shadow-sm outline-none ring-1 ring-slate-200 font-bold text-sm">
+            <input type="text" id="searchInput" oninput="doSearch()" placeholder="ค้นหารหัส HP-ID หรือ ชื่อแปลง..." class="flex-1 px-12 py-7 bg-white rounded-[3rem] shadow-sm outline-none ring-1 ring-slate-200 font-bold text-sm focus:ring-8 focus:ring-blue-500/5 transition-all">
         </header>
+
         <div class="bg-white rounded-[4rem] shadow-2xl overflow-hidden border border-slate-50">
             <table class="w-full text-left">
-                <thead class="bg-slate-50 border-b border-slate-100 uppercase text-[10px] tracking-widest text-slate-400 italic font-bold">
-                    <tr><th class="pl-16 py-10">Unit ID</th><th>Plot Name</th><th class="text-center">Sale Status</th><th class="text-center pr-16">Manage</th></tr>
+                <thead class="bg-slate-50 border-b border-slate-100 uppercase text-[10px] tracking-widest text-slate-400 font-bold">
+                    <tr>
+                        <th class="pl-16 py-10">Unit ID</th>
+                        <th>Plot Name</th>
+                        <th class="text-center">Sale Status</th>
+                        <th class="text-center">System</th>
+                        <th class="text-center pr-16">Manage</th>
+                    </tr>
                 </thead>
-                <tbody id="dataTable" class="text-[13px] font-bold text-slate-600 text-center">
-                    <tr><td colspan="4" class="p-24 animate-pulse uppercase tracking-widest text-xs">🔄 กำลังเรียกดูฐานข้อมูลโครงการ...</td></tr>
+                <tbody id="dataTable" class="text-[12px] font-semibold text-slate-600">
+                    <tr><td colspan="5" class="p-20 text-center animate-pulse">🔄 กำลังเรียกข้อมูลจาก Master Sheet...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
+
+    <div id="editModal" class="hidden fixed inset-0 bg-slate-900/90 backdrop-blur-xl z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-[4.5rem] p-14 shadow-2xl border-t-[18px] border-slate-900">
+            <h2 class="text-2xl font-bold text-slate-800 mb-10 uppercase italic border-b pb-6">Update: <span id="editingId" class="text-blue-600"></span></h2>
+            <div class="space-y-8">
+                <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-4 italic">ชื่อแปลง (PLOT NAME)</label>
+                <input type="text" id="plotInput" class="w-full p-6 bg-slate-50 rounded-[2rem] outline-none font-bold text-xs shadow-inner"></div>
+                <div><label class="text-[10px] font-bold text-orange-600 ml-4 uppercase italic">สถานะการขาย (STATUS)</label>
+                <select id="unitSelect" class="w-full p-6 bg-white border border-slate-100 rounded-[2rem] font-bold text-xs outline-none shadow-sm cursor-pointer">
+                    <option value="Available">Available</option><option value="Under Construction">Under Construction</option><option value="Sold">Sold</option><option value="Reserved">Reserved</option>
+                </select></div>
+                <button onclick="saveData()" id="btnSave" class="w-full bg-slate-900 text-white py-6 rounded-[2.2rem] font-bold uppercase text-[11px] tracking-[0.2em] shadow-xl hover:bg-blue-600 transition-all italic">Update Asset Status</button>
+                <button onclick="closeEdit()" class="w-full text-slate-300 text-[10px] font-bold uppercase tracking-widest hover:text-slate-500 transition-colors italic">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // 🛑 นำ URL จากข้อ 1 มาวางตรงนี้
         const API_URL = "https://script.google.com/macros/s/AKfycbwe5Sfa4aN_17nmtgekfP4CpHXVmlL4NOpzc7cG2zvffnrgpA5u9tUNmKGnZNUpz29u/exec";
-        const CURRENT_PROJECT = "Project_0"; 
+        const CURRENT_PROJECT = "Project_0";
+        let rawData = [];
 
         async function init() {
             try {
                 const res = await fetch(`${API_URL}?mode=getUnitList&project=${CURRENT_PROJECT}&t=${Date.now()}`);
-                const data = await res.json(); render(data);
-            } catch (e) { document.getElementById('dataTable').innerHTML = "<tr><td colspan='4' class='p-24 text-rose-500 font-bold uppercase tracking-tighter italic underline decoration-rose-200'>⚠️ Connection Error - โปรดเช็คสิทธิ์ Anyone</td></tr>"; }
+                rawData = await res.json(); render(rawData);
+            } catch (e) { document.getElementById('dataTable').innerHTML = "<tr><td colspan='5' class='p-20 text-center text-rose-500 font-bold uppercase'>⚠️ Connection Error</td></tr>"; }
         }
+
         function render(data) {
             document.getElementById('dataTable').innerHTML = data.map(u => `
-                <tr class="hover:bg-blue-50/50 transition-colors">
-                    <td class="pl-16 py-8 font-black text-slate-900 tracking-tighter italic text-left">${u.id}</td>
-                    <td class="text-slate-400 italic text-left">${u.plot || '-'}</td>
-                    <td class="text-center"><span class="px-5 py-2 bg-slate-100 rounded-2xl text-[9px] uppercase tracking-widest border border-slate-200">${u.unitStatus}</span></td>
-                    <td class="text-center pr-16"><button class="p-4 bg-white shadow-xl rounded-2xl text-blue-600 hover:bg-slate-900 hover:text-white transition-all scale-90"><i class="fa-solid fa-pen-nib"></i></button></td>
+                <tr class="hover:bg-slate-50 transition-colors border-b border-slate-50">
+                    <td class="pl-16 py-6 font-black text-slate-900">${u.id}</td>
+                    <td class="text-slate-400 italic">${u.plot || '-'}</td>
+                    <td class="text-center">
+                        <span class="status-pill ${getSaleColor(u.unitStatus)}">${u.unitStatus}</span>
+                    </td>
+                    <td class="text-center font-bold text-[10px] ${u.sysStatus === 'Online' ? 'text-emerald-500' : 'text-rose-400'}">
+                        ● ${u.sysStatus || 'Off'}
+                    </td>
+                    <td class="text-center pr-16"><button onclick="openEdit('${u.id}','${u.plot}','${u.unitStatus}')" class="w-10 h-10 bg-white shadow-md rounded-xl text-blue-600 hover:bg-slate-900 hover:text-white transition-all"><i class="fa-solid fa-pen-nib text-xs"></i></button></td>
                 </tr>`).join('');
+        }
+
+        function getSaleColor(s) {
+            if (s === 'Available') return 'bg-emerald-50 text-emerald-600 border border-emerald-100';
+            if (s === 'Sold') return 'bg-rose-50 text-rose-600 border border-rose-100';
+            if (s === 'Reserved') return 'bg-indigo-50 text-indigo-600 border border-indigo-100';
+            return 'bg-amber-50 text-amber-600 border border-amber-100';
+        }
+
+        function openEdit(id, plot, unit) {
+            document.getElementById('editingId').innerText = id;
+            document.getElementById('plotInput').value = (plot === '-' || !plot) ? "" : plot;
+            document.getElementById('unitSelect').value = unit || "Available";
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        async function saveData() {
+            const btn = document.getElementById('btnSave'); btn.disabled = true; btn.innerHTML = "🔄 SYNCING...";
+            const params = new URLSearchParams();
+            params.append('role', 'Project_Admin');
+            params.append('project', CURRENT_PROJECT);
+            params.append('hpId', document.getElementById('editingId').innerText);
+            params.append('plotName', document.getElementById('plotInput').value);
+            params.append('unitStatus', document.getElementById('unitSelect').value);
+
+            try {
+                await fetch(API_URL, { method: 'POST', body: params });
+                location.reload();
+            } catch (e) { btn.disabled = false; btn.innerText = "Error"; }
+        }
+
+        function closeEdit() { document.getElementById('editModal').style.display = 'none'; }
+        function doSearch() { 
+            const t = document.getElementById('searchInput').value.toUpperCase();
+            render(rawData.filter(u => u.id.includes(t) || (u.plot && u.plot.toUpperCase().includes(t)))); 
         }
         window.onload = init;
     </script>
