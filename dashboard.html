@@ -3,135 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DASHBOARD - DIRECT HUB SITE</title>
+    <title>DIRECT HUB - SITE DASHBOARD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: 'Kanit', sans-serif; background: #fdfdfd; color: #1e293b; overflow-x: hidden; }
-        /* การจัดเรียงแถวแบบชิดพิเศษเพื่อให้เห็นข้อมูลเยอะที่สุดในหน้าจอเดียว */
+        /* จัดเรียงแถวแบบชิดพิเศษเพื่อให้เห็นข้อมูลครบทุกรายการในหน้าจอเดียว */
         .dense-table td { padding: 0.6rem 0.3rem !important; border-bottom: 1px solid #f8f8f8; vertical-align: middle; }
         .dense-table th { padding: 0.8rem 0.3rem !important; font-size: 9px !important; text-transform: uppercase; color: #94a3b8; font-weight: 600; letter-spacing: 0.05em; }
         .no-wrap { white-space: nowrap; font-weight: 700; font-style: italic; font-size: 11px; }
         .plot-text { color: #64748b; font-size: 10px; font-weight: 600; font-style: italic; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
-        /* สไตล์สถานะการขาย */
-        .badge { font-size: 8px; padding: 2px 8px; border-radius: 99px; font-weight: 700; text-transform: uppercase; display: inline-block; min-width: 70px; text-align: center; }
-        /* ระบบ Responsive สำหรับคอมและมือถือ */
-        @media (max-width: 640px) { .hide-mobile { display: none; } }
+        /* Sale Status Badge สไตล์ดั้งเดิมที่มองเห็นชัดเจน */
+        .badge { font-size: 8px; padding: 2px 10px; border-radius: 99px; font-weight: 700; text-transform: uppercase; display: inline-block; min-width: 75px; text-align: center; }
+        /* System Status สไตล์จุดเขียว */
+        .sys-dot { font-size: 10px; font-weight: 600; color: #10b981; display: flex; align-items: center; justify-content: center; gap: 3px; font-style: italic; }
     </style>
 </head>
 <body class="p-2 md:p-6 italic font-['Kanit']">
 
     <div class="max-w-5xl mx-auto">
         <div class="flex flex-col md:flex-row items-center gap-3 mb-6">
-            <div class="bg-[#0f172a] text-white p-3 rounded-2xl flex items-center gap-3 shadow-lg min-w-fit px-6 w-full md:w-auto">
-                <i class="fa-solid fa-house-laptop text-blue-400 text-sm"></i>
+            <div class="bg-[#0f172a] text-white p-3 rounded-3xl flex items-center gap-4 shadow-lg px-6 w-full md:w-auto">
+                <i class="fa-solid fa-database text-blue-400 text-sm"></i>
                 <div class="leading-none text-left">
-                    <p class="text-[7px] uppercase font-bold text-slate-400">Admin Control</p>
-                    <p id="headerTitle" class="text-[11px] font-bold tracking-tighter">MASTER DASHBOARD</p>
+                    <p class="text-[7px] uppercase font-bold text-slate-400">Local Project Admin</p>
+                    <p class="text-[11px] font-bold tracking-tighter">DIRECT HUB SITE</p>
                 </div>
             </div>
-            
-            <div class="flex gap-2 w-full">
-                <select id="projectSelect" onchange="init()" class="flex-1 md:w-48 p-3 bg-white rounded-xl shadow-sm border border-slate-100 text-[10px] font-bold uppercase outline-none focus:ring-2 ring-blue-100">
-                    <option value="Project_A">📍 COCO HUA HIN</option>
-                    <option value="Project_B">👑 THE PYNE PLUS</option>
-                    <option value="Project_Master">⭐ MASTER HUB</option>
-                    <option value="all">🌐 SHOW ALL UNITS</option>
-                </select>
-                
-                <div class="relative flex-[1.5]">
-                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-slate-300 text-[10px]"></i>
-                    <input type="text" id="searchInput" oninput="localSearch()" placeholder="ค้นหารหัสบ้าน หรือ ชื่อแปลง..." class="w-full pl-9 pr-4 py-3 bg-white rounded-xl shadow-sm outline-none border border-slate-100 text-[10px] font-bold focus:ring-2 ring-blue-100">
-                </div>
+            <div class="relative flex-1 w-full">
+                <input type="text" id="searchInput" oninput="localSearch()" placeholder="ค้นหารหัส HP-ID หรือ ชื่อแปลง..." class="w-full pl-6 pr-4 py-4 bg-white rounded-full shadow-sm outline-none border-none ring-1 ring-slate-100 text-[10px] font-bold">
             </div>
         </div>
 
-        <div class="bg-white rounded-[2rem] shadow-xl overflow-hidden border border-slate-50">
+        <div class="bg-white rounded-[2.5rem] shadow-2xl p-4 border border-slate-50 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-center border-collapse dense-table">
                     <thead>
-                        <tr class="bg-slate-50 italic">
-                            <th class="text-left pl-4 w-[20%]">HP-ID</th>
-                            <th class="text-left w-[35%]">Property Name</th>
-                            <th class="w-[20%]">Sale Status</th>
-                            <th class="w-[15%] hide-mobile">System</th>
-                            <th class="w-[10%]">Edit</th>
+                        <tr>
+                            <th class="text-left pl-4">Unit ID</th>
+                            <th>Property Name</th>
+                            <th>Sale Status</th>
+                            <th>System</th>
+                            <th>Manage</th>
                         </tr>
                     </thead>
-                    <tbody id="unitTableBody" class="font-medium">
-                        <tr><td colspan="5" class="py-20 text-slate-300 animate-pulse font-bold italic text-[10px] uppercase">🔄 Syncing with Master Database...</td></tr>
+                    <tbody id="unitTableBody">
+                        <tr><td colspan="5" class="py-20 text-slate-300 animate-pulse font-bold italic text-xs uppercase">🔄 Syncing Master Database...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
-        
-        <div class="mt-4 px-4">
-            <p id="totalCount" class="text-[9px] font-bold text-slate-400 uppercase tracking-widest italic"></p>
-        </div>
     </div>
 
     <script>
-        // 🛑 ตั้งค่า URL ของพี่ที่นี่
+        // 🛑 ใส่ URL Apps Script ของคุณที่นี่
         const API_URL = "https://script.google.com/macros/s/AKfycbwe5Sfa4aN_17nmtgekfP4CpHXVmlL4NOpzc7cG2zvffnrgpA5u9tUNmKGnZNUpz29u/exec"; 
-        
-        // 🛑 เลือกโปรเจกต์เริ่มต้นให้ตรงกับโฟลเดอร์ (Project_A / Project_B / Project_Master)
-        const DEFAULT_PROJECT = "Project_A"; 
+        const PROJECT_ID = "Project_A"; // ปรับตามโครงการ (Project_A / Project_B)
         let masterData = [];
 
         async function init() {
-            const project = document.getElementById('projectSelect').value || DEFAULT_PROJECT;
-            const tbody = document.getElementById('unitTableBody');
-            
-            // ปรับหัวข้อตามโปรเจกต์ที่เลือก
-            document.getElementById('headerTitle').innerText = project.replace('_',' ').toUpperCase();
-            
             try {
-                const res = await fetch(`${API_URL}?mode=getUnitList&project=${project}`);
+                const res = await fetch(`${API_URL}?mode=getUnitList&project=${PROJECT_ID}`); //
                 masterData = await res.json();
                 renderTable(masterData);
-            } catch (e) {
-                tbody.innerHTML = "<tr><td colspan='5' class='py-10 text-red-400 font-bold'>⚠️ Connection Error</td></tr>";
-            }
+            } catch (e) { document.getElementById('unitTableBody').innerHTML = "<tr><td colspan='5' class='py-10 text-red-400 font-bold text-xs'>⚠️ Connection Error</td></tr>"; }
         }
 
         function renderTable(data) {
-            const tbody = document.getElementById('unitTableBody');
-            document.getElementById('totalCount').innerText = `TOTAL: ${data.length} PROPERTIES FOUND`;
-            
-            if (data.length === 0) {
-                tbody.innerHTML = "<tr><td colspan='5' class='py-10 text-slate-400 italic'>ไม่พบข้อมูลรายการที่ค้นหา</td></tr>";
-                return;
-            }
-
-            tbody.innerHTML = data.map(u => `
-                <tr class="hover:bg-blue-50/30 transition-colors">
+            document.getElementById('unitTableBody').innerHTML = data.map(u => `
+                <tr>
                     <td class="text-left pl-4 no-wrap text-slate-900">${u.id}</td>
-                    <td class="text-left"><div class="plot-text">${u.name || '-'}</div></td>
+                    <td class="text-left"><div class="plot-text uppercase">${u.name || '-'}</div></td>
                     <td><span class="badge ${getSaleStyle(u.sale_status)}">${u.sale_status || 'AVAILABLE'}</span></td>
-                    <td class="hide-mobile italic font-bold text-[9px] text-green-500">• ${u.status || 'Live'}</td>
+                    <td><div class="sys-dot"><span class="text-[12px]">•</span>${u.status || 'Live'}</div></td>
                     <td>
-                        <button onclick="openFullEdit('${u.id}', '${u.project}')" class="text-blue-500 hover:text-blue-700 transition-all p-2 active:scale-90">
+                        <button onclick="goToEdit('${u.id}')" class="text-blue-500 hover:scale-110 transition-transform p-2 active:scale-90">
                             <i class="fa-solid fa-pen-to-square text-sm"></i>
                         </button>
                     </td>
                 </tr>`).join('');
         }
 
-        // 🛠️ ลิงก์ไปยังหน้า edit.html ตัวเต็ม
-        function openFullEdit(id, project) {
-            const currentProj = project || document.getElementById('projectSelect').value;
-            window.location.href = `edit.html?id=${id}&project=${currentProj}`;
+        // 🛠️ แก้ไขการส่งค่าไปยังหน้า Edit ให้สมบูรณ์ ป้องกันหน้า Edit ดึงข้อมูลไม่ขึ้น
+        function goToEdit(id) {
+            window.location.href = `edit.html?id=${id}&project=${PROJECT_ID}`; //
         }
 
-        // 🔍 ระบบค้นหาในเครื่อง (เร็วและเสถียรที่สุด)
         function localSearch() {
             const term = document.getElementById('searchInput').value.toUpperCase();
-            const filtered = masterData.filter(u => 
-                u.id.toUpperCase().includes(term) || 
-                (u.name && u.name.toUpperCase().includes(term))
-            );
-            renderTable(filtered);
+            renderTable(masterData.filter(u => u.id.toUpperCase().includes(term) || (u.name && u.name.toUpperCase().includes(term))));
         }
 
         function getSaleStyle(s) {
