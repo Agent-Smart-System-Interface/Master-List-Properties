@@ -10,53 +10,24 @@
 
   <style>
     body { font-family: 'Kanit', sans-serif; }
-
-    /* ✅ ราคา: เล็กลง อ่านง่ายขึ้นบนมือถือ */
-    .price-text {
-      font-size: clamp(1.5rem, 4.2vw, 2.2rem); /* 📱 → 💻 */
-      font-weight: 500;
-      letter-spacing: -0.02em;
-      line-height: 1.1;
-      word-break: break-word;
-    }
-
-    .unit-text {
-      font-size: 0.9rem;
-      font-weight: 400;
-      color: #94a3b8;
-      margin-top: 0.3rem;
-    }
-
-    .feature {
-      font-size: 0.85rem;
-      font-weight: 400;
-      padding: 0.45rem 0.7rem;
-    }
-
-    .status {
-      font-size: 0.85rem;
-      font-weight: 500;
-      padding: 0.45rem 0.9rem;
-      white-space: nowrap;
-    }
+    .price-text { font-size: clamp(1.9rem, 5vw, 2.8rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.1; }
+    .unit-text { font-size: 0.9rem; font-weight: 400; color: #94a3b8; margin-top: 0.3rem; }
+    .feature { font-size: 0.85rem; font-weight: 400; padding: 0.45rem 0.7rem; }
+    .status { font-size: 0.85rem; font-weight: 500; padding: 0.45rem 0.9rem; }
   </style>
 </head>
 
 <body class="bg-slate-50">
-
 <div class="max-w-6xl mx-auto px-4 py-8">
 
-  <!-- Header -->
   <div class="flex justify-between items-start mb-8">
     <div>
       <h1 class="text-4xl md:text-5xl font-semibold italic text-slate-900">DIRECT HUB</h1>
       <p class="text-blue-700 text-lg mt-1">ศูนย์รวมบ้านฝากขายตรงจากเจ้าของ</p>
     </div>
 
-    <!-- ✅ กดได้แน่นอน -->
-    <a id="gatewayLink"
-       href="gateway.html"
-       class="w-12 h-12 rounded-2xl bg-white shadow flex items-center justify-center text-xl cursor-pointer select-none"
+    <a href="https://agent-smart-system-interface.github.io/Master-List-Properties/gateway.html"
+       class="w-12 h-12 rounded-2xl bg-white shadow flex items-center justify-center text-xl cursor-pointer"
        title="Go to Gateway">
       👤
     </a>
@@ -70,16 +41,13 @@
 const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
 const PROJECT = new URLSearchParams(location.search).get("project") || "Project_0";
 
-/* ✅ ส่ง project ไป gateway ด้วย */
-document.getElementById("gatewayLink").href = `gateway.html?project=${encodeURIComponent(PROJECT)}`;
-
 const priceFmt = v => {
-  const n = Number(String(v).replace(/,/g,""));
+  const n = Number(v);
   return (!n || n === 0) ? "฿0" : "฿" + n.toLocaleString();
 };
 
 const statusClass = s => {
-  s = String(s || "").toLowerCase();
+  s = String(s).toLowerCase();
   if (s.includes("available")) return "bg-emerald-100 text-emerald-700";
   if (s.includes("under")) return "bg-sky-100 text-sky-700";
   if (s.includes("reserved")) return "bg-amber-100 text-amber-700";
@@ -88,48 +56,39 @@ const statusClass = s => {
 };
 
 async function load(){
-  const res = await fetch(`${API_URL}?mode=getUnitList&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`);
+  const res = await fetch(`${API_URL}?mode=getUnitList&project=${PROJECT}&t=${Date.now()}`);
   const data = await res.json();
-
   document.getElementById("loading").style.display = "none";
 
-  document.getElementById("cards").innerHTML = (data || []).map(d => `
+  document.getElementById("cards").innerHTML = data.map(d => `
     <div class="bg-white rounded-[2.3rem] shadow-lg overflow-hidden">
-
       <div class="relative">
-        <img src="${d.thumbnail || d.Thumbnail_Image || ""}" class="w-full h-72 object-cover">
-        <div class="absolute top-4 left-4 bg-white/90 px-4 py-2 rounded-full font-medium">${d.plot || d.Plot || ""}</div>
+        <img src="${d.thumbnail}" class="w-full h-72 object-cover">
+        <div class="absolute top-4 left-4 bg-white/90 px-4 py-2 rounded-full font-medium">${d.plot}</div>
       </div>
 
       <div class="p-6">
         <div class="flex flex-wrap gap-2 mb-4">
-          <div class="feature bg-slate-100">🛏 ${d.bedrooms ?? d.Bedrooms ?? ""}</div>
-          <div class="feature bg-slate-100">🛁 ${d.bathrooms ?? d.Bathrooms ?? ""}</div>
-          <div class="feature bg-slate-100">📐 ${d.landSqw ?? d.Land_Area_sqw ?? ""} sq.w</div>
-          <div class="feature bg-slate-100">🏠 ${d.livingSqm ?? d.Living_Area_sqm ?? ""} sqm</div>
-
-          <div class="ml-auto status rounded-full ${statusClass(d.status || d.StatusBadge)}">
-            ${d.status || d.StatusBadge || ""}
-          </div>
+          <div class="feature bg-slate-100">🛏 ${d.bedrooms}</div>
+          <div class="feature bg-slate-100">🛁 ${d.bathrooms}</div>
+          <div class="feature bg-slate-100">📐 ${d.landSqw} sq.w</div>
+          <div class="feature bg-slate-100">🏠 ${d.livingSqm} sqm</div>
+          <div class="ml-auto status rounded-full ${statusClass(d.status)}">${d.status}</div>
         </div>
 
-        <div class="price-text text-slate-900">
-          ${priceFmt(d.price ?? d.Price)}
-        </div>
-        <div class="unit-text">UNIT: ${d.id || d.hpId || ""}</div>
+        <div class="price-text text-slate-900">${priceFmt(d.price)}</div>
+        <div class="unit-text">UNIT: ${d.id}</div>
 
-        <a href="details.html?id=${encodeURIComponent(d.id || d.hpId || "")}&project=${encodeURIComponent(PROJECT)}"
+        <a href="details.html?id=${d.id}&project=${PROJECT}"
            class="block mt-6 text-center bg-slate-900 text-white py-4 rounded-2xl text-sm tracking-widest">
           VIEW FULL DETAILS
         </a>
       </div>
-
     </div>
   `).join("");
 }
 
 load();
 </script>
-
 </body>
 </html>
