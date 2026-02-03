@@ -3,79 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>DASHBOARD - AGENT SMART SYSTEM</title>
+    <title>DIRECT HUB - SITE DASHBOARD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Kanit', sans-serif; background: #f8fafc; }
-        /* 🛠️ แก้ไขให้ ID ไม่ตัดแถว */
-        .no-wrap { white-space: nowrap; }
-        .dense-row td { padding: 0.5rem 0.4rem !important; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
-        .dense-row th { padding: 0.6rem 0.4rem !important; font-size: 10px !important; text-transform: uppercase; }
-        .status-badge { font-size: 8px; padding: 2px 6px; border-radius: 99px; font-weight: 600; text-transform: uppercase; }
-        /* จำกัดความกว้างชื่อบ้านให้พอดี */
-        .name-col { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        body { font-family: 'Kanit', sans-serif; background: #fdfdfd; color: #1e293b; overflow-x: hidden; }
+        /* การจัดเรียงแถวแบบชิดพิเศษตามต้นฉบับเพื่อให้เห็นข้อมูลเยอะที่สุด */
+        .dense-table td { padding: 0.5rem 0.2rem !important; border-bottom: 1px solid #f8f8f8; vertical-align: middle; }
+        .dense-table th { padding: 0.8rem 0.2rem !important; font-size: 9px !important; text-transform: uppercase; color: #94a3b8; font-weight: 600; letter-spacing: 0.05em; }
+        /* บังคับ ID ไม่ให้ตัดบรรทัด */
+        .no-wrap { white-space: nowrap; font-weight: 700; font-style: italic; font-size: 11px; }
+        .plot-text { color: #64748b; font-size: 10px; font-weight: 600; font-style: italic; }
+        /* Sale Status Badge สไตล์เดิม */
+        .badge { font-size: 8px; padding: 2px 10px; border-radius: 99px; font-weight: 700; text-transform: uppercase; display: inline-block; min-width: 75px; text-align: center; }
+        .status-available { bg-green-50; color: #10b981; border: 1px solid #d1fae5; }
+        .status-sold { bg-rose-50; color: #f43f5e; border: 1px solid #ffe4e6; }
+        .status-reserved { bg-indigo-50; color: #6366f1; border: 1px solid #e0e7ff; }
+        .status-pending { bg-amber-50; color: #f59e0b; border: 1px solid #fef3c7; }
+        /* System Status จุดเขียวสไตล์เดิม */
+        .sys-dot { font-size: 10px; font-weight: 600; color: #10b981; display: flex; items-center; justify-center; gap: 3px; font-style: italic; }
     </style>
 </head>
 <body class="p-2 md:p-6 italic">
 
     <div class="max-w-4xl mx-auto">
-        <div class="flex flex-col md:flex-row gap-2 mb-4">
-            <div class="flex-1 flex gap-2">
-                <div class="bg-white px-3 py-3 rounded-xl shadow-sm border border-slate-100 flex items-center min-w-fit">
-                    <span id="projBrand" class="text-blue-700 font-bold text-[10px] uppercase">📍 COCO HUA HIN</span>
+        <div class="flex items-center gap-3 mb-6">
+            <div class="bg-[#0f172a] text-white p-3 rounded-3xl flex items-center gap-3 shadow-lg min-w-fit px-6">
+                <i class="fa-solid fa-database text-blue-400 text-sm"></i>
+                <div class="leading-none">
+                    <p class="text-[7px] uppercase font-bold text-slate-400">Local Project Admin</p>
+                    <p class="text-[11px] font-bold tracking-tighter">DIRECT HUB SITE</p>
                 </div>
-                <div class="relative flex-1">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-300 text-xs"></i>
-                    <input type="text" id="searchInput" oninput="localSearch()" placeholder="ค้นหารหัส/ชื่อ..." class="w-full pl-9 pr-3 py-3 bg-white rounded-xl shadow-sm outline-none border-none ring-1 ring-slate-100 text-[10px] font-bold">
-                </div>
+            </div>
+            <div class="relative flex-1">
+                <input type="text" id="searchInput" oninput="localSearch()" placeholder="ค้นหารหัส HP-ID หรือ ชื่อแปลง..." class="w-full pl-6 pr-4 py-4 bg-white rounded-full shadow-sm outline-none border-none ring-1 ring-slate-100 text-[10px] font-bold">
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-slate-100">
+        <div class="bg-white rounded-[2.5rem] shadow-2xl p-4 md:p-8 border border-slate-50">
             <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse dense-row">
-                    <thead class="bg-[#1e3a8a] text-white">
-                        <tr class="italic uppercase text-[9px] tracking-widest">
-                            <th class="pl-4 w-[30%]">ID</th> <th class="w-[35%]">Property Name</th>
-                            <th class="w-[20%] text-center">Status</th>
-                            <th class="w-[15%] text-center">Manage</th>
+                <table class="w-full text-center border-collapse dense-table">
+                    <thead>
+                        <tr>
+                            <th class="text-left pl-4">Unit ID</th>
+                            <th>Plot Name</th>
+                            <th>Sale Status</th>
+                            <th>System</th>
+                            <th>Manage</th>
                         </tr>
                     </thead>
-                    <tbody id="unitTableBody" class="text-[11px] font-medium">
-                        </tbody>
+                    <tbody id="unitTableBody">
+                        <tr><td colspan="5" class="py-20 text-slate-300 animate-pulse font-bold italic text-xs uppercase tracking-widest">🔄 Syncing Master Database...</td></tr>
+                    </tbody>
                 </table>
             </div>
         </div>
     </div>
 
+    <div id="editModal" onclick="if(event.target==this) closeEdit()" class="hidden fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl border-t-8 border-blue-600 animate-in fade-in zoom-in duration-150">
+            <h2 class="text-sm font-bold text-slate-800 mb-6 uppercase italic">🛠️ Update Master: <span id="editingId" class="text-blue-600"></span></h2>
+            <div class="space-y-4">
+                <input type="text" id="idName" placeholder="ชื่อแปลง / ชื่อบ้าน" class="w-full p-4 bg-slate-50 rounded-xl outline-none font-bold text-[11px]">
+                <div class="grid grid-cols-2 gap-3 italic">
+                    <select id="saleStatus" class="p-4 bg-white border border-slate-100 rounded-xl font-bold text-[9px] outline-none">
+                        <option value="AVAILABLE">AVAILABLE</option>
+                        <option value="SOLD">SOLD</option>
+                        <option value="RESERVED">RESERVED</option>
+                        <option value="UNDER CON">UNDER CON</option>
+                    </select>
+                    <select id="sysStatus" class="p-4 bg-white border border-slate-100 rounded-xl font-bold text-[9px] outline-none">
+                        <option value="Online">Online</option>
+                        <option value="Offline">Offline</option>
+                    </select>
+                </div>
+                <button onclick="saveData()" id="btnSave" class="w-full bg-[#1e293b] text-white py-4 rounded-xl font-bold uppercase text-[10px] tracking-widest shadow-lg hover:bg-blue-600 transition-all mt-4">บันทึกข้อมูล Master</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // (API_URL และ PROJECT_ID ใส่ตามโปรเจกต์ของพี่นะครับ)
+        // ใช้ API_URL และ PROJECT_ID เดิมของคุณ
         const API_URL = "https://script.google.com/macros/s/AKfycbwe5Sfa4aN_17nmtgekfP4CpHXVmlL4NOpzc7cG2zvffnrgpA5u9tUNmKGnZNUpz29u/exec"; 
         const PROJECT_ID = "Project_A"; 
         let masterData = [];
 
+        async function init() {
+            try {
+                const res = await fetch(`${API_URL}?mode=getUnitList&project=${PROJECT_ID}`);
+                masterData = await res.json();
+                renderTable(masterData);
+            } catch (e) { document.getElementById('unitTableBody').innerHTML = "<tr><td colspan='5' class='py-10 text-red-400 font-bold'>Connection Error</td></tr>"; }
+        }
+
         function renderTable(data) {
             document.getElementById('unitTableBody').innerHTML = data.map(u => `
-                <tr class="hover:bg-blue-50/50 transition-colors">
-                    <td class="pl-4 font-bold text-slate-900 no-wrap italic">${u.id}</td> <td class="font-bold text-slate-500 italic name-col">${u.name || '-'}</td>
-                    <td class="text-center"><span class="${getStatusStyle(u.status)} status-badge">${u.status || 'PND'}</span></td>
-                    <td class="text-center text-blue-500">
-                        <button onclick="openEdit('${u.id}')" class="p-2 transition-transform active:scale-90">
+                <tr>
+                    <td class="text-left pl-4 no-wrap text-slate-900">${u.id}</td>
+                    <td class="plot-text uppercase">${u.plot || '-'}</td>
+                    <td><span class="badge ${getBadgeStyle(u.sale_status)}">${u.sale_status || 'AVAILABLE'}</span></td>
+                    <td><div class="sys-dot"><span class="text-[12px]">•</span>${u.status || 'Online'}</div></td>
+                    <td>
+                        <button onclick="openEdit('${u.id}')" class="text-blue-500 hover:scale-110 transition-transform p-2">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </button>
                     </td>
                 </tr>`).join('');
         }
-        
-        // (ฟังก์ชันอื่นๆ เหมือนเดิมครับ)
-        async function init() {
-            const res = await fetch(`${API_URL}?mode=getUnitList&project=${PROJECT_ID}`);
-            masterData = await res.json();
-            renderTable(masterData);
+
+        function getBadgeStyle(s) {
+            if (s === 'SOLD') return 'bg-rose-50 text-rose-500 border border-rose-100';
+            if (s === 'RESERVED') return 'bg-indigo-50 text-indigo-500 border border-indigo-100';
+            if (s === 'UNDER CON') return 'bg-amber-50 text-amber-500 border border-amber-100';
+            return 'bg-green-50 text-green-500 border border-green-100';
         }
-        function getStatusStyle(s) { return (s==='Live'||s==='Online') ? 'bg-green-100 text-green-600' : (s==='Sold'?'bg-red-100 text-red-600':'bg-yellow-100 text-yellow-600'); }
+
+        function localSearch() {
+            const term = document.getElementById('searchInput').value.toUpperCase();
+            renderTable(masterData.filter(u => u.id.toUpperCase().includes(term) || (u.plot && u.plot.toUpperCase().includes(term))));
+        }
+
+        async function openEdit(id) {
+            document.getElementById('editingId').innerText = id;
+            document.getElementById('editModal').style.display = 'flex';
+            const res = await fetch(`${API_URL}?mode=getUnitDetail&project=${PROJECT_ID}&hpId=${id}`);
+            const d = await res.json();
+            document.getElementById('idName').value = d.ID_NAME || "";
+            document.getElementById('saleStatus').value = d.Sale_Status || "AVAILABLE";
+            document.getElementById('sysStatus').value = d.System_Status || "Online";
+        }
+
+        function closeEdit() { document.getElementById('editModal').style.display = 'none'; }
+
+        async function saveData() {
+            const btn = document.getElementById('btnSave');
+            btn.disabled = true; btn.innerText = 'บันทึก...';
+            const payload = { project: PROJECT_ID, hpId: document.getElementById('editingId').innerText, idName: document.getElementById('idName').value, saleStatus: document.getElementById('saleStatus').value, sysStatus: document.getElementById('sysStatus').value };
+            try {
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+                closeEdit(); init();
+            } catch (e) { btn.disabled = false; btn.innerText = 'Error'; }
+        }
         window.onload = init;
     </script>
 </body>
