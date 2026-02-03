@@ -48,7 +48,6 @@
             border-color: #3b82f6
         }
 
-        /* เพิ่มนิดเดียว: ให้ช่องที่แก้ไม่ได้ดูเป็น read-only ชัดเจน */
         .field-input[disabled]{
             background:#f8fafc;
             cursor:not-allowed;
@@ -129,7 +128,6 @@
                 <div><span class="field-label">Map Link</span><input id="Map_Link" class="field-input"></div>
                 <div><span class="field-label">Virtual Tour</span><input id="Virtual_Tour" class="field-input"></div>
 
-                <!-- ✅ แก้เฉพาะจุดนี้: เอา dropdown ออก -> แสดงแบบ read-only (disabled) -->
                 <div class="col-span-full">
                     <span class="field-label">System Status (Read Only)</span>
                     <input id="System_Status" class="field-input font-bold bg-slate-50" disabled value="Pending">
@@ -171,21 +169,44 @@
             document.getElementById("btn-info").classList.toggle("tab-active", tab === "info");
         }
 
+        /* ✅ helper: ตั้งค่าให้ช่อง input แบบปลอดภัย */
+        function setVal(id, val) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.value = (val ?? "") === null ? "" : String(val ?? "");
+        }
+
+        /* ✅ helper: ดึงค่าได้หลายชื่อคีย์ (แก้ปัญหา Land/Living ว่าง) */
+        function pick(data, keys) {
+            for (const k of keys) {
+                if (data && data[k] !== undefined && data[k] !== null && String(data[k]).trim() !== "") {
+                    return data[k];
+                }
+            }
+            return "";
+        }
+
         async function loadData() {
             document.getElementById("displayId").innerText = HP_ID || "HP-XXXX";
             if (!HP_ID || !PROJECT) return alert("Missing id/project in URL");
+
             try {
                 const res = await fetch(`${API_URL}?mode=getUnitDetail&hpId=${encodeURIComponent(HP_ID)}&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`);
                 const data = await res.json();
                 if (data && data.error) throw new Error(data.error);
 
+                /* ✅ ใส่ค่าทั่วไปแบบเดิม */
                 Object.keys(data || {}).forEach(k => {
                     const el = document.getElementById(k);
                     if (el) el.value = data[k];
                 });
 
-                // ✅ normalize ค่า System_Status ให้เป็น Offline/Pending/Online เท่านั้น
-                // (รองรับกรณีชีตเคยมี Live หรือ Online (Live))
+                /* ✅ FIX สำคัญ: 3 ช่องนี้รองรับได้หลายชื่อคีย์ */
+                setVal("Land_Area_sqw", pick(data, ["Land_Area_sqw", "landSqw", "LandSqw", "Land_SQW", "Land (sq.w)", "LAND_SQW", "Land_sq_w"]));
+                setVal("Land_Area_sqm", pick(data, ["Land_Area_sqm", "landSqm", "LandSqm", "Land_SQM", "Land (sq.m)", "LAND_SQM", "Land_sq_m"]));
+                setVal("Living_Area_sqm", pick(data, ["Living_Area_sqm", "livingSqm", "LivingSqm", "Living_SQM", "Living (sq.m)", "LIVING_SQM", "Living_sq_m"]));
+
+                /* ✅ normalize System_Status */
                 const rawSys = (data.System_Status ?? "").toString().trim();
                 const mapSys = {
                     "Live": "Online",
@@ -230,10 +251,7 @@
 
         const toBase64 = file => new Promise((resolve) => {
             const reader = new FileReader();
-            reader.onload = () => resolve({
-                data: reader.result.split(",")[1],
-                type: file.type
-            });
+            reader.onload = () => resolve({ data: reader.result.split(",")[1], type: file.type });
             reader.readAsDataURL(file);
         });
 
@@ -243,19 +261,36 @@
             const oldText = btn.innerText;
             btn.innerText = "UPDATING DATABASE...";
 
+            const landSqwVal = document.getElementById("Land_Area_sqw").value;
+            const landSqmVal = document.getElementById("Land_Area_sqm").value;
+            const livingSqmVal = document.getElementById("Living_Area_sqm").value;
+
             const payload = {
                 mode: "updateUnit",
                 project: PROJECT,
                 hpId: HP_ID,
+
                 Plot: document.getElementById("Plot").value,
                 Type: document.getElementById("Type").value,
                 Address: document.getElementById("Address").value,
                 Project_Name: document.getElementById("Project_Name").value,
                 Bedrooms: document.getElementById("Bedrooms").value,
                 Bathrooms: document.getElementById("Bathrooms").value,
-                Land_Area_sqw: document.getElementById("Land_Area_sqw").value,
-                Land_Area_sqm: document.getElementById("Land_Area_sqm").value,
-                Living_Area_sqm: document.getElementById("Living_Area_sqm").value,
+                Parking: document.getElementById("Parking").value,
+
+                /* ✅ ส่งหลายคีย์เพื่อให้ฝั่งชีตรับได้แน่ */
+                Land_Area_sqw: landSqwVal,
+                landSqw: landSqwVal,
+                LandSqw: landSqwVal,
+
+                Land_Area_sqm: landSqmVal,
+                landSqm: landSqmVal,
+                LandSqm: landSqmVal,
+
+                Living_Area_sqm: livingSqmVal,
+                livingSqm: livingSqmVal,
+                LivingSqm: livingSqmVal,
+
                 Pool_Size: document.getElementById("Pool_Size").value,
                 Pool_Depth: document.getElementById("Pool_Depth").value,
                 Furnishing: document.getElementById("Furnishing").value,
@@ -263,9 +298,6 @@
                 Price_SQM: document.getElementById("Price_SQM").value,
                 StatusBadge: document.getElementById("StatusBadge").value,
                 Description: document.getElementById("Description").value,
-                Parking: document.getElementById("Parking").value,
-                Extras: (document.getElementById("Extras") || {}).value,
-                Electricity: (document.getElementById("Electricity") || {}).value,
                 District: document.getElementById("District").value,
                 SubDistrict: document.getElementById("SubDistrict").value,
                 FBLink: document.getElementById("FBLink").value,
@@ -273,9 +305,7 @@
                 Virtual_Tour: document.getElementById("Virtual_Tour").value,
                 Commission: document.getElementById("Commission").value,
 
-                // ✅ สำคัญ: ไม่ส่ง System_Status แล้ว (Master ใหญ่กำหนดเอง)
-                // System_Status: document.getElementById("System_Status").value,
-
+                /* ✅ ไม่ส่ง System_Status */
                 file_thumb: null,
                 files_gallery: []
             };
@@ -287,10 +317,7 @@
             for (const f of (galleryFiles || [])) payload.files_gallery.push(await toBase64(f));
 
             try {
-                const res = await fetch(API_URL, {
-                    method: "POST",
-                    body: JSON.stringify(payload)
-                });
+                const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
                 const out = await res.json().catch(() => ({}));
                 if (!res.ok || out.error) throw new Error(out.error || "Save failed");
                 document.getElementById("successPopup").classList.remove("hidden");
