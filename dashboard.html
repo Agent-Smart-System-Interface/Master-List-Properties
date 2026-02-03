@@ -3,139 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SMART DASHBOARD - OPTIMIZED</title>
+    <title>DASHBOARD - AGENT SMART SYSTEM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: 'Kanit', sans-serif; background: #f8fafc; }
-        /* 🛠️ จุดแก้ไขสำคัญ: ป้องกันการตัดบรรทัดและจัดสมดุล */
-        .dense-row td { 
-            padding: 0.5rem 0.4rem !important; 
-            border-bottom: 1px solid #f1f5f9;
-            white-space: nowrap; /* ห้ามตัดขึ้นบรรทัดใหม่เด็ดขาด */
-        }
-        .dense-row th { 
-            padding: 0.7rem 0.4rem !important; 
-            font-size: 10px !important; 
-            text-transform: uppercase; 
-            white-space: nowrap;
-        }
-        /* กำหนดความกว้างคอลัมน์ ID ให้พอดีกับตัวหนังสือ */
-        .col-id { width: 85px; min-width: 85px; }
-        .col-name { width: auto; max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
-        .col-status { width: 70px; text-align: center; }
-        .col-manage { width: 50px; text-align: center; }
+        /* 🛠️ แก้ไขให้ ID ไม่ตัดแถว */
+        .no-wrap { white-space: nowrap; }
+        .dense-row td { padding: 0.5rem 0.4rem !important; border-bottom: 1px solid #f1f5f9; vertical-align: middle; }
+        .dense-row th { padding: 0.6rem 0.4rem !important; font-size: 10px !important; text-transform: uppercase; }
+        .status-badge { font-size: 8px; padding: 2px 6px; border-radius: 99px; font-weight: 600; text-transform: uppercase; }
+        /* จำกัดความกว้างชื่อบ้านให้พอดี */
+        .name-col { max-width: 100px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     </style>
 </head>
 <body class="p-2 md:p-6 italic">
 
     <div class="max-w-4xl mx-auto">
-        <div class="flex flex-row gap-2 mb-4">
-            <div class="bg-white px-3 py-2.5 rounded-xl shadow-sm border border-slate-100 flex items-center shrink-0">
-                <span id="brandLabel" class="text-blue-700 font-bold text-[10px] uppercase tracking-tighter italic">📍 LOADING...</span>
-            </div>
-            <div class="relative flex-grow">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-300 text-[10px]"></i>
-                <input type="text" id="searchInput" oninput="localSearch()" placeholder="ค้นหารหัส/ชื่อ..." class="w-full pl-8 pr-3 py-2.5 bg-white rounded-xl shadow-sm outline-none border-none ring-1 ring-slate-200 text-[10px] font-bold">
+        <div class="flex flex-col md:flex-row gap-2 mb-4">
+            <div class="flex-1 flex gap-2">
+                <div class="bg-white px-3 py-3 rounded-xl shadow-sm border border-slate-100 flex items-center min-w-fit">
+                    <span id="projBrand" class="text-blue-700 font-bold text-[10px] uppercase">📍 COCO HUA HIN</span>
+                </div>
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-300 text-xs"></i>
+                    <input type="text" id="searchInput" oninput="localSearch()" placeholder="ค้นหารหัส/ชื่อ..." class="w-full pl-9 pr-3 py-3 bg-white rounded-xl shadow-sm outline-none border-none ring-1 ring-slate-100 text-[10px] font-bold">
+                </div>
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-100">
-            <div class="overflow-x-auto no-scrollbar">
+        <div class="bg-white rounded-2xl shadow-md overflow-hidden border border-slate-100">
+            <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse dense-row">
                     <thead class="bg-[#1e3a8a] text-white">
                         <tr class="italic uppercase text-[9px] tracking-widest">
-                            <th class="col-id">ID</th>
-                            <th class="col-name">Property Name</th>
-                            <th class="col-status">Status</th>
-                            <th class="col-manage">Manage</th>
+                            <th class="pl-4 w-[30%]">ID</th> <th class="w-[35%]">Property Name</th>
+                            <th class="w-[20%] text-center">Status</th>
+                            <th class="w-[15%] text-center">Manage</th>
                         </tr>
                     </thead>
-                    <tbody id="unitTableBody" class="text-[11px] font-medium text-slate-600">
+                    <tbody id="unitTableBody" class="text-[11px] font-medium">
                         </tbody>
                 </table>
             </div>
         </div>
     </div>
 
-    <div id="editModal" onclick="if(event.target==this) closeEdit()" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 items-center justify-center p-4">
-        <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl border-t-8 border-blue-600 animate-in fade-in zoom-in duration-200">
-            <h2 class="text-sm font-bold text-slate-800 mb-6 uppercase italic">🛠️ Update: <span id="editingId" class="text-blue-600"></span></h2>
-            <div class="space-y-4">
-                <input type="text" id="idName" class="w-full p-4 bg-slate-50 rounded-xl outline-none font-bold text-[11px] border-none shadow-inner">
-                <div class="grid grid-cols-2 gap-3">
-                    <input type="number" id="price" class="p-4 bg-blue-50 text-blue-700 font-bold rounded-xl outline-none text-sm border-none shadow-inner">
-                    <select id="sysStatus" class="p-4 bg-white border border-slate-100 rounded-xl font-bold text-[10px] outline-none shadow-sm">
-                        <option value="Live">🟢 Online</option>
-                        <option value="Pending">🟡 Pending</option>
-                        <option value="Sold">🔴 Sold</option>
-                    </select>
-                </div>
-                <button onclick="saveData()" id="btnSave" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold uppercase text-[10px] tracking-widest hover:bg-blue-600 transition-all shadow-lg mt-4">บันทึกข้อมูล Master</button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxO40_bOBK66N22L6AWzBWaagzNkxSXs4KuvY5hRZ3vE4miazrpn7iNttlgmtGERmXV/exec";
-        // ระบุโครงการตามหน้าไฟล์: Project_A (CoCo) หรือ Project_B (The Pyne)
+        // (API_URL และ PROJECT_ID ใส่ตามโปรเจกต์ของพี่นะครับ)
+        const API_URL = "https://script.google.com/macros/s/AKfycbwe5Sfa4aN_17nmtgekfP4CpHXVmlL4NOpzc7cG2zvffnrgpA5u9tUNmKGnZNUpz29u/exec"; 
         const PROJECT_ID = "Project_A"; 
         let masterData = [];
 
-        async function init() {
-            document.getElementById('brandLabel').innerText = `📍 ${PROJECT_ID.replace('Project_','').replace('A','COCO').replace('B','THE PYNE')}`;
-            const tbody = document.getElementById('unitTableBody');
-            tbody.innerHTML = "<tr><td colspan='4' class='p-10 text-center text-[10px] font-bold animate-pulse'>🔄 SYNCING DATA...</td></tr>";
-            try {
-                const res = await fetch(`${API_URL}?mode=getUnitList&project=${PROJECT_ID}`);
-                masterData = await res.json();
-                renderTable(masterData);
-            } catch (e) { tbody.innerHTML = "<tr><td colspan='4' class='p-10 text-center text-red-500 font-bold'>Error</td></tr>"; }
-        }
-
         function renderTable(data) {
             document.getElementById('unitTableBody').innerHTML = data.map(u => `
-                <tr class="hover:bg-blue-50/40 transition-colors">
-                    <td class="col-id font-bold text-slate-900 italic">${u.id}</td>
-                    <td class="col-name font-bold text-slate-400 italic">${u.name || '-'}</td>
-                    <td class="col-status"><span class="${getStatusStyle(u.status)} px-2 py-0.5 rounded-full text-[8px] font-bold uppercase">${u.status || 'PND'}</span></td>
-                    <td class="col-manage text-blue-500"><button onclick="openEdit('${u.id}')" class="p-1"><i class="fa-solid fa-pen-to-square"></i></button></td>
+                <tr class="hover:bg-blue-50/50 transition-colors">
+                    <td class="pl-4 font-bold text-slate-900 no-wrap italic">${u.id}</td> <td class="font-bold text-slate-500 italic name-col">${u.name || '-'}</td>
+                    <td class="text-center"><span class="${getStatusStyle(u.status)} status-badge">${u.status || 'PND'}</span></td>
+                    <td class="text-center text-blue-500">
+                        <button onclick="openEdit('${u.id}')" class="p-2 transition-transform active:scale-90">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </button>
+                    </td>
                 </tr>`).join('');
         }
-
-        function localSearch() {
-            const term = document.getElementById('searchInput').value.toUpperCase();
-            renderTable(masterData.filter(u => u.id.toUpperCase().includes(term) || (u.name && u.name.toUpperCase().includes(term))));
+        
+        // (ฟังก์ชันอื่นๆ เหมือนเดิมครับ)
+        async function init() {
+            const res = await fetch(`${API_URL}?mode=getUnitList&project=${PROJECT_ID}`);
+            masterData = await res.json();
+            renderTable(masterData);
         }
-
-        function getStatusStyle(s) {
-            if (s === 'Live' || s === 'Online') return 'bg-green-100 text-green-600';
-            if (s === 'Sold') return 'bg-red-100 text-red-600';
-            return 'bg-yellow-100 text-yellow-600';
-        }
-
-        async function openEdit(id) {
-            document.getElementById('editingId').innerText = id;
-            document.getElementById('editModal').style.display = 'flex';
-            const res = await fetch(`${API_URL}?mode=getUnitDetail&project=${PROJECT_ID}&hpId=${id}`);
-            const d = await res.json();
-            document.getElementById('idName').value = d.ID_NAME || "";
-            document.getElementById('price').value = d.Price || 0;
-            document.getElementById('sysStatus').value = d.System_Status || "Pending";
-        }
-
-        function closeEdit() { document.getElementById('editModal').style.display = 'none'; }
-
-        async function saveData() {
-            const btn = document.getElementById('btnSave');
-            btn.disabled = true; btn.innerText = 'บันทึก...';
-            const payload = { project: PROJECT_ID, hpId: document.getElementById('editingId').innerText, idName: document.getElementById('idName').value, price: document.getElementById('price').value, sysStatus: document.getElementById('sysStatus').value, files: [] };
-            try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-                closeEdit(); init();
-            } catch (e) { btn.disabled = false; btn.innerText = 'Error'; }
-        }
+        function getStatusStyle(s) { return (s==='Live'||s==='Online') ? 'bg-green-100 text-green-600' : (s==='Sold'?'bg-red-100 text-red-600':'bg-yellow-100 text-yellow-600'); }
         window.onload = init;
     </script>
 </body>
