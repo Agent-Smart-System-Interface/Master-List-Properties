@@ -15,10 +15,13 @@
                 <i class="fa-solid fa-database text-blue-400 text-3xl"></i>
                 <div class="flex flex-col border-l border-slate-700 pl-6">
                     <span class="text-[10px] font-bold uppercase tracking-[0.3em] opacity-40 mb-1">Local Project Admin</span>
-                    <h2 class="text-xl font-bold uppercase tracking-tight">Direct Hub Site</h2>
+                    <h2 class="text-xl font-bold uppercase tracking-tight leading-none">Direct Hub Site</h2>
                 </div>
             </div>
-            <input type="text" id="searchInput" oninput="doSearch()" placeholder="ค้นหารหัส HP-ID หรือ แปลง..." class="flex-1 px-16 py-7.5 bg-white rounded-[3.5rem] shadow-sm outline-none ring-1 ring-slate-200 font-bold text-sm focus:ring-8 focus:ring-blue-500/5 transition-all">
+            <div class="relative flex-1">
+                <i class="fa-solid fa-magnifying-glass absolute left-8 top-7 text-slate-300 text-sm"></i>
+                <input type="text" id="searchInput" oninput="doSearch()" placeholder="ค้นหารหัส HP-ID หรือ แปลง..." class="w-full px-16 py-7 bg-white rounded-[3.5rem] shadow-sm outline-none ring-1 ring-slate-200 font-bold text-sm focus:ring-8 focus:ring-blue-500/5 transition-all">
+            </div>
         </header>
 
         <div class="bg-white rounded-[4rem] shadow-2xl overflow-hidden border border-slate-50">
@@ -27,7 +30,7 @@
                     <tr><th class="pl-16 py-10">Unit ID</th><th>Plot Name</th><th class="text-center">Sale Status</th><th class="text-center pr-16">Manage</th></tr>
                 </thead>
                 <tbody id="dataTable" class="text-[13px] font-bold text-slate-600">
-                    <tr><td colspan="4" class="p-20 text-center animate-pulse">กำลังโหลดข้อมูลโครงการ...</td></tr>
+                    <tr><td colspan="4" class="p-24 text-center animate-pulse text-slate-400 uppercase tracking-widest">🔄 กำลังเชื่อมต่อฐานข้อมูล...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -44,7 +47,7 @@
                     <option value="Available">Available</option><option value="Under Construction">Under Construction</option><option value="Sold">Sold</option><option value="Reserved">Reserved</option>
                 </select></div>
                 <button onclick="saveData()" id="btnSave" class="w-full bg-slate-900 text-white py-7 rounded-[2.2rem] font-bold uppercase text-[12px] tracking-[0.2em] shadow-xl hover:bg-blue-600 transition-all italic">
-                    <i class="fa-solid fa-rotate mr-2"></i> Update Asset Status
+                    <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Update Asset Status
                 </button>
                 <button onclick="closeEdit()" class="w-full text-slate-300 text-[10px] font-bold uppercase tracking-widest hover:text-slate-500 transition-colors italic">Cancel</button>
             </div>
@@ -59,29 +62,30 @@
         async function init() {
             try {
                 const res = await fetch(`${API_URL}?mode=getUnitList&project=${CURRENT_PROJECT}&t=${Date.now()}`);
+                if (!res.ok) throw new Error('Fetch failed');
                 rawData = await res.json(); render(rawData);
-            } catch (e) { document.getElementById('dataTable').innerHTML = "<tr><td colspan='4' class='p-20 text-center text-red-500'>Connection Error</td></tr>"; }
+            } catch (e) { document.getElementById('dataTable').innerHTML = "<tr><td colspan='4' class='p-24 text-center text-rose-500 font-bold uppercase tracking-tighter'>⚠️ Connection Error - โปรดเช็คสิทธิ์ Anyone</td></tr>"; }
         }
 
         function render(data) {
             document.getElementById('dataTable').innerHTML = data.map(u => `
                 <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="pl-16 py-8 font-black text-slate-900 tracking-tighter">${u.id}</td>
+                    <td class="pl-16 py-8 font-black text-slate-900 tracking-tighter italic">${u.id}</td>
                     <td class="text-slate-400 italic">${u.plot || '-'}</td>
                     <td class="text-center"><span class="px-5 py-2 bg-slate-100 rounded-2xl text-[9px] uppercase tracking-widest border border-slate-200">${u.unitStatus}</span></td>
-                    <td class="text-center pr-16"><button onclick="openEdit('${u.id}','${u.plot}','${u.unitStatus}')" class="w-12 h-12 bg-white shadow-lg rounded-2xl text-blue-600 hover:bg-slate-900 hover:text-white transition-all scale-90 hover:scale-100"><i class="fa-solid fa-pen-nib"></i></button></td>
+                    <td class="text-center pr-16"><button onclick="openEdit('${u.id}','${u.plot}','${u.unitStatus}')" class="w-12 h-12 bg-white shadow-lg rounded-2xl text-blue-600 hover:bg-slate-900 hover:text-white transition-all scale-90 hover:scale-100 border border-slate-100"><i class="fa-solid fa-pen-nib"></i></button></td>
                 </tr>`).join('');
         }
 
         function openEdit(id, plot, unit) {
             document.getElementById('editingId').innerText = id;
-            document.getElementById('plotInput').value = (plot === '-' || plot === 'undefined') ? "" : plot;
-            document.getElementById('unitSelect').value = unit;
+            document.getElementById('plotInput').value = (plot === '-' || !plot) ? "" : plot;
+            document.getElementById('unitSelect').value = unit || "Available";
             document.getElementById('editModal').style.display = 'flex';
         }
 
         async function saveData() {
-            const btn = document.getElementById('btnSave'); btn.disabled = true; btn.innerHTML = "🔄 กำลังซิงค์ข้อมูล...";
+            const btn = document.getElementById('btnSave'); btn.disabled = true; btn.innerHTML = "🔄 SYNCING TO MASTER...";
             const params = new URLSearchParams();
             params.append('role', 'Project_Admin');
             params.append('project', CURRENT_PROJECT);
@@ -90,15 +94,15 @@
             params.append('unitStatus', document.getElementById('unitSelect').value);
 
             try {
-                await fetch(API_URL, { method: 'POST', body: params });
-                location.reload();
+                const response = await fetch(API_URL, { method: 'POST', body: params });
+                if (response.ok) location.reload(); else throw new Error();
             } catch (e) { btn.disabled = false; btn.innerText = "Error - Try Again"; }
         }
 
         function closeEdit() { document.getElementById('editModal').style.display = 'none'; }
         function doSearch() { 
             const t = document.getElementById('searchInput').value.toUpperCase();
-            render(rawData.filter(u => u.id.includes(t) || u.plot.toUpperCase().includes(t))); 
+            render(rawData.filter(u => u.id.includes(t) || (u.plot && u.plot.toUpperCase().includes(t)))); 
         }
         window.onload = init;
     </script>
