@@ -1,49 +1,110 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8"><title>PROPERTY EDITOR | PROJECT_0</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EDITOR | PROPERTY SYSTEM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>body { font-family: 'Kanit', sans-serif; background: #f8fafc; } .field-input { width: 100%; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 0.8rem; outline: none; }</style>
+    <style>
+        body { font-family: 'Kanit', sans-serif; background: #f1f5f9; }
+        .tab-active { border-bottom: 4px solid #3b82f6; color: #3b82f6; }
+        .field-input { width: 100%; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1rem; outline: none; background: #f8fafc; font-weight: 500; }
+    </style>
 </head>
-<body class="p-4 md:p-10 italic">
-    <div class="max-w-5xl mx-auto bg-white rounded-[3rem] shadow-2xl overflow-hidden">
-        <div class="bg-slate-900 p-10 text-white flex justify-between items-center">
-            <div><p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest">Master Database Editor</p><h1 id="displayId" class="text-4xl font-bold tracking-tighter italic">HP-XXXX</h1></div>
-            <button onclick="window.history.back()" class="bg-white/10 p-4 rounded-2xl"><i class="fa-solid fa-xmark"></i></button>
+<body class="p-4 md:p-12 italic">
+    <div class="max-w-5xl mx-auto bg-white rounded-[3.5rem] shadow-2xl overflow-hidden border">
+        <div class="bg-slate-900 p-12 text-white flex justify-between items-center italic">
+            <div>
+                <p class="text-[10px] text-blue-400 font-bold uppercase tracking-widest mb-2">Master Database Editor</p>
+                <h1 id="displayId" class="text-5xl font-bold tracking-tighter italic">HP-XXXX</h1>
+            </div>
+            <button onclick="window.history.back()" class="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center hover:bg-white/20"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <div id="mainForm" class="p-10 space-y-8">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div><span class="text-[10px] font-bold text-slate-400">UNIT ID (READ ONLY)</span><input id="HP_ID" class="field-input bg-slate-50" readonly></div>
-                <div><span class="text-[10px] font-bold text-slate-400">PLOT</span><input id="Plot" class="field-input"></div>
-                <div><span class="text-[10px] font-bold text-slate-400">TYPE</span><input id="Type" class="field-input"></div>
-                <div class="col-span-full"><span class="text-[10px] font-bold text-slate-400">PROJECT NAME</span><input id="Project_Name" class="field-input text-blue-600 font-bold"></div>
+
+        <div class="flex gap-10 px-12 pt-8 border-b">
+            <button onclick="switchTab('photo')" id="btn-photo" class="pb-4 font-bold text-slate-400 tab-active uppercase text-xs tracking-widest"><i class="fa-solid fa-camera mr-2"></i> Media & Gallery</button>
+            <button onclick="switchTab('info')" id="btn-info" class="pb-4 font-bold text-slate-400 uppercase text-xs tracking-widest"><i class="fa-solid fa-file-lines mr-2"></i> Property Data</button>
+        </div>
+
+        <div id="mainForm" class="p-12 space-y-10">
+            <div id="tab-photo" class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="space-y-4">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-4">Main Cover Thumbnail</span>
+                    <div id="thumbPreview" class="h-64 bg-slate-50 rounded-[2.5rem] border-2 border-dashed flex items-center justify-center overflow-hidden">
+                        <i class="fa-solid fa-cloud-arrow-up text-4xl text-slate-200"></i>
+                    </div>
+                    <input type="file" id="file_thumb" class="hidden" accept="image/*" onchange="previewImg(this, 'thumbPreview')">
+                    <button onclick="document.getElementById('file_thumb').click()" class="w-full py-4 bg-blue-600 text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest">Upload Cover</button>
                 </div>
-            <button onclick="updateData()" id="saveBtn" class="w-full py-7 bg-slate-900 text-white rounded-[2.5rem] font-bold uppercase tracking-[0.4em] shadow-2xl hover:bg-blue-600 transition-all">Update Database</button>
+                <div class="space-y-4">
+                    <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-4">Project Gallery Album</span>
+                    <div id="galleryPreview" class="h-64 bg-slate-50 rounded-[2.5rem] border-2 border-dashed p-4 grid grid-cols-4 gap-2 overflow-y-auto">
+                        <i class="fa-solid fa-images text-4xl text-slate-200 col-span-4 self-center justify-self-center"></i>
+                    </div>
+                    <input type="file" id="file_gallery" class="hidden" multiple accept="image/*" onchange="previewGallery(this)">
+                    <button onclick="document.getElementById('file_gallery').click()" class="w-full py-4 bg-purple-600 text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest">Add Gallery Photos</button>
+                </div>
+            </div>
+
+            <div id="tab-info" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div><span class="text-[10px] font-bold text-slate-400 ml-4 uppercase">Plot</span><input id="Plot" class="field-input"></div>
+                <div><span class="text-[10px] font-bold text-slate-400 ml-4 uppercase">Type</span><input id="Type" class="field-input"></div>
+                <div><span class="text-[10px] font-bold text-slate-400 ml-4 uppercase">Price</span><input id="Price" class="field-input text-blue-600 font-bold"></div>
+                <div class="col-span-full"><span class="text-[10px] font-bold text-slate-400 ml-4 uppercase">Description</span><textarea id="Description" rows="4" class="field-input"></textarea></div>
+                </div>
+
+            <button onclick="updateData()" id="saveBtn" class="w-full py-8 bg-slate-900 text-white rounded-[2.5rem] font-bold uppercase tracking-[0.4em] shadow-2xl hover:bg-blue-600 transition-all active:scale-95 italic">Update Master Database</button>
         </div>
     </div>
+
+    <div id="successPop" class="hidden fixed inset-0 bg-slate-900/90 backdrop-blur-md z-50 flex items-center justify-center p-6">
+        <div class="bg-white rounded-[3rem] p-12 text-center shadow-2xl max-w-sm w-full italic">
+            <div class="w-24 h-24 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-8 text-4xl shadow-inner"><i class="fa-solid fa-check"></i></div>
+            <h2 class="text-3xl font-bold mb-2">บันทึกสำเร็จ!</h2>
+            <p class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-10 leading-relaxed">ข้อมูลถูกซิงค์ไปยัง <br>Master Hub และ Drive เรียบร้อย</p>
+            <button onclick="window.history.back()" class="w-full py-5 bg-slate-900 text-white rounded-3xl font-bold uppercase tracking-widest text-xs">Done</button>
+        </div>
+    </div>
+
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbxJ_QwwXW7sV8dmAH0J6mzBV5QWMjxm_MWpL74JC6iJUzgikHtt31HNG-koRtzd8AGJ/exec";
         const params = new URLSearchParams(window.location.search);
         const HP_ID = params.get('id');
         const PROJECT = params.get('project');
 
+        function switchTab(t) {
+            document.getElementById('tab-photo').classList.toggle('hidden', t !== 'photo');
+            document.getElementById('tab-info').classList.toggle('hidden', t !== 'info');
+            document.getElementById('btn-photo').classList.toggle('tab-active', t === 'photo');
+            document.getElementById('btn-info').classList.toggle('tab-active', t === 'info');
+        }
+
         async function init() {
             document.getElementById('displayId').innerText = HP_ID;
             const res = await fetch(`${API_URL}?mode=getUnitDetail&hpId=${HP_ID}&project=${PROJECT}&t=${Date.now()}`);
             const d = await res.json();
-            // ✅ บังคับให้ช่อง HP_ID แสดงผลตามที่ดึงมา
             Object.keys(d).forEach(k => { if(document.getElementById(k)) document.getElementById(k).value = d[k]; });
+            if(d.Thumbnail_Image) document.getElementById('thumbPreview').innerHTML = `<img src="${d.Thumbnail_Image}" class="w-full h-full object-cover">`;
         }
-        
+
         async function updateData() {
             const btn = document.getElementById('saveBtn');
             btn.disabled = true; btn.innerText = "UPDATING...";
-            const payload = { mode: "updateUnit", project: PROJECT, hpId: HP_ID, Plot: document.getElementById('Plot').value, Type: document.getElementById('Type').value, Project_Name: document.getElementById('Project_Name').value };
+            const payload = { mode: "updateUnit", project: PROJECT, hpId: HP_ID, Plot: document.getElementById('Plot').value, Type: document.getElementById('Type').value, Price: document.getElementById('Price').value, Description: document.getElementById('Description').value, file_thumb: null, files_gallery: [] };
+            
+            const tFile = document.getElementById('file_thumb').files[0];
+            if(tFile) payload.file_thumb = await toBase64(tFile);
+            
+            const gFiles = document.getElementById('file_gallery').files;
+            for(let f of gFiles) payload.files_gallery.push(await toBase64(f));
+
             await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
-            alert("บันทึกสำเร็จ!"); window.history.back();
+            document.getElementById('successPop').classList.remove('hidden');
         }
+
+        const toBase64 = f => new Promise(r => { const rd = new FileReader(); rd.readAsDataURL(f); rd.onload = () => r({data: rd.result.split(',')[1], type: f.type}); });
         window.onload = init;
     </script>
 </body>
