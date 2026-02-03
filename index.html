@@ -4,98 +4,142 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>DIRECT HUB - PROPERTIES</title>
-
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;700&display=swap" rel="stylesheet">
-
   <style>
-    body{font-family:'Kanit',sans-serif;background:#f3f5f8}
-    .card-shadow{box-shadow:0 20px 40px rgba(15,23,42,.10)}
-    .glass{background:rgba(255,255,255,.75);backdrop-filter: blur(10px)}
-    .pill{border-radius:999px}
+    body{font-family:'Kanit',sans-serif}
   </style>
 </head>
 
-<body>
-<main class="max-w-6xl mx-auto px-4 py-10">
-  <div id="list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-</main>
+<body class="bg-slate-50">
+  <div class="max-w-6xl mx-auto px-4 py-8">
+
+    <!-- Header -->
+    <div class="flex items-start justify-between gap-4 mb-8">
+      <div>
+        <h1 class="text-5xl md:text-6xl font-black italic tracking-tight text-slate-900">DIRECT HUB</h1>
+        <p class="text-blue-700 font-bold italic text-xl mt-1">ศูนย์รวมบ้านฝากขายตรงจากเจ้าของ</p>
+      </div>
+
+      <button class="w-14 h-14 rounded-2xl bg-white shadow flex items-center justify-center text-2xl"
+              title="Profile">
+        👤
+      </button>
+    </div>
+
+    <!-- Cards -->
+    <div id="cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10"></div>
+
+    <!-- Loading -->
+    <div id="loading" class="text-center text-slate-400 font-bold py-10">Loading...</div>
+  </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
-const PROJECT = new URLSearchParams(location.search).get("project") || "Project_0";
+  // ✅ ใช้ API ตัวเดียวกับที่คุณใช้ใน edit.html
+  const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
 
-function fmtPrice(n){
-  const x = Number(String(n || "").replace(/,/g,""));
-  if (!Number.isFinite(x) || x <= 0) return "";
-  return "฿ " + x.toLocaleString("en-US");
-}
+  const urlParams = new URLSearchParams(location.search);
+  const PROJECT = urlParams.get("project") || "Project_0";
 
-function statusMeta(raw){
-  const map = {
-    "Available": ["ว่าง","bg-emerald-100 text-emerald-700"],
-    "Under Con": ["กำลังก่อสร้าง","bg-sky-100 text-sky-700"],
-    "Under Construction": ["กำลังก่อสร้าง","bg-sky-100 text-sky-700"],
-    "Reserved": ["จองแล้ว","bg-amber-100 text-amber-700"],
-    "Sold": ["ขายแล้ว","bg-rose-100 text-rose-700"]
+  const fmtPrice = (v) => {
+    const n = Number(String(v||"").replace(/,/g,""));
+    if (!isFinite(n) || n === 0) return "฿0";
+    return "฿" + n.toLocaleString("en-US");
   };
-  return map[raw] || ["","bg-slate-100 text-slate-600"];
-}
 
-function cardTemplate(item){
-  const price = fmtPrice(item.price);
-  const [statusTH,statusCls] = statusMeta(item.unitStatus || "");
-  return `
-  <article class="rounded-[2.5rem] bg-white card-shadow overflow-hidden">
-    <div class="relative">
-      <div class="aspect-[4/3] bg-slate-100 overflow-hidden">
-        ${item.thumbnail
-          ? `<img src="${item.thumbnail}" class="w-full h-full object-cover">`
-          : `<div class="w-full h-full flex items-center justify-center text-5xl text-slate-300">🖼️</div>`
-        }
-      </div>
+  const safe = (v) => (v === null || v === undefined) ? "" : String(v);
 
-      <!-- Z-1 / Z-2 / Z-3 -->
-      <div class="absolute top-4 left-4 glass pill px-4 py-2 font-extrabold italic">
-        ${item.plot || "-"}
-      </div>
-    </div>
+  function statusClass(status){
+    const s = String(status||"").toLowerCase();
+    if (s.includes("available")) return "bg-emerald-100 text-emerald-700";
+    if (s.includes("under")) return "bg-sky-100 text-sky-700";
+    if (s.includes("reserved")) return "bg-amber-100 text-amber-700";
+    if (s.includes("sold")) return "bg-rose-100 text-rose-700";
+    return "bg-slate-100 text-slate-700";
+  }
 
-    <div class="p-5">
-      <!-- Info line -->
-      <div class="flex flex-wrap gap-2 text-sm font-bold text-slate-700">
-        <span class="px-3 py-1 rounded-xl bg-slate-100">🛏 ${item.bedrooms || "-"}</span>
-        <span class="px-3 py-1 rounded-xl bg-slate-100">🛁 ${item.bathrooms || "-"}</span>
-        <span class="px-3 py-1 rounded-xl bg-slate-100">📐 ${item.landSqw || "-"} sq.w</span>
-        <span class="px-3 py-1 rounded-xl bg-slate-100">🏠 ${item.livingSqm || "-"} sqm</span>
+  async function load(){
+    const loading = document.getElementById("loading");
+    const cards = document.getElementById("cards");
 
-        ${statusTH
-          ? `<span class="ml-auto px-3 py-1 rounded-xl ${statusCls}">${statusTH}</span>`
-          : ""
-        }
-      </div>
+    try{
+      const res = await fetch(`${API_URL}?mode=getUnitList&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`);
+      const list = await res.json();
 
-      <!-- Price (hide if 0) -->
-      ${price
-        ? `<div class="mt-4 text-3xl font-extrabold italic text-slate-900">${price}</div>`
-        : ""
+      if (!Array.isArray(list)) {
+        throw new Error(list && list.error ? list.error : "Invalid data");
       }
 
-      <!-- Button -->
-      <a href="details.html?id=${item.id}&project=${PROJECT}"
-        class="mt-5 block w-full text-center py-4 rounded-[2rem] bg-slate-900 text-white font-extrabold italic tracking-widest hover:bg-blue-600 transition-all">
-        VIEW FULL DETAILS
-      </a>
-    </div>
-  </article>`;
-}
+      loading.classList.add("hidden");
+      cards.innerHTML = list.map(item => {
+        const id = safe(item.id);
+        const plot = safe(item.plot); // ✅ เช่น Z-3 (ตามที่คุณต้องการ)
+        const img = safe(item.thumbnail) || "https://via.placeholder.com/800x600?text=No+Image";
 
-async function load(){
-  const res = await fetch(`${API_URL}?mode=getUnitList&project=${PROJECT}`);
-  const data = await res.json();
-  document.getElementById("list").innerHTML = data.map(cardTemplate).join("");
-}
-load();
+        // ✅ ตัวเลขที่ต้องแสดง
+        const bed = safe(item.bedrooms);
+        const bath = safe(item.bathrooms);
+        const landSqw = safe(item.landSqw);
+        const livingSqm = safe(item.livingSqm);
+        const price = fmtPrice(item.price);
+
+        // ✅ สเตตัสท้ายบรรทัด
+        const status = safe(item.status);
+
+        const detailLink = `details.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(PROJECT)}`;
+
+        return `
+          <div class="bg-white rounded-[2.5rem] shadow-xl overflow-hidden">
+
+            <!-- Image -->
+            <div class="relative">
+              <img src="${img}" class="w-full h-72 object-cover" alt="${id}" />
+
+              <!-- ✅ จุดที่ 1: มุมซ้ายบน แสดงเฉพาะ Z-3 (ไม่มีคำว่า Plot / ไม่มี HP-Z003) -->
+              <div class="absolute top-4 left-4 bg-white/90 backdrop-blur px-4 py-2 rounded-full font-black italic text-slate-900">
+                ${plot}
+              </div>
+
+              <!-- ❌ จุดที่ 3: ป้ายแดงถูกเอาออกแล้ว -->
+            </div>
+
+            <!-- Body -->
+            <div class="p-6">
+
+              <!-- ✅ จุดที่ 2: ใต้รูป แสดง Bed/Bath/พื้นที่/และท้ายเป็น Status -->
+              <div class="flex flex-wrap items-center gap-2 mb-4">
+                <span class="px-3 py-2 rounded-xl bg-slate-100 font-bold text-slate-700">🛏 ${bed}</span>
+                <span class="px-3 py-2 rounded-xl bg-slate-100 font-bold text-slate-700">🛁 ${bath}</span>
+                <span class="px-3 py-2 rounded-xl bg-slate-100 font-bold text-slate-700">📐 ${landSqw} sq.w</span>
+                <span class="px-3 py-2 rounded-xl bg-slate-100 font-bold text-slate-700">🏠 ${livingSqm} sqm</span>
+
+                <span class="ml-auto px-4 py-2 rounded-full font-extrabold ${statusClass(status)}">
+                  ${status || "-"}
+                </span>
+              </div>
+
+              <!-- ✅ จุดที่ 4: ราคา -->
+              <div class="text-5xl font-black italic tracking-tight text-slate-900 mb-1">${price}</div>
+              <div class="text-slate-400 font-bold">UNIT: ${id}</div>
+
+              <!-- Button -->
+              <a href="${detailLink}"
+                 class="mt-6 block text-center bg-slate-900 text-white py-5 rounded-[2rem] font-black italic tracking-widest
+                        hover:bg-blue-700 transition">
+                VIEW FULL DETAILS
+              </a>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+    }catch(err){
+      loading.classList.remove("hidden");
+      loading.innerText = "Error: " + err.message;
+    }
+  }
+
+  load();
 </script>
 </body>
 </html>
