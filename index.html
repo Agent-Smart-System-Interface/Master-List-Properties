@@ -14,13 +14,46 @@
     .unit-text { font-size: 0.9rem; font-weight: 400; color: #94a3b8; margin-top: 0.3rem; }
     .feature { font-size: 0.85rem; font-weight: 400; padding: 0.45rem 0.7rem; }
     .status { font-size: 0.85rem; font-weight: 500; padding: 0.45rem 0.9rem; }
+
+    /* ✅ เพิ่มเฉพาะส่วน UI คอนโทรลด้านบน */
+    .control-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 1.5rem;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+      padding: 0.9rem;
+    }
+    .select-ui {
+      width: 100%;
+      border: 1px solid #e2e8f0;
+      border-radius: 1rem;
+      padding: 0.8rem 0.9rem;
+      outline: none;
+      background: #fff;
+    }
+    .select-ui:focus { border-color: #3b82f6; }
+    .flag-btn {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 0.9rem;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.05);
+      transition: transform .12s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+    .flag-btn:active { transform: scale(0.96); }
   </style>
 </head>
 
 <body class="bg-slate-50">
 <div class="max-w-6xl mx-auto px-4 py-8">
 
-  <div class="flex justify-between items-start mb-8">
+  <div class="flex justify-between items-start mb-6">
     <div>
       <h1 class="text-4xl md:text-5xl font-semibold italic text-slate-900">DIRECT HUB</h1>
       <p class="text-blue-700 text-lg mt-1">ศูนย์รวมบ้านฝากขายตรงจากเจ้าของ</p>
@@ -31,6 +64,54 @@
        title="Go to Gateway">
       👤
     </a>
+  </div>
+
+  <!-- ✅ จุดที่ 1,2,3 (เพิ่มใหม่): แถบเครื่องมือ -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <!-- (1) Flags Translate -->
+    <div class="control-card">
+      <div class="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3">Translate</div>
+      <div class="flex flex-wrap gap-2">
+        <button class="flag-btn" onclick="translateTo('th')" title="Thai">🇹🇭</button>
+        <button class="flag-btn" onclick="translateTo('en')" title="English">🇬🇧</button>
+        <button class="flag-btn" onclick="translateTo('de')" title="German">🇩🇪</button>
+        <button class="flag-btn" onclick="translateTo('ru')" title="Russian">🇷🇺</button>
+        <button class="flag-btn" onclick="translateTo('zh-CN')" title="Chinese (Simplified)">🇨🇳</button>
+        <button class="flag-btn" onclick="translateTo('fr')" title="French">🇫🇷</button>
+      </div>
+      <div class="text-[11px] text-slate-400 mt-3">
+        กดธงเพื่อแปลหน้านี้ด้วย Google Translate
+      </div>
+    </div>
+
+    <!-- (2) Bedrooms Filter -->
+    <div class="control-card">
+      <div class="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3">Bedrooms</div>
+      <select id="bedFilter" class="select-ui">
+        <option value="all">All Bedrooms</option>
+        <option value="1">1 Bedroom</option>
+        <option value="2">2 Bedrooms</option>
+        <option value="3">3 Bedrooms</option>
+        <option value="4">4 Bedrooms</option>
+        <option value="5+">5+ Bedrooms</option>
+      </select>
+      <div class="text-[11px] text-slate-400 mt-3">
+        เลือกเพื่อกรองรายการบ้านตามจำนวนห้องนอน
+      </div>
+    </div>
+
+    <!-- (3) Price Sort -->
+    <div class="control-card">
+      <div class="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3">Sort by Price</div>
+      <select id="priceSort" class="select-ui">
+        <option value="none">Default</option>
+        <option value="desc">High → Low</option>
+        <option value="asc">Low → High</option>
+      </select>
+      <div class="text-[11px] text-slate-400 mt-3">
+        เลือกเพื่อเรียงราคาบ้าน
+      </div>
+    </div>
   </div>
 
   <div id="cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
@@ -55,31 +136,94 @@ const statusClass = s => {
   return "bg-slate-100 text-slate-700";
 };
 
-async function load(){
-  const res = await fetch(`${API_URL}?mode=getUnitList&project=${PROJECT}&t=${Date.now()}`);
-  const data = await res.json();
-  document.getElementById("loading").style.display = "none";
+/* =========================
+   ✅ เพิ่ม: Translate Helper
+   ========================= */
+function getCanonicalUrl() {
+  // ถ้าอยู่ใน translate.google.com ให้ดึง url จริงจากพารามิเตอร์ u
+  try {
+    const u = new URL(location.href);
+    if (u.hostname.includes("translate.google")) {
+      const real = u.searchParams.get("u");
+      if (real) return real;
+    }
+  } catch (e) {}
+  return location.href;
+}
 
-  document.getElementById("cards").innerHTML = data.map(d => `
+function translateTo(tl) {
+  const target = encodeURIComponent(getCanonicalUrl());
+  const url = `https://translate.google.com/translate?sl=auto&tl=${encodeURIComponent(tl)}&u=${target}`;
+  location.href = url; // เปิดแท็บเดิมเพื่อให้ใช้งานง่ายบนมือถือ
+}
+
+/* =========================
+   ✅ เพิ่ม: Filter + Sort State
+   ========================= */
+let ALL_UNITS = [];
+let currentBedFilter = "all";
+let currentPriceSort = "none";
+
+function normalizeNum(x) {
+  const n = Number(String(x ?? "").replace(/,/g, "").trim());
+  return Number.isFinite(n) ? n : 0;
+}
+
+function applyFilterSort(data) {
+  let out = Array.isArray(data) ? [...data] : [];
+
+  // Filter Bedrooms
+  if (currentBedFilter !== "all") {
+    if (currentBedFilter === "5+") {
+      out = out.filter(d => normalizeNum(d.bedrooms) >= 5);
+    } else {
+      const b = normalizeNum(currentBedFilter);
+      out = out.filter(d => normalizeNum(d.bedrooms) === b);
+    }
+  }
+
+  // Sort Price
+  if (currentPriceSort === "asc") {
+    out.sort((a,b) => normalizeNum(a.price) - normalizeNum(b.price));
+  } else if (currentPriceSort === "desc") {
+    out.sort((a,b) => normalizeNum(b.price) - normalizeNum(a.price));
+  }
+
+  return out;
+}
+
+function renderCards(data) {
+  const list = applyFilterSort(data);
+
+  if (!list || list.length === 0) {
+    document.getElementById("cards").innerHTML = `
+      <div class="col-span-full bg-white rounded-[2.3rem] shadow-lg p-10 text-center text-slate-400">
+        No results
+      </div>
+    `;
+    return;
+  }
+
+  document.getElementById("cards").innerHTML = list.map(d => `
     <div class="bg-white rounded-[2.3rem] shadow-lg overflow-hidden">
       <div class="relative">
-        <img src="${d.thumbnail}" class="w-full h-72 object-cover">
-        <div class="absolute top-4 left-4 bg-white/90 px-4 py-2 rounded-full font-medium">${d.plot}</div>
+        <img src="${d.thumbnail}" class="w-full h-72 object-cover" alt="">
+        <div class="absolute top-4 left-4 bg-white/90 px-4 py-2 rounded-full font-medium">${d.plot ?? "-"}</div>
       </div>
 
       <div class="p-6">
         <div class="flex flex-wrap gap-2 mb-4">
-          <div class="feature bg-slate-100">🛏 ${d.bedrooms}</div>
-          <div class="feature bg-slate-100">🛁 ${d.bathrooms}</div>
-          <div class="feature bg-slate-100">📐 ${d.landSqw} sq.w</div>
-          <div class="feature bg-slate-100">🏠 ${d.livingSqm} sqm</div>
-          <div class="ml-auto status rounded-full ${statusClass(d.status)}">${d.status}</div>
+          <div class="feature bg-slate-100">🛏 ${d.bedrooms ?? "-"}</div>
+          <div class="feature bg-slate-100">🛁 ${d.bathrooms ?? "-"}</div>
+          <div class="feature bg-slate-100">📐 ${d.landSqw ?? "-"} sq.w</div>
+          <div class="feature bg-slate-100">🏠 ${d.livingSqm ?? "-"} sqm</div>
+          <div class="ml-auto status rounded-full ${statusClass(d.status)}">${d.status ?? "-"}</div>
         </div>
 
         <div class="price-text text-slate-900">${priceFmt(d.price)}</div>
-        <div class="unit-text">UNIT: ${d.id}</div>
+        <div class="unit-text">UNIT: ${d.id ?? "-"}</div>
 
-        <a href="details.html?id=${d.id}&project=${PROJECT}"
+        <a href="details.html?id=${encodeURIComponent(d.id ?? '')}&project=${encodeURIComponent(PROJECT)}"
            class="block mt-6 text-center bg-slate-900 text-white py-4 rounded-2xl text-sm tracking-widest">
           VIEW FULL DETAILS
         </a>
@@ -87,6 +231,26 @@ async function load(){
     </div>
   `).join("");
 }
+
+async function load(){
+  const res = await fetch(`${API_URL}?mode=getUnitList&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`);
+  const data = await res.json();
+
+  ALL_UNITS = Array.isArray(data) ? data : [];
+
+  document.getElementById("loading").style.display = "none";
+  renderCards(ALL_UNITS);
+}
+
+/* ✅ เพิ่ม: bind events (ไม่กระทบโค้ดเดิม) */
+document.getElementById("bedFilter").addEventListener("change", (e) => {
+  currentBedFilter = e.target.value;
+  renderCards(ALL_UNITS);
+});
+document.getElementById("priceSort").addEventListener("change", (e) => {
+  currentPriceSort = e.target.value;
+  renderCards(ALL_UNITS);
+});
 
 load();
 </script>
