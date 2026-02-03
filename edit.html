@@ -72,14 +72,24 @@
         <div><span class="field-label">Bathrooms</span><input type="number" id="Bathrooms" class="field-input"></div>
         <div><span class="field-label">Parking</span><input id="Parking" class="field-input"></div>
 
-        <!-- ✅ สำคัญ: เปลี่ยน id ให้ตรงกับ normKey ใน Apps Script -->
         <div><span class="field-label">Land (sq.w)</span><input id="Land_Area_sq_w" class="field-input"></div>
         <div><span class="field-label">Land (sq.m)</span><input id="Land_Area_sq_m" class="field-input"></div>
         <div><span class="field-label">Living (sq.m)</span><input id="Living_Area_sq_m" class="field-input"></div>
 
         <div><span class="field-label">Pool Size</span><input id="Pool_Size" class="field-input"></div>
         <div><span class="field-label">Pool Depth</span><input id="Pool_Depth" class="field-input"></div>
-        <div><span class="field-label">Furnishing</span><input id="Furnishing" class="field-input"></div>
+
+        <!-- ✅ Furnishing: Dropdown -->
+        <div>
+          <span class="field-label">Furnishing</span>
+          <select id="Furnishing" class="field-input">
+            <option value="">-- Select Furnishing --</option>
+            <option value="Ready to Move">Ready to Move</option>
+            <option value="Fully Furnished">Fully Furnished</option>
+            <option value="Partially Furnished">Partially Furnished</option>
+            <option value="Unfurnished">Unfurnished</option>
+          </select>
+        </div>
 
         <div class="col-span-full"><span class="field-label">Address</span><input id="Address" class="field-input"></div>
 
@@ -90,14 +100,42 @@
 
         <div><span class="field-label">Price/SQM</span><input id="Price_SQM" class="field-input"></div>
 
-        <!-- ✅ แยก Status และ Badge เป็น 2 ช่อง -->
-        <div><span class="field-label">Status</span><input id="Status" class="field-input" placeholder="Available / Reserved / Sold ..."></div>
+        <!-- ✅ Status: Dropdown -->
+        <div>
+          <span class="field-label">Status</span>
+          <select id="Status" class="field-input">
+            <option value="">-- Select Status --</option>
+            <option value="Available">Available</option>
+            <option value="Under Con">Under Con</option>
+            <option value="Reserved">Reserved</option>
+            <option value="Sold">Sold</option>
+          </select>
+        </div>
+
+        <!-- Badge: (ปล่อยเป็นช่องกรอกอิสระตามเดิม) -->
         <div><span class="field-label">Badge</span><input id="Badge" class="field-input" placeholder="NEW / HOT / ..."></div>
 
         <div class="col-span-full"><span class="field-label">Description</span><textarea id="Description" rows="4" class="field-input"></textarea></div>
 
-        <div><span class="field-label">District</span><input id="District" class="field-input"></div>
-        <div><span class="field-label">Sub-District</span><input id="SubDistrict" class="field-input"></div>
+        <!-- ✅ District: Dropdown -->
+        <div>
+          <span class="field-label">District</span>
+          <select id="District" class="field-input">
+            <option value="">-- Select District --</option>
+            <option value="Hua Hin">Hua Hin</option>
+            <option value="Cha-am">Cha-am</option>
+            <option value="Pranburi">Pranburi</option>
+          </select>
+        </div>
+
+        <!-- ✅ Sub-District: Dropdown (เปลี่ยนอัตโนมัติ) -->
+        <div>
+          <span class="field-label">Sub-District</span>
+          <select id="SubDistrict" class="field-input" disabled>
+            <option value="">-- Select Sub-District --</option>
+          </select>
+        </div>
+
         <div><span class="field-label">Commission</span><input id="Commission" class="field-input"></div>
 
         <div class="col-span-full border-t pt-6"><span class="field-label">External Links</span></div>
@@ -140,11 +178,85 @@
     const HP_ID = urlParams.get("id");
     const PROJECT = urlParams.get("project");
 
+    // ✅ ตำบลตาม District (แก้/เพิ่มได้ง่าย)
+    const SUBDISTRICTS_BY_DISTRICT = {
+      "Hua Hin": [
+        "Hua Hin",
+        "Nong Kae",
+        "Hin Lek Fai",
+        "Thap Tai",
+        "Huai Sat Yai",
+        "Bueng Nakhon",
+        "Nong Phlap"
+      ],
+      "Cha-am": [
+        "Cha-am",
+        "Bang Kao",
+        "Na Yang",
+        "Khao Yai",
+        "Nong Sala",
+        "Huai Sai Nuea",
+        "Rai Mai Phatthana"
+      ],
+      "Pranburi": [
+        "Pran Buri",
+        "Pak Nam Pran",
+        "Wang Phong",
+        "Nong Ta Taem",
+        "Nong Din Daeng",
+        "Khao Noi",
+        "Khao Chao"
+      ]
+    };
+
     function switchTab(tab) {
       document.getElementById("tab-photo").classList.toggle("hidden", tab !== "photo");
       document.getElementById("tab-info").classList.toggle("hidden", tab !== "info");
       document.getElementById("btn-photo").classList.toggle("tab-active", tab === "photo");
       document.getElementById("btn-info").classList.toggle("tab-active", tab === "info");
+    }
+
+    // ✅ เติมรายการตำบลให้ SubDistrict เมื่อเลือก District
+    function setSubDistrictOptions(selectedDistrict, selectedSubDistrict = "") {
+      const subSel = document.getElementById("SubDistrict");
+      const list = SUBDISTRICTS_BY_DISTRICT[selectedDistrict] || [];
+
+      subSel.innerHTML = `<option value="">-- Select Sub-District --</option>`;
+
+      if (!selectedDistrict || list.length === 0) {
+        subSel.disabled = true;
+        subSel.value = "";
+        return;
+      }
+
+      list.forEach(name => {
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+        subSel.appendChild(opt);
+      });
+
+      subSel.disabled = false;
+
+      if (selectedSubDistrict) {
+        subSel.value = selectedSubDistrict;
+        if (subSel.value !== selectedSubDistrict) {
+          // ถ้าค่าที่โหลดมาจากชีตไม่อยู่ใน list ให้เพิ่มแบบ custom เพื่อไม่ให้หาย
+          const custom = document.createElement("option");
+          custom.value = selectedSubDistrict;
+          custom.textContent = selectedSubDistrict + " (custom)";
+          subSel.appendChild(custom);
+          subSel.value = selectedSubDistrict;
+        }
+      }
+    }
+
+    // ✅ event: เมื่อเปลี่ยน District -> เปลี่ยน SubDistrict อัตโนมัติ
+    function bindDistrictChange() {
+      const districtSel = document.getElementById("District");
+      districtSel.addEventListener("change", () => {
+        setSubDistrictOptions(districtSel.value, "");
+      });
     }
 
     async function loadData() {
@@ -156,11 +268,21 @@
         const data = await res.json();
         if (data && data.error) throw new Error(data.error);
 
-        // เติมค่าตาม id ที่ตรงกับ key (normKey) จาก Apps Script
+        // เติมค่าตาม id
         Object.keys(data || {}).forEach(k => {
           const el = document.getElementById(k);
           if (el) el.value = (data[k] ?? "");
         });
+
+        // ✅ หลังโหลดค่า District/SubDistrict แล้ว จัดการ dropdown ตำบลให้ถูกต้อง
+        const districtVal = (data.District ?? "").toString().trim();
+        const subDistrictVal = (data.SubDistrict ?? "").toString().trim();
+        if (districtVal) {
+          document.getElementById("District").value = districtVal;
+          setSubDistrictOptions(districtVal, subDistrictVal);
+        } else {
+          setSubDistrictOptions("", "");
+        }
 
         // normalize System_Status
         const rawSys = (data.System_Status ?? "").toString().trim();
@@ -213,7 +335,6 @@
       const oldText = btn.innerText;
       btn.innerText = "UPDATING DATABASE...";
 
-      // ✅ ส่ง key ให้ตรงกับหัวคอลัมน์ในชีต (ผ่าน Apps Script setIfExists)
       const payload = {
         mode: "updateUnit",
         project: PROJECT,
@@ -227,30 +348,29 @@
         Bathrooms: document.getElementById("Bathrooms").value,
         Parking: document.getElementById("Parking").value,
 
-        // ✅ 3 ช่องที่เคยไม่ดึงข้อมูล/ไม่ตรงคีย์
         Land_Area_sq_w: document.getElementById("Land_Area_sq_w").value,
         Land_Area_sq_m: document.getElementById("Land_Area_sq_m").value,
         Living_Area_sq_m: document.getElementById("Living_Area_sq_m").value,
 
         Pool_Size: document.getElementById("Pool_Size").value,
         Pool_Depth: document.getElementById("Pool_Depth").value,
+
+        // ✅ dropdown values
         Furnishing: document.getElementById("Furnishing").value,
+        Status: document.getElementById("Status").value,
+        District: document.getElementById("District").value,
+        SubDistrict: document.getElementById("SubDistrict").value,
+
         Price: document.getElementById("Price").value,
         Price_SQM: document.getElementById("Price_SQM").value,
-
-        // ✅ แยก Status / Badge
-        Status: document.getElementById("Status").value,
         Badge: document.getElementById("Badge").value,
 
         Description: document.getElementById("Description").value,
-        District: document.getElementById("District").value,
-        SubDistrict: document.getElementById("SubDistrict").value,
         FBLink: document.getElementById("FBLink").value,
         Map_Link: document.getElementById("Map_Link").value,
         Virtual_Tour: document.getElementById("Virtual_Tour").value,
         Commission: document.getElementById("Commission").value,
 
-        // ไม่ส่ง System_Status ให้ Master ใหญ่กำหนด
         file_thumb: null,
         files_gallery: []
       };
@@ -273,7 +393,10 @@
       }
     }
 
-    window.onload = loadData;
+    window.onload = () => {
+      bindDistrictChange();   // ✅ สำคัญ: ผูก event dropdown
+      loadData();
+    };
   </script>
 </body>
 </html>
