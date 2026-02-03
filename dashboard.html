@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>body { font-family: 'Kanit', sans-serif; background: #f8fafc; }</style>
 </head>
-<body class="p-4 md:p-12 italic font-medium">
+<body class="p-4 md:p-12 italic font-medium text-slate-700">
     <div class="max-w-7xl mx-auto">
         <header class="mb-12 flex flex-col md:flex-row gap-6 items-center">
             <div class="bg-slate-900 text-white px-12 py-8 rounded-[3.5rem] shadow-2xl flex items-center gap-6">
@@ -18,21 +18,18 @@
                     <h2 class="text-xl font-bold uppercase tracking-tight">Direct Hub Site</h2>
                 </div>
             </div>
-            <div class="relative flex-1">
-                <i class="fa-solid fa-magnifying-glass absolute left-8 top-7.5 text-slate-300"></i>
-                <input type="text" id="searchInput" oninput="doSearch()" placeholder="ค้นหารหัส HP-ID หรือ แปลง..." class="w-full px-16 py-7.5 bg-white rounded-[3.5rem] shadow-sm outline-none ring-1 ring-slate-200 font-bold text-sm focus:ring-8 focus:ring-blue-500/5 transition-all">
-            </div>
+            <input type="text" id="searchInput" oninput="doSearch()" placeholder="ค้นหารหัส HP-ID หรือ แปลง..." class="flex-1 px-16 py-7.5 bg-white rounded-[3.5rem] shadow-sm outline-none ring-1 ring-slate-200 font-bold text-sm focus:ring-8 focus:ring-blue-500/5 transition-all">
         </header>
 
         <div class="bg-white rounded-[4rem] shadow-2xl overflow-hidden border border-slate-50">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead class="bg-slate-50 border-b border-slate-100 uppercase text-[10px] tracking-widest text-slate-400 italic">
-                        <tr><th class="pl-16 py-10">Unit ID</th><th>Plot/Asset Name</th><th class="text-center">Sale Status</th><th class="text-center pr-16">Manage</th></tr>
-                    </thead>
-                    <tbody id="dataTable" class="text-[13px] font-bold text-slate-600"></tbody>
-                </table>
-            </div>
+            <table class="w-full text-left">
+                <thead class="bg-slate-50 border-b border-slate-100 uppercase text-[10px] tracking-widest text-slate-400 italic font-bold">
+                    <tr><th class="pl-16 py-10">Unit ID</th><th>Plot Name</th><th class="text-center">Sale Status</th><th class="text-center pr-16">Manage</th></tr>
+                </thead>
+                <tbody id="dataTable" class="text-[13px] font-bold text-slate-600">
+                    <tr><td colspan="4" class="p-20 text-center animate-pulse">กำลังโหลดข้อมูลโครงการ...</td></tr>
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -41,7 +38,7 @@
             <h2 class="text-2xl font-bold text-slate-800 mb-10 uppercase italic border-b pb-6">Modify: <span id="editingId" class="text-blue-600"></span></h2>
             <div class="space-y-10">
                 <div><label class="text-[10px] font-bold text-slate-400 uppercase ml-4 italic">ชื่อแปลง/พอร์ต (NAME)</label>
-                <input type="text" id="plotInput" class="w-full p-7 bg-slate-50 rounded-[2rem] outline-none font-bold text-xs border-none shadow-inner"></div>
+                <input type="text" id="plotInput" class="w-full p-7 bg-slate-50 rounded-[2rem] outline-none font-bold text-xs border-none shadow-inner text-slate-700"></div>
                 <div><label class="text-[10px] font-bold text-orange-600 ml-4 uppercase italic">สถานะปัจจุบัน (STATUS)</label>
                 <select id="unitSelect" class="w-full p-7 bg-white border border-slate-100 rounded-[2rem] font-bold text-xs outline-none shadow-sm cursor-pointer">
                     <option value="Available">Available</option><option value="Under Construction">Under Construction</option><option value="Sold">Sold</option><option value="Reserved">Reserved</option>
@@ -60,8 +57,10 @@
         let rawData = [];
 
         async function init() {
-            const res = await fetch(`${API_URL}?mode=getUnitList&project=${CURRENT_PROJECT}&t=${Date.now()}`);
-            rawData = await res.json(); render(rawData);
+            try {
+                const res = await fetch(`${API_URL}?mode=getUnitList&project=${CURRENT_PROJECT}&t=${Date.now()}`);
+                rawData = await res.json(); render(rawData);
+            } catch (e) { document.getElementById('dataTable').innerHTML = "<tr><td colspan='4' class='p-20 text-center text-red-500'>Connection Error</td></tr>"; }
         }
 
         function render(data) {
@@ -70,21 +69,21 @@
                     <td class="pl-16 py-8 font-black text-slate-900 tracking-tighter">${u.id}</td>
                     <td class="text-slate-400 italic">${u.plot || '-'}</td>
                     <td class="text-center"><span class="px-5 py-2 bg-slate-100 rounded-2xl text-[9px] uppercase tracking-widest border border-slate-200">${u.unitStatus}</span></td>
-                    <td class="text-center pr-16"><button onclick="openEdit('${u.id}','${u.plot}','${u.unitStatus}')" class="w-12 h-12 bg-white shadow-lg rounded-2xl text-blue-600 hover:bg-slate-900 hover:text-white transition-all"><i class="fa-solid fa-pen-nib"></i></button></td>
+                    <td class="text-center pr-16"><button onclick="openEdit('${u.id}','${u.plot}','${u.unitStatus}')" class="w-12 h-12 bg-white shadow-lg rounded-2xl text-blue-600 hover:bg-slate-900 hover:text-white transition-all scale-90 hover:scale-100"><i class="fa-solid fa-pen-nib"></i></button></td>
                 </tr>`).join('');
         }
 
         function openEdit(id, plot, unit) {
             document.getElementById('editingId').innerText = id;
-            document.getElementById('plotInput').value = plot === '-' ? "" : plot;
+            document.getElementById('plotInput').value = (plot === '-' || plot === 'undefined') ? "" : plot;
             document.getElementById('unitSelect').value = unit;
             document.getElementById('editModal').style.display = 'flex';
         }
 
         async function saveData() {
-            const btn = document.getElementById('btnSave'); btn.disabled = true; btn.innerHTML = "🔄 SYNCING...";
+            const btn = document.getElementById('btnSave'); btn.disabled = true; btn.innerHTML = "🔄 กำลังซิงค์ข้อมูล...";
             const params = new URLSearchParams();
-            params.append('role', 'Project_Admin'); // สิทธิ์แอดมินโครงการ
+            params.append('role', 'Project_Admin');
             params.append('project', CURRENT_PROJECT);
             params.append('hpId', document.getElementById('editingId').innerText);
             params.append('plotName', document.getElementById('plotInput').value);
@@ -93,7 +92,7 @@
             try {
                 await fetch(API_URL, { method: 'POST', body: params });
                 location.reload();
-            } catch (e) { btn.disabled = false; alert("Sync Error"); }
+            } catch (e) { btn.disabled = false; btn.innerText = "Error - Try Again"; }
         }
 
         function closeEdit() { document.getElementById('editModal').style.display = 'none'; }
