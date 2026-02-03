@@ -1,87 +1,42 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROJECT_0 DASHBOARD</title>
+    <meta charset="UTF-8"><title>PROJECT_0 DASHBOARD</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>body { font-family: 'Kanit', sans-serif; }</style>
+    <style>body { font-family: 'Kanit', sans-serif; background: #f8fafc; }</style>
 </head>
-<body class="bg-slate-50 p-4 md:p-8 italic font-medium">
+<body class="p-4 md:p-8 italic">
     <div class="max-w-6xl mx-auto">
-        <div class="flex flex-col md:flex-row items-center gap-4 mb-8">
-            <div class="bg-slate-900 text-white p-4 rounded-3xl flex items-center gap-4 shadow-xl w-full md:w-auto">
-                <i class="fa-solid fa-house-lock text-blue-400"></i>
-                <div>
-                    <p class="text-[8px] uppercase font-bold text-slate-400 tracking-widest">Admin Control</p>
-                    <p class="text-sm font-bold">HUB: PROJECT_0</p>
-                </div>
-            </div>
-            <input type="text" id="searchInput" oninput="localSearch()" placeholder="ค้นหาข้อมูลใน Project_0..." class="flex-1 w-full px-6 py-4 bg-white rounded-full shadow-sm ring-1 ring-slate-100 outline-none focus:ring-2 focus:ring-blue-500 transition-all">
-        </div>
-
-        <div class="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden">
+        <div class="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border">
             <table class="w-full text-center">
-                <thead class="bg-slate-50 text-[10px] uppercase text-slate-400 font-bold border-b">
-                    <tr>
-                        <th class="py-5 pl-8 text-left">Unit ID</th>
-                        <th class="text-left">Property Name</th>
-                        <th>Sale Status</th>
-                        <th>System</th>
-                        <th>Manage</th>
-                    </tr>
+                <thead class="bg-slate-900 text-white text-[10px] uppercase">
+                    <tr><th class="py-6 pl-8 text-left">Unit ID (HP-ID)</th><th class="text-left">Project Name</th><th>Status</th><th>Visibility</th><th>Manage</th></tr>
                 </thead>
                 <tbody id="unitTableBody" class="text-xs">
-                    <tr><td colspan="5" class="py-24 animate-pulse text-slate-300 font-bold italic">🔄 SYNCING PROJECT_0 DATABASE...</td></tr>
+                    <tr><td colspan="5" class="py-20 animate-pulse text-slate-300 font-bold">🔄 SYNCING DATABASE...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
-
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxJ_QwwXW7sV8dmAH0J6mzBV5QWMjxm_MWpL74JC6iJUzgikHtt31HNG-koRtzd8AGJ/exec"; 
-        const PROJECT_ID = "Project_0"; // 🔒 ล็อคเป้าหมายที่ Project_0 เท่านั้น
-        let masterData = [];
-
+        const API_URL = "https://script.google.com/macros/s/AKfycbxJ_QwwXW7sV8dmAH0J6mzBV5QWMjxm_MWpL74JC6iJUzgikHtt31HNG-koRtzd8AGJ/exec";
+        const PROJECT_ID = "Project_0";
         async function init() {
             try {
                 const res = await fetch(`${API_URL}?mode=getUnitList&project=${PROJECT_ID}&t=${Date.now()}`);
-                masterData = await res.json();
-                renderTable(masterData);
-            } catch (e) {
-                document.getElementById('unitTableBody').innerHTML = "<tr><td colspan='5' class='py-10 text-red-500 font-bold'>⚠️ เชื่อมต่อ Project_0 ล้มเหลว</td></tr>";
-            }
+                const data = await res.json();
+                document.getElementById('unitTableBody').innerHTML = data.map(u => `
+                    <tr class="hover:bg-slate-50 border-b">
+                        <td class="py-5 pl-8 text-left font-bold text-slate-900">${u.id}</td>
+                        <td class="text-left font-medium text-slate-500 uppercase">${u.name || '-'}</td>
+                        <td><span class="px-3 py-1 bg-green-50 text-green-600 rounded-full font-bold">${u.unitStatus || 'Available'}</span></td>
+                        <td class="${u.sysStatus === 'Live' ? 'text-blue-500' : 'text-slate-300'} font-bold">${u.sysStatus || 'Offline'}</td>
+                        <td><button onclick="window.location.href='edit.html?id=${u.id}&project=${PROJECT_ID}'" class="p-2 text-blue-500 hover:scale-125 transition-all"><i class="fa-solid fa-pen-to-square"></i></button></td>
+                    </tr>`).join('');
+            } catch (e) { alert("Connection Error"); }
         }
-
-        function renderTable(data) {
-            document.getElementById('unitTableBody').innerHTML = data.map(u => `
-                <tr class="hover:bg-slate-50 transition-colors border-b border-slate-50">
-                    <td class="py-5 pl-8 text-left font-bold text-slate-900">${u.id}</td>
-                    <td class="text-left font-semibold text-slate-500 uppercase">${u.name || (u.plot ? 'PLOT: '+u.plot : '-')}</td>
-                    <td>
-                        <span class="px-3 py-1 rounded-full text-[9px] font-bold ${u.unitStatus === 'SOLD' ? 'bg-rose-50 text-rose-500' : 'bg-green-50 text-green-500'}">
-                            ${u.unitStatus || 'AVAILABLE'}
-                        </span>
-                    </td>
-                    <td class="font-bold ${u.sysStatus === 'Live' || u.sysStatus === 'Online' ? 'text-blue-500' : 'text-slate-300'}">
-                        ${u.sysStatus || 'Offline'}
-                    </td>
-                    <td>
-                        <button onclick="window.location.href='edit.html?id=${u.id}&project=${PROJECT_ID}'" class="text-slate-400 hover:text-blue-600 hover:scale-125 transition-all p-2">
-                            <i class="fa-solid fa-pen-to-square text-sm"></i>
-                        </button>
-                    </td>
-                </tr>`).join('');
-        }
-
-        function localSearch() {
-            const term = document.getElementById('searchInput').value.toUpperCase();
-            const filtered = masterData.filter(u => u.id.includes(term) || (u.name && u.name.toUpperCase().includes(term)) || (u.plot && u.plot.includes(term)));
-            renderTable(filtered);
-        }
-
         window.onload = init;
     </script>
 </body>
