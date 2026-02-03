@@ -38,6 +38,7 @@
             width: 100%;
             border: 1px solid #e2e8f0;
             border-radius: .75rem;
+            padding_toggle: .75rem;
             padding: .75rem;
             outline: none;
             transition: all .2s
@@ -45,6 +46,13 @@
 
         .field-input:focus {
             border-color: #3b82f6
+        }
+
+        /* เพิ่มนิดเดียว: ให้ช่องที่แก้ไม่ได้ดูเป็น read-only ชัดเจน */
+        .field-input[disabled]{
+            background:#f8fafc;
+            cursor:not-allowed;
+            opacity:.9;
         }
     </style>
 </head>
@@ -120,12 +128,14 @@
                 <div><span class="field-label">FB Link</span><input id="FBLink" class="field-input"></div>
                 <div><span class="field-label">Map Link</span><input id="Map_Link" class="field-input"></div>
                 <div><span class="field-label">Virtual Tour</span><input id="Virtual_Tour" class="field-input"></div>
+
+                <!-- ✅ แก้เฉพาะจุดนี้: เอา dropdown ออก -> แสดงแบบ read-only (disabled) -->
                 <div class="col-span-full">
-                    <span class="field-label">System Status</span>
-                    <select id="System_Status" class="field-input font-bold bg-slate-50">
-                        <option value="Live">Online (Live)</option>
-                        <option value="Offline">Offline</option>
-                    </select>
+                    <span class="field-label">System Status (Read Only)</span>
+                    <input id="System_Status" class="field-input font-bold bg-slate-50" disabled value="Pending">
+                    <p class="text-xs text-slate-400 mt-2 italic">
+                        Offline = ไม่แสดงออนไลน์ | Pending = ยังไม่แสดงออนไลน์แต่แก้ไขข้อมูลได้ | Online = ข้อมูลพร้อมแล้ว (กำหนดโดย Master ใหญ่)
+                    </p>
                 </div>
             </div>
         </div>
@@ -168,10 +178,25 @@
                 const res = await fetch(`${API_URL}?mode=getUnitDetail&hpId=${encodeURIComponent(HP_ID)}&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`);
                 const data = await res.json();
                 if (data && data.error) throw new Error(data.error);
+
                 Object.keys(data || {}).forEach(k => {
                     const el = document.getElementById(k);
                     if (el) el.value = data[k];
                 });
+
+                // ✅ normalize ค่า System_Status ให้เป็น Offline/Pending/Online เท่านั้น
+                // (รองรับกรณีชีตเคยมี Live หรือ Online (Live))
+                const rawSys = (data.System_Status ?? "").toString().trim();
+                const mapSys = {
+                    "Live": "Online",
+                    "Online (Live)": "Online",
+                    "Online": "Online",
+                    "Pending": "Pending",
+                    "Offline": "Offline"
+                };
+                const normalized = mapSys[rawSys] || (rawSys ? rawSys : "Pending");
+                document.getElementById("System_Status").value = normalized;
+
                 if (data.Thumbnail_Image) {
                     document.getElementById("thumbPreview").innerHTML = `<img src="${data.Thumbnail_Image}" class="w-full h-full object-cover">`;
                 }
@@ -217,6 +242,7 @@
             btn.disabled = true;
             const oldText = btn.innerText;
             btn.innerText = "UPDATING DATABASE...";
+
             const payload = {
                 mode: "updateUnit",
                 project: PROJECT,
@@ -246,14 +272,20 @@
                 Map_Link: document.getElementById("Map_Link").value,
                 Virtual_Tour: document.getElementById("Virtual_Tour").value,
                 Commission: document.getElementById("Commission").value,
-                System_Status: document.getElementById("System_Status").value,
+
+                // ✅ สำคัญ: ไม่ส่ง System_Status แล้ว (Master ใหญ่กำหนดเอง)
+                // System_Status: document.getElementById("System_Status").value,
+
                 file_thumb: null,
                 files_gallery: []
             };
+
             const thumb = document.getElementById("file_thumb").files[0];
             if (thumb) payload.file_thumb = await toBase64(thumb);
+
             const galleryFiles = document.getElementById("file_gallery").files;
             for (const f of (galleryFiles || [])) payload.files_gallery.push(await toBase64(f));
+
             try {
                 const res = await fetch(API_URL, {
                     method: "POST",
@@ -268,6 +300,7 @@
                 btn.innerText = oldText;
             }
         }
+
         window.onload = loadData;
     </script>
 </body>
