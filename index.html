@@ -6,278 +6,73 @@
   <title>DIRECT HUB - PROPERTIES</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <style>
-    :root{
-      --line-green:#06C755;
-      --line-green-dark:#05A646;
-      --line-bg:#EEF1F6;
-      --line-card:#FFFFFF;
-      --line-ink:#111827;
-      --line-muted:#64748b;
-      --line-border: rgba(15,23,42,.10);
-      --line-shadow: 0 12px 30px rgba(2,6,23,.10);
-      --r-2xl: 1.25rem;
-      --r-3xl: 1.75rem;
+    body { font-family: 'Kanit', sans-serif; }
+
+    /* ✅ LINE-like Background + soft clouds (light, not too many) */
+    body.line-bg{
+      background: linear-gradient(180deg,#8fb6e3 0%, #a9c9ef 35%, #cfe3f7 100%);
+      min-height: 100vh;
+    }
+    body.line-bg::before{
+      content:"";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .22; /* เมฆบางๆ */
+      background-repeat: repeat;
+      background-size: 900px 520px;
+      background-position: center top;
+      /* simple cloud svg pattern */
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='520' viewBox='0 0 900 520'%3E%3Cg fill='%23ffffff'%3E%3Cpath opacity='.55' d='M160 150c-32 0-58 20-65 47-3-1-7-1-10-1-22 0-40 14-46 33-1 4-2 8-2 12 0 24 20 44 45 44h172c26 0 47-20 47-44s-21-44-47-44c-6 0-11 1-16 3-9-27-35-50-78-50z'/%3E%3Cpath opacity='.45' d='M630 110c-28 0-50 17-57 40-3-1-6-1-9-1-18 0-33 11-38 27-1 3-1 6-1 10 0 20 16 36 36 36h150c21 0 38-16 38-36s-17-36-38-36c-5 0-9 1-14 2-8-23-28-42-67-42z'/%3E%3Cpath opacity='.35' d='M500 320c-38 0-68 24-76 56-4-1-8-2-12-2-25 0-46 16-52 38-2 5-2 10-2 15 0 29 24 53 53 53h208c31 0 56-24 56-53s-25-53-56-53c-7 0-13 1-19 3-10-33-40-57-100-57z'/%3E%3C/g%3E%3C/svg%3E");
     }
 
-    body { font-family: 'Kanit', sans-serif; background: var(--line-bg); color: var(--line-ink); }
     .price-text {
       font-size: clamp(1.9rem, 5vw, 2.8rem);
-      font-weight: 700;
+      font-weight: 500;
       letter-spacing: -0.02em;
       line-height: 1.1;
     }
     .unit-text { font-size: 0.9rem; font-weight: 400; color: #94a3b8; margin-top: 0.3rem; }
-    .feature { font-size: 0.85rem; font-weight: 500; padding: 0.45rem 0.7rem; border-radius: 999px; }
-    .status { font-size: 0.85rem; font-weight: 700; padding: 0.45rem 0.9rem; border-radius: 999px; }
-
-    /* top control ui */
-    .ctrl-card{
-      background: var(--line-card);
-      border: 1px solid var(--line-border);
-      border-radius: var(--r-3xl);
-      box-shadow: var(--line-shadow);
-      padding: 12px;
-    }
-
-    .line-btn{
-      border-radius: 999px;
-      padding: 12px 14px;
-      font-weight: 800;
-      letter-spacing: .08em;
-      border: 1px solid var(--line-border);
-      background: #fff;
-      box-shadow: 0 10px 22px rgba(2,6,23,.10);
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-      transition: transform .08s ease, box-shadow .12s ease;
-    }
-    .line-btn:active{ transform: scale(.98); }
-
-    .flag-btn{
-      width: 36px; height: 26px;
-      border-radius: 10px;
-      overflow:hidden;
-      border: 1px solid rgba(15,23,42,.15);
-      box-shadow: 0 6px 14px rgba(2,6,23,.08);
-      cursor:pointer;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:#fff;
-      transition: transform .08s ease, box-shadow .12s ease;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .flag-btn:active{ transform: scale(.96); }
-    .flag-btn img{ width:100%; height:100%; object-fit:cover; display:block; }
-
-    select{
-      appearance: none;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      background-image:
-        linear-gradient(45deg, transparent 50%, #0f172a 50%),
-        linear-gradient(135deg, #0f172a 50%, transparent 50%),
-        linear-gradient(to right, transparent, transparent);
-      background-position:
-        calc(100% - 18px) calc(1.1em),
-        calc(100% - 12px) calc(1.1em),
-        calc(100% - 2.5em) 0.5em;
-      background-size:
-        6px 6px,
-        6px 6px,
-        1px 1.5em;
-      background-repeat: no-repeat;
-    }
-
-    /* skeleton */
-    .shimmer {
-      background: linear-gradient(90deg, #e9edf4 25%, #f8fafc 37%, #e9edf4 63%);
-      background-size: 400% 100%;
-      animation: shimmer 1.25s ease infinite;
-    }
-    @keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: 0 0; } }
-
-    /* modal (Project Port) */
-    .modal-mask{
-      position: fixed; inset: 0;
-      background: rgba(2,6,23,.55);
-      display: none;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 18px;
-      z-index: 50;
-    }
-    .modal-card{
-      width: min(920px, 100%);
-      background: #fff;
-      border: 1px solid var(--line-border);
-      border-radius: 22px;
-      box-shadow: var(--line-shadow);
-      overflow: hidden;
-      margin-top: 10px;
-    }
-    .modal-head{
-      display:flex; align-items:center; justify-content: space-between;
-      padding: 14px 16px;
-      background: #fff;
-      border-bottom: 1px solid var(--line-border);
-    }
-    .modal-title{
-      font-weight: 900; font-size: 1.25rem;
-      letter-spacing: .02em;
-    }
-    .modal-close{
-      border-radius: 999px;
-      padding: 10px 14px;
-      font-weight: 900;
-      background: #ef4444;
-      color: #fff;
-      border: none;
-      box-shadow: 0 10px 20px rgba(239,68,68,.25);
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .port-list{ max-height: min(70vh, 680px); overflow: auto; }
-    .port-row{
-      display:flex; align-items:center; justify-content: space-between;
-      padding: 14px 16px;
-      border-top: 1px solid rgba(15,23,42,.06);
-      cursor: pointer;
-    }
-    .port-row:active{ background: rgba(2,6,23,.03); }
-    .port-left{
-      display:flex; flex-direction: column; gap: 6px;
-      min-width: 0;
-    }
-    .port-plot{
-      font-weight: 900;
-      font-size: 1.25rem;
-      color: #0f172a;
-      line-height: 1.1;
-    }
-    .port-sub{
-      display:flex; flex-wrap: wrap;
-      gap: 12px;
-      color: var(--line-muted);
-      font-weight: 600;
-    }
-    .port-sub span{ display:inline-flex; align-items:center; gap:6px; }
-    .port-price{
-      font-weight: 900;
-      font-size: 1.35rem;
-      color: #0f172a;
-      white-space: nowrap;
-      padding-left: 14px;
-    }
-    .port-status{
-      font-weight: 900;
-      border-radius: 999px;
-      padding: 8px 12px;
-      font-size: .9rem;
-      margin-left: 10px;
-      white-space: nowrap;
-    }
-
-    /* hide Google translate bar */
-    .goog-te-banner-frame.skiptranslate{ display:none !important; }
-    body{ top:0 !important; }
-    #google_translate_element{ position:absolute; left:-9999px; top:-9999px; height:1px; width:1px; overflow:hidden; }
+    .feature { font-size: 0.85rem; font-weight: 400; padding: 0.45rem 0.7rem; }
+    .status { font-size: 0.85rem; font-weight: 500; padding: 0.45rem 0.9rem; }
   </style>
 </head>
 
-<body>
+<body class="line-bg">
 <div class="max-w-6xl mx-auto px-4 py-8">
 
   <!-- HEADER -->
-  <div class="flex justify-between items-start mb-5">
+  <div class="flex justify-between items-start mb-8">
     <div>
-      <h1 class="text-4xl md:text-5xl font-black italic text-slate-900">DIRECT HUB</h1>
-      <p class="text-[var(--line-green-dark)] text-lg mt-1 font-semibold">ศูนย์รวมบ้านฝากขายตรงจากเจ้าของ</p>
+      <h1 class="text-4xl md:text-5xl font-semibold italic text-slate-900">
+        DIRECT HUB
+      </h1>
+      <p class="text-blue-700 text-lg mt-1">
+        ศูนย์รวมบ้านฝากขายตรงจากเจ้าของ
+      </p>
     </div>
 
     <a href="gateway.html"
-       class="w-12 h-12 rounded-2xl bg-white shadow flex items-center justify-center text-xl cursor-pointer"
-       title="Go to Gateway">👤</a>
-  </div>
-
-  <!-- ✅ CONTROL BAR -->
-  <div class="ctrl-card mb-8">
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
-
-      <!-- (1) FLAGS -->
-      <div class="flex items-center gap-2">
-        <div class="text-xs font-black text-slate-500 mr-1">LANG</div>
-
-        <button class="flag-btn" title="Thai" data-lang="th"><img alt="TH" src="https://flagcdn.com/w40/th.png"></button>
-        <button class="flag-btn" title="English" data-lang="en"><img alt="EN" src="https://flagcdn.com/w40/us.png"></button>
-        <button class="flag-btn" title="German" data-lang="de"><img alt="DE" src="https://flagcdn.com/w40/de.png"></button>
-        <button class="flag-btn" title="Russian" data-lang="ru"><img alt="RU" src="https://flagcdn.com/w40/ru.png"></button>
-        <button class="flag-btn" title="Chinese" data-lang="zh-CN"><img alt="ZH" src="https://flagcdn.com/w40/cn.png"></button>
-        <button class="flag-btn" title="French" data-lang="fr"><img alt="FR" src="https://flagcdn.com/w40/fr.png"></button>
-      </div>
-
-      <!-- ✅ (2) PROJECT PORT (แทน Bedrooms) -->
-      <div>
-        <label class="text-xs font-black text-slate-500">PROJECT PORT</label>
-        <button id="portBtn" class="mt-1 w-full line-btn">
-          PROJECT PLOTS
-        </button>
-      </div>
-
-      <!-- (3) PRICE SORT -->
-      <div>
-        <label class="text-xs font-black text-slate-500">SORT PRICE</label>
-        <select id="priceSort"
-          class="mt-1 w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 font-extrabold text-slate-900">
-          <option value="none">Default</option>
-          <option value="desc">High → Low</option>
-          <option value="asc">Low → High</option>
-        </select>
-      </div>
-    </div>
+       class="w-12 h-12 rounded-2xl bg-white/90 shadow flex items-center justify-center text-xl cursor-pointer"
+       title="Go to Gateway">
+      👤
+    </a>
   </div>
 
   <!-- CARDS -->
   <div id="cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-
-  <!-- LOADING / ERROR -->
-  <div id="loading" class="text-center text-slate-400 py-10 font-semibold">Loading...</div>
-  <div id="errorBox" class="hidden text-center text-rose-600 py-10 font-extrabold"></div>
-
-  <!-- hidden google translate -->
-  <div id="google_translate_element"></div>
-</div>
-
-<!-- ✅ PROJECT PORT MODAL -->
-<div id="portModal" class="modal-mask" role="dialog" aria-modal="true">
-  <div class="modal-card">
-    <div class="modal-head">
-      <div class="modal-title">Project Plots</div>
-      <button id="portClose" class="modal-close">CLOSE</button>
-    </div>
-    <div id="portList" class="port-list"></div>
+  <div id="loading" class="text-center text-slate-600 py-10 font-semibold">
+    Loading...
   </div>
+
 </div>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
 const PROJECT = new URLSearchParams(location.search).get("project") || "Project_0";
-
-const elCards = document.getElementById("cards");
-const elLoading = document.getElementById("loading");
-const elError = document.getElementById("errorBox");
-const elPriceSort = document.getElementById("priceSort");
-
-const elPortBtn = document.getElementById("portBtn");
-const elPortModal = document.getElementById("portModal");
-const elPortClose = document.getElementById("portClose");
-const elPortList = document.getElementById("portList");
-
-let RAW = []; // keep original data
 
 const priceFmt = v => {
   const n = Number(v);
@@ -285,80 +80,50 @@ const priceFmt = v => {
 };
 
 const statusClass = s => {
-  s = String(s || "").toLowerCase();
+  s = String(s).toLowerCase();
   if (s.includes("available")) return "bg-emerald-100 text-emerald-700";
   if (s.includes("under")) return "bg-sky-100 text-sky-700";
   if (s.includes("reserved")) return "bg-amber-100 text-amber-700";
-  if (s.includes("pending")) return "bg-yellow-100 text-yellow-700";
   if (s.includes("sold")) return "bg-rose-100 text-rose-700";
   return "bg-slate-100 text-slate-700";
 };
 
-function renderSkeleton(n=6){
-  elCards.innerHTML = Array.from({length:n}).map(() => `
-    <div class="bg-white rounded-[2.3rem] shadow-lg overflow-hidden border border-slate-100">
-      <div class="h-72 shimmer"></div>
-      <div class="p-6">
-        <div class="flex gap-2 mb-4">
-          <div class="h-10 w-20 rounded-2xl shimmer"></div>
-          <div class="h-10 w-20 rounded-2xl shimmer"></div>
-          <div class="h-10 w-24 rounded-2xl shimmer"></div>
-          <div class="h-10 w-24 rounded-2xl shimmer"></div>
-        </div>
-        <div class="h-10 w-40 rounded-2xl shimmer mb-3"></div>
-        <div class="h-5 w-28 rounded-xl shimmer"></div>
-        <div class="h-12 w-full rounded-2xl shimmer mt-6"></div>
-      </div>
-    </div>
-  `).join("");
-}
+async function load(){
+  const res = await fetch(`${API_URL}?mode=getUnitList&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`);
+  const data = await res.json();
 
-function getSorted(){
-  let list = [...RAW];
-  const sort = elPriceSort.value;
-  if (sort === "asc") list.sort((a,b) => Number(a.price||0) - Number(b.price||0));
-  if (sort === "desc") list.sort((a,b) => Number(b.price||0) - Number(a.price||0));
-  return list;
-}
+  document.getElementById("loading").style.display = "none";
 
-function renderCards(list){
-  if (!list.length){
-    elCards.innerHTML = `
-      <div class="col-span-full text-center text-slate-500 py-16">
-        <div class="text-2xl font-extrabold text-slate-900 mb-2">No results</div>
-        ไม่พบบ้าน
-      </div>
-    `;
-    return;
-  }
-
-  elCards.innerHTML = list.map(d => `
-    <div class="bg-white rounded-[2.3rem] overflow-hidden border border-slate-100" style="box-shadow: var(--line-shadow);">
+  document.getElementById("cards").innerHTML = data.map(d => `
+    <div class="bg-white/95 rounded-[2.3rem] shadow-lg overflow-hidden backdrop-blur-sm">
       <div class="relative">
-        <img src="${d.thumbnail || ""}" class="w-full h-72 object-cover" loading="lazy" decoding="async" alt="thumb">
-        <div class="absolute top-4 left-4 bg-white/90 px-4 py-2 rounded-full font-extrabold">
-          ${d.plot || "-"}
+        <img src="${d.thumbnail}" class="w-full h-72 object-cover" loading="lazy" decoding="async">
+        <div class="absolute top-4 left-4 bg-white/90 px-4 py-2 rounded-full font-medium">
+          ${d.plot}
         </div>
       </div>
 
       <div class="p-6">
         <div class="flex flex-wrap gap-2 mb-4">
-          <div class="feature bg-slate-100">🛏 ${d.bedrooms ?? "-"}</div>
-          <div class="feature bg-slate-100">🛁 ${d.bathrooms ?? "-"}</div>
-          <div class="feature bg-slate-100">📐 ${d.landSqw ?? "-"} sq.w</div>
-          <div class="feature bg-slate-100">🏠 ${d.livingSqm ?? "-"} sqm</div>
-          <div class="ml-auto status ${statusClass(d.status)}">
-            ${d.status || "-"}
+          <div class="feature bg-slate-100">🛏 ${d.bedrooms}</div>
+          <div class="feature bg-slate-100">🛁 ${d.bathrooms}</div>
+          <div class="feature bg-slate-100">📐 ${d.landSqw} sq.w</div>
+          <div class="feature bg-slate-100">🏠 ${d.livingSqm} sqm</div>
+          <div class="ml-auto status rounded-full ${statusClass(d.status)}">
+            ${d.status}
           </div>
         </div>
 
-        <div class="price-text text-slate-900">${priceFmt(d.price)}</div>
-        <div class="unit-text">UNIT: ${d.id}</div>
+        <div class="price-text text-slate-900">
+          ${priceFmt(d.price)}
+        </div>
+        <div class="unit-text">
+          UNIT: ${d.id}
+        </div>
 
-        <!-- ✅ ลิงก์ไป details.html -->
+        <!-- ✅ ลิงก์ไป details.html (ถูกต้อง) -->
         <a href="details.html?id=${encodeURIComponent(d.id)}&project=${encodeURIComponent(PROJECT)}"
-           class="block mt-6 text-center py-4 rounded-2xl text-sm tracking-widest transition font-extrabold"
-           style="background: var(--line-green); color:#fff;">
+           class="block mt-6 text-center bg-slate-900 text-white py-4 rounded-2xl text-sm tracking-widest hover:bg-slate-800 transition">
           VIEW FULL DETAILS
         </a>
       </div>
@@ -366,106 +131,7 @@ function renderCards(list){
   `).join("");
 }
 
-function applyUI(){
-  renderCards(getSorted());
-}
-
-/* ==============================
-   PROJECT PORT MODAL
-   ============================== */
-function openPortModal(){
-  // build list from RAW (sorted by plot)
-  const list = [...RAW].filter(x => String(x.id||"").trim() !== "");
-  list.sort((a,b) => String(a.plot||"").localeCompare(String(b.plot||""), undefined, {numeric:true}));
-
-  elPortList.innerHTML = list.map(d => {
-    const st = d.status || "-";
-    return `
-      <div class="port-row" data-id="${encodeURIComponent(d.id)}">
-        <div class="port-left">
-          <div class="port-plot">${d.plot || d.id}</div>
-          <div class="port-sub">
-            <span>🛏 ${d.bedrooms ?? "-"}</span>
-            <span>🛁 ${d.bathrooms ?? "-"}</span>
-            <span>🏠 ${d.livingSqm ?? "-"} m²</span>
-            <span class="port-status ${statusClass(st)}">${st}</span>
-          </div>
-        </div>
-        <div class="port-price">${priceFmt(d.price)}</div>
-      </div>
-    `;
-  }).join("");
-
-  elPortModal.style.display = "flex";
-}
-
-function closePortModal(){
-  elPortModal.style.display = "none";
-}
-
-elPortBtn.addEventListener("click", openPortModal);
-elPortClose.addEventListener("click", closePortModal);
-elPortModal.addEventListener("click", (e) => {
-  if (e.target === elPortModal) closePortModal();
-});
-
-elPortList.addEventListener("click", (e) => {
-  const row = e.target.closest(".port-row");
-  if (!row) return;
-  const id = decodeURIComponent(row.getAttribute("data-id"));
-  location.href = `details.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(PROJECT)}`;
-});
-
-/* ==============================
-   LOAD
-   ============================== */
-async function load(){
-  elError.classList.add("hidden");
-  elLoading.style.display = "block";
-  renderSkeleton(6);
-
-  try{
-    const url = `${API_URL}?mode=getUnitList&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`;
-    const res = await fetch(url);
-    const data = await res.json();
-
-    if (!Array.isArray(data)) throw new Error((data && data.error) ? data.error : "Invalid API response");
-
-    RAW = data;
-    elLoading.style.display = "none";
-    applyUI();
-
-  }catch(err){
-    elLoading.style.display = "none";
-    elCards.innerHTML = "";
-    elError.textContent = "โหลดข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง";
-    elError.classList.remove("hidden");
-    console.error(err);
-  }
-}
-
-elPriceSort.addEventListener("change", applyUI);
 load();
-
-/* ==============================
-   GOOGLE TRANSLATE (Flags)
-   ============================== */
-function setGoogleTranslateLang(lang){
-  document.cookie = `googtrans=/th/${lang};path=/`;
-  document.cookie = `googtrans=/th/${lang};path=/;domain=${location.hostname}`;
-  location.reload();
-}
-document.querySelectorAll("[data-lang]").forEach(btn => {
-  btn.addEventListener("click", () => setGoogleTranslateLang(btn.getAttribute("data-lang")));
-});
-function googleTranslateElementInit() {
-  new google.translate.TranslateElement(
-    { pageLanguage: 'th', autoDisplay: false },
-    'google_translate_element'
-  );
-}
 </script>
-
-<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>
