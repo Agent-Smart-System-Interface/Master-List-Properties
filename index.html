@@ -1,812 +1,605 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>smart properties system · Catalog</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>smart properties system</title>
 
-  <!-- LINE-like font (best effort) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/LINESeed/seed-font@main/css/LINESeedSansTH.css" />
-
+  <link rel="preconnect" href="https://script.google.com">
+  <link rel="preconnect" href="https://lh3.googleusercontent.com">
   <style>
     :root{
-      --bg1:#89A6C7;
-      --bg2:#BFD0E6;
-      --card:#ffffffee;
-      --ink:#0b1320;
-      --muted:#617086;
-      --lineGreen:#06C755;
-      --chip:#eef2f7;
-      --shadow: 0 16px 40px rgba(0,0,0,.12);
-      --r24: 24px;
-      --r28: 28px;
-      --r32: 32px;
+      --bg:#a8bdd6;
+      --card:#ffffff;
+      --muted:#6b7c93;
+      --text:#0f172a;
+      --pill:#eef2f7;
+      --green:#19b45b;
+      --softGreen:#c9f3dd;
+      --radius:22px;
+      --shadow: 0 12px 30px rgba(0,0,0,.12);
     }
     *{box-sizing:border-box}
-    html,body{height:100%}
     body{
       margin:0;
-      font-family: "LINE Seed Sans TH","LINE Seed Sans","Kanit",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-      color:var(--ink);
-      background: linear-gradient(180deg,var(--bg1),var(--bg2));
-      overflow-x:hidden;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans Thai", sans-serif;
+      background: radial-gradient(ellipse at top, rgba(255,255,255,.25), rgba(255,255,255,0) 55%) , var(--bg);
+      color:var(--text);
     }
-
-    /* LINE cloud background (light, not too many) */
-    body:before, body:after{
-      content:"";
-      position:fixed;
-      inset:-20% -10%;
-      pointer-events:none;
-      z-index:-1;
-      background:
-        radial-gradient(ellipse at 18% 28%, rgba(255,255,255,.26) 0 22%, transparent 23%),
-        radial-gradient(ellipse at 72% 32%, rgba(255,255,255,.22) 0 24%, transparent 25%),
-        radial-gradient(ellipse at 28% 78%, rgba(255,255,255,.18) 0 20%, transparent 21%),
-        radial-gradient(ellipse at 78% 82%, rgba(255,255,255,.16) 0 19%, transparent 20%);
-      filter: blur(.2px);
-      opacity:.95;
-    }
-    body:after{
-      inset:-30% -20%;
-      opacity:.35;
-      filter: blur(1.2px);
-    }
-
-    .wrap{
-      max-width:1100px;
-      margin:0 auto;
-      padding:18px 16px 28px;
-    }
-
-    /* Top bar */
+    .wrap{max-width:1200px; margin:0 auto; padding:16px 14px 28px;}
     .topbar{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      padding:10px 10px 14px;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.18);
+      backdrop-filter: blur(10px);
     }
-    .avatar{
-      width:44px;height:44px;border-radius:18px;
-      background:#dbe7f6;
-      display:grid;place-items:center;
-      font-weight:800;
-      letter-spacing:.3px;
-      box-shadow: 0 6px 16px rgba(0,0,0,.10);
-      flex:0 0 auto;
+    .brand{display:flex; gap:12px; align-items:center;}
+    .logo{
+      width:44px; height:44px; border-radius:999px; background:rgba(255,255,255,.55);
+      display:grid; place-items:center; font-weight:800;
+      letter-spacing:.5px;
     }
-    .brand{
-      flex:1 1 auto;
-      min-width:0;
-    }
-    .brand h1{
-      margin:0;
-      font-size:22px;
-      line-height:1.1;
-      font-weight:800;
-      letter-spacing:-.2px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .brand .sub{
-      margin-top:2px;
-      color:rgba(0,0,0,.55);
-      font-size:13px;
-      font-weight:500;
-    }
-    .iconBtn{
-      width:44px;height:44px;border-radius:18px;
-      background:rgba(255,255,255,.80);
-      display:grid;place-items:center;
-      border:1px solid rgba(255,255,255,.55);
-      box-shadow: 0 10px 24px rgba(0,0,0,.10);
+    .titles h1{margin:0; font-size:28px; line-height:1.1; font-weight:900;}
+    .titles .sub{color:rgba(15,23,42,.7); font-weight:600; margin-top:2px;}
+    .avatarBtn{
+      width:44px; height:44px; border-radius:999px;
+      border:0;
+      background: rgba(255,255,255,.55);
+      display:grid; place-items:center;
       cursor:pointer;
-      user-select:none;
-      flex:0 0 auto;
     }
-    .iconBtn:active{transform:scale(.98)}
-    .iconBtn svg{width:22px;height:22px;opacity:.86}
 
-    /* Controls */
     .controls{
-      margin-top:6px;
-      display:grid;
-      grid-template-columns: 1fr auto auto;
+      margin-top:14px;
+      display:flex;
       gap:10px;
       align-items:center;
+      flex-wrap:wrap;
     }
     .pill{
-      border-radius:20px;
-      background:rgba(255,255,255,.55);
-      border:1px solid rgba(255,255,255,.55);
-      padding:12px 14px;
-      box-shadow: 0 10px 24px rgba(0,0,0,.08);
-      display:flex;
+      flex:1;
+      min-width:260px;
+      background: rgba(255,255,255,.35);
+      border:1px solid rgba(255,255,255,.45);
+      border-radius: 18px;
+      padding:10px 12px;
+      display:flex; align-items:center; justify-content:space-between;
       gap:10px;
-      align-items:center;
-      min-height:48px;
     }
-    .pill .left{
-      font-weight:700;
-      color:rgba(0,0,0,.82);
-      min-width:0;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-    .pill .right{
-      margin-left:auto;
-      color:rgba(0,0,0,.55);
-      font-weight:700;
-      font-size:13px;
-      white-space:nowrap;
-    }
-    .pill .chev{
-      width:18px;height:18px; opacity:.65; flex:0 0 auto;
-    }
-
-    .btnGreen{
+    .pill strong{font-size:22px}
+    .pill .meta{color:rgba(15,23,42,.6); font-weight:700}
+    .btn{
       border:0;
-      border-radius:18px;
-      background: var(--lineGreen);
-      color:#fff;
-      font-weight:800;
-      padding:12px 16px;
-      min-height:48px;
-      box-shadow: 0 14px 26px rgba(6,199,85,.28);
+      border-radius: 18px;
+      padding:14px 18px;
+      font-weight:900;
       cursor:pointer;
     }
-    .btnGreen:active{transform:scale(.99)}
-    select.sort{
+    .btn.green{background: var(--green); color:#fff; box-shadow: var(--shadow);}
+    .select{
       border:0;
-      border-radius:18px;
-      background:rgba(255,255,255,.72);
-      color:rgba(0,0,0,.75);
-      font-weight:800;
-      padding:12px 14px;
-      min-height:48px;
-      box-shadow: 0 10px 24px rgba(0,0,0,.08);
-      outline:none;
+      border-radius: 18px;
+      padding:14px 14px;
+      font-weight:900;
+      background: rgba(255,255,255,.55);
       cursor:pointer;
+      min-width:140px;
     }
 
-    /* Grid cards */
     .grid{
       margin-top:14px;
       display:grid;
       grid-template-columns: 1fr;
       gap:14px;
     }
-    @media (min-width: 720px){
-      .grid{ grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (min-width: 1100px){
-      .grid{ grid-template-columns: repeat(3, 1fr); }
-      .wrap{max-width:1200px}
+    @media (min-width: 900px){
+      .grid{grid-template-columns: repeat(3, 1fr);}
     }
 
     .card{
-      background:var(--card);
-      border:1px solid rgba(255,255,255,.55);
-      border-radius: var(--r32);
+      background: rgba(255,255,255,.82);
+      border:1px solid rgba(255,255,255,.65);
+      border-radius: var(--radius);
       overflow:hidden;
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(8px);
+      box-shadow: 0 10px 25px rgba(0,0,0,.10);
     }
     .thumb{
-      height:210px;
-      background:#e9eef6;
-      position:relative;
-      overflow:hidden;
-    }
-    .thumb img{
       width:100%;
-      height:100%;
-      object-fit:cover;
+      aspect-ratio: 16 / 9;
+      background: #e6edf6;
       display:block;
+      object-fit:cover;
     }
-    .thumb .noimg{
-      position:absolute; inset:0;
-      display:grid; place-items:center;
-      color:#7c8aa0;
-      font-weight:800;
-      letter-spacing:.2px;
-      font-size:14px;
-    }
-    .row{
-      padding:14px 14px 12px;
-    }
-    .titleRow{
-      display:flex; gap:10px; align-items:baseline;
-    }
-    .unit{
-      font-size:20px;
+    .cardBody{padding:14px 14px 12px;}
+    .row1{display:flex; align-items:flex-end; justify-content:space-between; gap:10px;}
+    .hp{font-size:22px; font-weight:1000; letter-spacing:.4px;}
+    .price{font-size:20px; font-weight:1000;}
+    .iconsRow{display:flex; gap:10px; margin-top:10px;}
+    .miniPill{
+      background: rgba(15,23,42,.06);
+      border:1px solid rgba(15,23,42,.06);
+      padding:10px 12px;
+      border-radius: 999px;
+      display:flex; align-items:center; gap:8px;
       font-weight:900;
-      letter-spacing:-.4px;
+      min-width: 84px;
+      justify-content:center;
     }
-    .price{
-      margin-left:auto;
-      font-size:18px;
-      font-weight:900;
-      letter-spacing:-.2px;
-    }
-    .chips{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-top:10px;
-      align-items:center;
-    }
-    .chip{
-      background:rgba(255,255,255,.62);
-      border:1px solid rgba(0,0,0,.05);
-      border-radius:999px;
-      padding:8px 10px;
-      font-weight:800;
-      font-size:13px;
-      color:rgba(0,0,0,.70);
-      display:flex;
-      gap:6px;
-      align-items:center;
-      min-height:34px;
-    }
-    .chip .mini{
-      opacity:.80;
-      font-weight:900;
-    }
-    .status{
-      margin-left:auto;
-      border-radius:999px;
-      padding:8px 12px;
-      font-size:13px;
-      font-weight:900;
-      border:1px solid rgba(0,0,0,.05);
-      background:#e8eef7;
-      color:#2e3a4c;
-      white-space:nowrap;
-    }
-    .st-available{ background:#dff7ea; color:#0d7a43; }
-    .st-under{ background:#d9eefc; color:#116aa0; }
-    .st-reserved{ background:#fff2d7; color:#9a6a12; }
-    .st-sold{ background:#ffe1e1; color:#a01818; }
-
     .btnDetail{
-      margin-top:12px;
       width:100%;
+      margin-top:12px;
+      background: var(--softGreen);
       border:0;
-      border-radius: 22px;
-      background:#c9f2d9;
-      color:#0c2b1a;
-      font-weight:900;
+      border-radius: 16px;
       padding:14px 14px;
+      font-weight:1000;
       cursor:pointer;
-      font-size:16px;
-      letter-spacing:.2px;
-      box-shadow: 0 12px 22px rgba(0,0,0,.08);
     }
-    .btnDetail:active{transform:scale(.995)}
 
-    /* Loading */
-    .loading{
-      margin:22px 0 6px;
-      color:rgba(0,0,0,.55);
-      font-weight:800;
-      text-align:center;
-    }
+    /* loader */
     .skeleton{
-      border-radius: var(--r32);
-      overflow:hidden;
-      background:rgba(255,255,255,.35);
-      border:1px solid rgba(255,255,255,.45);
-      box-shadow: 0 10px 24px rgba(0,0,0,.06);
-      height:320px;
-      position:relative;
-    }
-    .skeleton:before{
-      content:"";
-      position:absolute; inset:0;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent);
-      transform: translateX(-100%);
-      animation: shimmer 1.2s infinite;
+      background: linear-gradient(90deg, rgba(255,255,255,.55), rgba(255,255,255,.25), rgba(255,255,255,.55));
+      background-size: 200% 100%;
+      animation: shimmer 1.2s infinite linear;
     }
     @keyframes shimmer{
-      0%{transform:translateX(-100%)}
-      100%{transform:translateX(100%)}
+      0%{background-position: 200% 0;}
+      100%{background-position: -200% 0;}
     }
 
-    /* Plot modal */
-    .modalBack{
+    /* Modal (แก้ pop up เลื่อนลงผิดปกติ) */
+    .modalBackdrop{
       position:fixed; inset:0;
-      background: rgba(0,0,0,.26);
       display:none;
-      align-items:center;
-      justify-content:center;
-      padding:18px;
-      z-index:999;
+      align-items:center; justify-content:center;
+      padding:16px;
+      background: rgba(0,0,0,.35);
+      z-index:9999;
     }
+    .modalBackdrop.show{display:flex;}
     .modal{
-      width:min(720px, 96vw);
-      background: rgba(255,255,255,.92);
-      border-radius: 28px;
-      border:1px solid rgba(255,255,255,.70);
-      box-shadow: 0 26px 60px rgba(0,0,0,.22);
-      overflow:hidden;
-      backdrop-filter: blur(10px);
-    }
-    .modalHead{
-      display:flex;
-      align-items:center;
-      gap:12px;
-      padding:16px 18px;
-      border-bottom:1px solid rgba(0,0,0,.06);
-    }
-    .modalHead .ttl{
-      font-size:18px;
-      font-weight:900;
-      letter-spacing:-.2px;
-    }
-    .modalHead .closeBtn{
-      margin-left:auto;
-      border:0;
-      border-radius: 999px;
-      padding:10px 16px;
-      font-weight:900;
-      cursor:pointer;
-      background:#ff5a5a;
-      color:#fff;
-    }
-    .modalList{
-      max-height: 70vh;
+      width:min(680px, 100%);
+      max-height: min(80vh, 720px);
       overflow:auto;
-      padding:8px 10px 12px;
+      background: rgba(255,255,255,.92);
+      border:1px solid rgba(255,255,255,.65);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding:14px;
     }
-    .plotRow{
-      padding:12px 12px;
-      border-radius: 18px;
-      display:flex;
-      gap:12px;
-      align-items:center;
+    .modalHeader{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:6px 6px 10px;
+      position:sticky; top:0;
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(10px);
+      z-index:2;
+    }
+    .modalHeader h2{margin:0; font-size:22px; font-weight:1000;}
+    .closeBtn{
+      border:0; border-radius: 999px;
+      padding:10px 14px;
+      font-weight:1000;
+      background:#f04a3a; color:#fff;
       cursor:pointer;
     }
-    .plotRow:hover{ background: rgba(0,0,0,.04); }
-    .plotRow .name{
-      font-weight:900;
-      font-size:18px;
-      color:#1a3550;
-      width:88px;
-      flex:0 0 auto;
-    }
-    .plotRow .mid{
-      flex:1 1 auto;
-      display:flex;
+    .plotList{display:flex; flex-direction:column; gap:10px; padding:8px 6px 12px;}
+    .plotItem{
+      display:flex; align-items:center; justify-content:space-between;
       gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      color:rgba(0,0,0,.68);
-      font-weight:800;
-      font-size:13px;
+      padding:12px;
+      border-radius: 18px;
+      background: rgba(15,23,42,.04);
+      border:1px solid rgba(15,23,42,.06);
+      cursor:pointer;
     }
-    .plotRow .price{
-      font-size:18px;
-      font-weight:900;
-      color:#152032;
-      flex:0 0 auto;
-      min-width:130px;
-      text-align:right;
-    }
-
-    .tiny{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:7px 10px;
-      border-radius:999px;
-      background: rgba(0,0,0,.04);
-      border:1px solid rgba(0,0,0,.05);
+    .plotLeft .plot{font-size:22px; font-weight:1000;}
+    .plotLeft .mini{display:flex; gap:10px; margin-top:6px; color:rgba(15,23,42,.75); font-weight:800; flex-wrap:wrap;}
+    .badge{
+      padding:8px 12px;
+      border-radius: 999px;
+      font-weight:1000;
+      background: rgba(25,180,91,.12);
+      color: rgba(25,120,70,1);
       white-space:nowrap;
+    }
+    .badge.sold{background: rgba(240,74,58,.12); color: rgba(180,45,35,1);}
+    .muted{color:rgba(15,23,42,.55); font-weight:800;}
+
+    .errorBox{
+      margin-top:14px;
+      padding:14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.7);
+      border:1px solid rgba(255,255,255,.65);
+      font-weight:900;
+      color:#8b1d1d;
+      display:none;
     }
   </style>
 </head>
-
 <body>
   <div class="wrap">
     <div class="topbar">
-      <div class="avatar">SP</div>
       <div class="brand">
-        <h1>smart properties system</h1>
-        <div class="sub">Catalog · รายการบ้านแบบ feel LINE</div>
+        <div class="logo">SP</div>
+        <div class="titles">
+          <h1>smart properties system</h1>
+          <div class="sub">Catalog · รายการบ้านแบบ feel LINE</div>
+        </div>
       </div>
-
-      <!-- จุดที่ 1: ไอคอนคน ไปหน้า Gateway -->
-      <div class="iconBtn" id="btnGateway" title="Gateway">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5Z" stroke="currentColor" stroke-width="2"/>
-          <path d="M4 22c0-4.42 3.58-8 8-8s8 3.58 8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-      </div>
+      <!-- จุดที่ 1: ไอคอนคน (ไปหน้า Gateway/Edit) -->
+      <button class="avatarBtn" id="btnGateway" title="Gateway / Edit">
+        👤
+      </button>
     </div>
 
     <div class="controls">
-      <!-- Project_0 only (fixed) -->
-      <div class="pill" id="pillPlot" role="button" tabindex="0" aria-label="เลือก Plot">
-        <div class="left" id="plotLabel">Project_0 · เลือก PLOT</div>
-        <div class="right" id="countLabel">0 รายการ</div>
-        <svg class="chev" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M7 10l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
+      <div class="pill" id="plotPill" role="button" tabindex="0">
+        <div>
+          <strong id="projectName">Project_0</strong>
+          <span class="muted">· เลือก PLOT</span>
+          <span class="muted" id="countText">0 รายการ</span>
+        </div>
+        <div class="meta">▼</div>
       </div>
 
-      <button class="btnGreen" id="btnReload">โหลดรายการ</button>
+      <button class="btn green" id="btnLoad">โหลดรายการ</button>
 
-      <select class="sort" id="sortSel" title="เรียงลำดับ">
+      <select class="select" id="sortSelect">
         <option value="latest">ล่าสุด</option>
-        <option value="price_desc">ราคา: มาก → น้อย</option>
-        <option value="price_asc">ราคา: น้อย → มาก</option>
-        <option value="plot_asc">PLOT: A → Z</option>
+        <option value="price_desc">ราคาสูง→ต่ำ</option>
+        <option value="price_asc">ราคาต่ำ→สูง</option>
+        <option value="plot_asc">Plot A→Z</option>
       </select>
     </div>
 
-    <div id="loading" class="loading" style="display:none;">กำลังโหลดข้อมูล...</div>
+    <div class="errorBox" id="errBox"></div>
 
     <div class="grid" id="grid">
-      <!-- skeletons -->
+      <!-- cards -->
     </div>
   </div>
 
   <!-- Plot Modal -->
-  <div class="modalBack" id="modalBack" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true">
-      <div class="modalHead">
-        <div class="ttl">Project Plots (Project_0)</div>
-        <button class="closeBtn" id="btnCloseModal">CLOSE</button>
+  <div class="modalBackdrop" id="plotModal">
+    <div class="modal">
+      <div class="modalHeader">
+        <h2>Project Plots (Project_0)</h2>
+        <button class="closeBtn" id="closePlot">CLOSE</button>
       </div>
-      <div class="modalList" id="modalList"></div>
+      <div class="plotList" id="plotList"></div>
     </div>
   </div>
 
 <script>
-/* ===================== CONFIG ===================== */
-const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
-const PROJECT = "Project_0";                 // จุดที่ 2: บังคับ Project_0 เท่านั้น
-const CACHE_KEY = "MLS_CACHE_UNITLIST_P0_V1";
-const CACHE_TTL_MS = 60 * 1000;            // 60s
-const DETAILS_URL = "details.html";         // same folder
-const GATEWAY_URL = "gateway.html";
+/** =========================
+ * CONFIG
+ * ========================= */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
+const PROJECT = "Project_0";
 
-/* ===================== HELPERS ===================== */
-const qs = new URLSearchParams(location.search);
-let selectedPlot = (qs.get("plot") || "").trim();
+// เปลี่ยนได้ตามระบบคุณ
+const GATEWAY_URL = "https://agent-smart-system-interface.github.io/Master-List-Properties/"; // หรือหน้า gateway จริง
 
-function money(v){
-  const n = Number(v);
-  if (!n) return "฿0";
-  return "฿" + n.toLocaleString("en-US");
-}
-function normStr(v){ return (v==null? "" : String(v)).trim(); }
-function statusClass(s){
-  s = normStr(s).toLowerCase();
-  if (s.includes("avail")) return "st-available";
-  if (s.includes("under")) return "st-under";
-  if (s.includes("reser")) return "st-reserved";
-  if (s.includes("sold")) return "st-sold";
-  return "";
-}
-function safeImg(url){
-  url = normStr(url);
-  if (!url) return "";
-  return url;
-}
+/** =========================
+ * JSONP Helper (แก้ CORS)
+ * ========================= */
+function jsonp(url, timeoutMs = 20000){
+  return new Promise((resolve, reject) => {
+    const cb = "cb_" + Math.random().toString(36).slice(2);
+    const script = document.createElement("script");
+    const timer = setTimeout(() => {
+      cleanup();
+      reject(new Error("timeout"));
+    }, timeoutMs);
 
-function setUrlPlot(plot){
-  const u = new URL(location.href);
-  if (plot) u.searchParams.set("plot", plot);
-  else u.searchParams.delete("plot");
-  history.replaceState({}, "", u.toString());
-}
-
-/* ===================== CACHE (fast load) ===================== */
-function readCache(){
-  try{
-    const raw = localStorage.getItem(CACHE_KEY);
-    if(!raw) return null;
-    const obj = JSON.parse(raw);
-    if(!obj || !obj.data || !obj.ts) return null;
-    return obj;
-  }catch(e){ return null; }
-}
-function writeCache(data){
-  try{
-    localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data }));
-  }catch(e){}
-}
-
-/* ===================== API (robust) ===================== */
-/**
- * เราพยายามหลาย mode เผื่อฝั่ง Apps Script ใช้ชื่อไม่ตรงกัน
- * - getUnitList
- * - list
- * - units
- */
-async function fetchUnitList(){
-  const urlCandidates = [
-    `${API_URL}?mode=getUnitList&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`,
-    `${API_URL}?mode=list&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`,
-    `${API_URL}?mode=units&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`
-  ];
-
-  let lastErr = null;
-  for (const u of urlCandidates){
-    try{
-      const res = await fetch(u, { cache: "no-store" });
-      const data = await res.json();
-      const arr = Array.isArray(data) ? data : (Array.isArray(data?.data) ? data.data : (Array.isArray(data?.items) ? data.items : null));
-      if (arr && arr.length >= 0) return arr;
-    }catch(e){ lastErr = e; }
-  }
-  throw lastErr || new Error("Cannot load unit list");
-}
-
-/* ===================== UI ===================== */
-const grid = document.getElementById("grid");
-const loading = document.getElementById("loading");
-const plotLabel = document.getElementById("plotLabel");
-const countLabel = document.getElementById("countLabel");
-const sortSel = document.getElementById("sortSel");
-
-const modalBack = document.getElementById("modalBack");
-const modalList = document.getElementById("modalList");
-const pillPlot = document.getElementById("pillPlot");
-
-document.getElementById("btnGateway").addEventListener("click", () => {
-  location.href = `${GATEWAY_URL}?project=${encodeURIComponent(PROJECT)}`;
-});
-document.getElementById("btnReload").addEventListener("click", () => hardReload());
-
-pillPlot.addEventListener("click", () => openModal());
-pillPlot.addEventListener("keydown", (e) => { if(e.key==="Enter"||e.key===" "){ e.preventDefault(); openModal(); }});
-document.getElementById("btnCloseModal").addEventListener("click", closeModal);
-modalBack.addEventListener("click", (e) => { if(e.target === modalBack) closeModal(); });
-
-sortSel.addEventListener("change", () => renderAll(window.__UNITS__ || []));
-
-function skeletons(){
-  grid.innerHTML = "";
-  for(let i=0;i<6;i++){
-    const d = document.createElement("div");
-    d.className = "skeleton";
-    grid.appendChild(d);
-  }
-}
-
-function openModal(){
-  modalBack.style.display = "flex";
-  modalBack.setAttribute("aria-hidden","false");
-}
-function closeModal(){
-  modalBack.style.display = "none";
-  modalBack.setAttribute("aria-hidden","true");
-}
-
-function renderPlotModal(units){
-  // group by plot
-  const map = new Map();
-  for(const u of units){
-    const plot = normStr(u.plot || u.Plot || u.plotNo || u.PLOT);
-    if(!plot) continue;
-    if(!map.has(plot)) map.set(plot, []);
-    map.get(plot).push(u);
-  }
-  const plots = Array.from(map.keys()).sort((a,b)=>a.localeCompare(b));
-
-  // "ALL"
-  const allRow = `
-    <div class="plotRow" data-plot="">
-      <div class="name">ALL</div>
-      <div class="mid">
-        <span class="tiny">📦 ${units.length} units</span>
-        <span class="tiny">Project_0</span>
-      </div>
-      <div class="price"> </div>
-    </div>
-  `;
-
-  const rows = plots.map(p=>{
-    const list = map.get(p);
-    // best effort summary like รูปที่ 2 (beds baths sqm status)
-    // pick min price as display
-    let minPrice = Infinity;
-    let bed = "", bath = "", sqm = "", st = "";
-    for(const it of list){
-      const pr = Number(it.price || it.Price || it.PRICE || 0);
-      if(pr && pr < minPrice) minPrice = pr;
-      bed = bed || normStr(it.bedrooms || it.bed || it.Bed || it.Bedrooms);
-      bath = bath || normStr(it.bathrooms || it.bath || it.Bath || it.Bathrooms);
-      sqm = sqm || normStr(it.livingSqm || it.sqm || it.LivingSqm || it.AreaSqm);
-      st = st || normStr(it.status || it.Status);
+    function cleanup(){
+      clearTimeout(timer);
+      if (script.parentNode) script.parentNode.removeChild(script);
+      try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
     }
-    const stCls = statusClass(st);
-    const stShow = st ? `<span class="tiny ${stCls ? "" : ""}" style="${stCls ? "" : ""}">${st}</span>` : "";
-    return `
-      <div class="plotRow" data-plot="${encodeURIComponent(p)}">
-        <div class="name">${p}</div>
-        <div class="mid">
-          ${bed ? `<span class="tiny">🛏 ${bed} Bed</span>` : ""}
-          ${bath ? `<span class="tiny">🚿 ${bath} Bath</span>` : ""}
-          ${sqm ? `<span class="tiny">🏠 ${sqm} m²</span>` : ""}
-          ${stShow}
-          <span class="tiny">📦 ${list.length} units</span>
-        </div>
-        <div class="price">${minPrice !== Infinity ? money(minPrice) : ""}</div>
-      </div>
-    `;
-  }).join("");
 
-  modalList.innerHTML = allRow + rows;
+    window[cb] = (data) => { cleanup(); resolve(data); };
 
-  modalList.querySelectorAll(".plotRow").forEach(el=>{
-    el.addEventListener("click", ()=>{
-      const p = decodeURIComponent(el.getAttribute("data-plot") || "");
-      selectedPlot = p;
-      setUrlPlot(selectedPlot);
-      closeModal();
-      renderAll(window.__UNITS__ || []);
-    });
+    const sep = url.includes("?") ? "&" : "?";
+    script.src = url + sep + "callback=" + encodeURIComponent(cb);
+    script.onerror = () => { cleanup(); reject(new Error("jsonp_error")); };
+    document.body.appendChild(script);
   });
 }
 
-function normalizeUnit(u){
-  const id = normStr(u.id || u.hp_id || u.HP_ID || u.unitId || u.Unit || u.unit || u.HP || u.hpId);
-  const plot = normStr(u.plot || u.Plot || u.plotNo || u.PLOT || u.PlotNo);
-  const price = Number(u.price || u.Price || u.PRICE || 0) || 0;
-  const status = normStr(u.status || u.Status || u.SaleStatus || u.saleStatus);
-  const bedrooms = normStr(u.bedrooms || u.Bedrooms || u.bed || u.Bed);
-  const bathrooms = normStr(u.bathrooms || u.Bathrooms || u.bath || u.Bath);
-  const landSqw = normStr(u.landSqw || u.LandSqw || u.land || u.Land);
-  const livingSqm = normStr(u.livingSqm || u.LivingSqm || u.sqm || u.AreaSqm || u.areaSqm);
-  const thumb = safeImg(u.thumbnail || u.thumb || u.cover || u.Cover || u.coverUrl || u.thumbnailUrl);
-  const updated = normStr(u.updated || u.updatedAt || u.Updated || u.LastUpdate || u.lastUpdate);
-  return { id, plot, price, status, bedrooms, bathrooms, landSqw, livingSqm, thumb, updated, raw:u };
+/** =========================
+ * Utilities
+ * ========================= */
+function toNumber(x){
+  const s = String(x ?? "").replace(/,/g,"").trim();
+  const n = Number(s);
+  return Number.isFinite(n) ? n : 0;
+}
+function moneyTHB(x){
+  const n = toNumber(x);
+  return "฿" + n.toLocaleString("en-US");
+}
+function cleanDriveImage(url){
+  const u = String(url || "").trim();
+  if(!u) return "";
+  // already googleusercontent direct
+  if (u.includes("lh3.googleusercontent.com/d/")) return u;
+
+  // drive file id patterns
+  let id = "";
+  const m1 = u.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (m1) id = m1[1];
+  const m2 = u.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (!id && m2) id = m2[1];
+  const m3 = u.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (!id && m3) id = m3[1];
+
+  if (id) return "https://lh3.googleusercontent.com/d/" + id;
+  return u;
+}
+function firstImageFromList(imageList){
+  const arr = String(imageList||"").split(",").map(s=>s.trim()).filter(Boolean);
+  return arr.length ? cleanDriveImage(arr[0]) : "";
 }
 
-function sortUnits(units){
-  const mode = sortSel.value;
-  const arr = [...units];
-  if(mode === "price_desc") arr.sort((a,b)=> (b.price||0)-(a.price||0));
-  else if(mode === "price_asc") arr.sort((a,b)=> (a.price||0)-(b.price||0));
-  else if(mode === "plot_asc") arr.sort((a,b)=> (a.plot||"").localeCompare(b.plot||""));
-  else { // latest
-    arr.sort((a,b)=> (normStr(b.updated)).localeCompare(normStr(a.updated)));
-  }
-  return arr;
+/** =========================
+ * State
+ * ========================= */
+let ALL = [];
+let FILTER_PLOT = "ALL";
+
+/** =========================
+ * DOM
+ * ========================= */
+const grid = document.getElementById("grid");
+const errBox = document.getElementById("errBox");
+const countText = document.getElementById("countText");
+const plotPill = document.getElementById("plotPill");
+const plotModal = document.getElementById("plotModal");
+const plotList = document.getElementById("plotList");
+const sortSelect = document.getElementById("sortSelect");
+
+document.getElementById("btnGateway").addEventListener("click", () => {
+  // ไปหน้า Gateway/Edit
+  window.location.href = GATEWAY_URL;
+});
+
+/** เปิด/ปิด modal */
+function openPlotModal(){
+  plotModal.classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+function closePlotModal(){
+  plotModal.classList.remove("show");
+  document.body.style.overflow = "";
+}
+document.getElementById("closePlot").addEventListener("click", closePlotModal);
+plotModal.addEventListener("click", (e) => {
+  if(e.target === plotModal) closePlotModal();
+});
+plotPill.addEventListener("click", openPlotModal);
+plotPill.addEventListener("keydown", (e)=>{ if(e.key==="Enter") openPlotModal(); });
+
+/** =========================
+ * Render
+ * ========================= */
+function showError(msg){
+  errBox.style.display = "block";
+  errBox.textContent = msg;
+}
+function hideError(){
+  errBox.style.display = "none";
+  errBox.textContent = "";
 }
 
-function renderAll(unitsRaw){
-  const units = unitsRaw.map(normalizeUnit).filter(x=>x.id);
-  window.__UNITS_NORM__ = units;
-
-  // modal plot list
-  renderPlotModal(unitsRaw);
-
-  // filter
-  let shown = units;
-  if(selectedPlot){
-    shown = units.filter(u=>u.plot === selectedPlot);
-    plotLabel.textContent = `Project_0 · PLOT ${selectedPlot}`;
-  }else{
-    plotLabel.textContent = `Project_0 · เลือก PLOT`;
+function sortUnits(arr){
+  const mode = sortSelect.value;
+  const a = [...arr];
+  if(mode==="latest"){
+    a.sort((x,y)=> String(y.lastUpdated||"").localeCompare(String(x.lastUpdated||"")));
+  }else if(mode==="price_desc"){
+    a.sort((x,y)=> toNumber(y.price)-toNumber(x.price));
+  }else if(mode==="price_asc"){
+    a.sort((x,y)=> toNumber(x.price)-toNumber(y.price));
+  }else if(mode==="plot_asc"){
+    a.sort((x,y)=> String(x.plot||"").localeCompare(String(y.plot||"")));
   }
-  countLabel.textContent = `${shown.length} รายการ`;
+  return a;
+}
 
-  // sort
-  shown = sortUnits(shown);
+function renderGrid(){
+  const list = (FILTER_PLOT==="ALL")
+    ? ALL
+    : ALL.filter(u => String(u.plot||"").trim() === FILTER_PLOT);
 
-  // render cards
-  if(!shown.length){
-    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:24px 12px;font-weight:900;color:rgba(0,0,0,.55)">ไม่พบรายการ</div>`;
+  countText.textContent = `${list.length} รายการ`;
+
+  const sorted = sortUnits(list);
+
+  grid.innerHTML = "";
+  if(!sorted.length){
+    grid.innerHTML = `<div class="card" style="padding:18px; border-radius:18px;">
+      <b>ไม่พบรายการ</b><div class="muted">ลองเลือก Plot อื่น หรือกดโหลดรายการ</div>
+    </div>`;
     return;
   }
 
-  grid.innerHTML = shown.map(u=>{
-    const stCls = statusClass(u.status);
-    const thumb = u.thumb;
-    const imgHtml = thumb
-      ? `<img src="${thumb}" alt="${u.id}" loading="lazy" decoding="async" fetchpriority="low"
-            onerror="this.style.display='none'; this.parentElement.querySelector('.noimg').style.display='grid';">`
-      : ``;
+  const frag = document.createDocumentFragment();
+  for(const u of sorted){
+    const img = cleanDriveImage(u.thumbnail) || firstImageFromList(u.imageList) || "";
+    const card = document.createElement("div");
+    card.className = "card";
 
-    return `
-      <div class="card">
-        <div class="thumb">
-          ${imgHtml}
-          <div class="noimg" style="display:${thumb?'none':'grid'}">no image</div>
+    const imgEl = document.createElement("img");
+    imgEl.className = "thumb";
+    imgEl.loading = "lazy";
+    imgEl.decoding = "async";
+    imgEl.alt = u.id || "no image";
+    imgEl.src = img || "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='800' height='450'><rect width='100%' height='100%' fill='#e6edf6'/><text x='50%' y='50%' text-anchor='middle' fill='#8aa0bb' font-size='32' font-family='Arial'>no image</text></svg>`);
+
+    const body = document.createElement("div");
+    body.className = "cardBody";
+    body.innerHTML = `
+      <div class="row1">
+        <div class="hp">${u.id||""}</div>
+        <div class="price">${moneyTHB(u.price||0)}</div>
+      </div>
+      <div class="iconsRow">
+        <div class="miniPill">🛏️ ${u.bedrooms||"-"}</div>
+        <div class="miniPill">🚿 ${u.bathrooms||"-"}</div>
+        <div class="miniPill">📐 ${u.livingSqm||"-"} m²</div>
+      </div>
+      <button class="btnDetail">ดูรายละเอียด</button>
+    `;
+
+    body.querySelector(".btnDetail").addEventListener("click", () => {
+      window.location.href = `details.html?id=${encodeURIComponent(u.id)}&project=${encodeURIComponent(PROJECT)}`;
+    });
+
+    card.appendChild(imgEl);
+    card.appendChild(body);
+    frag.appendChild(card);
+  }
+  grid.appendChild(frag);
+}
+
+/** Plot List Modal */
+function renderPlotModal(){
+  const items = [];
+
+  // ✅ สร้างกลุ่ม Plot จาก Project_0 เท่านั้น
+  const plots = new Map();
+  for(const u of ALL){
+    const plot = String(u.plot||"").trim() || "-";
+    if(!plots.has(plot)) plots.set(plot, u);
+  }
+
+  // ALL item
+  items.push({
+    plot:"ALL",
+    unit:null
+  });
+
+  const sortedPlots = [...plots.keys()].sort((a,b)=>a.localeCompare(b));
+  for(const p of sortedPlots){
+    items.push({ plot:p, unit: plots.get(p) });
+  }
+
+  plotList.innerHTML = "";
+  for(const it of items){
+    const div = document.createElement("div");
+    div.className = "plotItem";
+    if(it.plot==="ALL"){
+      div.innerHTML = `
+        <div class="plotLeft">
+          <div class="plot">ALL</div>
+          <div class="mini"><span class="muted">${ALL.length} units</span> <span class="muted">Project_0</span></div>
         </div>
-
-        <div class="row">
-          <div class="titleRow">
-            <div class="unit">${u.id}</div>
-            <div class="price">${money(u.price)}</div>
+        <div class="badge">เลือก</div>
+      `;
+    }else{
+      const u = it.unit || {};
+      const status = String(u.status||"").toLowerCase().includes("sold") ? "sold" : "";
+      const badgeText = u.status ? String(u.status) : "Available";
+      div.innerHTML = `
+        <div class="plotLeft">
+          <div class="plot">${it.plot}</div>
+          <div class="mini">
+            <span>🛏️ ${u.bedrooms||"-"} Bed</span>
+            <span>🚿 ${u.bathrooms||"-"} Bath</span>
+            <span>🏠 ${u.livingSqm||"-"} m²</span>
           </div>
-
-          <div class="chips">
-            <div class="chip"><span class="mini">🛏</span>${u.bedrooms || "-"}</div>
-            <div class="chip"><span class="mini">🛁</span>${u.bathrooms || "-"}</div>
-            <div class="chip"><span class="mini">📐</span>${u.landSqw ? `${u.landSqw} sq.w` : "-"}</div>
-            <div class="status ${stCls}">${u.status || "—"}</div>
-          </div>
-
-          <button class="btnDetail" onclick="location.href='${DETAILS_URL}?id=${encodeURIComponent(u.id)}'">
-            ดูรายละเอียด
-          </button>
         </div>
+        <div style="text-align:right">
+          <div style="font-weight:1000; font-size:18px;">${moneyTHB(u.price||0)}</div>
+          <div class="badge ${status}">${badgeText}</div>
+        </div>
+      `;
+    }
+
+    div.addEventListener("click", ()=>{
+      FILTER_PLOT = it.plot;
+      closePlotModal();
+      renderGrid();
+    });
+
+    plotList.appendChild(div);
+  }
+}
+
+/** Skeleton */
+function renderSkeleton(){
+  grid.innerHTML = "";
+  for(let i=0;i<6;i++){
+    const s = document.createElement("div");
+    s.className = "card";
+    s.innerHTML = `
+      <div class="thumb skeleton"></div>
+      <div class="cardBody">
+        <div class="row1"><div class="hp skeleton" style="width:120px;height:22px;border-radius:10px;"></div>
+        <div class="price skeleton" style="width:120px;height:22px;border-radius:10px;"></div></div>
+        <div class="iconsRow">
+          <div class="miniPill skeleton" style="height:40px;"></div>
+          <div class="miniPill skeleton" style="height:40px;"></div>
+          <div class="miniPill skeleton" style="height:40px;"></div>
+        </div>
+        <div class="btnDetail skeleton" style="height:46px;"></div>
       </div>
     `;
-  }).join("");
-}
-
-async function softLoadFromCache(){
-  const cached = readCache();
-  if(cached?.data){
-    window.__UNITS__ = cached.data;
-    renderAll(cached.data);
-    // stale-while-revalidate
-    const isFresh = (Date.now() - cached.ts) < CACHE_TTL_MS;
-    if(!isFresh){
-      try{ await refreshInBackground(); }catch(e){}
-    }
-    return true;
-  }
-  return false;
-}
-
-async function refreshInBackground(){
-  const data = await fetchUnitList();
-  window.__UNITS__ = data;
-  writeCache(data);
-  renderAll(data);
-}
-
-async function hardReload(){
-  skeletons();
-  loading.style.display = "block";
-  try{
-    const data = await fetchUnitList();
-    window.__UNITS__ = data;
-    writeCache(data);
-    renderAll(data);
-  }catch(e){
-    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:24px 12px;font-weight:900;color:#8b1a1a;background:rgba(255,255,255,.75);border-radius:24px;border:1px solid rgba(0,0,0,.06)">
-      โหลดไม่สำเร็จ<br><span style="font-weight:700;color:rgba(0,0,0,.55)">ตรวจสอบ Apps Script ว่าเปิดเป็น Web App และอนุญาต Public แล้ว</span>
-    </div>`;
-  }finally{
-    loading.style.display = "none";
+    grid.appendChild(s);
   }
 }
 
-(async function init(){
-  skeletons();
-  loading.style.display = "block";
+/** =========================
+ * Data Load (เร็วขึ้น + cache)
+ * ========================= */
+let _cache = null;
+let _cacheTime = 0;
 
-  // 1) show cache instantly if possible
-  const hadCache = await softLoadFromCache();
-  loading.style.display = hadCache ? "none" : "block";
+async function loadUnits(force=false){
+  hideError();
+  renderSkeleton();
 
-  // 2) always try update quickly (but not block UI if cache exists)
-  try{
-    await refreshInBackground();
-  }catch(e){
-    if(!hadCache){
-      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:24px 12px;font-weight:900;color:#8b1a1a;background:rgba(255,255,255,.75);border-radius:24px;border:1px solid rgba(0,0,0,.06)">
-        โหลดไม่สำเร็จ<br><span style="font-weight:700;color:rgba(0,0,0,.55)">กรุณาลองกด “โหลดรายการ” อีกครั้ง</span>
-      </div>`;
-    }
-  }finally{
-    loading.style.display = "none";
+  const now = Date.now();
+  if(!force && _cache && (now - _cacheTime) < 60_000){
+    ALL = _cache;
+    renderGrid();
+    renderPlotModal();
+    return;
   }
-})();
+
+  const url = `${SCRIPT_URL}?mode=getUnitList&project=${encodeURIComponent(PROJECT)}`;
+  const data = await jsonp(url).catch(err=>{
+    throw new Error("โหลดข้อมูลไม่สำเร็จ (ตรวจ Deploy Apps Script ให้เป็น Anyone และใช้ /exec) : " + err.message);
+  });
+
+  if(data && data.error){
+    throw new Error(String(data.error));
+  }
+  if(!Array.isArray(data)) throw new Error("รูปแบบข้อมูลไม่ถูกต้อง");
+
+  // normalize
+  ALL = data.map(u => ({
+    ...u,
+    thumbnail: cleanDriveImage(u.thumbnail),
+    imageList: String(u.imageList||"")
+  }));
+
+  _cache = ALL;
+  _cacheTime = now;
+
+  renderGrid();
+  renderPlotModal();
+}
+
+document.getElementById("btnLoad").addEventListener("click", ()=>loadUnits(true));
+sortSelect.addEventListener("change", renderGrid);
+
+/** Auto load on start */
+loadUnits(false).catch(err=>showError(err.message));
 </script>
 </body>
 </html>
