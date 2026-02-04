@@ -14,6 +14,10 @@
       --line-green:#06c755;
       --text:#111827;
       --muted:rgba(17,24,39,.55);
+      --card:#ffffff;
+      --stroke:rgba(0,0,0,.06);
+      --shadow:0 10px 26px rgba(0,0,0,.10);
+      --radius:28px;
       --font:"LINE Seed Sans TH","LINE Seed Sans","Noto Sans Thai","Noto Sans Thai UI",
               system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
     }
@@ -26,6 +30,8 @@
       color:var(--text);
       overflow-x:hidden;
     }
+
+    /* LINE-like clouds (บาง ๆ) */
     body::before{
       content:"";
       position:fixed; inset:0;
@@ -39,11 +45,14 @@
         radial-gradient(220px 140px at 18% 78%, var(--cloud-a) 0 56%, transparent 57%),
         radial-gradient(180px 120px at 62% 86%, var(--cloud-b) 0 56%, transparent 57%);
     }
+
     .wrap{
       max-width:420px;
       margin:0 auto;
       padding:16px 14px 22px;
     }
+
+    /* Top bar feel */
     .topbar{
       position:sticky;
       top:0;
@@ -62,17 +71,29 @@
       box-shadow:0 6px 14px rgba(0,0,0,.10);
       display:flex; align-items:center; justify-content:center;
       font-weight:900;
+      letter-spacing:.2px;
     }
     h1{margin:0; font-size:18px; font-weight:900}
-    .sub{margin:4px 0 0; font-size:12px; font-weight:700; color:var(--muted)}
+    .sub{margin:4px 0 0; font-size:12px; font-weight:700; color:rgba(17,24,39,.65)}
+
     .panel{
       background:rgba(255,255,255,.94);
-      border:1px solid rgba(0,0,0,.06);
-      border-radius:28px;
-      box-shadow:0 10px 30px rgba(0,0,0,.10);
+      border:1px solid var(--stroke);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
       padding:14px;
     }
+
     .row{display:flex; gap:10px; align-items:center}
+    .selbox{
+      flex:1;
+      display:flex; align-items:center; gap:10px;
+      background:rgba(255,255,255,.85);
+      border:1px solid var(--stroke);
+      border-radius:16px;
+      padding:10px 12px;
+      min-height:42px;
+    }
     select{
       width:100%;
       border:none;
@@ -82,15 +103,7 @@
       font-size:14px;
       font-weight:900;
     }
-    .selbox{
-      flex:1;
-      display:flex; align-items:center; gap:10px;
-      background:rgba(255,255,255,.85);
-      border:1px solid rgba(0,0,0,.06);
-      border-radius:16px;
-      padding:10px 12px;
-      min-height:42px;
-    }
+
     .btn{
       border:none;
       border-radius:16px;
@@ -101,14 +114,35 @@
       background:var(--line-green);
       color:#fff;
       box-shadow:0 8px 18px rgba(6,199,85,.28);
+      white-space:nowrap;
     }
     .btn:active{transform:translateY(1px)}
+
+    .loadingRow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:14px 10px 6px;
+      color:#fff;
+      font-weight:900;
+      text-shadow:0 1px 0 rgba(0,0,0,.12);
+    }
+    .spinner{
+      width:18px; height:18px;
+      border-radius:999px;
+      border:2px solid rgba(255,255,255,.65);
+      border-top-color:rgba(255,255,255,.15);
+      animation:spin .8s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
     .list{margin-top:12px; display:grid; gap:12px}
+
     .card{
-      background:#fff;
-      border:1px solid rgba(0,0,0,.06);
+      background:var(--card);
+      border:1px solid var(--stroke);
       border-radius:26px;
-      box-shadow:0 10px 26px rgba(0,0,0,.10);
+      box-shadow:var(--shadow);
       overflow:hidden;
     }
     .cardInner{
@@ -124,18 +158,21 @@
     }
     .thumb img{width:100%; height:100%; object-fit:cover}
     .meta{flex:1; min-width:0}
-    .row1{display:flex; justify-content:space-between; gap:10px}
+
+    .row1{display:flex; justify-content:space-between; gap:10px; align-items:baseline}
     .hp{margin:0; font-weight:900; font-size:15px}
     .price{margin:0; font-weight:900; font-size:15px; white-space:nowrap}
+
     .subline{
       margin:4px 0 0;
       font-size:12px;
       font-weight:700;
-      color:var(--muted);
+      color:rgba(17,24,39,.55);
       overflow:hidden;
       white-space:nowrap;
       text-overflow:ellipsis;
     }
+
     .chips{margin-top:8px; display:flex; gap:8px; flex-wrap:wrap}
     .chip{
       background:rgba(17,24,39,.06);
@@ -146,6 +183,7 @@
       font-weight:900;
     }
     .chipGreen{background:rgba(157,229,147,.55)}
+
     .actions{padding:0 12px 12px}
     .aBtn{
       display:block;
@@ -154,26 +192,18 @@
       border-radius:18px;
       padding:11px 12px;
       font-weight:900;
-      border:1px solid rgba(0,0,0,.06);
+      border:1px solid var(--stroke);
       background:var(--chat-green);
       color:#0b1b12;
     }
-    .loadingRow{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:14px 10px 6px;
-      color:#fff;
-      font-weight:900;
+
+    .hint{
+      margin-top:10px;
+      font-size:12px;
+      font-weight:800;
+      color:rgba(255,255,255,.92);
+      text-shadow:0 1px 0 rgba(0,0,0,.10);
     }
-    .spinner{
-      width:18px; height:18px;
-      border-radius:999px;
-      border:2px solid rgba(255,255,255,.65);
-      border-top-color:rgba(255,255,255,.15);
-      animation:spin .8s linear infinite;
-    }
-    @keyframes spin{to{transform:rotate(360deg)}}
   </style>
 </head>
 
@@ -184,7 +214,7 @@
         <div class="logoDot">SP</div>
         <div>
           <h1>smart properties system</h1>
-          <div class="sub">Catalog • เลือกโครงการ แล้วโหลดรายการบ้าน</div>
+          <div class="sub">Catalog • รายการบ้านแบบ feel LINE</div>
         </div>
       </div>
     </div>
@@ -212,23 +242,26 @@
     </div>
 
     <div id="list" class="list"></div>
+    <div class="hint">Tip: ถ้าเปิดจากลิงก์ สามารถใส่ ?project=Project_0 ได้</div>
   </div>
 
 <script>
-  // ✅ ใส่ URL Web App ของ Apps Script ที่ Deploy แล้ว (สำคัญ!)
+  // ✅ API URL ของคุณ (ใส่ให้แล้ว)
   const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
 
   const $ = (id)=>document.getElementById(id);
 
   function formatPriceTHB(n){
-    const num = Number(String(n||"").replace(/,/g,""));
-    if(!isFinite(num)) return String(n||"");
+    const raw = String(n ?? "").trim();
+    const num = Number(raw.replace(/,/g,""));
+    if(!raw) return "-";
+    if(!isFinite(num)) return raw;
     return "฿" + num.toLocaleString("en-US");
   }
 
   async function fetchUnitList(project){
     const url = `${API_URL}?mode=getUnitList&project=${encodeURIComponent(project)}&t=${Date.now()}`;
-    const res = await fetch(url);
+    const res = await fetch(url, { cache:"no-store" });
     const data = await res.json();
     if(data && data.error) throw new Error(data.error);
     return Array.isArray(data)?data:[];
@@ -236,6 +269,8 @@
 
   function card(item, project){
     const detailsUrl = `details.html?id=${encodeURIComponent(item.id)}&project=${encodeURIComponent(project)}`;
+    const nameLine = (item.projectName && String(item.projectName).trim()) ? item.projectName : project;
+
     return `
       <div class="card">
         <div class="cardInner">
@@ -245,7 +280,7 @@
               <p class="hp">${item.id||"-"} • ${item.plot||"-"}</p>
               <p class="price">${formatPriceTHB(item.price)}</p>
             </div>
-            <div class="subline">${item.projectName||project}</div>
+            <div class="subline">${nameLine}</div>
             <div class="chips">
               ${item.badge?`<div class="chip chipGreen">Badge: ${item.badge}</div>`:""}
               ${item.status?`<div class="chip">Status: ${item.status}</div>`:""}
@@ -272,7 +307,7 @@
     try{
       const items = await fetchUnitList(project);
       items.sort((a,b)=>String(a.id||"").localeCompare(String(b.id||"")));
-      $("list").innerHTML = items.map(x=>card(x,project)).join("");
+      $("list").innerHTML = items.map(x=>card(x,project)).join("") || `<div class="panel" style="margin-top:12px;">ไม่พบรายการ</div>`;
     }catch(err){
       $("list").innerHTML = `<div class="panel" style="margin-top:12px;"><b>Error:</b> ${err.message}</div>`;
     }finally{
