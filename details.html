@@ -317,11 +317,216 @@
   <div class="h-6"></div>
 
 <script>
-/* ====== (script เดิมของคุณ) ======
-   ผมไม่แตะ logic เดิมนะครับ — ใส่สคริปต์เดิมของคุณไว้ตรงนี้ “ทั้งหมด”
-   ถ้าคุณต้องการให้ผมวางให้ครบ 100% แบบไม่ต้องแทรกเอง:
-   ให้คุณก็อปปี้ <script> เดิมจาก details.html เดิมมาแปะทับตรงนี้ครับ
-*/
+ <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Kanit', sans-serif; }
+    .price-text { font-size: clamp(2.2rem, 5vw, 3.3rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; }
+    .muted { color:#94a3b8; }
+    .pill { padding:.55rem 1rem; border-radius:999px; font-weight:600; font-size:.95rem; }
+    .soft-card { border-radius: 2.2rem; overflow:hidden; box-shadow: 0 10px 30px rgba(2,6,23,.10); }
+    .thumb { border-radius: 1.25rem; overflow:hidden; border: 2px solid transparent; }
+    .thumb.active { border-color:#0f172a; }
+    .thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+    img { -webkit-user-drag: none; }
+
+    /* ✅ Arrow buttons: subtle, no white background */
+    .nav-btn{
+      position:absolute;
+      top:50%;
+      transform: translateY(-50%);
+      width:56px; height:56px;
+      border-radius:999px;
+      display:flex; align-items:center; justify-content:center;
+      background: transparent;
+      border: none;
+      color: rgba(255,255,255,.85);
+      font-size: 44px;
+      line-height: 1;
+      cursor:pointer;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+      text-shadow: 0 6px 18px rgba(0,0,0,.40);
+      transition: transform .12s ease, opacity .12s ease;
+      opacity: .85;
+    }
+    .nav-btn:hover{ opacity: 1; transform: translateY(-50%) scale(1.04); }
+    .nav-btn:active{ transform: translateY(-50%) scale(.96); }
+    .nav-left{ left: 14px; }
+    .nav-right{ right: 14px; }
+
+    @media (max-width: 640px){
+      .nav-btn{ width:46px; height:46px; font-size:38px; }
+      .nav-left{ left: 10px; }
+      .nav-right{ right: 10px; }
+    }
+
+    /* ✅ Skeleton shimmer */
+    .shimmer {
+      background: linear-gradient(90deg, #eef2f7 25%, #f8fafc 37%, #eef2f7 63%);
+      background-size: 400% 100%;
+      animation: shimmer 1.25s ease infinite;
+    }
+    @keyframes shimmer {
+      0% { background-position: 100% 0; }
+      100% { background-position: 0 0; }
+    }
+
+    /* ✅ Photo loading overlay */
+    .photo-overlay {
+      position:absolute; inset:0;
+      display:flex; align-items:center; justify-content:center;
+      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.28), rgba(0,0,0,.18));
+      backdrop-filter: blur(6px);
+      color: rgba(255,255,255,.95);
+      font-weight:700;
+      letter-spacing:.04em;
+    }
+    .photo-overlay.hidden{ display:none; }
+
+    /* ✅ Page loading overlay (clean, not "broken") */
+    .page-loading {
+      position: fixed; inset:0;
+      background: #f8fafc;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index: 9999;
+      padding: 16px;
+    }
+    .page-loading.hidden{ display:none; }
+  </style>
+</head>
+
+<body class="bg-slate-50">
+
+  <!-- ✅ FULL PAGE LOADING (shows first, looks clean) -->
+  <div id="pageLoading" class="page-loading">
+    <div class="w-full max-w-3xl">
+      <div class="flex items-start justify-between mb-6">
+        <div class="w-1/2">
+          <div class="h-10 w-48 rounded-2xl shimmer"></div>
+          <div class="h-5 w-64 mt-3 rounded-xl shimmer"></div>
+        </div>
+        <div class="flex gap-3">
+          <div class="w-12 h-12 rounded-2xl shimmer"></div>
+          <div class="w-12 h-12 rounded-2xl shimmer"></div>
+        </div>
+      </div>
+
+      <div class="soft-card bg-white">
+        <div class="h-[320px] sm:h-[420px] md:h-[520px] shimmer"></div>
+        <div class="p-6">
+          <div class="h-6 w-40 rounded-xl shimmer mb-3"></div>
+          <div class="h-6 w-56 rounded-xl shimmer"></div>
+        </div>
+      </div>
+
+      <div class="mt-6 soft-card bg-white p-6">
+        <div class="h-12 w-56 rounded-2xl shimmer mb-4"></div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div class="h-20 rounded-2xl shimmer"></div>
+          <div class="h-20 rounded-2xl shimmer"></div>
+          <div class="h-20 rounded-2xl shimmer"></div>
+          <div class="h-20 rounded-2xl shimmer"></div>
+        </div>
+      </div>
+
+      <div class="text-center muted mt-6 font-semibold">Loading data & photos…</div>
+    </div>
+  </div>
+
+  <!-- ✅ MAIN CONTENT (hidden until ready) -->
+  <div id="app" class="opacity-0 transition-opacity duration-200">
+    <div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
+
+      <!-- Header -->
+      <div class="flex items-start justify-between gap-4 mb-6">
+        <div class="min-w-0">
+          <h1 id="title" class="text-3xl md:text-5xl font-extrabold italic text-slate-900 truncate">UNIT</h1>
+          <div id="subtitle" class="mt-2 text-base md:text-lg muted">Project: - • Unit: -</div>
+        </div>
+
+        <div class="flex gap-3 shrink-0">
+          <button onclick="history.back()"
+            class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white shadow flex items-center justify-center text-xl"
+            title="Back">←</button>
+
+          <a id="homeBtn" href="index.html"
+            class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-slate-900 text-white shadow flex items-center justify-center text-xl"
+            title="Home">⌂</a>
+        </div>
+      </div>
+
+      <!-- Error card (if missing id) -->
+      <div id="errBox" class="hidden bg-white soft-card p-6 md:p-8">
+        <div class="text-2xl font-extrabold text-slate-900 mb-2">Missing Unit ID</div>
+        <div class="muted mb-4">กรุณาเปิดลิงก์แบบนี้: <b>details.html?id=HP-Z001&project=Project_0</b></div>
+        <a href="index.html" class="inline-block px-5 py-3 rounded-2xl bg-slate-900 text-white font-semibold">Back to Index</a>
+      </div>
+
+      <!-- Main gallery card -->
+      <div id="galleryCard" class="soft-card bg-white">
+        <div class="relative">
+          <img id="mainImg" src="" alt="Property photo"
+               class="w-full h-[320px] sm:h-[420px] md:h-[520px] object-cover"
+               decoding="async" loading="eager">
+
+          <!-- ✅ overlay while photo loads (prevents "broken" feeling) -->
+          <div id="photoLoading" class="photo-overlay">
+            Loading photo…
+          </div>
+
+          <div id="plotPill" class="absolute top-4 left-4 bg-white/90 px-4 py-2 rounded-full font-semibold">-</div>
+          <div id="statusPill" class="absolute top-4 right-4 px-4 py-2 rounded-full font-semibold">-</div>
+
+          <button id="prevBtn" class="nav-btn nav-left" aria-label="Previous photo" title="Previous">‹</button>
+          <button id="nextBtn" class="nav-btn nav-right" aria-label="Next photo" title="Next">›</button>
+
+          <div id="counter" class="absolute bottom-4 right-4 bg-white/90 px-4 py-2 rounded-full font-semibold">1 / 1</div>
+        </div>
+
+        <div class="p-4 md:p-6">
+          <div id="thumbRow" class="flex gap-3 overflow-x-auto pb-2"></div>
+        </div>
+      </div>
+
+      <!-- Info card -->
+      <div class="mt-6 bg-white soft-card p-6 md:p-8">
+        <div class="flex flex-wrap gap-3 mb-5">
+          <div id="badgePill" class="pill bg-violet-100 text-violet-700">Badge: -</div>
+          <div id="sysPill" class="pill bg-slate-100 text-slate-700">System: -</div>
+          <div id="updated" class="w-full muted font-semibold">Updated: -</div>
+        </div>
+
+        <div class="price-text text-slate-900" id="price">฿0</div>
+
+        <div class="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+          <div class="bg-slate-100 rounded-2xl p-4"><div class="muted">Bedrooms</div><div id="bed" class="text-lg font-semibold">-</div></div>
+          <div class="bg-slate-100 rounded-2xl p-4"><div class="muted">Bathrooms</div><div id="bath" class="text-lg font-semibold">-</div></div>
+          <div class="bg-slate-100 rounded-2xl p-4"><div class="muted">Land (sq.w)</div><div id="landSqw" class="text-lg font-semibold">-</div></div>
+          <div class="bg-slate-100 rounded-2xl p-4"><div class="muted">Living (sqm)</div><div id="livingSqm" class="text-lg font-semibold">-</div></div>
+        </div>
+
+        <div class="mt-6">
+          <div class="text-sm muted font-semibold mb-2">Description</div>
+          <div id="desc" class="text-slate-800 leading-relaxed">-</div>
+        </div>
+
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a id="mapBtn" href="#" target="_blank"
+             class="px-5 py-3 rounded-2xl bg-slate-900 text-white font-semibold">OPEN MAP</a>
+          <a id="fbBtn" href="#" target="_blank"
+             class="px-5 py-3 rounded-2xl bg-blue-600 text-white font-semibold">FACEBOOK / LISTING</a>
+        </div>
+      </div>
+
+      <div id="loadingText" class="text-center text-slate-400 py-10 hidden">Loading...</div>
+    </div>
+  </div>
+
+<script>
 </script>
 </body>
 </html>
