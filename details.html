@@ -317,7 +317,7 @@
   <div class="h-6"></div>
 
 <script>
- <script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
@@ -527,6 +527,202 @@
   </div>
 
 <script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
+
+  const qs = new URLSearchParams(location.search);
+  const PROJECT = qs.get("project") || "Project_0";
+  const ID = qs.get("id") || qs.get("hpId") || "";
+
+  document.getElementById("homeBtn").href = `index.html?project=${encodeURIComponent(PROJECT)}`;
+
+  const pageLoading = document.getElementById("pageLoading");
+  const app = document.getElementById("app");
+  const errBox = document.getElementById("errBox");
+  const galleryCard = document.getElementById("galleryCard");
+  const photoLoading = document.getElementById("photoLoading");
+
+  const priceFmt = v => {
+    const n = Number(v);
+    return (!n || n === 0) ? "฿0" : "฿" + n.toLocaleString();
+  };
+
+  const statusClass = s => {
+    s = String(s || "").toLowerCase();
+    if (s.includes("available")) return "bg-emerald-100 text-emerald-700";
+    if (s.includes("under")) return "bg-sky-100 text-sky-700";
+    if (s.includes("reserved")) return "bg-amber-100 text-amber-700";
+    if (s.includes("sold")) return "bg-rose-100 text-rose-700";
+    return "bg-slate-100 text-slate-700";
+  };
+
+  let images = [];
+  let current = 0;
+
+  function cleanUrl(u){ return String(u||"").trim(); }
+
+  function showApp(){
+    pageLoading.classList.add("hidden");
+    app.classList.remove("opacity-0");
+  }
+
+  function waitImageLoad(imgEl, src){
+    return new Promise((resolve) => {
+      let done = false;
+      const timer = setTimeout(() => { if(!done){ done = true; resolve(false); } }, 12000);
+
+      imgEl.onload = () => { if(done) return; done = true; clearTimeout(timer); resolve(true); };
+      imgEl.onerror = () => { if(done) return; done = true; clearTimeout(timer); resolve(false); };
+
+      imgEl.src = src;
+    });
+  }
+
+  function setMain(i){
+    if(!images.length) return;
+    current = (i + images.length) % images.length;
+
+    // show photo overlay until loaded
+    photoLoading.classList.remove("hidden");
+    const mainImg = document.getElementById("mainImg");
+    waitImageLoad(mainImg, images[current]).then(() => {
+      photoLoading.classList.add("hidden");
+    });
+
+    document.getElementById("counter").textContent = `${current+1} / ${images.length}`;
+
+    const thumbs = document.querySelectorAll("[data-thumb]");
+    thumbs.forEach((t, idx) => idx === current ? t.classList.add("active") : t.classList.remove("active"));
+  }
+
+  function renderThumbs(){
+    const row = document.getElementById("thumbRow");
+    row.innerHTML = images.map((src, idx) => `
+      <button data-thumb class="thumb ${idx===0 ? "active" : ""} shrink-0 w-[92px] h-[64px] md:w-[120px] md:h-[78px] bg-slate-200"
+              title="Photo ${idx+1}">
+        <img src="${src}" alt="thumb ${idx+1}" loading="lazy" decoding="async">
+      </button>
+    `).join("");
+
+    row.querySelectorAll("[data-thumb]").forEach((btn, idx) => {
+      btn.addEventListener("click", () => setMain(idx));
+    });
+  }
+
+  function enableSwipe(){
+    const img = document.getElementById("mainImg");
+    let x0 = null;
+
+    img.addEventListener("touchstart", (e) => { x0 = e.touches[0].clientX; }, {passive:true});
+    img.addEventListener("touchend", (e) => {
+      if(x0 === null) return;
+      const x1 = e.changedTouches[0].clientX;
+      const dx = x1 - x0;
+      x0 = null;
+      if(Math.abs(dx) < 40) return;
+      if(dx > 0) setMain(current - 1);
+      else setMain(current + 1);
+    }, {passive:true});
+  }
+
+  async function load(){
+    // ✅ if missing id, show clean error page
+    if(!ID){
+      galleryCard.classList.add("hidden");
+      errBox.classList.remove("hidden");
+      showApp();
+      return;
+    }
+
+    try{
+      const res = await fetch(`${API_URL}?mode=getUnitDetail&project=${encodeURIComponent(PROJECT)}&hpId=${encodeURIComponent(ID)}&t=${Date.now()}`);
+      const d = await res.json();
+
+      if(d.error){
+        galleryCard.classList.add("hidden");
+        errBox.classList.remove("hidden");
+        showApp();
+        return;
+      }
+
+      const plot = d.Plot || d.plot || "-";
+      document.getElementById("title").textContent = `UNIT ${ID} • ${plot}`;
+      document.getElementById("subtitle").textContent = `Project: ${PROJECT} • Unit: ${ID}`;
+
+      document.getElementById("plotPill").textContent = plot;
+
+      const status = d.Status || d.status || "-";
+      const statusPill = document.getElementById("statusPill");
+      statusPill.className = `absolute top-4 right-4 px-4 py-2 rounded-full font-semibold ${statusClass(status)}`;
+      statusPill.textContent = status;
+
+      document.getElementById("badgePill").textContent = `Badge: ${d.Badge || d.badge || "-"}`;
+      document.getElementById("sysPill").textContent = `System: ${d.System_Status || d.sysStatus || "-"}`;
+      document.getElementById("updated").textContent = `Updated: ${d.Last_Updated || d.lastUpdated || "-"}`;
+
+      document.getElementById("price").textContent = priceFmt(d.Price || d.price || 0);
+      document.getElementById("bed").textContent = d.Bedrooms || d.bedrooms || "-";
+      document.getElementById("bath").textContent = d.Bathrooms || d.bathrooms || "-";
+      document.getElementById("landSqw").textContent = d.Land_Area_sq_w || d.landSqw || "-";
+      document.getElementById("livingSqm").textContent = d.Living_Area_sq_m || d.livingSqm || "-";
+      document.getElementById("desc").textContent = d.Description || d.description || "-";
+
+      const map = d.Map_Link || "";
+      const fb  = d.FBLink || "";
+      const mapBtn = document.getElementById("mapBtn");
+      const fbBtn  = document.getElementById("fbBtn");
+      mapBtn.href = map ? map : "#";
+      fbBtn.href  = fb ? fb : "#";
+      if(!map) mapBtn.classList.add("opacity-40","pointer-events-none");
+      if(!fb)  fbBtn.classList.add("opacity-40","pointer-events-none");
+
+      // Images
+      const thumb = cleanUrl(d.Thumbnail_Image || d.thumbnail || "");
+      const listRaw = cleanUrl(d.Image_List || d.image_list || "");
+      const list = listRaw ? listRaw.split(",").map(s => cleanUrl(s)).filter(Boolean) : [];
+
+      const seen = new Set();
+      images = [];
+      [thumb, ...list].forEach(u => {
+        if(u && !seen.has(u)){
+          seen.add(u);
+          images.push(u);
+        }
+      });
+
+      if(!images.length){
+        images = ["https://via.placeholder.com/1200x700?text=No+Image"];
+      }
+
+      renderThumbs();
+      enableSwipe();
+
+      // ✅ show app immediately (not broken), but keep photo overlay until first image loads
+      showApp();
+
+      // First image
+      setMain(0);
+
+      // Arrows
+      document.getElementById("prevBtn").addEventListener("click", () => setMain(current - 1));
+      document.getElementById("nextBtn").addEventListener("click", () => setMain(current + 1));
+
+      // Keyboard (desktop)
+      window.addEventListener("keydown", (e) => {
+        if(e.key === "ArrowLeft") setMain(current - 1);
+        if(e.key === "ArrowRight") setMain(current + 1);
+      });
+
+    }catch(err){
+      galleryCard.classList.add("hidden");
+      errBox.classList.remove("hidden");
+      showApp();
+    }
+  }
+
+  load();
+</script>
+</body>
+</html>
 </script>
 </body>
 </html>
