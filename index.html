@@ -2,328 +2,588 @@
 <html lang="th">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>smart properties system</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Noto+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --line-bg:#8CABD9;
-      --cloud-a:rgba(244,252,255,.26);
-      --cloud-b:rgba(244,252,255,.18);
-      --chat-green:#9DE593;
-      --line-green:#06c755;
-      --text:#111827;
-      --muted:rgba(17,24,39,.55);
+      --line-bg:#8fb2d9;
       --card:#ffffff;
-      --stroke:rgba(0,0,0,.06);
-      --shadow:0 10px 26px rgba(0,0,0,.10);
-      --radius:28px;
-      --font:"LINE Seed Sans TH","LINE Seed Sans","Noto Sans Thai","Noto Sans Thai UI",
-              system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      --text:#0f172a;
+      --muted:#64748b;
+      --border:rgba(15,23,42,.10);
+      --shadow:0 10px 30px rgba(2,6,23,.08);
+      --green:#06c755;
+      --green-d:#05b24c;
+      --pill:#eef2f7;
+      --chip:#f1f5f9;
+      --radius:22px;
     }
+
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
-      font-family:var(--font);
-      background:var(--line-bg);
+      font-family:"Noto Sans Thai","Noto Sans",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       color:var(--text);
+      background:var(--line-bg);
       overflow-x:hidden;
     }
 
-    /* LINE-like clouds (บาง ๆ) */
+    /* LINE-like wallpaper */
     body::before{
       content:"";
       position:fixed; inset:0;
-      pointer-events:none;
       background:
-        radial-gradient(120px 80px at 12% 22%, var(--cloud-a) 0 60%, transparent 61%),
-        radial-gradient(160px 100px at 30% 24%, var(--cloud-a) 0 58%, transparent 59%),
-        radial-gradient(130px 90px at 50% 20%, var(--cloud-b) 0 56%, transparent 57%),
-        radial-gradient(200px 120px at 85% 28%, var(--cloud-a) 0 56%, transparent 57%),
-        radial-gradient(160px 110px at 78% 62%, var(--cloud-b) 0 56%, transparent 57%),
-        radial-gradient(220px 140px at 18% 78%, var(--cloud-a) 0 56%, transparent 57%),
-        radial-gradient(180px 120px at 62% 86%, var(--cloud-b) 0 56%, transparent 57%);
+        radial-gradient(120px 70px at 12% 28%, rgba(255,255,255,.18) 0 60%, rgba(255,255,255,0) 61%),
+        radial-gradient(140px 80px at 23% 30%, rgba(255,255,255,.18) 0 58%, rgba(255,255,255,0) 59%),
+        radial-gradient(120px 70px at 32% 28%, rgba(255,255,255,.18) 0 60%, rgba(255,255,255,0) 61%),
+
+        radial-gradient(140px 80px at 72% 58%, rgba(255,255,255,.14) 0 58%, rgba(255,255,255,0) 59%),
+        radial-gradient(160px 90px at 82% 60%, rgba(255,255,255,.14) 0 58%, rgba(255,255,255,0) 59%),
+        radial-gradient(140px 80px at 92% 58%, rgba(255,255,255,.14) 0 58%, rgba(255,255,255,0) 59%),
+
+        linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,0) 55%);
+      pointer-events:none;
+      z-index:-1;
     }
 
-    .wrap{
-      max-width:420px;
-      margin:0 auto;
-      padding:16px 14px 22px;
-    }
-
-    /* Top bar feel */
     .topbar{
-      position:sticky;
-      top:0;
-      z-index:50;
-      padding:10px 12px;
-      margin:0 -14px 12px;
-      background:rgba(140,171,217,.70);
+      position:sticky; top:0;
+      padding:12px 14px calc(10px + env(safe-area-inset-top));
+      display:flex; align-items:center; gap:12px;
+      background:rgba(15,23,42,.18);
       backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
       border-bottom:1px solid rgba(255,255,255,.18);
     }
-    .titleRow{display:flex; gap:10px; align-items:center}
-    .logoDot{
-      width:34px; height:34px;
-      border-radius:12px;
-      background:rgba(255,255,255,.85);
-      box-shadow:0 6px 14px rgba(0,0,0,.10);
-      display:flex; align-items:center; justify-content:center;
-      font-weight:900;
-      letter-spacing:.2px;
+    .avatar{
+      width:42px; height:42px; border-radius:50%;
+      display:grid; place-items:center;
+      font-weight:800;
+      background:rgba(255,255,255,.80);
+      color:#0f172a;
+      box-shadow:0 6px 16px rgba(0,0,0,.12);
+      flex:0 0 auto;
     }
-    h1{margin:0; font-size:18px; font-weight:900}
-    .sub{margin:4px 0 0; font-size:12px; font-weight:700; color:rgba(17,24,39,.65)}
+    .titlewrap{flex:1; min-width:0}
+    .title{
+      font-size:20px; font-weight:800; line-height:1.2;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      text-transform:lowercase;
+    }
+    .subtitle{
+      font-size:12px; color:rgba(255,255,255,.85);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .iconbtn{
+      width:40px; height:40px; border-radius:14px;
+      border:1px solid rgba(255,255,255,.25);
+      background:rgba(255,255,255,.70);
+      display:grid; place-items:center;
+      cursor:pointer;
+      box-shadow:0 8px 18px rgba(0,0,0,.10);
+      user-select:none;
+      flex:0 0 auto;
+    }
+    .iconbtn:active{transform:translateY(1px)}
+    .iconbtn svg{width:20px;height:20px;opacity:.85}
+    .iconbtn[disabled]{opacity:.45; cursor:not-allowed}
 
+    .wrap{max-width:1200px; margin:0 auto; padding:14px 14px 26px}
     .panel{
-      background:rgba(255,255,255,.94);
-      border:1px solid var(--stroke);
+      background:rgba(255,255,255,.92);
+      border:1px solid rgba(255,255,255,.55);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
       padding:14px;
     }
 
-    .row{display:flex; gap:10px; align-items:center}
-    .selbox{
-      flex:1;
-      display:flex; align-items:center; gap:10px;
-      background:rgba(255,255,255,.85);
-      border:1px solid var(--stroke);
-      border-radius:16px;
-      padding:10px 12px;
-      min-height:42px;
-    }
-    select{
-      width:100%;
-      border:none;
-      outline:none;
-      background:transparent;
-      font-family:var(--font);
-      font-size:14px;
-      font-weight:900;
-    }
+    .controls{display:flex; gap:12px; align-items:center; flex-wrap:wrap}
+    .controlGrow{flex:1; min-width:220px}
 
     .btn{
-      border:none;
-      border-radius:16px;
-      padding:11px 14px;
-      min-height:42px;
-      font-weight:900;
+      border:none; border-radius:16px;
+      padding:12px 14px;
+      font-weight:800;
+      font-size:15px;
       cursor:pointer;
-      background:var(--line-green);
-      color:#fff;
-      box-shadow:0 8px 18px rgba(6,199,85,.28);
-      white-space:nowrap;
+      display:inline-flex; align-items:center; gap:8px;
+      user-select:none;
     }
     .btn:active{transform:translateY(1px)}
+    .btnGreen{background:var(--green); color:white}
+    .btnGreen:hover{background:var(--green-d)}
+    .btnSoft{background:var(--pill); color:var(--text)}
+    .btnSoft:hover{filter:brightness(.98)}
 
-    .loadingRow{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:14px 10px 6px;
-      color:#fff;
+    .selectLike{
+      width:100%;
+      background:var(--pill);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:12px 14px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      cursor:pointer;
+    }
+    .selectLike .left{min-width:0}
+    .selectLike .label{font-size:12px; color:var(--muted); font-weight:700}
+    .selectLike .value{font-size:16px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+    .selectLike .chev{opacity:.6}
+
+    /* จุดที่ 3: 1 col มือถือ / 2 col tablet / 3 col desktop */
+    .grid{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns:1fr;
+      gap:14px;
+    }
+    @media (min-width:720px){
+      .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    }
+    @media (min-width:1024px){
+      .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+    }
+
+    .card{
+      background:rgba(255,255,255,.95);
+      border:1px solid rgba(255,255,255,.55);
+      border-radius:var(--radius);
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      display:flex; flex-direction:column;
+    }
+    .thumb{
+      width:100%; aspect-ratio:16/9;
+      background:#e5e7eb;
+      position:relative;
+      overflow:hidden;
+    }
+    .thumb img{
+      width:100%; height:100%;
+      object-fit:cover;
+      display:block;
+      transform:scale(1.02);
+    }
+    .thumb .badge{
+      position:absolute; left:10px; top:10px;
+      background:rgba(255,255,255,.88);
+      border:1px solid rgba(15,23,42,.10);
+      padding:6px 10px;
+      border-radius:999px;
+      font-weight:900; font-size:12px;
+      backdrop-filter:blur(8px);
+    }
+    .content{padding:12px 12px 14px}
+    .row1{display:flex; justify-content:space-between; gap:10px; align-items:flex-start}
+    .hp{font-weight:900; font-size:18px; line-height:1.2}
+    .plot{font-weight:800; font-size:14px; color:var(--muted)}
+    .price{font-weight:950; font-size:18px; white-space:nowrap}
+
+    .chips{margin-top:10px; display:flex; flex-wrap:wrap; gap:8px}
+    .chip{
+      background:var(--chip);
+      border:1px solid var(--border);
+      border-radius:999px;
+      padding:7px 10px;
+      font-weight:800;
+      font-size:13px;
+      display:inline-flex; align-items:center; gap:6px;
+    }
+    .chip .i{opacity:.85}
+
+    .actions{margin-top:12px; display:flex; gap:10px}
+    .actions a{
+      flex:1;
+      text-align:center;
+      text-decoration:none;
+      border-radius:16px;
+      padding:12px 12px;
       font-weight:900;
-      text-shadow:0 1px 0 rgba(0,0,0,.12);
+    }
+    .aDetail{background:rgba(6,199,85,.18); color:#065f46; border:1px solid rgba(6,199,85,.35)}
+    .aDetail:hover{background:rgba(6,199,85,.22)}
+    .aShare{background:rgba(15,23,42,.06); color:#0f172a; border:1px solid rgba(15,23,42,.10)}
+    .aShare:hover{background:rgba(15,23,42,.08)}
+
+    .modalBack{
+      position:fixed; inset:0;
+      background:rgba(2,6,23,.45);
+      display:none;
+      align-items:center; justify-content:center;
+      padding:16px;
+      z-index:50;
+    }
+    .modal{
+      width:min(720px, 100%);
+      background:rgba(255,255,255,.98);
+      border-radius:22px;
+      box-shadow:0 30px 70px rgba(0,0,0,.30);
+      overflow:hidden;
+    }
+    .modalHead{
+      padding:14px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      border-bottom:1px solid rgba(15,23,42,.08);
+    }
+    .modalTitle{font-weight:950; font-size:18px}
+    .closeBtn{background:rgba(239,68,68,.92); color:white}
+    .modalBody{max-height:min(70vh, 620px); overflow:auto}
+
+    /* จุดที่ 2: รายการ Plot เป็นของ Project_0 เท่านั้น + แสดงรายละเอียดครบ */
+    .item{
+      padding:14px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      border-bottom:1px solid rgba(15,23,42,.06);
+      cursor:pointer;
+    }
+    .item:hover{background:rgba(15,23,42,.03)}
+    .itemMain{min-width:0}
+    .itemTop{display:flex; gap:10px; align-items:baseline; flex-wrap:wrap}
+    .itemPlot{font-weight:950; font-size:18px}
+    .itemPrice{font-weight:950; font-size:18px}
+    .itemSub{margin-top:6px; display:flex; gap:12px; flex-wrap:wrap; color:var(--muted); font-weight:700; font-size:13px}
+    .statusPill{
+      padding:7px 12px; border-radius:999px; font-weight:900; font-size:13px;
+      border:1px solid rgba(15,23,42,.10);
+      background:rgba(34,197,94,.14);
+      color:#166534;
+      white-space:nowrap;
+    }
+    .statusPill.sold{background:rgba(239,68,68,.12); color:#991b1b}
+    .statusPill.pending{background:rgba(245,158,11,.14); color:#92400e}
+
+    .loading{
+      margin-top:14px;
+      padding:14px;
+      text-align:center;
+      color:rgba(255,255,255,.92);
+      font-weight:800;
     }
     .spinner{
-      width:18px; height:18px;
-      border-radius:999px;
-      border:2px solid rgba(255,255,255,.65);
-      border-top-color:rgba(255,255,255,.15);
-      animation:spin .8s linear infinite;
+      width:22px;height:22px;border-radius:50%;
+      border:3px solid rgba(255,255,255,.35);
+      border-top-color:rgba(255,255,255,.95);
+      margin:0 auto 10px;
+      animation:spin .9s linear infinite;
     }
     @keyframes spin{to{transform:rotate(360deg)}}
 
-    .list{margin-top:12px; display:grid; gap:12px}
-
-    .card{
-      background:var(--card);
-      border:1px solid var(--stroke);
-      border-radius:26px;
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    .cardInner{
-      display:flex; gap:12px;
-      padding:12px;
-    }
-    .thumb{
-      width:86px; height:86px;
-      border-radius:18px;
-      overflow:hidden;
-      background:rgba(0,0,0,.06);
-      flex:0 0 auto;
-    }
-    .thumb img{width:100%; height:100%; object-fit:cover}
-    .meta{flex:1; min-width:0}
-
-    .row1{display:flex; justify-content:space-between; gap:10px; align-items:baseline}
-    .hp{margin:0; font-weight:900; font-size:15px}
-    .price{margin:0; font-weight:900; font-size:15px; white-space:nowrap}
-
-    .subline{
-      margin:4px 0 0;
-      font-size:12px;
-      font-weight:700;
-      color:rgba(17,24,39,.55);
-      overflow:hidden;
-      white-space:nowrap;
-      text-overflow:ellipsis;
-    }
-
-    .chips{margin-top:8px; display:flex; gap:8px; flex-wrap:wrap}
-    .chip{
-      background:rgba(17,24,39,.06);
-      border:1px solid rgba(0,0,0,.05);
-      border-radius:999px;
-      padding:6px 10px;
-      font-size:12px;
-      font-weight:900;
-    }
-    .chipGreen{background:rgba(157,229,147,.55)}
-
-    .actions{padding:0 12px 12px}
-    .aBtn{
-      display:block;
-      text-align:center;
-      text-decoration:none;
-      border-radius:18px;
-      padding:11px 12px;
-      font-weight:900;
-      border:1px solid var(--stroke);
-      background:var(--chat-green);
-      color:#0b1b12;
-    }
-
-    .hint{
-      margin-top:10px;
-      font-size:12px;
-      font-weight:800;
-      color:rgba(255,255,255,.92);
-      text-shadow:0 1px 0 rgba(0,0,0,.10);
-    }
+    .muted{color:var(--muted)}
   </style>
 </head>
 
 <body>
-  <div class="topbar">
-    <div class="wrap" style="padding:0 14px;">
-      <div class="titleRow">
-        <div class="logoDot">SP</div>
-        <div>
-          <h1>smart properties system</h1>
-          <div class="sub">Catalog • รายการบ้านแบบ feel LINE</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="wrap">
-    <div class="panel">
-      <div class="row">
-        <div class="selbox">
-          <select id="projectSelect">
-            <option value="">เลือก Project...</option>
-            <option value="Project_0">Project_0</option>
-            <option value="Project_A">Project_A</option>
-            <option value="Project_B">Project_B</option>
-            <option value="Project_C">Project_C</option>
-          </select>
-        </div>
-        <button class="btn" id="btnLoad">โหลดรายการ</button>
-      </div>
+  <header class="topbar">
+    <div class="avatar">SP</div>
+    <div class="titlewrap">
+      <div class="title">smart properties system</div>
+      <div class="subtitle">Catalog · รายการบ้านแบบ feel LINE</div>
     </div>
 
-    <div id="loading" class="loadingRow" style="display:none;">
-      <div class="spinner"></div>
-      กำลังดึงข้อมูลล่าสุด...
-    </div>
+    <!-- จุดที่ 1 -->
+    <button class="iconbtn" id="btnGateway" title="Gateway">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21a8 8 0 0 0-16 0"></path>
+        <circle cx="12" cy="8" r="4"></circle>
+      </svg>
+    </button>
+    <button class="iconbtn" id="btnEdit" title="Edit (ต้องเลือกบ้านก่อน)" disabled>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 20h9"></path>
+        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+      </svg>
+    </button>
+  </header>
 
-    <div id="list" class="list"></div>
-    <div class="hint">Tip: ถ้าเปิดจากลิงก์ สามารถใส่ ?project=Project_0 ได้</div>
-  </div>
-
-<script>
-  // ✅ API URL ของคุณ (ใส่ให้แล้ว)
-  const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
-
-  const $ = (id)=>document.getElementById(id);
-
-  function formatPriceTHB(n){
-    const raw = String(n ?? "").trim();
-    const num = Number(raw.replace(/,/g,""));
-    if(!raw) return "-";
-    if(!isFinite(num)) return raw;
-    return "฿" + num.toLocaleString("en-US");
-  }
-
-  async function fetchUnitList(project){
-    const url = `${API_URL}?mode=getUnitList&project=${encodeURIComponent(project)}&t=${Date.now()}`;
-    const res = await fetch(url, { cache:"no-store" });
-    const data = await res.json();
-    if(data && data.error) throw new Error(data.error);
-    return Array.isArray(data)?data:[];
-  }
-
-  function card(item, project){
-    const detailsUrl = `details.html?id=${encodeURIComponent(item.id)}&project=${encodeURIComponent(project)}`;
-    const nameLine = (item.projectName && String(item.projectName).trim()) ? item.projectName : project;
-
-    return `
-      <div class="card">
-        <div class="cardInner">
-          <div class="thumb">${item.thumbnail?`<img src="${item.thumbnail}" alt="">`:""}</div>
-          <div class="meta">
-            <div class="row1">
-              <p class="hp">${item.id||"-"} • ${item.plot||"-"}</p>
-              <p class="price">${formatPriceTHB(item.price)}</p>
+  <main class="wrap">
+    <section class="panel">
+      <div class="controls">
+        <div class="controlGrow">
+          <div class="selectLike" id="btnPickPlot">
+            <div class="left">
+              <div class="label">Project: Project_0</div>
+              <div class="value" id="plotLabel">เลือก PLOT / ทั้งหมด</div>
             </div>
-            <div class="subline">${nameLine}</div>
-            <div class="chips">
-              ${item.badge?`<div class="chip chipGreen">Badge: ${item.badge}</div>`:""}
-              ${item.status?`<div class="chip">Status: ${item.status}</div>`:""}
-              <div class="chip">🛏 ${item.bedrooms||"-"} • 🛁 ${item.bathrooms||"-"}</div>
-              <div class="chip">📐 ${item.landSqw||"-"} sq.w</div>
-              <div class="chip">🏠 ${item.livingSqm||"-"} sqm</div>
-            </div>
+            <div class="chev">▾</div>
           </div>
         </div>
-        <div class="actions">
-          <a class="aBtn" href="${detailsUrl}">ดูรายละเอียด</a>
-        </div>
+
+        <button class="btn btnGreen" id="btnReload">โหลดรายการ</button>
+        <button class="btn btnSoft" id="btnClearPlot" title="ล้างตัวกรอง Plot">ทั้งหมด</button>
       </div>
-    `;
-  }
+    </section>
 
-  async function loadList(){
-    const project = $("projectSelect").value;
-    if(!project){ alert("กรุณาเลือก Project"); return; }
+    <div class="loading" id="loading" style="display:none;">
+      <div class="spinner"></div>
+      กำลังดึงข้อมูลล่าสุดจากระบบ...
+    </div>
 
-    $("list").innerHTML="";
-    $("loading").style.display="flex";
+    <section class="grid" id="unitGrid"></section>
+  </main>
 
-    try{
-      const items = await fetchUnitList(project);
-      items.sort((a,b)=>String(a.id||"").localeCompare(String(b.id||"")));
-      $("list").innerHTML = items.map(x=>card(x,project)).join("") || `<div class="panel" style="margin-top:12px;">ไม่พบรายการ</div>`;
-    }catch(err){
-      $("list").innerHTML = `<div class="panel" style="margin-top:12px;"><b>Error:</b> ${err.message}</div>`;
-    }finally{
-      $("loading").style.display="none";
+  <!-- Plot Modal -->
+  <div class="modalBack" id="plotModalBack" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modalHead">
+        <div>
+          <div class="modalTitle">Project Plots</div>
+          <div class="muted" style="font-size:12px;font-weight:700;margin-top:2px;">เลือก Plot เพื่อกรองรายการ (Project_0 เท่านั้น)</div>
+        </div>
+        <button class="btn closeBtn" id="btnClosePlotModal">CLOSE</button>
+      </div>
+      <div class="modalBody" id="plotList"></div>
+    </div>
+  </div>
+
+  <script>
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
+    const PROJECT = "Project_0";
+    const CACHE_KEY = `unitList_${PROJECT}`;
+    const CACHE_TTL_MS = 60 * 1000; // จุดที่ 4: cache 60s ลดโหลดช้า
+
+    let allUnits = [];
+    let selectedPlot = "";
+    let lastSelectedId = localStorage.getItem("lastSelectedId") || "";
+
+    const $ = (id) => document.getElementById(id);
+    const unitGrid = $("unitGrid");
+    const loading = $("loading");
+    const plotLabel = $("plotLabel");
+    const btnEdit = $("btnEdit");
+
+    function setEditEnabled(){
+      if (lastSelectedId) btnEdit.removeAttribute("disabled");
+      else btnEdit.setAttribute("disabled","disabled");
     }
-  }
 
-  $("btnLoad").addEventListener("click", loadList);
+    const fmtPrice = (v) => {
+      const n = Number(String(v).replace(/[^0-9.]/g,""));
+      if (!isFinite(n)) return v || "";
+      return "฿" + n.toLocaleString("en-US");
+    };
+    const normalize = (v) => String(v ?? "").trim();
 
-  // auto load if query has project
-  const sp = new URLSearchParams(location.search);
-  const qp = sp.get("project");
-  if(qp){
-    $("projectSelect").value = qp;
-    loadList();
-  }
-</script>
+    function statusPillClass(status){
+      const s = normalize(status).toLowerCase();
+      if (s.includes("sold")) return "statusPill sold";
+      if (s.includes("pending") || s.includes("under")) return "statusPill pending";
+      return "statusPill";
+    }
+
+    function safeText(v){
+      return String(v ?? "").replace(/[<>]/g, "");
+    }
+
+    function getCache(){
+      try{
+        const raw = sessionStorage.getItem(CACHE_KEY);
+        if(!raw) return null;
+        const obj = JSON.parse(raw);
+        if(!obj || !obj.t || !obj.data) return null;
+        if(Date.now() - obj.t > CACHE_TTL_MS) return null;
+        return obj.data;
+      }catch{
+        return null;
+      }
+    }
+
+    function setCache(data){
+      try{
+        sessionStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), data }));
+      }catch{}
+    }
+
+    async function fetchUnitList(){
+      const url = `${GAS_URL}?mode=getUnitList&project=${encodeURIComponent(PROJECT)}&_=${Date.now()}`;
+      const res = await fetch(url, { cache: "no-store" });
+      if(!res.ok) throw new Error("Fetch failed");
+      return await res.json();
+    }
+
+    function renderUnits(){
+      const list = selectedPlot ? allUnits.filter(u => normalize(u.plot) === selectedPlot) : allUnits;
+
+      unitGrid.innerHTML = list.map(u => {
+        const id = safeText(u.id);
+        const plot = safeText(u.plot || "");
+        const thumb = safeText(u.thumbnail || "");
+        const price = fmtPrice(u.price);
+        const bed = safeText(u.bedrooms ?? "");
+        const bath = safeText(u.bathrooms ?? "");
+        const land = safeText(u.landSqw ?? "");
+        const living = safeText(u.livingSqm ?? "");
+        const badge = safeText(u.badge ?? "");
+        const status = safeText(u.status ?? "");
+
+        return `
+          <article class="card" data-id="${id}">
+            <div class="thumb">
+              ${badge ? `<div class="badge">${badge}</div>` : ``}
+              <img loading="lazy" decoding="async" src="${thumb || ""}" alt="${id}" onerror="this.style.display='none'">
+            </div>
+            <div class="content">
+              <div class="row1">
+                <div style="min-width:0">
+                  <div class="hp">${id}${plot ? ` · ${plot}` : ""}</div>
+                  <div class="plot">${status || ""}</div>
+                </div>
+                <div class="price">${price}</div>
+              </div>
+
+              <div class="chips">
+                ${bed ? `<span class="chip"><span class="i">🛏️</span>${bed}</span>` : ``}
+                ${bath ? `<span class="chip"><span class="i">🛁</span>${bath}</span>` : ``}
+                ${land ? `<span class="chip"><span class="i">📐</span>${land} sq.w</span>` : ``}
+                ${living ? `<span class="chip"><span class="i">🏠</span>${living} sqm</span>` : ``}
+              </div>
+
+              <div class="actions">
+                <a class="aDetail" href="details.html?id=${encodeURIComponent(id)}">ดูรายละเอียด</a>
+                <a class="aShare" href="#" onclick="window.__shareUnit('${id}');return false;">แชร์</a>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join("");
+
+      unitGrid.querySelectorAll(".card").forEach(card => {
+        card.addEventListener("click", (e) => {
+          if (e.target.closest("a")) return;
+          const id = card.getAttribute("data-id");
+          if(!id) return;
+          lastSelectedId = id;
+          localStorage.setItem("lastSelectedId", id);
+          setEditEnabled();
+          card.style.transform = "scale(0.995)";
+          setTimeout(()=>card.style.transform="", 140);
+        });
+      });
+    }
+
+    function renderPlotList(){
+      const map = new Map();
+      for (const u of allUnits){
+        const plot = normalize(u.plot);
+        if(!plot) continue;
+        if(!map.has(plot)){
+          map.set(plot, {
+            plot,
+            price: u.price,
+            bedrooms: u.bedrooms,
+            bathrooms: u.bathrooms,
+            livingSqm: u.livingSqm,
+            status: u.status
+          });
+        }
+      }
+      const plots = Array.from(map.values()).sort((a,b)=>a.plot.localeCompare(b.plot,"en",{numeric:true}));
+
+      const listEl = $("plotList");
+      listEl.innerHTML = plots.map(p => {
+        const pillCls = statusPillClass(p.status);
+        const status = safeText(p.status || "Available");
+        return `
+          <div class="item" data-plot="${safeText(p.plot)}">
+            <div class="itemMain">
+              <div class="itemTop">
+                <div class="itemPlot">${safeText(p.plot)}</div>
+                <div class="itemPrice muted">${fmtPrice(p.price)}</div>
+              </div>
+              <div class="itemSub">
+                ${p.bedrooms ? `<span>🛏️ ${safeText(p.bedrooms)} Bed</span>` : ``}
+                ${p.bathrooms ? `<span>🚿 ${safeText(p.bathrooms)} Bath</span>` : ``}
+                ${p.livingSqm ? `<span>🏠 ${safeText(p.livingSqm)} m²</span>` : ``}
+              </div>
+            </div>
+            <div class="${pillCls}">${status}</div>
+          </div>
+        `;
+      }).join("");
+
+      listEl.querySelectorAll(".item").forEach(el => {
+        el.addEventListener("click", () => {
+          selectedPlot = el.getAttribute("data-plot") || "";
+          plotLabel.textContent = selectedPlot ? selectedPlot : "เลือก PLOT / ทั้งหมด";
+          closePlotModal();
+          renderUnits();
+        });
+      });
+    }
+
+    function openPlotModal(){ $("plotModalBack").style.display = "flex"; }
+    function closePlotModal(){ $("plotModalBack").style.display = "none"; }
+
+    window.__shareUnit = async (id) => {
+      const base = location.href.split("?")[0].replace(/index\\.html?$/,"");
+      const url = `${base}details.html?id=${encodeURIComponent(id)}`;
+      try{
+        if(navigator.share){
+          await navigator.share({ title: "Unit " + id, url });
+        }else{
+          await navigator.clipboard.writeText(url);
+          alert("คัดลอกลิงก์แล้ว: " + url);
+        }
+      }catch{}
+    };
+
+    async function loadAll({ preferCache=true } = {}){
+      if(preferCache){
+        const cached = getCache();
+        if(cached && Array.isArray(cached)){
+          allUnits = cached;
+          renderUnits();
+          renderPlotList();
+        }
+      }
+
+      loading.style.display = "block";
+      try{
+        const data = await fetchUnitList();
+        if(Array.isArray(data)){
+          allUnits = data;
+          setCache(data);
+          renderUnits();
+          renderPlotList();
+        }
+      }catch(e){
+        console.warn(e);
+        if(!allUnits.length){
+          unitGrid.innerHTML = `<div class="panel" style="grid-column:1/-1;padding:16px;">โหลดไม่สำเร็จ ลองกด “โหลดรายการ” อีกครั้ง</div>`;
+        }
+      }finally{
+        loading.style.display = "none";
+      }
+    }
+
+    $("btnGateway").addEventListener("click", () => location.href = "gateway.html");
+
+    btnEdit.addEventListener("click", () => {
+      if(!lastSelectedId){
+        alert("กรุณาแตะเลือกบ้าน 1 หลังจากการ์ดก่อน แล้วค่อยกด Edit");
+        return;
+      }
+      location.href = `edit.html?id=${encodeURIComponent(lastSelectedId)}&project=${encodeURIComponent(PROJECT)}`;
+    });
+
+    $("btnPickPlot").addEventListener("click", openPlotModal);
+    $("btnClosePlotModal").addEventListener("click", closePlotModal);
+    $("plotModalBack").addEventListener("click", (e) => { if(e.target === $("plotModalBack")) closePlotModal(); });
+
+    $("btnReload").addEventListener("click", () => loadAll({ preferCache:false }));
+    $("btnClearPlot").addEventListener("click", () => {
+      selectedPlot = "";
+      plotLabel.textContent = "เลือก PLOT / ทั้งหมด";
+      renderUnits();
+    });
+
+    setEditEnabled();
+    loadAll();
+  </script>
 </body>
 </html>
