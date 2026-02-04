@@ -101,12 +101,13 @@
       gap:10px;
       align-items:center;
       justify-content:center;
-      flex-wrap:wrap;
+      flex-wrap:nowrap;            /* ✅ อยู่แถวเดียวกัน */
     }
     .selectWrap{
-      flex:1 1 260px;
-      min-width: 190px;
-      max-width: 420px;
+      flex:1 1 0;
+      min-width: 0;
+      max-width: none;
+      position:relative;
     }
     .select{
       width:100%;
@@ -120,20 +121,9 @@
       color:rgba(11,19,32,.85);
       outline:none;
       box-shadow: 0 10px 22px rgba(0,0,0,.08);
-    }
-    .selectSmall{
       font-size:16px;
       line-height:1.2;
     }
-    .selectHint{
-      display:block;
-      margin-top:4px;
-      font-size:12px;
-      color: rgba(11,19,32,.6);
-      font-weight:700;
-      padding-left: 4px;
-    }
-    .selectWrap{position:relative}
     .selectWrap:after{
       content:"";
       position:absolute;
@@ -208,15 +198,10 @@
       justify-content:space-between;
       gap:10px;
     }
+    /* ✅ จุดที่ 2: ทำให้ "PLOT : Z-1" หนา */
     .plotLine{
       font-weight:1000;
       color: rgba(11,19,32,.75);
-      letter-spacing:.2px;
-    }
-    .hp{
-      margin-top:6px;
-      font-size:22px;
-      font-weight:1000;
       letter-spacing:.2px;
     }
     .price{
@@ -289,6 +274,11 @@
       text-overflow:ellipsis;
     }
     .toast.show{opacity:1; transform:translateX(-50%) translateY(-6px);}
+
+    /* มือถือจอเล็กมาก: ให้ยังอยู่ 2 ช่องแถวเดียว */
+    @media (max-width: 360px){
+      .select{font-size:14px;padding:12px 38px 12px 12px}
+    }
   </style>
 </head>
 
@@ -300,14 +290,13 @@
       <div class="logo">SP</div>
 
       <div class="titlebox">
-        <!-- จุดที่ 1: แสดง Master Vill จากคอลัมน์ Project_Name -->
         <p class="title" id="masterVill">Master Vill</p>
         <div class="subtitle">
           <span class="chip" id="countChip">0 รายการ</span>
         </div>
       </div>
 
-      <!-- จุดที่ 2: ไอคอนคนคลิกเข้า Gateway -->
+      <!-- ไอคอนคนคลิกเข้า Gateway -->
       <a class="iconbtn" id="gatewayBtn" href="#" aria-label="Gateway">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
              stroke-linecap="round" stroke-linejoin="round">
@@ -317,23 +306,20 @@
       </a>
     </div>
 
-    <!-- Filters (จุดที่ 2: เอาข้อความ Project_0 ออก / จัดกึ่งกลาง / ไม่ล้นจอ) -->
+    <!-- ✅ จุดที่ 1: ย้าย "ราคาสูงต่ำ" มาอยู่แถวเดียวกับ "เลือก Plot" (2 ช่องครึ่งซ้าย/ขวา) -->
     <div class="controls">
       <div class="controlsInner">
         <div class="selectWrap">
-          <select class="select selectSmall" id="plotSelect">
+          <select class="select" id="plotSelect">
             <option value="__all__">เลือก Plot</option>
           </select>
-          <span class="selectHint" id="plotHint"></span>
         </div>
 
         <div class="selectWrap">
-          <select class="select selectSmall" id="sortSelect">
-            <option value="updated_desc">ราคาสูง → ต่ำ</option>
+          <select class="select" id="sortSelect">
             <option value="price_desc">ราคาสูง → ต่ำ</option>
             <option value="price_asc">ราคาต่ำ → สูง</option>
           </select>
-          <span class="selectHint"></span>
         </div>
       </div>
     </div>
@@ -375,9 +361,8 @@
 
     function statusStyle(statusRaw){
       const s = String(statusRaw||"").trim().toLowerCase();
-      // จุดที่ 3: สีตามสถานะ
       if (s.includes("available")) return {bg:"rgba(192,255,222,.92)", fg:"rgba(0,90,55,1)"};
-      if (s.includes("under"))     return {bg:"rgba(255,240,195,.92)", fg:"rgba(120,70,0,1)"}; // Under Con
+      if (s.includes("under"))     return {bg:"rgba(255,240,195,.92)", fg:"rgba(120,70,0,1)"};
       if (s.includes("reserved"))  return {bg:"rgba(213,232,255,.92)", fg:"rgba(0,60,120,1)"};
       if (s.includes("sold"))      return {bg:"rgba(255,208,208,.92)", fg:"rgba(130,0,0,1)"};
       return {bg:"rgba(255,255,255,.75)", fg:"rgba(11,19,32,.80)"};
@@ -387,7 +372,7 @@
       return String(p||"").trim();
     }
 
-    // เร่งโหลด: cache ใน sessionStorage
+    // cache ใน sessionStorage
     const CACHE_KEY = "SP_UNITLIST_Project_0_v1";
     function readCache(){
       try{
@@ -395,7 +380,6 @@
         if(!raw) return null;
         const obj = JSON.parse(raw);
         if(!obj || !Array.isArray(obj.data)) return null;
-        // อายุแคช 3 นาที
         if(Date.now() - obj.ts > 3*60*1000) return null;
         return obj.data;
       }catch(_){ return null; }
@@ -427,6 +411,10 @@
     let all = [];
     let filtered = [];
 
+    function escapeHtml(s){
+      return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
     function buildPlotOptions(list){
       const set = new Set();
       list.forEach(x=>{
@@ -435,12 +423,9 @@
       });
       const plots = Array.from(set).sort((a,b)=>a.localeCompare(b, "en"));
       const sel = $("plotSelect");
-      sel.innerHTML = `<option value="__all__">เลือก Plot</option>` + plots.map(p=>`<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
-      $("plotHint").textContent = plots.length ? "" : "";
-    }
-
-    function escapeHtml(s){
-      return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+      sel.innerHTML =
+        `<option value="__all__">เลือก Plot</option>` +
+        plots.map(p=>`<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
     }
 
     function applyFilters(){
@@ -452,16 +437,11 @@
         return normalizePlot(x.plot) === plotVal;
       });
 
-      // sort
       filtered.sort((a,b)=>{
         const pa = Number(String(a.price||"").replace(/,/g,"")) || 0;
         const pb = Number(String(b.price||"").replace(/,/g,"")) || 0;
         if(sortVal === "price_asc") return pa - pb;
-        if(sortVal === "price_desc") return pb - pa;
-        // fallback: lastUpdated desc
-        const da = new Date(a.lastUpdated||0).getTime() || 0;
-        const db = new Date(b.lastUpdated||0).getTime() || 0;
-        return db - da;
+        return pb - pa; // price_desc
       });
 
       renderGrid();
@@ -486,20 +466,16 @@
         cover.appendChild(sk);
 
         const img = document.createElement("img");
-        img.alt = item.id || "image";
-        img.loading = "lazy";           // จุดที่ 5 เร่งโหลด (lazy)
+        img.alt = "image";
+        img.loading = "lazy";
         img.decoding = "async";
         img.referrerPolicy = "no-referrer";
 
         const src = String(item.thumbnail||"").trim();
-        if(src){
-          img.dataset.src = src;        // โหลดจริงตอนเข้า viewport
-        }else{
-          img.dataset.src = "";
-        }
+        img.dataset.src = src || "";
         cover.appendChild(img);
 
-        // status badge (จุดที่ 3)
+        // status badge
         const st = document.createElement("div");
         st.className = "badgeStatus";
         const style = statusStyle(item.status);
@@ -515,11 +491,10 @@
         const row1 = document.createElement("div");
         row1.className = "row1";
 
-        // จุดที่ 4: แสดง PLOT : Z-1
+        // ✅ จุดที่ 2: ทำให้ PLOT หนา + เอา HP-z001 ออก (ไม่แสดง id)
         const plotLine = document.createElement("div");
         plotLine.className = "plotLine";
-        const ptxt = normalizePlot(item.plot) ? `PLOT : ${normalizePlot(item.plot)}` : "PLOT : -";
-        plotLine.textContent = ptxt;
+        plotLine.textContent = normalizePlot(item.plot) ? `PLOT : ${normalizePlot(item.plot)}` : "PLOT : -";
 
         const price = document.createElement("div");
         price.className = "price";
@@ -528,13 +503,8 @@
         row1.appendChild(plotLine);
         row1.appendChild(price);
 
-        const hp = document.createElement("div");
-        hp.className = "hp";
-        hp.textContent = item.id || "";
-
         const meta = document.createElement("div");
         meta.className = "meta";
-
         meta.appendChild(pillIcon("bed", item.bedrooms || "-"));
         meta.appendChild(pillIcon("bath", item.bathrooms || "-"));
         meta.appendChild(pillIcon("area", item.livingSqm || "-"));
@@ -548,7 +518,6 @@
         });
 
         body.appendChild(row1);
-        body.appendChild(hp);
         body.appendChild(meta);
         body.appendChild(btn);
 
@@ -557,7 +526,6 @@
         grid.appendChild(card);
       });
 
-      // lazy load images with IntersectionObserver
       setupLazyImages();
     }
 
@@ -607,12 +575,8 @@
             return;
           }
 
-          img.onload = ()=>{
-            if(sk) sk.remove();
-          };
-          img.onerror = ()=>{
-            if(sk) sk.remove();
-          };
+          img.onload = ()=>{ if(sk) sk.remove(); };
+          img.onerror = ()=>{ if(sk) sk.remove(); };
           img.src = src;
         });
       }, { rootMargin: "220px 0px" });
@@ -624,15 +588,8 @@
      * INIT
      **********************************************************/
     (function init(){
-      // gateway link
       $("gatewayBtn").href = GATEWAY_URL;
 
-      // default sort label (ให้เหลือ “ราคาสูงต่ำ” แนวที่คุณต้องการ)
-      // ค่า option แรกเป็น updated_desc แต่แสดงข้อความ “ราคาสูง → ต่ำ” ไว้แล้ว
-      // ถ้าคุณอยากให้ default เป็น “ราคาสูง → ต่ำ” จริง ๆ เปลี่ยนบรรทัดล่างเป็น "price_desc"
-      $("sortSelect").value = "price_desc";
-
-      // load data
       loadAll();
 
       $("plotSelect").addEventListener("change", applyFilters);
@@ -642,7 +599,6 @@
     async function loadAll(){
       try{
         const data = await fetchUnitList();
-        // normalize keys coming from API
         all = data.map(x=>({
           id: x.id || "",
           plot: x.plot || "",
@@ -652,35 +608,29 @@
           bathrooms: x.bathrooms || "",
           livingSqm: x.livingSqm || x.living_area_sq_m || "",
           price: x.price || "",
-          status: x.status || "",
-          lastUpdated: x.lastUpdated || ""
+          status: x.status || ""
         }));
 
-        // จุดที่ 1: เอา Project_Name มาโชว์เป็นชื่อด้านบน (Master Vill)
-        const name = pickMasterVillName(all);
-        $("masterVill").textContent = name || "Master Vill";
+        $("masterVill").textContent = pickMasterVillName(all) || "Master Vill";
 
         buildPlotOptions(all);
         applyFilters();
       }catch(err){
         console.error(err);
         $("countChip").textContent = "โหลดไม่สำเร็จ";
-        $("masterVill").textContent = "smart properties system";
         toast("โหลดข้อมูลไม่สำเร็จ");
         $("empty").style.display = "block";
       }
     }
 
     function pickMasterVillName(list){
-      // เอาค่า Project_Name ที่พบมากที่สุด
       const freq = new Map();
       list.forEach(x=>{
         const n = String(x.projectName||"").trim();
         if(!n) return;
         freq.set(n, (freq.get(n)||0)+1);
       });
-      let best = "";
-      let bestN = 0;
+      let best = "", bestN = 0;
       for(const [k,v] of freq.entries()){
         if(v>bestN){ best=k; bestN=v; }
       }
