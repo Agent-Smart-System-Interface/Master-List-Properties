@@ -1,1 +1,471 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PROPERTY DETAILS</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Kanit', sans-serif; background:#f8fafc; }
+    .glass { background: rgba(255,255,255,.7); backdrop-filter: blur(10px); }
+    .price-text { font-size: clamp(2.0rem, 5.5vw, 3.2rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
+    .chip { font-size: 0.9rem; font-weight: 500; padding: 0.55rem 0.85rem; border-radius: 9999px; }
+    .label { color:#94a3b8; font-weight:600; font-size:.78rem; letter-spacing:.12em; text-transform: uppercase; }
+    .value { color:#0f172a; font-weight:600; }
+    .btn { border-radius: 1.25rem; padding: .95rem 1rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .skeleton { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 37%, #f1f5f9 63%); background-size: 400% 100%; animation: shimmer 1.2s infinite; }
+    @keyframes shimmer { 0%{background-position: 100% 0} 100%{background-position: 0 0} }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
+  </style>
+</head>
+
+<body>
+  <div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
+
+    <!-- TOP BAR -->
+    <div class="flex items-start justify-between gap-3 mb-5 md:mb-8">
+      <div class="min-w-0">
+        <div class="text-slate-900 text-2xl md:text-4xl font-extrabold italic leading-tight truncate" id="pageTitle">
+          PROPERTY DETAILS
+        </div>
+        <div class="text-slate-500 mt-1 font-medium">
+          <span class="text-slate-400">Project:</span> <span id="projectText">-</span>
+          <span class="mx-2 text-slate-300">•</span>
+          <span class="text-slate-400">Unit:</span> <span id="unitText">-</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 shrink-0">
+        <a id="backBtn"
+           class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white shadow flex items-center justify-center text-xl active:scale-95 transition"
+           title="Back">
+          ←
+        </a>
+        <a id="homeBtn"
+           href="index.html"
+           class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-slate-900 text-white shadow flex items-center justify-center text-xl active:scale-95 transition"
+           title="Home">
+          ⌂
+        </a>
+      </div>
+    </div>
+
+    <!-- LOADING BLOCK -->
+    <div id="loadingBlock" class="bg-white rounded-[2rem] shadow-xl border border-slate-100 p-6 md:p-8">
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="rounded-[1.6rem] overflow-hidden skeleton h-72 md:h-[420px]"></div>
+        <div class="space-y-3">
+          <div class="skeleton h-10 rounded-2xl"></div>
+          <div class="skeleton h-10 rounded-2xl"></div>
+          <div class="skeleton h-10 rounded-2xl"></div>
+          <div class="skeleton h-28 rounded-2xl"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div id="content" class="hidden">
+
+      <!-- HERO (Image + Price panel) -->
+      <div class="grid lg:grid-cols-2 gap-6 md:gap-8">
+
+        <!-- GALLERY -->
+        <div class="bg-white rounded-[2.3rem] shadow-xl overflow-hidden border border-slate-100">
+          <div class="relative">
+            <img id="heroImg" src="" alt="thumbnail" class="w-full h-72 md:h-[420px] object-cover">
+
+            <!-- Plot badge -->
+            <div class="absolute top-4 left-4 glass px-4 py-2 rounded-full font-bold text-slate-900 shadow">
+              <span id="plotBadge">-</span>
+            </div>
+
+            <!-- Status badge -->
+            <div class="absolute top-4 right-4">
+              <span id="statusBadge" class="chip bg-slate-100 text-slate-700">-</span>
+            </div>
+
+            <!-- Image count -->
+            <div class="absolute bottom-4 right-4 glass px-3 py-2 rounded-full text-sm font-bold text-slate-800 shadow">
+              <span id="imgCount">0</span> Photos
+            </div>
+          </div>
+
+          <!-- Thumbnails strip -->
+          <div id="thumbStripWrap" class="p-4 border-t border-slate-100">
+            <div id="thumbStrip" class="flex gap-3 overflow-x-auto hide-scrollbar"></div>
+          </div>
+        </div>
+
+        <!-- SUMMARY PANEL -->
+        <div class="bg-white rounded-[2.3rem] shadow-xl border border-slate-100 p-6 md:p-8">
+          <div class="flex flex-wrap items-center gap-2 mb-4">
+            <span id="badgeText" class="chip bg-slate-100 text-slate-700">Badge</span>
+            <span id="sysBadge" class="chip bg-slate-100 text-slate-700">System</span>
+            <span class="ml-auto text-slate-400 font-semibold text-sm">
+              Updated: <span id="lastUpdated">-</span>
+            </span>
+          </div>
+
+          <div class="price-text text-slate-900" id="priceText">฿0</div>
+          <div class="text-slate-400 font-semibold mt-1">PRICE</div>
+
+          <div class="grid grid-cols-2 gap-3 mt-6">
+            <div class="bg-slate-50 rounded-2xl p-4">
+              <div class="label">Bedrooms</div>
+              <div class="value text-xl mt-1">🛏 <span id="bedrooms">-</span></div>
+            </div>
+            <div class="bg-slate-50 rounded-2xl p-4">
+              <div class="label">Bathrooms</div>
+              <div class="value text-xl mt-1">🛁 <span id="bathrooms">-</span></div>
+            </div>
+            <div class="bg-slate-50 rounded-2xl p-4">
+              <div class="label">Land Area</div>
+              <div class="value text-lg mt-1">📐 <span id="landSqw">-</span> sq.w</div>
+            </div>
+            <div class="bg-slate-50 rounded-2xl p-4">
+              <div class="label">Living Area</div>
+              <div class="value text-lg mt-1">🏠 <span id="livingSqm">-</span> sqm</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
+            <a id="mapBtn" target="_blank" class="btn bg-slate-900 text-white text-center hover:opacity-95 active:scale-[.99] transition hidden">
+              Map
+            </a>
+            <a id="tourBtn" target="_blank" class="btn bg-white border border-slate-200 text-slate-900 text-center hover:bg-slate-50 active:scale-[.99] transition hidden">
+              Virtual Tour
+            </a>
+            <a id="fbBtn" target="_blank" class="btn bg-white border border-slate-200 text-slate-900 text-center hover:bg-slate-50 active:scale-[.99] transition hidden">
+              FB Link
+            </a>
+          </div>
+
+          <a id="agentBtn"
+             class="btn mt-4 block text-center bg-emerald-600 text-white hover:opacity-95 active:scale-[.99] transition"
+             href="">
+            Contact / Enquire
+          </a>
+          <div class="text-slate-400 text-xs mt-2">
+            (ปุ่มนี้คุณสามารถเปลี่ยนไปลิงก์ LINE / WhatsApp / เบอร์โทรได้ทีหลัง)
+          </div>
+        </div>
+
+      </div>
+
+      <!-- DETAILS GRID -->
+      <div class="grid lg:grid-cols-3 gap-6 md:gap-8 mt-6 md:mt-8">
+
+        <!-- Main description -->
+        <div class="lg:col-span-2 bg-white rounded-[2.3rem] shadow-xl border border-slate-100 p-6 md:p-8">
+          <div class="text-slate-900 font-extrabold text-xl md:text-2xl italic">Description</div>
+          <div id="desc" class="mt-4 text-slate-700 leading-relaxed whitespace-pre-line">-</div>
+
+          <div class="grid sm:grid-cols-2 gap-4 mt-8">
+            <div class="bg-slate-50 rounded-2xl p-5">
+              <div class="label">Address</div>
+              <div class="value mt-2" id="address">-</div>
+            </div>
+            <div class="bg-slate-50 rounded-2xl p-5">
+              <div class="label">District / SubDistrict</div>
+              <div class="value mt-2"><span id="district">-</span> / <span id="subdistrict">-</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Extra specs -->
+        <div class="bg-white rounded-[2.3rem] shadow-xl border border-slate-100 p-6 md:p-8">
+          <div class="text-slate-900 font-extrabold text-xl md:text-2xl italic">Specs</div>
+
+          <div class="mt-5 space-y-3">
+            <div class="flex items-center justify-between bg-slate-50 rounded-2xl p-4">
+              <div class="label">Type</div>
+              <div class="value" id="type">-</div>
+            </div>
+            <div class="flex items-center justify-between bg-slate-50 rounded-2xl p-4">
+              <div class="label">Furnishing</div>
+              <div class="value" id="furnishing">-</div>
+            </div>
+            <div class="flex items-center justify-between bg-slate-50 rounded-2xl p-4">
+              <div class="label">Pool</div>
+              <div class="value"><span id="poolSize">-</span> / <span id="poolDepth">-</span></div>
+            </div>
+            <div class="flex items-center justify-between bg-slate-50 rounded-2xl p-4">
+              <div class="label">Parking</div>
+              <div class="value" id="parking">-</div>
+            </div>
+            <div class="flex items-center justify-between bg-slate-50 rounded-2xl p-4">
+              <div class="label">Electricity</div>
+              <div class="value" id="electricity">-</div>
+            </div>
+            <div class="flex items-center justify-between bg-slate-50 rounded-2xl p-4">
+              <div class="label">Price/SQM</div>
+              <div class="value" id="priceSqm">-</div>
+            </div>
+          </div>
+
+          <div class="mt-6 bg-slate-50 rounded-2xl p-5">
+            <div class="label">Extras</div>
+            <div class="value mt-2 whitespace-pre-line" id="extras">-</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="text-center text-slate-400 text-sm mt-8 mb-2">
+        © Direct Hub Properties • Powered by Google Sheets + Apps Script
+      </div>
+    </div>
+
+    <!-- ERROR -->
+    <div id="errorBlock" class="hidden bg-white rounded-[2rem] shadow-xl border border-rose-100 p-8 text-center">
+      <div class="text-rose-600 font-extrabold text-2xl">⚠️ Not Found</div>
+      <div class="text-slate-600 mt-2">ไม่พบข้อมูลยูนิตนี้ หรือพารามิเตอร์ไม่ครบ</div>
+      <a href="index.html" class="inline-block mt-6 px-6 py-3 rounded-2xl bg-slate-900 text-white font-bold">Go Home</a>
+    </div>
+
+  </div>
+
+<script>
+  // =========================
+  // CONFIG
+  // =========================
+  const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
+
+  const params = new URLSearchParams(location.search);
+  const PROJECT = params.get("project") || "Project_0";
+
+  // รองรับทั้ง id และ hpId
+  const ID = params.get("id") || params.get("hpId") || "";
+
+  // ปุ่มกลับไปหน้า index ของโปรเจคเดิม
+  const backBtn = document.getElementById("backBtn");
+  backBtn.href = `index.html?project=${encodeURIComponent(PROJECT)}`;
+
+  document.getElementById("projectText").innerText = PROJECT;
+  document.getElementById("unitText").innerText = ID || "-";
+
+  // =========================
+  // HELPERS
+  // =========================
+  function escapeHtml(str) {
+    return String(str ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  function numOrDash(v) {
+    const s = String(v ?? "").trim();
+    return s === "" ? "-" : s;
+  }
+
+  function priceFmt(v) {
+    const n = Number(String(v ?? "").replace(/,/g,""));
+    if (!n || n === 0) return "฿0";
+    return "฿" + n.toLocaleString();
+  }
+
+  function statusBadgeClass(s) {
+    s = String(s ?? "").toLowerCase();
+    if (s.includes("available")) return "bg-emerald-100 text-emerald-700";
+    if (s.includes("under")) return "bg-sky-100 text-sky-700";
+    if (s.includes("reserved")) return "bg-amber-100 text-amber-700";
+    if (s.includes("sold")) return "bg-rose-100 text-rose-700";
+    return "bg-slate-100 text-slate-700";
+  }
+
+  function sysBadgeClass(s) {
+    s = String(s ?? "").toLowerCase();
+    if (s.includes("live") || s.includes("online")) return "bg-blue-100 text-blue-700";
+    if (s.includes("pending") || s.includes("review")) return "bg-amber-100 text-amber-700";
+    if (s.includes("off") || s.includes("offline") || s.includes("hide")) return "bg-slate-200 text-slate-700";
+    return "bg-slate-100 text-slate-700";
+  }
+
+  function toGalleryArray(detail) {
+    // รองรับได้ทั้ง Image_List หรือ Image_List_ (กรณีคีย์/หัวคอลัมน์ต่างกัน)
+    const raw =
+      detail.Image_List ??
+      detail.Image_List_ ??
+      detail.Image_List_Final ??
+      "";
+
+    const list = String(raw ?? "")
+      .split(",")
+      .map(x => x.trim())
+      .filter(Boolean);
+
+    // fallback: ถ้าไม่มี image_list ให้ใช้ Thumbnail_Image
+    const thumb = String(detail.Thumbnail_Image ?? detail.thumbnail ?? "").trim();
+    if (list.length === 0 && thumb) return [thumb];
+    return list;
+  }
+
+  function formatDate(v) {
+    // Apps Script ส่ง Date มาได้หลายแบบ
+    try {
+      if (!v) return "-";
+      const s = String(v);
+      const d = new Date(s);
+      if (isNaN(d.getTime())) return s;
+      return d.toLocaleString("th-TH", { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+    } catch {
+      return String(v ?? "-");
+    }
+  }
+
+  // =========================
+  // RENDER
+  // =========================
+  function setText(id, value, useHtml=false) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (useHtml) el.innerHTML = value;
+    else el.textContent = value;
+  }
+
+  function setLink(id, url) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const u = String(url ?? "").trim();
+    if (!u || u === "-") {
+      el.classList.add("hidden");
+      return;
+    }
+    el.classList.remove("hidden");
+    el.href = u;
+  }
+
+  function render(detail) {
+    // Title
+    const plot = numOrDash(detail.Plot);
+    document.getElementById("pageTitle").innerText = plot !== "-" ? `UNIT ${ID} • ${plot}` : `UNIT ${ID}`;
+
+    // Hero badges
+    setText("plotBadge", plot);
+    const st = numOrDash(detail.Status);
+    const statusBadge = document.getElementById("statusBadge");
+    statusBadge.className = `chip ${statusBadgeClass(st)}`;
+    statusBadge.textContent = st;
+
+    const sys = numOrDash(detail.System_Status);
+    const sysBadge = document.getElementById("sysBadge");
+    sysBadge.className = `chip ${sysBadgeClass(sys)}`;
+    sysBadge.textContent = (sys === "-" ? "System: -" : `System: ${sys}`);
+
+    const badge = numOrDash(detail.Badge);
+    const badgeText = document.getElementById("badgeText");
+    badgeText.className = `chip ${badge === "-" ? "bg-slate-100 text-slate-700" : "bg-violet-100 text-violet-700"}`;
+    badgeText.textContent = (badge === "-" ? "Badge: -" : `Badge: ${badge}`);
+
+    setText("lastUpdated", formatDate(detail.Last_Updated));
+
+    // Price / main values
+    setText("priceText", priceFmt(detail.Price));
+    setText("bedrooms", numOrDash(detail.Bedrooms));
+    setText("bathrooms", numOrDash(detail.Bathrooms));
+    setText("landSqw", numOrDash(detail.Land_Area_sq_w));
+    setText("livingSqm", numOrDash(detail.Living_Area_sq_m));
+
+    // Text blocks
+    setText("desc", String(detail.Description ?? "-"));
+    setText("address", String(detail.Address ?? "-"));
+    setText("district", String(detail.District ?? "-"));
+    setText("subdistrict", String(detail.SubDistrict ?? "-"));
+
+    // Specs
+    setText("type", String(detail.Type ?? "-"));
+    setText("furnishing", String(detail.Furnishing ?? "-"));
+    setText("poolSize", String(detail.Pool_Size ?? "-"));
+    setText("poolDepth", String(detail.Pool_Depth ?? "-"));
+    setText("parking", String(detail.Parking ?? "-"));
+    setText("electricity", String(detail.Electricity ?? "-"));
+    setText("priceSqm", String(detail.Price_SQM ?? "-"));
+    setText("extras", String(detail.Extras ?? "-"));
+
+    // Links
+    setLink("mapBtn", detail.Map_Link);
+    setLink("tourBtn", detail.Virtual_Tour);
+    setLink("fbBtn", detail.FBLink);
+
+    // Contact button (ค่าเริ่มต้น: ไปที่ gateway หรือจะใส่ LINE/WA ทีหลังได้)
+    const agentBtn = document.getElementById("agentBtn");
+    agentBtn.href = `gateway.html?project=${encodeURIComponent(PROJECT)}`;
+
+    // Gallery
+    const imgs = toGalleryArray(detail);
+    setText("imgCount", String(imgs.length));
+
+    const heroImg = document.getElementById("heroImg");
+    heroImg.src = imgs[0] || (detail.Thumbnail_Image ?? "");
+
+    // thumbs
+    const strip = document.getElementById("thumbStrip");
+    strip.innerHTML = imgs.map((url, idx) => {
+      const safe = escapeHtml(url);
+      return `
+        <button
+          class="shrink-0 w-20 h-16 md:w-24 md:h-20 rounded-2xl overflow-hidden border border-slate-200 hover:scale-[1.02] active:scale-[.99] transition"
+          onclick="setHero('${safe}', ${idx})"
+          aria-label="img-${idx}"
+        >
+          <img src="${safe}" class="w-full h-full object-cover" />
+        </button>
+      `;
+    }).join("");
+
+    // show content
+    document.getElementById("loadingBlock").classList.add("hidden");
+    document.getElementById("content").classList.remove("hidden");
+
+    // Expose setter
+    window.__gallery = imgs;
+  }
+
+  window.setHero = (url, idx) => {
+    const heroImg = document.getElementById("heroImg");
+    heroImg.src = url;
+  };
+
+  // =========================
+  // LOAD
+  // =========================
+  async function init() {
+    if (!ID) {
+      document.getElementById("loadingBlock").classList.add("hidden");
+      document.getElementById("errorBlock").classList.remove("hidden");
+      return;
+    }
+
+    try {
+      // Apps Script ของคุณรับ hpId เป็นพารามิเตอร์
+      const url = `${API_URL}?mode=getUnitDetail&project=${encodeURIComponent(PROJECT)}&hpId=${encodeURIComponent(ID)}&t=${Date.now()}`;
+      const res = await fetch(url);
+      const detail = await res.json();
+
+      if (!detail || detail.error) {
+        document.getElementById("loadingBlock").classList.add("hidden");
+        document.getElementById("errorBlock").classList.remove("hidden");
+        return;
+      }
+
+      render(detail);
+
+    } catch (e) {
+      document.getElementById("loadingBlock").classList.add("hidden");
+      document.getElementById("errorBlock").classList.remove("hidden");
+    }
+  }
+
+  init();
+</script>
+</body>
+</html>
 
