@@ -198,7 +198,6 @@
       justify-content:space-between;
       gap:10px;
     }
-    /* ✅ จุดที่ 2: ทำให้ "PLOT : Z-1" หนา */
     .plotLine{
       font-weight:1000;
       color: rgba(11,19,32,.75);
@@ -209,24 +208,43 @@
       font-weight:1000;
       white-space:nowrap;
     }
+
+    /* ✅ จุดที่ 2: ทำให้ meta เป็น 1 แถวเสมอ + อ่านง่ายขึ้น */
     .meta{
       margin-top:10px;
       display:flex;
       gap:10px;
-      flex-wrap:wrap;
+      flex-wrap:nowrap;            /* ✅ บังคับ 1 แถว */
     }
     .pill{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:10px 12px;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 10px;
       border-radius: 999px;
       background: rgba(11,19,32,.04);
       border: 1px solid rgba(11,19,32,.08);
       font-weight:900;
-      color: rgba(11,19,32,.75);
-      min-width: 86px;
+      color: rgba(11,19,32,.78);
+      min-width: 0;               /* ✅ ให้ยุบได้ */
+      flex: 1 1 0;                /* ✅ แบ่ง 3 ช่องเท่ากัน */
       justify-content:center;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      font-size:16px;
     }
-    .pill svg{width:18px;height:18px;opacity:.75}
+    .pill .ico{
+      font-size:18px;
+      line-height:1;
+      opacity:.95;
+      flex:0 0 auto;
+    }
+    .pill .lbl{
+      font-weight:1000;
+      letter-spacing:.2px;
+    }
+
     .btn{
       margin-top:12px;
       width:100%;
@@ -275,14 +293,94 @@
     }
     .toast.show{opacity:1; transform:translateX(-50%) translateY(-6px);}
 
-    /* มือถือจอเล็กมาก: ให้ยังอยู่ 2 ช่องแถวเดียว */
+    /* มือถือจอเล็กมาก */
     @media (max-width: 360px){
       .select{font-size:14px;padding:12px 38px 12px 12px}
+      .pill{font-size:14px;padding:9px 8px}
+      .pill .ico{font-size:16px}
+    }
+
+    /**********************************************************
+     * ✅ จุดที่ 1: Loading overlay (พื้นหลังเดิม + emoji ดุ๊กดิ๊ก)
+     **********************************************************/
+    .loader{
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:10000;
+      background: radial-gradient(1200px 700px at 10% 10%, rgba(255,255,255,.26), transparent 60%),
+                  radial-gradient(1100px 700px at 90% 30%, rgba(255,255,255,.18), transparent 60%),
+                  linear-gradient(180deg, #8faac8, #a7bdd5 55%, #95b2cf);
+    }
+    .loaderCard{
+      width:min(92vw, 520px);
+      padding:28px 18px;
+      border-radius:28px;
+      border:1px solid rgba(255,255,255,.5);
+      background: rgba(255,255,255,.16);
+      backdrop-filter: blur(10px);
+      text-align:center;
+    }
+    .loaderIcons{
+      display:flex;
+      gap:16px;
+      justify-content:center;
+      align-items:center;
+      margin-bottom:14px;
+      font-size:42px;
+    }
+    .wiggle{
+      display:inline-block;
+      animation: wiggle 1.05s ease-in-out infinite;
+      transform-origin: 50% 80%;
+      filter: drop-shadow(0 10px 16px rgba(0,0,0,.14));
+    }
+    .wiggle:nth-child(2){ animation-delay:.12s; }
+    .wiggle:nth-child(3){ animation-delay:.24s; }
+    @keyframes wiggle{
+      0%   { transform: translateY(0) rotate(0deg) scale(1); }
+      35%  { transform: translateY(-8px) rotate(-5deg) scale(1.02); }
+      70%  { transform: translateY(0) rotate(5deg) scale(1); }
+      100% { transform: translateY(0) rotate(0deg) scale(1); }
+    }
+    .loaderText{
+      font-weight:1000;
+      letter-spacing:1px;
+      font-size:22px;
+      color: rgba(255,255,255,.92);
+      text-shadow: 0 10px 18px rgba(0,0,0,.20);
+    }
+    .loaderSub{
+      margin-top:8px;
+      font-weight:800;
+      font-size:14px;
+      color: rgba(255,255,255,.85);
+      opacity:.95;
+    }
+    .loader.hide{
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .22s ease;
     }
   </style>
 </head>
 
 <body>
+  <!-- ✅ จุดที่ 1: Loader -->
+  <div class="loader" id="loader" aria-live="polite">
+    <div class="loaderCard">
+      <div class="loaderIcons" aria-hidden="true">
+        <span class="wiggle">🐚</span>
+        <span class="wiggle">🌊</span>
+        <span class="wiggle">🌴</span>
+      </div>
+      <div class="loaderText">Smart Properties System</div>
+      <div class="loaderSub">กำลังโหลดข้อมูล…</div>
+    </div>
+  </div>
+
   <div class="wrap">
 
     <!-- Top -->
@@ -306,7 +404,7 @@
       </a>
     </div>
 
-    <!-- ✅ จุดที่ 1: ย้าย "ราคาสูงต่ำ" มาอยู่แถวเดียวกับ "เลือก Plot" (2 ช่องครึ่งซ้าย/ขวา) -->
+    <!-- 2 ช่องครึ่งซ้าย/ขวา -->
     <div class="controls">
       <div class="controlsInner">
         <div class="selectWrap">
@@ -344,6 +442,13 @@
      * HELPERS
      **********************************************************/
     const $ = (id)=>document.getElementById(id);
+
+    function showLoader(on){
+      const el = $("loader");
+      if(!el) return;
+      if(on) el.classList.remove("hide");
+      else el.classList.add("hide");
+    }
 
     function toast(msg){
       const el = $("toast");
@@ -441,7 +546,7 @@
         const pa = Number(String(a.price||"").replace(/,/g,"")) || 0;
         const pb = Number(String(b.price||"").replace(/,/g,"")) || 0;
         if(sortVal === "price_asc") return pa - pb;
-        return pb - pa; // price_desc
+        return pb - pa;
       });
 
       renderGrid();
@@ -491,7 +596,6 @@
         const row1 = document.createElement("div");
         row1.className = "row1";
 
-        // ✅ จุดที่ 2: ทำให้ PLOT หนา + เอา HP-z001 ออก (ไม่แสดง id)
         const plotLine = document.createElement("div");
         plotLine.className = "plotLine";
         plotLine.textContent = normalizePlot(item.plot) ? `PLOT : ${normalizePlot(item.plot)}` : "PLOT : -";
@@ -503,11 +607,12 @@
         row1.appendChild(plotLine);
         row1.appendChild(price);
 
+        // ✅ จุดที่ 2: meta 1 แถว + ไอคอนชัดเจน
         const meta = document.createElement("div");
         meta.className = "meta";
-        meta.appendChild(pillIcon("bed", item.bedrooms || "-"));
-        meta.appendChild(pillIcon("bath", item.bathrooms || "-"));
-        meta.appendChild(pillIcon("area", item.livingSqm || "-"));
+        meta.appendChild(pillIcon("bed", item.bedrooms || "-", "Beds"));
+        meta.appendChild(pillIcon("bath", item.bathrooms || "-", "Baths"));
+        meta.appendChild(pillIcon("area", item.livingSqm || "-", "m²"));
 
         const btn = document.createElement("button");
         btn.className = "btn";
@@ -529,32 +634,17 @@
       setupLazyImages();
     }
 
-    function pillIcon(type, val){
+    function pillIcon(type, val, unitLabel){
       const el = document.createElement("div");
       el.className = "pill";
 
-      let svg = "";
-      if(type==="bed"){
-        svg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 7v10"></path><path d="M21 7v10"></path>
-                <path d="M3 15h18"></path><path d="M7 15V9h10v6"></path>
-              </svg>`;
-      }else if(type==="bath"){
-        svg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 12h12"></path><path d="M7 12V8a5 5 0 0 1 10 0v4"></path>
-                <path d="M5 12v2a7 7 0 0 0 14 0v-2"></path>
-              </svg>`;
-      }else{
-        svg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 20V4h16v16H4Z"></path>
-                <path d="M8 8h8"></path><path d="M8 12h8"></path><path d="M8 16h8"></path>
-              </svg>`;
-      }
+      // ไอคอนชัด ๆ + อยู่แถวเดียวกัน
+      let ico = "📐";
+      let label = unitLabel || "";
+      if(type==="bed"){ ico = "🛏️"; }
+      if(type==="bath"){ ico = "🚿"; }
 
-      el.innerHTML = svg + `<span>${escapeHtml(val)}</span>`;
+      el.innerHTML = `<span class="ico">${ico}</span><span class="lbl">${escapeHtml(val)}${label ? " " + escapeHtml(label) : ""}</span>`;
       return el;
     }
 
@@ -590,6 +680,9 @@
     (function init(){
       $("gatewayBtn").href = GATEWAY_URL;
 
+      // ✅ จุดที่ 1: แสดง loader ระหว่างโหลด
+      showLoader(true);
+
       loadAll();
 
       $("plotSelect").addEventListener("change", applyFilters);
@@ -615,11 +708,15 @@
 
         buildPlotOptions(all);
         applyFilters();
+
+        // ซ่อน loader เมื่อข้อมูลพร้อมและแสดงผลแล้ว
+        showLoader(false);
       }catch(err){
         console.error(err);
         $("countChip").textContent = "โหลดไม่สำเร็จ";
         toast("โหลดข้อมูลไม่สำเร็จ");
         $("empty").style.display = "block";
+        showLoader(false);
       }
     }
 
