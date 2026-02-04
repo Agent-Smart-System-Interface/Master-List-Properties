@@ -2,470 +2,321 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PROPERTY DETAILS</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PROPERTY DETAIL</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <style>
-    body { font-family: 'Kanit', sans-serif; background:#f8fafc; }
-    .glass { background: rgba(255,255,255,.7); backdrop-filter: blur(10px); }
-    .price-text { font-size: clamp(2.0rem, 5.5vw, 3.2rem); font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
-    .chip { font-size: 0.9rem; font-weight: 500; padding: 0.55rem 0.85rem; border-radius: 9999px; }
-    .label { color:#94a3b8; font-weight:600; font-size:.78rem; letter-spacing:.12em; text-transform: uppercase; }
-    .value { color:#0f172a; font-weight:600; }
-    .btn { border-radius: 1.25rem; padding: .95rem 1rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-    .skeleton { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 37%, #f1f5f9 63%); background-size: 400% 100%; animation: shimmer 1.2s infinite; }
-    @keyframes shimmer { 0%{background-position: 100% 0} 100%{background-position: 0 0} }
-    .hide-scrollbar::-webkit-scrollbar { display: none; }
-    .hide-scrollbar { -ms-overflow-style:none; scrollbar-width:none; }
+    body { font-family: 'Kanit', sans-serif; background: #f8fafc; }
+    .price-text { font-size: clamp(2.2rem, 6vw, 3.6rem); font-weight: 600; letter-spacing: -0.02em; line-height: 1.05; }
+    .chip { font-size: 0.9rem; font-weight: 500; padding: .55rem .9rem; border-radius: 999px; }
+    .feature { font-size: .95rem; font-weight: 500; padding: .65rem .85rem; border-radius: 1rem; }
   </style>
 </head>
 
-<body>
-  <div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
+<body class="p-4 md:p-10">
+  <div class="max-w-6xl mx-auto">
 
-    <!-- TOP BAR -->
-    <div class="flex items-start justify-between gap-3 mb-5 md:mb-8">
+    <!-- TOP -->
+    <div class="flex items-start justify-between gap-4 mb-6">
       <div class="min-w-0">
-        <div class="text-slate-900 text-2xl md:text-4xl font-extrabold italic leading-tight truncate" id="pageTitle">
-          PROPERTY DETAILS
-        </div>
-        <div class="text-slate-500 mt-1 font-medium">
-          <span class="text-slate-400">Project:</span> <span id="projectText">-</span>
-          <span class="mx-2 text-slate-300">•</span>
-          <span class="text-slate-400">Unit:</span> <span id="unitText">-</span>
-        </div>
+        <div id="titleLine" class="text-3xl md:text-5xl font-semibold italic text-slate-900 truncate">Loading...</div>
+        <div id="subLine" class="text-slate-400 mt-2 text-sm md:text-base">—</div>
       </div>
 
-      <div class="flex items-center gap-2 shrink-0">
-        <a id="backBtn"
-           class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white shadow flex items-center justify-center text-xl active:scale-95 transition"
-           title="Back">
-          ←
-        </a>
-        <a id="homeBtn"
-           href="index.html"
-           class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-slate-900 text-white shadow flex items-center justify-center text-xl active:scale-95 transition"
-           title="Home">
-          ⌂
-        </a>
+      <div class="flex items-center gap-3 shrink-0">
+        <a id="backBtn" href="index.html" class="w-14 h-14 rounded-2xl bg-white shadow flex items-center justify-center text-xl active:scale-95">←</a>
+        <a id="homeBtn" href="index.html" class="w-14 h-14 rounded-2xl bg-slate-900 text-white shadow flex items-center justify-center text-xl active:scale-95">⌂</a>
       </div>
     </div>
 
-    <!-- LOADING BLOCK -->
-    <div id="loadingBlock" class="bg-white rounded-[2rem] shadow-xl border border-slate-100 p-6 md:p-8">
-      <div class="grid md:grid-cols-2 gap-6">
-        <div class="rounded-[1.6rem] overflow-hidden skeleton h-72 md:h-[420px]"></div>
-        <div class="space-y-3">
-          <div class="skeleton h-10 rounded-2xl"></div>
-          <div class="skeleton h-10 rounded-2xl"></div>
-          <div class="skeleton h-10 rounded-2xl"></div>
-          <div class="skeleton h-28 rounded-2xl"></div>
-        </div>
-      </div>
+    <!-- LOADING -->
+    <div id="loading" class="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 p-10 text-center text-slate-300 font-bold animate-pulse uppercase">
+      🔄 Loading property detail...
     </div>
 
     <!-- CONTENT -->
-    <div id="content" class="hidden">
+    <div id="content" class="hidden space-y-6">
 
-      <!-- HERO (Image + Price panel) -->
-      <div class="grid lg:grid-cols-2 gap-6 md:gap-8">
+      <!-- HERO -->
+      <div class="bg-white rounded-[2.7rem] shadow-2xl border border-slate-100 overflow-hidden">
+        <div class="relative">
+          <img id="heroImg" src="" class="w-full h-[22rem] md:h-[28rem] object-cover cursor-pointer" alt="hero">
 
-        <!-- GALLERY -->
-        <div class="bg-white rounded-[2.3rem] shadow-xl overflow-hidden border border-slate-100">
+          <!-- Plot -->
+          <div id="plotPill" class="absolute top-4 left-4 bg-white/90 px-4 py-2 rounded-full font-semibold shadow">
+            -
+          </div>
+
+          <!-- Status -->
+          <div id="statusPill" class="absolute top-4 right-4 chip bg-emerald-100 text-emerald-700 shadow">
+            Available
+          </div>
+
+          <!-- Count -->
+          <div id="countPill" class="absolute bottom-4 right-4 bg-white/90 px-4 py-2 rounded-full font-semibold shadow">
+            0 Photos
+          </div>
+
+          <!-- thumbnails strip -->
+          <div class="bg-white/95 backdrop-blur border-t border-slate-100 p-4">
+            <div id="thumbStrip" class="flex gap-3 overflow-x-auto pb-1"></div>
+          </div>
+        </div>
+
+        <div class="p-6 md:p-8 space-y-5">
+          <div class="flex flex-wrap gap-2 items-center">
+            <div id="badgePill" class="chip bg-violet-100 text-violet-700">Badge: -</div>
+            <div id="sysPill" class="chip bg-slate-100 text-slate-700">System: -</div>
+            <div id="updatedPill" class="text-slate-400 font-semibold">Updated: -</div>
+          </div>
+
+          <div id="price" class="price-text text-slate-900">฿0</div>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="feature bg-slate-50 border border-slate-100">🛏 <span id="bed">-</span></div>
+            <div class="feature bg-slate-50 border border-slate-100">🛁 <span id="bath">-</span></div>
+            <div class="feature bg-slate-50 border border-slate-100">📐 <span id="land">-</span> sq.w</div>
+            <div class="feature bg-slate-50 border border-slate-100">🏠 <span id="living">-</span> sqm</div>
+          </div>
+
+          <div id="descBlock" class="bg-slate-50 border border-slate-100 rounded-[2rem] p-6 text-slate-700 leading-relaxed">
+            —
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-4">
+            <a id="mapBtn" class="hidden text-center bg-white border border-slate-200 rounded-2xl py-4 font-bold text-slate-800 hover:bg-slate-50">
+              📍 OPEN MAP
+            </a>
+            <a id="vrBtn" class="hidden text-center bg-slate-900 text-white rounded-2xl py-4 font-bold hover:bg-slate-800">
+              🌀 VIRTUAL TOUR
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div id="lightbox" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm">
+    <div class="w-full h-full flex items-center justify-center p-4">
+      <div class="relative w-full max-w-5xl">
+        <button id="lbClose" class="absolute -top-4 right-0 md:right-2 w-12 h-12 rounded-2xl bg-white text-slate-900 shadow flex items-center justify-center text-xl active:scale-95">✕</button>
+
+        <!-- image -->
+        <div class="bg-white rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/20">
           <div class="relative">
-            <img id="heroImg" src="" alt="thumbnail" class="w-full h-72 md:h-[420px] object-cover">
+            <img id="lbImg" src="" class="w-full max-h-[78vh] object-contain bg-slate-900">
 
-            <!-- Plot badge -->
-            <div class="absolute top-4 left-4 glass px-4 py-2 rounded-full font-bold text-slate-900 shadow">
-              <span id="plotBadge">-</span>
-            </div>
+            <!-- arrows (เข้าธีม) -->
+            <button id="lbPrev" class="absolute left-4 top-1/2 -translate-y-1/2 w-14 h-14 rounded-2xl bg-white/90 hover:bg-white text-slate-900 shadow flex items-center justify-center text-2xl active:scale-95">
+              ‹
+            </button>
+            <button id="lbNext" class="absolute right-4 top-1/2 -translate-y-1/2 w-14 h-14 rounded-2xl bg-white/90 hover:bg-white text-slate-900 shadow flex items-center justify-center text-2xl active:scale-95">
+              ›
+            </button>
 
-            <!-- Status badge -->
-            <div class="absolute top-4 right-4">
-              <span id="statusBadge" class="chip bg-slate-100 text-slate-700">-</span>
-            </div>
-
-            <!-- Image count -->
-            <div class="absolute bottom-4 right-4 glass px-3 py-2 rounded-full text-sm font-bold text-slate-800 shadow">
-              <span id="imgCount">0</span> Photos
-            </div>
-          </div>
-
-          <!-- Thumbnails strip -->
-          <div id="thumbStripWrap" class="p-4 border-t border-slate-100">
-            <div id="thumbStrip" class="flex gap-3 overflow-x-auto hide-scrollbar"></div>
-          </div>
-        </div>
-
-        <!-- SUMMARY PANEL -->
-        <div class="bg-white rounded-[2.3rem] shadow-xl border border-slate-100 p-6 md:p-8">
-          <div class="flex flex-wrap items-center gap-2 mb-4">
-            <span id="badgeText" class="chip bg-slate-100 text-slate-700">Badge</span>
-            <span id="sysBadge" class="chip bg-slate-100 text-slate-700">System</span>
-            <span class="ml-auto text-slate-400 font-semibold text-sm">
-              Updated: <span id="lastUpdated">-</span>
-            </span>
-          </div>
-
-          <div class="price-text text-slate-900" id="priceText">฿0</div>
-          <div class="text-slate-400 font-semibold mt-1">PRICE</div>
-
-          <div class="grid grid-cols-2 gap-3 mt-6">
-            <div class="bg-slate-50 rounded-2xl p-4">
-              <div class="label">Bedrooms</div>
-              <div class="value text-xl mt-1">🛏 <span id="bedrooms">-</span></div>
-            </div>
-            <div class="bg-slate-50 rounded-2xl p-4">
-              <div class="label">Bathrooms</div>
-              <div class="value text-xl mt-1">🛁 <span id="bathrooms">-</span></div>
-            </div>
-            <div class="bg-slate-50 rounded-2xl p-4">
-              <div class="label">Land Area</div>
-              <div class="value text-lg mt-1">📐 <span id="landSqw">-</span> sq.w</div>
-            </div>
-            <div class="bg-slate-50 rounded-2xl p-4">
-              <div class="label">Living Area</div>
-              <div class="value text-lg mt-1">🏠 <span id="livingSqm">-</span> sqm</div>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
-            <a id="mapBtn" target="_blank" class="btn bg-slate-900 text-white text-center hover:opacity-95 active:scale-[.99] transition hidden">
-              Map
-            </a>
-            <a id="tourBtn" target="_blank" class="btn bg-white border border-slate-200 text-slate-900 text-center hover:bg-slate-50 active:scale-[.99] transition hidden">
-              Virtual Tour
-            </a>
-            <a id="fbBtn" target="_blank" class="btn bg-white border border-slate-200 text-slate-900 text-center hover:bg-slate-50 active:scale-[.99] transition hidden">
-              FB Link
-            </a>
-          </div>
-
-          <a id="agentBtn"
-             class="btn mt-4 block text-center bg-emerald-600 text-white hover:opacity-95 active:scale-[.99] transition"
-             href="">
-            Contact / Enquire
-          </a>
-          <div class="text-slate-400 text-xs mt-2">
-            (ปุ่มนี้คุณสามารถเปลี่ยนไปลิงก์ LINE / WhatsApp / เบอร์โทรได้ทีหลัง)
-          </div>
-        </div>
-
-      </div>
-
-      <!-- DETAILS GRID -->
-      <div class="grid lg:grid-cols-3 gap-6 md:gap-8 mt-6 md:mt-8">
-
-        <!-- Main description -->
-        <div class="lg:col-span-2 bg-white rounded-[2.3rem] shadow-xl border border-slate-100 p-6 md:p-8">
-          <div class="text-slate-900 font-extrabold text-xl md:text-2xl italic">Description</div>
-          <div id="desc" class="mt-4 text-slate-700 leading-relaxed whitespace-pre-line">-</div>
-
-          <div class="grid sm:grid-cols-2 gap-4 mt-8">
-            <div class="bg-slate-50 rounded-2xl p-5">
-              <div class="label">Address</div>
-              <div class="value mt-2" id="address">-</div>
-            </div>
-            <div class="bg-slate-50 rounded-2xl p-5">
-              <div class="label">District / SubDistrict</div>
-              <div class="value mt-2"><span id="district">-</span> / <span id="subdistrict">-</span></div>
+            <div id="lbCounter" class="absolute bottom-4 left-4 bg-white/90 px-4 py-2 rounded-full font-semibold shadow">
+              1 / 1
             </div>
           </div>
         </div>
 
-        <!-- Extra specs -->
-        <div class="bg-white rounded-[2.3rem] shadow-xl border border-slate-100 p-6 md:p-8">
-          <div class="text-slate-900 font-extrabold text-xl md:text-2xl italic">Specs</div>
-
-          <div class="mt-5 space-y-3">
-            <div class="flex items-center justify-between bg-slate-50 rounded-2xl p-4">
-              <div class="label">Type</div>
-              <div class="value" id="type">-</div>
-            </div>
-            <div class="flex items-center justify-between bg-slate-50 rounded-2xl p-4">
-              <div class="label">Furnishing</div>
-              <div class="value" id="furnishing">-</div>
-            </div>
-            <div class="flex items-center justify-between bg-slate-50 rounded-2xl p-4">
-              <div class="label">Pool</div>
-              <div class="value"><span id="poolSize">-</span> / <span id="poolDepth">-</span></div>
-            </div>
-            <div class="flex items-center justify-between bg-slate-50 rounded-2xl p-4">
-              <div class="label">Parking</div>
-              <div class="value" id="parking">-</div>
-            </div>
-            <div class="flex items-center justify-between bg-slate-50 rounded-2xl p-4">
-              <div class="label">Electricity</div>
-              <div class="value" id="electricity">-</div>
-            </div>
-            <div class="flex items-center justify-between bg-slate-50 rounded-2xl p-4">
-              <div class="label">Price/SQM</div>
-              <div class="value" id="priceSqm">-</div>
-            </div>
-          </div>
-
-          <div class="mt-6 bg-slate-50 rounded-2xl p-5">
-            <div class="label">Extras</div>
-            <div class="value mt-2 whitespace-pre-line" id="extras">-</div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- FOOTER -->
-      <div class="text-center text-slate-400 text-sm mt-8 mb-2">
-        © Direct Hub Properties • Powered by Google Sheets + Apps Script
+        <div class="mt-3 text-center text-white/80 text-sm">Swipe/Click arrows to navigate</div>
       </div>
     </div>
-
-    <!-- ERROR -->
-    <div id="errorBlock" class="hidden bg-white rounded-[2rem] shadow-xl border border-rose-100 p-8 text-center">
-      <div class="text-rose-600 font-extrabold text-2xl">⚠️ Not Found</div>
-      <div class="text-slate-600 mt-2">ไม่พบข้อมูลยูนิตนี้ หรือพารามิเตอร์ไม่ครบ</div>
-      <a href="index.html" class="inline-block mt-6 px-6 py-3 rounded-2xl bg-slate-900 text-white font-bold">Go Home</a>
-    </div>
-
   </div>
 
 <script>
-  // =========================
-  // CONFIG
-  // =========================
   const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
+  const qs = new URLSearchParams(location.search);
+  const project = qs.get("project") || "Project_0";
+  const id = qs.get("id") || qs.get("hpId") || "";
 
-  const params = new URLSearchParams(location.search);
-  const PROJECT = params.get("project") || "Project_0";
+  // links
+  document.getElementById("backBtn").href = `index.html?project=${encodeURIComponent(project)}`;
+  document.getElementById("homeBtn").href = `index.html?project=${encodeURIComponent(project)}`;
 
-  // รองรับทั้ง id และ hpId
-  const ID = params.get("id") || params.get("hpId") || "";
+  const priceFmt = v => {
+    const n = Number(v);
+    return (!n || n === 0) ? "฿0" : "฿" + n.toLocaleString();
+  };
 
-  // ปุ่มกลับไปหน้า index ของโปรเจคเดิม
-  const backBtn = document.getElementById("backBtn");
-  backBtn.href = `index.html?project=${encodeURIComponent(PROJECT)}`;
-
-  document.getElementById("projectText").innerText = PROJECT;
-  document.getElementById("unitText").innerText = ID || "-";
-
-  // =========================
-  // HELPERS
-  // =========================
-  function escapeHtml(str) {
-    return String(str ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-
-  function numOrDash(v) {
-    const s = String(v ?? "").trim();
-    return s === "" ? "-" : s;
-  }
-
-  function priceFmt(v) {
-    const n = Number(String(v ?? "").replace(/,/g,""));
-    if (!n || n === 0) return "฿0";
-    return "฿" + n.toLocaleString();
-  }
-
-  function statusBadgeClass(s) {
-    s = String(s ?? "").toLowerCase();
+  const statusClass = s => {
+    s = String(s || "").toLowerCase();
     if (s.includes("available")) return "bg-emerald-100 text-emerald-700";
     if (s.includes("under")) return "bg-sky-100 text-sky-700";
     if (s.includes("reserved")) return "bg-amber-100 text-amber-700";
     if (s.includes("sold")) return "bg-rose-100 text-rose-700";
     return "bg-slate-100 text-slate-700";
-  }
-
-  function sysBadgeClass(s) {
-    s = String(s ?? "").toLowerCase();
-    if (s.includes("live") || s.includes("online")) return "bg-blue-100 text-blue-700";
-    if (s.includes("pending") || s.includes("review")) return "bg-amber-100 text-amber-700";
-    if (s.includes("off") || s.includes("offline") || s.includes("hide")) return "bg-slate-200 text-slate-700";
-    return "bg-slate-100 text-slate-700";
-  }
-
-  function toGalleryArray(detail) {
-    // รองรับได้ทั้ง Image_List หรือ Image_List_ (กรณีคีย์/หัวคอลัมน์ต่างกัน)
-    const raw =
-      detail.Image_List ??
-      detail.Image_List_ ??
-      detail.Image_List_Final ??
-      "";
-
-    const list = String(raw ?? "")
-      .split(",")
-      .map(x => x.trim())
-      .filter(Boolean);
-
-    // fallback: ถ้าไม่มี image_list ให้ใช้ Thumbnail_Image
-    const thumb = String(detail.Thumbnail_Image ?? detail.thumbnail ?? "").trim();
-    if (list.length === 0 && thumb) return [thumb];
-    return list;
-  }
-
-  function formatDate(v) {
-    // Apps Script ส่ง Date มาได้หลายแบบ
-    try {
-      if (!v) return "-";
-      const s = String(v);
-      const d = new Date(s);
-      if (isNaN(d.getTime())) return s;
-      return d.toLocaleString("th-TH", { year:"numeric", month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit" });
-    } catch {
-      return String(v ?? "-");
-    }
-  }
-
-  // =========================
-  // RENDER
-  // =========================
-  function setText(id, value, useHtml=false) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    if (useHtml) el.innerHTML = value;
-    else el.textContent = value;
-  }
-
-  function setLink(id, url) {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const u = String(url ?? "").trim();
-    if (!u || u === "-") {
-      el.classList.add("hidden");
-      return;
-    }
-    el.classList.remove("hidden");
-    el.href = u;
-  }
-
-  function render(detail) {
-    // Title
-    const plot = numOrDash(detail.Plot);
-    document.getElementById("pageTitle").innerText = plot !== "-" ? `UNIT ${ID} • ${plot}` : `UNIT ${ID}`;
-
-    // Hero badges
-    setText("plotBadge", plot);
-    const st = numOrDash(detail.Status);
-    const statusBadge = document.getElementById("statusBadge");
-    statusBadge.className = `chip ${statusBadgeClass(st)}`;
-    statusBadge.textContent = st;
-
-    const sys = numOrDash(detail.System_Status);
-    const sysBadge = document.getElementById("sysBadge");
-    sysBadge.className = `chip ${sysBadgeClass(sys)}`;
-    sysBadge.textContent = (sys === "-" ? "System: -" : `System: ${sys}`);
-
-    const badge = numOrDash(detail.Badge);
-    const badgeText = document.getElementById("badgeText");
-    badgeText.className = `chip ${badge === "-" ? "bg-slate-100 text-slate-700" : "bg-violet-100 text-violet-700"}`;
-    badgeText.textContent = (badge === "-" ? "Badge: -" : `Badge: ${badge}`);
-
-    setText("lastUpdated", formatDate(detail.Last_Updated));
-
-    // Price / main values
-    setText("priceText", priceFmt(detail.Price));
-    setText("bedrooms", numOrDash(detail.Bedrooms));
-    setText("bathrooms", numOrDash(detail.Bathrooms));
-    setText("landSqw", numOrDash(detail.Land_Area_sq_w));
-    setText("livingSqm", numOrDash(detail.Living_Area_sq_m));
-
-    // Text blocks
-    setText("desc", String(detail.Description ?? "-"));
-    setText("address", String(detail.Address ?? "-"));
-    setText("district", String(detail.District ?? "-"));
-    setText("subdistrict", String(detail.SubDistrict ?? "-"));
-
-    // Specs
-    setText("type", String(detail.Type ?? "-"));
-    setText("furnishing", String(detail.Furnishing ?? "-"));
-    setText("poolSize", String(detail.Pool_Size ?? "-"));
-    setText("poolDepth", String(detail.Pool_Depth ?? "-"));
-    setText("parking", String(detail.Parking ?? "-"));
-    setText("electricity", String(detail.Electricity ?? "-"));
-    setText("priceSqm", String(detail.Price_SQM ?? "-"));
-    setText("extras", String(detail.Extras ?? "-"));
-
-    // Links
-    setLink("mapBtn", detail.Map_Link);
-    setLink("tourBtn", detail.Virtual_Tour);
-    setLink("fbBtn", detail.FBLink);
-
-    // Contact button (ค่าเริ่มต้น: ไปที่ gateway หรือจะใส่ LINE/WA ทีหลังได้)
-    const agentBtn = document.getElementById("agentBtn");
-    agentBtn.href = `gateway.html?project=${encodeURIComponent(PROJECT)}`;
-
-    // Gallery
-    const imgs = toGalleryArray(detail);
-    setText("imgCount", String(imgs.length));
-
-    const heroImg = document.getElementById("heroImg");
-    heroImg.src = imgs[0] || (detail.Thumbnail_Image ?? "");
-
-    // thumbs
-    const strip = document.getElementById("thumbStrip");
-    strip.innerHTML = imgs.map((url, idx) => {
-      const safe = escapeHtml(url);
-      return `
-        <button
-          class="shrink-0 w-20 h-16 md:w-24 md:h-20 rounded-2xl overflow-hidden border border-slate-200 hover:scale-[1.02] active:scale-[.99] transition"
-          onclick="setHero('${safe}', ${idx})"
-          aria-label="img-${idx}"
-        >
-          <img src="${safe}" class="w-full h-full object-cover" />
-        </button>
-      `;
-    }).join("");
-
-    // show content
-    document.getElementById("loadingBlock").classList.add("hidden");
-    document.getElementById("content").classList.remove("hidden");
-
-    // Expose setter
-    window.__gallery = imgs;
-  }
-
-  window.setHero = (url, idx) => {
-    const heroImg = document.getElementById("heroImg");
-    heroImg.src = url;
   };
 
-  // =========================
-  // LOAD
-  // =========================
-  async function init() {
-    if (!ID) {
-      document.getElementById("loadingBlock").classList.add("hidden");
-      document.getElementById("errorBlock").classList.remove("hidden");
+  // gallery state
+  let gallery = [];
+  let currentIndex = 0;
+
+  function setHero(i) {
+    if (!gallery.length) return;
+    currentIndex = (i + gallery.length) % gallery.length;
+    document.getElementById("heroImg").src = gallery[currentIndex];
+    document.getElementById("countPill").textContent = `${gallery.length} Photos`;
+  }
+
+  function renderThumbStrip() {
+    const strip = document.getElementById("thumbStrip");
+    if (!gallery.length) {
+      strip.innerHTML = `<div class="text-slate-400 font-semibold">No gallery photos</div>`;
       return;
     }
 
-    try {
-      // Apps Script ของคุณรับ hpId เป็นพารามิเตอร์
-      const url = `${API_URL}?mode=getUnitDetail&project=${encodeURIComponent(PROJECT)}&hpId=${encodeURIComponent(ID)}&t=${Date.now()}`;
-      const res = await fetch(url);
-      const detail = await res.json();
-
-      if (!detail || detail.error) {
-        document.getElementById("loadingBlock").classList.add("hidden");
-        document.getElementById("errorBlock").classList.remove("hidden");
-        return;
-      }
-
-      render(detail);
-
-    } catch (e) {
-      document.getElementById("loadingBlock").classList.add("hidden");
-      document.getElementById("errorBlock").classList.remove("hidden");
-    }
+    strip.innerHTML = gallery.map((url, idx) => `
+      <button class="shrink-0 rounded-2xl overflow-hidden border ${idx===currentIndex ? "border-slate-900" : "border-slate-100"} bg-slate-50"
+        onclick="window.__pick(${idx})"
+        title="View">
+        <img src="${url}" class="w-24 h-20 object-cover">
+      </button>
+    `).join("");
   }
 
-  init();
+  window.__pick = (idx) => {
+    setHero(idx);
+    renderThumbStrip();
+  };
+
+  // lightbox
+  const lb = document.getElementById("lightbox");
+  const lbImg = document.getElementById("lbImg");
+  const lbCounter = document.getElementById("lbCounter");
+
+  function openLightbox(idx) {
+    if (!gallery.length) return;
+    currentIndex = idx;
+    lb.classList.remove("hidden");
+    updateLightbox();
+  }
+
+  function closeLightbox() {
+    lb.classList.add("hidden");
+  }
+
+  function updateLightbox() {
+    lbImg.src = gallery[currentIndex];
+    lbCounter.textContent = `${currentIndex + 1} / ${gallery.length}`;
+  }
+
+  function prev() {
+    currentIndex = (currentIndex - 1 + gallery.length) % gallery.length;
+    updateLightbox();
+  }
+
+  function next() {
+    currentIndex = (currentIndex + 1) % gallery.length;
+    updateLightbox();
+  }
+
+  document.getElementById("lbClose").addEventListener("click", closeLightbox);
+  document.getElementById("lbPrev").addEventListener("click", prev);
+  document.getElementById("lbNext").addEventListener("click", next);
+
+  // click outside close
+  lb.addEventListener("click", (e) => {
+    if (e.target === lb) closeLightbox();
+  });
+
+  // hero click -> open lightbox
+  document.getElementById("heroImg").addEventListener("click", () => openLightbox(currentIndex));
+
+  // keyboard on desktop
+  window.addEventListener("keydown", (e) => {
+    if (lb.classList.contains("hidden")) return;
+    if (e.key === "Escape") closeLightbox();
+    if (e.key === "ArrowLeft") prev();
+    if (e.key === "ArrowRight") next();
+  });
+
+  async function load() {
+    if (!id) {
+      document.getElementById("loading").textContent = "⚠️ Missing id";
+      return;
+    }
+
+    const res = await fetch(`${API_URL}?mode=getUnitDetail&project=${encodeURIComponent(project)}&hpId=${encodeURIComponent(id)}&t=${Date.now()}`);
+    const d = await res.json();
+
+    if (d.error) {
+      document.getElementById("loading").textContent = "⚠️ " + d.error;
+      return;
+    }
+
+    // data
+    const plot = d.Plot || "-";
+    const status = d.Status || "-";
+    const badge = d.Badge || "-";
+    const sys = d.System_Status || "-";
+    const updated = d.Last_Updated || "-";
+
+    const thumb = d.Thumbnail_Image || "";
+    const list = String(d.Image_List || "").split(",").map(s => s.trim()).filter(Boolean);
+
+    gallery = (list.length ? list : (thumb ? [thumb] : []));
+
+    // title
+    document.getElementById("titleLine").textContent = `UNIT ${id} • ${plot}`;
+    document.getElementById("subLine").textContent = `Project: ${project} • Unit: ${id}`;
+
+    // pills
+    document.getElementById("plotPill").textContent = plot;
+    const st = document.getElementById("statusPill");
+    st.className = `absolute top-4 right-4 chip shadow ${statusClass(status)}`;
+    st.textContent = status;
+
+    document.getElementById("badgePill").textContent = `Badge: ${badge}`;
+    document.getElementById("sysPill").textContent = `System: ${sys}`;
+    document.getElementById("updatedPill").textContent = `Updated: ${updated}`;
+
+    // numbers
+    document.getElementById("price").textContent = priceFmt(d.Price || d.Price_SQM || 0);
+    document.getElementById("bed").textContent = d.Bedrooms || "-";
+    document.getElementById("bath").textContent = d.Bathrooms || "-";
+    document.getElementById("land").textContent = d.Land_Area_sq_w || "-";
+    document.getElementById("living").textContent = d.Living_Area_sq_m || "-";
+
+    // description
+    document.getElementById("descBlock").textContent = d.Description || "—";
+
+    // map / virtual
+    const map = d.Map_Link || "";
+    const vr = d.Virtual_Tour || "";
+    if (map) {
+      const a = document.getElementById("mapBtn");
+      a.href = map;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.classList.remove("hidden");
+    }
+    if (vr) {
+      const a = document.getElementById("vrBtn");
+      a.href = vr;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.classList.remove("hidden");
+    }
+
+    // hero image
+    document.getElementById("heroImg").src = gallery[0] || "https://via.placeholder.com/1200x800?text=No+Image";
+    document.getElementById("countPill").textContent = `${gallery.length} Photos`;
+    currentIndex = 0;
+    renderThumbStrip();
+
+    // show
+    document.getElementById("loading").classList.add("hidden");
+    document.getElementById("content").classList.remove("hidden");
+  }
+
+  load();
 </script>
 </body>
 </html>
-
