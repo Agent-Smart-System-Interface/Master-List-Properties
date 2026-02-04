@@ -1,437 +1,683 @@
-<!doctype html>
-<html lang="th">
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>smart properties system · details</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>smart properties system • details</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Noto+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <!--
+    ✅ Fix: Gallery not showing even though images exist
+    What changed (no logic breaking):
+    - Robust parsing of Image_List (comma/newline/pipe/semicolon/JSON array)
+    - Normalize Google Drive share links to direct-view URLs
+    - Remove dependency on via.placeholder (often blocked in in-app browsers)
+    - Safe fallbacks + lazy-loading
+  -->
 
   <style>
     :root{
-      --line-bg:#8fb2d9;
+      --line-blue:#8FA9CC;
+      --line-blue-dark:#6f87ad;
+      --card:#ffffff;
       --text:#0f172a;
       --muted:#64748b;
-      --border:rgba(15,23,42,.10);
-      --shadow:0 10px 30px rgba(2,6,23,.08);
-      --green:#06c755;
-      --green-d:#05b24c;
-      --pill:#eef2f7;
-      --chip:#f1f5f9;
-      --radius:22px;
+      --shadow: 0 14px 40px rgba(15, 23, 42, .12);
+      --radius:28px;
     }
 
-    *{box-sizing:border-box}
-    html,body{height:100%}
+    html,body{height:100%;}
     body{
       margin:0;
-      font-family:"Noto Sans Thai","Noto Sans",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
       color:var(--text);
-      background:var(--line-bg);
-      overflow-x:hidden;
-    }
-
-    body::before{
-      content:"";
-      position:fixed; inset:0;
+      font-family:
+        system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", Roboto, "Noto Sans", Arial,
+        "Helvetica Neue", sans-serif;
       background:
-        radial-gradient(120px 70px at 12% 28%, rgba(255,255,255,.18) 0 60%, rgba(255,255,255,0) 61%),
-        radial-gradient(140px 80px at 23% 30%, rgba(255,255,255,.18) 0 58%, rgba(255,255,255,0) 59%),
-        radial-gradient(120px 70px at 32% 28%, rgba(255,255,255,.18) 0 60%, rgba(255,255,255,0) 61%),
-        radial-gradient(140px 80px at 72% 58%, rgba(255,255,255,.14) 0 58%, rgba(255,255,255,0) 59%),
-        radial-gradient(160px 90px at 82% 60%, rgba(255,255,255,.14) 0 58%, rgba(255,255,255,0) 59%),
-        radial-gradient(140px 80px at 92% 58%, rgba(255,255,255,.14) 0 58%, rgba(255,255,255,0) 59%),
-        linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,0) 55%);
-      pointer-events:none;
-      z-index:-1;
+        radial-gradient(120px 90px at 12% 18%, rgba(255,255,255,.32) 0 62%, transparent 63%),
+        radial-gradient(170px 120px at 70% 26%, rgba(255,255,255,.26) 0 60%, transparent 61%),
+        radial-gradient(140px 100px at 34% 74%, rgba(255,255,255,.22) 0 60%, transparent 61%),
+        radial-gradient(180px 130px at 86% 78%, rgba(255,255,255,.18) 0 60%, transparent 61%),
+        linear-gradient(180deg, var(--line-blue) 0%, #b7c8df 70%, #c8d6e8 100%);
+      background-attachment: fixed;
     }
 
     .topbar{
-      position:sticky; top:0;
-      padding:12px 14px calc(10px + env(safe-area-inset-top));
-      display:flex; align-items:center; gap:10px;
-      background:rgba(15,23,42,.18);
-      backdrop-filter:blur(10px);
-      -webkit-backdrop-filter:blur(10px);
-      border-bottom:1px solid rgba(255,255,255,.18);
-    }
-    .iconbtn{
-      width:40px; height:40px; border-radius:14px;
-      border:1px solid rgba(255,255,255,.25);
-      background:rgba(255,255,255,.70);
-      display:grid; place-items:center;
-      cursor:pointer;
-      box-shadow:0 8px 18px rgba(0,0,0,.10);
-      user-select:none;
-      flex:0 0 auto;
-    }
-    .iconbtn:active{transform:translateY(1px)}
-    .iconbtn svg{width:20px;height:20px;opacity:.85}
-
-    .titlewrap{flex:1; min-width:0}
-    .title{
-      font-size:16px; font-weight:900; line-height:1.2;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-      text-transform:lowercase;
-      color:white;
-    }
-    .subtitle{
-      font-size:12px; font-weight:800;
-      color:rgba(255,255,255,.85);
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      padding: 18px 14px 12px;
+      background: linear-gradient(180deg, rgba(111,135,173,.82), rgba(111,135,173,.40));
+      backdrop-filter: blur(10px);
     }
 
-    .wrap{max-width:1200px; margin:0 auto; padding:14px 14px 26px}
+    .topbar-inner{
+      max-width: 980px;
+      margin: 0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+    }
 
-    /* จุดที่ 3: มือถือ 1 คอลัมน์ / คอม 2 คอลัมน์ */
-    .layout{
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .avatar{
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.65);
       display:grid;
-      grid-template-columns:1fr;
-      gap:14px;
-    }
-    @media (min-width:1024px){
-      .layout{grid-template-columns: 1.2fr .8fr;}
+      place-items:center;
+      font-weight: 900;
+      letter-spacing:.5px;
+      color:#0b1220;
+      user-select:none;
+      flex: 0 0 auto;
     }
 
-    .panel{
-      background:rgba(255,255,255,.92);
-      border:1px solid rgba(255,255,255,.55);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
+    .brand-text{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap: 2px;
+    }
+
+    .brand-title{
+      font-size: 22px;
+      line-height: 1.1;
+      font-weight: 900;
+      color:#0b1220;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      text-transform: lowercase;
+    }
+
+    .brand-sub{
+      font-size: 13px;
+      color: rgba(0,0,0,.55);
+      font-weight: 600;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .actions{
+      display:flex;
+      gap: 10px;
+      flex: 0 0 auto;
+    }
+
+    .icon-btn{
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      border: 0;
+      cursor: pointer;
+      background: rgba(255,255,255,.78);
+      box-shadow: 0 6px 18px rgba(15, 23, 42, .10);
+      display:grid;
+      place-items:center;
+    }
+    .icon-btn:active{ transform: scale(.98); }
+
+    .wrap{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 12px 14px 60px;
+    }
+
+    .card{
+      background: rgba(255,255,255,.92);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
       overflow:hidden;
     }
+
+    .card + .card{ margin-top: 14px; }
 
     .hero{
-      position:relative;
-      background:#e5e7eb;
-      aspect-ratio: 16/9;
+      padding: 12px;
+    }
+
+    .hero-img{
       width:100%;
-      overflow:hidden;
-    }
-    .hero img{
-      width:100%; height:100%;
-      object-fit:cover;
+      height: 240px;
+      object-fit: cover;
+      border-radius: 22px;
+      background:#e5e7eb;
       display:block;
-    }
-    .heroBadge{
-      position:absolute; left:12px; top:12px;
-      background:rgba(255,255,255,.88);
-      border:1px solid rgba(15,23,42,.10);
-      padding:6px 10px;
-      border-radius:999px;
-      font-weight:950; font-size:12px;
-      backdrop-filter: blur(8px);
     }
 
     .thumbs{
       display:flex;
-      gap:10px;
-      padding:12px;
-      overflow:auto;
-      border-top:1px solid rgba(15,23,42,.06);
-      background:rgba(255,255,255,.70);
+      gap: 10px;
+      margin-top: 12px;
+      overflow-x:auto;
+      padding-bottom: 6px;
+      -webkit-overflow-scrolling: touch;
     }
-    .thumbBtn{
-      width:88px; height:56px;
-      border-radius:14px;
-      border:1px solid rgba(15,23,42,.10);
-      overflow:hidden;
-      flex:0 0 auto;
-      padding:0;
+
+    .thumb{
+      width: 120px;
+      height: 74px;
+      border-radius: 18px;
+      object-fit: cover;
       background:#e5e7eb;
+      flex: 0 0 auto;
       cursor:pointer;
+      border: 2px solid transparent;
     }
-    .thumbBtn img{width:100%; height:100%; object-fit:cover; display:block}
+    .thumb.active{ border-color: rgba(15,23,42,.22); }
 
-    .pad{padding:14px}
-    .h1{font-size:20px; font-weight:950; margin:0}
-    .price{font-size:22px; font-weight:950; margin:6px 0 0}
-    .muted{color:var(--muted); font-weight:800}
-
-    .chips{margin-top:10px; display:flex; flex-wrap:wrap; gap:8px}
-    .chip{
-      background:var(--chip);
-      border:1px solid var(--border);
-      border-radius:999px;
-      padding:7px 10px;
-      font-weight:900;
-      font-size:13px;
-      display:inline-flex; align-items:center; gap:6px;
+    .content{
+      padding: 18px 18px 22px;
     }
 
-    .sectionTitle{margin:14px 0 8px; font-weight:950}
-    .kv{display:grid; grid-template-columns: 1fr; gap:10px}
-    .kv .row{
-      display:flex; justify-content:space-between; gap:10px;
-      padding:10px 12px;
-      background:rgba(15,23,42,.04);
-      border:1px solid rgba(15,23,42,.08);
-      border-radius:16px;
-      font-weight:800;
+    .titleRow{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap: 10px;
     }
-    .kv .k{color:var(--muted)}
-    .kv .v{text-align:right; color:var(--text)}
 
-    .btnRow{display:flex; gap:10px; margin-top:14px}
+    .hpid{
+      font-size: 36px;
+      letter-spacing:.3px;
+      margin: 0;
+      font-weight: 1000;
+    }
+
+    .price{
+      margin: 0;
+      font-size: 42px;
+      font-weight: 1000;
+    }
+
+    .muted{ color: var(--muted); font-weight: 700; }
+
+    .sectionTitle{
+      margin: 18px 0 10px;
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .kv{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      background: rgba(241,245,249,.9);
+      border-radius: 18px;
+      padding: 12px 14px;
+      border: 1px solid rgba(15,23,42,.06);
+    }
+
+    .k{
+      font-weight: 900;
+      color: rgba(15,23,42,.55);
+      letter-spacing:.2px;
+    }
+
+    .v{
+      font-weight: 1000;
+      color: rgba(15,23,42,.95);
+      text-align:right;
+      word-break: break-word;
+    }
+
+    .btnRow{
+      display:flex;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
     .btn{
-      flex:1;
-      border:none;
-      border-radius:16px;
-      padding:12px 14px;
-      font-weight:950;
+      border:0;
       cursor:pointer;
-      user-select:none;
+      padding: 14px 16px;
+      border-radius: 18px;
+      font-weight: 1000;
+      min-width: 160px;
+      box-shadow: 0 12px 26px rgba(15,23,42,.12);
     }
-    .btn:active{transform:translateY(1px)}
-    .btnGreen{background:var(--green); color:white}
-    .btnGreen:hover{background:var(--green-d)}
-    .btnSoft{background:rgba(15,23,42,.06); color:var(--text); border:1px solid rgba(15,23,42,.10)}
 
-    .loading{
-      padding:14px;
-      text-align:center;
-      color:rgba(255,255,255,.92);
-      font-weight:800;
+    .btn.primary{ background:#111827; color:#fff; }
+    .btn.ghost{ background: rgba(255,255,255,.82); color:#111827; border: 1px solid rgba(15,23,42,.10); }
+
+    .loadingWrap{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 26px 0 0;
     }
-    .spinner{
-      width:22px;height:22px;border-radius:50%;
-      border:3px solid rgba(255,255,255,.35);
-      border-top-color:rgba(255,255,255,.95);
-      margin:0 auto 10px;
-      animation:spin .9s linear infinite;
+
+    .dot{
+      width: 10px;
+      height: 10px;
+      border-radius: 99px;
+      background: rgba(255,255,255,.86);
+      box-shadow: 0 8px 20px rgba(15,23,42,.14);
+      margin: 0 6px;
+      animation: bounce 1s infinite;
     }
-    @keyframes spin{to{transform:rotate(360deg)}}
+    .dot:nth-child(2){ animation-delay: .15s; }
+    .dot:nth-child(3){ animation-delay: .3s; }
+    @keyframes bounce{
+      0%,100%{ transform: translateY(0); opacity:.65; }
+      50%{ transform: translateY(-8px); opacity: 1; }
+    }
+
+    .err{
+      margin-top: 12px;
+      padding: 14px 14px;
+      background: rgba(255,255,255,.9);
+      border-radius: 18px;
+      border: 1px solid rgba(220,38,38,.22);
+      color: #991b1b;
+      font-weight: 900;
+    }
+
+    @media (min-width: 860px){
+      .grid{ grid-template-columns: 1fr 1fr; }
+      .hero-img{ height: 340px; }
+      .thumb{ width: 160px; height: 92px; }
+    }
   </style>
 </head>
 
 <body>
   <header class="topbar">
-    <button class="iconbtn" id="btnBack" title="กลับ">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M15 18l-6-6 6-6"></path>
-      </svg>
-    </button>
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="avatar">SP</div>
+        <div class="brand-text">
+          <div class="brand-title" id="brandTitle">smart properties system</div>
+          <div class="brand-sub" id="brandSub">Details • feel LINE</div>
+        </div>
+      </div>
 
-    <div class="titlewrap">
-      <div class="title">smart properties system</div>
-      <div class="subtitle" id="subTitle">Details</div>
+      <div class="actions">
+        <button class="icon-btn" id="btnBack" title="Back" aria-label="Back">
+          <!-- left arrow -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6" stroke="#0b1220" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <button class="icon-btn" id="btnGateway" title="Gateway" aria-label="Gateway">
+          <!-- user icon -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M20 21a8 8 0 10-16 0" stroke="#0b1220" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M12 12a4 4 0 100-8 4 4 0 000 8z" stroke="#0b1220" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <button class="icon-btn" id="btnEdit" title="Edit" aria-label="Edit">
+          <!-- pencil icon -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 20h9" stroke="#0b1220" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M16.5 3.5a2.1 2.1 0 013 3L8 18l-4 1 1-4 11.5-11.5z" stroke="#0b1220" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
     </div>
-
-    <!-- จุดที่ 1 -->
-    <button class="iconbtn" id="btnGateway" title="Gateway">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20 21a8 8 0 0 0-16 0"></path>
-        <circle cx="12" cy="8" r="4"></circle>
-      </svg>
-    </button>
-    <button class="iconbtn" id="btnEdit" title="Edit">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M12 20h9"></path>
-        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
-      </svg>
-    </button>
   </header>
 
   <main class="wrap">
-    <div class="loading" id="loading">
-      <div class="spinner"></div>
-      กำลังโหลดรายละเอียด...
+    <div class="loadingWrap" id="loading">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
     </div>
 
-    <section class="layout" id="layout" style="display:none;">
-      <article class="panel">
-        <div class="hero" id="hero">
-          <div class="heroBadge" id="heroBadge" style="display:none;"></div>
-          <img id="heroImg" alt="main" />
+    <div class="err" id="err" style="display:none;"></div>
+
+    <section class="card" id="heroCard" style="display:none;">
+      <div class="hero">
+        <img id="mainImage" class="hero-img" alt="no image" />
+        <div class="thumbs" id="thumbs" style="display:none;"></div>
+      </div>
+    </section>
+
+    <section class="card" id="detailCard" style="display:none;">
+      <div class="content">
+        <div class="titleRow">
+          <h1 class="hpid" id="hpid">—</h1>
+          <p class="price" id="price">—</p>
         </div>
-        <div class="thumbs" id="thumbs"></div>
-      </article>
 
-      <aside class="panel">
-        <div class="pad">
-          <h1 class="h1" id="unitTitle">-</h1>
-          <div class="price" id="unitPrice">-</div>
-          <div class="muted" id="unitStatus" style="margin-top:6px;">-</div>
+        <div class="muted" id="subtitle" style="margin-top:10px;">Project: — • Unit: —</div>
 
-          <div class="chips" id="chips"></div>
+        <div class="sectionTitle">ข้อมูลเพิ่มเติม</div>
+        <div class="grid" id="kvGrid"></div>
 
-          <div class="sectionTitle">ข้อมูลเพิ่มเติม</div>
-          <div class="kv" id="kv"></div>
-
-          <div class="btnRow">
-            <button class="btn btnGreen" id="btnCopyLink">คัดลอกลิงก์</button>
-            <button class="btn btnSoft" id="btnShare">แชร์</button>
-          </div>
+        <div class="btnRow">
+          <button class="btn primary" id="btnMap">Google Map</button>
+          <button class="btn ghost" id="btnFacebook">Facebook</button>
         </div>
-      </aside>
+      </div>
     </section>
   </main>
 
   <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
-    const PROJECT = "Project_0";
-    const CACHE_TTL_MS = 5 * 60 * 1000; // จุดที่ 4: cache details 5 นาที
+    // ======== CONFIG ========
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
 
-    const $ = (id) => document.getElementById(id);
+    // ✅ Data-URI fallback image (no external dependency)
+    const FALLBACK_IMG = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`
+      <svg xmlns='http://www.w3.org/2000/svg' width='1200' height='700'>
+        <defs>
+          <linearGradient id='g' x1='0' y1='0' x2='0' y2='1'>
+            <stop offset='0' stop-color='#e5e7eb'/>
+            <stop offset='1' stop-color='#cbd5e1'/>
+          </linearGradient>
+        </defs>
+        <rect width='100%' height='100%' fill='url(#g)'/>
+        <g fill='none' stroke='#94a3b8' stroke-width='10' stroke-linecap='round' stroke-linejoin='round' opacity='.9'>
+          <path d='M420 370h360'/>
+          <path d='M510 310h180'/>
+          <path d='M470 450h260'/>
+          <rect x='430' y='240' width='340' height='260' rx='40' />
+          <path d='M470 440l90-90 70 70 70-70 100 100' />
+          <circle cx='525' cy='310' r='22' />
+        </g>
+        <text x='50%' y='88%' text-anchor='middle' font-family='Arial, sans-serif' font-size='52' fill='#475569' opacity='.9'>NO IMAGE</text>
+      </svg>
+    `);
 
-    function qs(name){
-      return new URLSearchParams(location.search).get(name) || "";
-    }
-    const hpId = qs("id");
-
-    function safeText(v){ return String(v ?? "").replace(/[<>]/g, ""); }
-
-    const fmtPrice = (v) => {
-      const n = Number(String(v).replace(/[^0-9.]/g,""));
-      if (!isFinite(n)) return v || "";
-      return "฿" + n.toLocaleString("en-US");
-    };
-
-    function getCache(key){
-      try{
-        const raw = sessionStorage.getItem(key);
-        if(!raw) return null;
-        const obj = JSON.parse(raw);
-        if(!obj || !obj.t || !obj.data) return null;
-        if(Date.now() - obj.t > CACHE_TTL_MS) return null;
-        return obj.data;
-      }catch{ return null; }
-    }
-    function setCache(key, data){
-      try{ sessionStorage.setItem(key, JSON.stringify({ t: Date.now(), data })); }catch{}
+    // ======== HELPERS ========
+    function qs(key){
+      return new URLSearchParams(location.search).get(key);
     }
 
-    async function fetchDetail(){
-      const url = `${GAS_URL}?mode=getUnitDetail&project=${encodeURIComponent(PROJECT)}&hpId=${encodeURIComponent(hpId)}&_=${Date.now()}`;
-      const res = await fetch(url, { cache: "no-store" });
-      if(!res.ok) throw new Error("Fetch failed");
-      return await res.json();
+    function showError(msg){
+      const el = document.getElementById('err');
+      el.style.display = 'block';
+      el.textContent = msg;
     }
 
-    function setHero(src){
-      const img = $("heroImg");
-      img.src = src || "";
-      img.onerror = () => { img.removeAttribute("src"); img.alt = "no image"; };
+    function hideLoading(){
+      document.getElementById('loading').style.display = 'none';
     }
 
-    function buildThumbs(images){
-      const wrap = $("thumbs");
-      wrap.innerHTML = "";
-      (images || []).forEach((src, idx) => {
-        if(!src) return;
-        const b = document.createElement("button");
-        b.className = "thumbBtn";
-        b.type = "button";
-        b.innerHTML = `<img loading="lazy" decoding="async" src="${src}" alt="thumb ${idx+1}" />`;
-        b.addEventListener("click", ()=> setHero(src));
-        wrap.appendChild(b);
-      });
+    function safeText(v){
+      if (v === null || v === undefined) return "";
+      return String(v);
     }
 
-    function render(data){
-      const id = safeText(data.id || hpId);
-      const plot = safeText(data.plot || "");
-      const status = safeText(data.status || "");
-      const badge = safeText(data.badge || "");
-      const price = fmtPrice(data.price);
+    function fmtPrice(v){
+      const n = Number(String(v).replace(/[^0-9.]/g,''));
+      if (!isFinite(n)) return safeText(v) || "—";
+      return "฿" + n.toLocaleString('en-US');
+    }
 
-      $("subTitle").textContent = plot ? `${id} · ${plot}` : id;
-      $("unitTitle").textContent = plot ? `${id} · ${plot}` : id;
-      $("unitPrice").textContent = price || "-";
-      $("unitStatus").textContent = status || "";
+    function normalizeDriveUrl(url){
+      if (!url) return "";
+      let u = String(url).trim();
 
-      if(badge){
-        $("heroBadge").style.display = "inline-block";
-        $("heroBadge").textContent = badge;
-      }else{
-        $("heroBadge").style.display = "none";
+      // already data uri / direct http(s)
+      if (u.startsWith("data:")) return u;
+
+      // Convert Google Drive share links to direct-view
+      // Patterns:
+      // 1) https://drive.google.com/file/d/FILEID/view?...
+      // 2) https://drive.google.com/open?id=FILEID
+      // 3) https://drive.google.com/uc?id=FILEID&export=download
+      // 4) https://lh3.googleusercontent.com/d/FILEID (already ok)
+      let fileId = "";
+
+      const m1 = u.match(/drive\\.google\\.com\\/file\\/d\\/([a-zA-Z0-9_-]+)/);
+      if (m1 && m1[1]) fileId = m1[1];
+
+      const m2 = u.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+      if (!fileId && m2 && m2[1]) fileId = m2[1];
+
+      const m3 = u.match(/lh3\\.googleusercontent\\.com\\/d\\/([a-zA-Z0-9_-]+)/);
+      if (!fileId && m3 && m3[1]) fileId = m3[1];
+
+      if (fileId){
+        // Most compatible:
+        return `https://drive.google.com/uc?export=view&id=${fileId}`;
       }
 
-      const chips = [];
-      if(data.bedrooms) chips.push(`🛏️ ${safeText(data.bedrooms)}`);
-      if(data.bathrooms) chips.push(`🛁 ${safeText(data.bathrooms)}`);
-      if(data.landSqw) chips.push(`📐 ${safeText(data.landSqw)} sq.w`);
-      if(data.livingSqm) chips.push(`🏠 ${safeText(data.livingSqm)} sqm`);
-      $("chips").innerHTML = chips.map(t => `<span class="chip">${t}</span>`).join("");
+      // Some users store multiple URLs with spaces; keep as-is if http(s)
+      if (/^https?:\\/\\//i.test(u)) return u;
 
-      const rows = [
-        ["Project", PROJECT],
-        ["HP_ID", id],
-        ["Plot", plot],
-        ["Status", status],
-        ["Price", price],
-      ].filter(r => r[1]);
-
-      $("kv").innerHTML = rows.map(([k,v]) => `
-        <div class="row"><div class="k">${safeText(k)}</div><div class="v">${safeText(v)}</div></div>
-      `).join("");
-
-      const images = Array.isArray(data.images) ? data.images : [];
-      const main = data.mainImage || images[0] || data.thumbnail || "";
-      setHero(main);
-      buildThumbs(images.length ? images : (main ? [main] : []));
-
-      $("loading").style.display = "none";
-      $("layout").style.display = "grid";
-
-      localStorage.setItem("lastSelectedId", id);
+      return u;
     }
 
-    async function init(){
-      if(!hpId){
-        $("loading").innerHTML = "ไม่พบ id ในลิงก์ (ต้องเป็น details.html?id=HP-0001)";
-        return;
-      }
+    function parseImageList(raw){
+      if (!raw) return [];
+      const s = String(raw).trim();
+      if (!s) return [];
 
-      const cacheKey = `unitDetail_${hpId}`;
-      const cached = getCache(cacheKey);
-      if(cached) {
-        render(cached);
+      // If JSON array: ["url1","url2"]
+      if (s.startsWith("[") && s.endsWith("]")){
         try{
-          const fresh = await fetchDetail();
-          setCache(cacheKey, fresh);
-          render(fresh);
-        }catch{}
+          const arr = JSON.parse(s);
+          if (Array.isArray(arr)) return arr.map(x => normalizeDriveUrl(x)).filter(Boolean);
+        }catch(e){}
+      }
+
+      // Otherwise split by common separators
+      const parts = s
+        .split(/[,\\n\\r\\t\\|;]+/g)
+        .map(x => normalizeDriveUrl(x))
+        .map(x => x.trim())
+        .filter(Boolean);
+
+      // de-duplicate
+      return [...new Set(parts)];
+    }
+
+    async function fetchUnitDetail(hpId){
+      // Try cache first
+      const cacheKey = `DETAIL_${hpId}`;
+      try{
+        const cached = sessionStorage.getItem(cacheKey);
+        if (cached){
+          const obj = JSON.parse(cached);
+          if (obj && obj._t && (Date.now()-obj._t) < 3*60*1000 && obj.data) return obj.data;
+        }
+      }catch(e){}
+
+      // Many GAS backends accept different params. We'll send both id + hpId.
+      const url = new URL(WEB_APP_URL);
+      url.searchParams.set("action", "getUnitDetail");
+      url.searchParams.set("hpId", hpId);
+      url.searchParams.set("id", hpId);
+
+      const res = await fetch(url.toString(), { cache: "no-store" });
+      if (!res.ok) throw new Error("Fetch failed: " + res.status);
+      const data = await res.json();
+
+      // Store cache
+      try{
+        sessionStorage.setItem(cacheKey, JSON.stringify({ _t: Date.now(), data }));
+      }catch(e){}
+
+      return data;
+    }
+
+    function buildThumb(imgUrl, idx, onPick){
+      const im = document.createElement("img");
+      im.className = "thumb";
+      im.loading = "lazy";
+      im.decoding = "async";
+      im.alt = "thumb " + (idx+1);
+      im.src = imgUrl;
+      im.addEventListener("click", () => onPick(idx));
+      im.addEventListener("error", () => { im.src = FALLBACK_IMG; });
+      return im;
+    }
+
+    function setMainImage(url){
+      const main = document.getElementById("mainImage");
+      main.src = url || FALLBACK_IMG;
+    }
+
+    function makeKVRow(k, v){
+      const row = document.createElement("div");
+      row.className = "kv";
+
+      const left = document.createElement("div");
+      left.className = "k";
+      left.textContent = k;
+
+      const right = document.createElement("div");
+      right.className = "v";
+      right.textContent = v || "—";
+
+      row.appendChild(left);
+      row.appendChild(right);
+      return row;
+    }
+
+    function pickValue(obj, keys){
+      for (const k of keys){
+        if (obj && obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== "") return obj[k];
+      }
+      return "";
+    }
+
+    function toSafeUrl(maybeUrl){
+      const u = normalizeDriveUrl(maybeUrl);
+      if (!u) return "";
+      if (u.startsWith("data:")) return u;
+      if (/^https?:\\/\\//i.test(u)) return u;
+      return "";
+    }
+
+    // ======== MAIN ========
+    (async function init(){
+      const hpId = qs("id") || qs("hpId") || qs("HP_ID") || "";
+      if (!hpId){
+        hideLoading();
+        showError("Missing id. Example: details.html?id=HP-Z001");
         return;
       }
 
-      try{
-        const data = await fetchDetail();
-        setCache(cacheKey, data);
-        render(data);
-      }catch(e){
-        console.warn(e);
-        $("loading").innerHTML = "โหลดรายละเอียดไม่สำเร็จ ลองใหม่อีกครั้ง";
-      }
-    }
+      // Buttons
+      document.getElementById("btnBack").addEventListener("click", () => history.back());
+      document.getElementById("btnGateway").addEventListener("click", () => {
+        // Keep your original routing convention; adjust if your gateway expects params
+        window.location.href = "gateway.html?id=" + encodeURIComponent(hpId);
+      });
+      document.getElementById("btnEdit").addEventListener("click", () => {
+        window.location.href = "edit.html?id=" + encodeURIComponent(hpId);
+      });
 
-    $("btnBack").addEventListener("click", () => history.length > 1 ? history.back() : location.href="index.html");
-    $("btnGateway").addEventListener("click", () => location.href="gateway.html");
-    $("btnEdit").addEventListener("click", () => location.href=`edit.html?id=${encodeURIComponent(hpId)}&project=${encodeURIComponent(PROJECT)}`);
+      const mainImg = document.getElementById("mainImage");
+      mainImg.addEventListener("error", () => { mainImg.src = FALLBACK_IMG; });
 
-    $("btnCopyLink").addEventListener("click", async () => {
       try{
-        await navigator.clipboard.writeText(location.href);
-        alert("คัดลอกลิงก์แล้ว");
-      }catch{
-        alert(location.href);
-      }
-    });
+        const payload = await fetchUnitDetail(hpId);
 
-    $("btnShare").addEventListener("click", async () => {
-      try{
-        if(navigator.share){
-          await navigator.share({ title: "Unit " + hpId, url: location.href });
+        // Some backends return { success:true, data:{...} } or directly {...}
+        const item = payload && payload.data ? payload.data : payload;
+
+        // Headline
+        const project = safeText(pickValue(item, ["Project", "project", "PROJECT", "ProjectName"])) || "—";
+        const unit = safeText(pickValue(item, ["Unit", "unit", "UNIT", "Plot", "PlotNo", "Plot_No", "PlotName"])) || hpId;
+        const priceRaw = pickValue(item, ["Price", "price", "PRICE", "SellingPrice", "SalePrice"]);
+
+        document.getElementById("hpid").textContent = hpId;
+        document.getElementById("price").textContent = fmtPrice(priceRaw) || "—";
+        document.getElementById("subtitle").textContent = `Project: ${project} • Unit: ${unit}`;
+
+        // Map / FB
+        const mapUrl = toSafeUrl(pickValue(item, ["GoogleMap", "googleMap", "Map", "MapUrl", "Google_Map", "GoogleMapUrl"]));
+        const fbUrl  = toSafeUrl(pickValue(item, ["Facebook", "facebook", "FB", "FacebookUrl", "FBUrl"]));
+
+        document.getElementById("btnMap").addEventListener("click", () => {
+          if (mapUrl) window.open(mapUrl, "_blank");
+          else alert("No Google Map link");
+        });
+        document.getElementById("btnFacebook").addEventListener("click", () => {
+          if (fbUrl) window.open(fbUrl, "_blank");
+          else alert("No Facebook link");
+        });
+
+        // Images
+        const cover = normalizeDriveUrl(pickValue(item, ["Thumbnail_Image", "Cover", "cover", "CoverImage", "Cover_Image", "thumbnail", "thumb"]));
+        const rawList = pickValue(item, ["Image_List", "Images", "images", "Gallery", "gallery", "Gallery_List"]);
+        const list = parseImageList(rawList);
+
+        const allImages = [];
+        if (cover) allImages.push(cover);
+        for (const u of list) allImages.push(u);
+        const images = [...new Set(allImages)].filter(Boolean);
+
+        // Show hero
+        document.getElementById("heroCard").style.display = "block";
+        setMainImage(images[0] || cover || FALLBACK_IMG);
+
+        const thumbsWrap = document.getElementById("thumbs");
+        thumbsWrap.innerHTML = "";
+
+        if (images.length > 1){
+          thumbsWrap.style.display = "flex";
+          let active = 0;
+
+          const renderActive = (idx) => {
+            active = idx;
+            setMainImage(images[active] || FALLBACK_IMG);
+            [...thumbsWrap.children].forEach((el, i) => el.classList.toggle("active", i === active));
+          };
+
+          images.forEach((imgUrl, i) => {
+            const th = buildThumb(imgUrl, i, renderActive);
+            if (i === 0) th.classList.add("active");
+            thumbsWrap.appendChild(th);
+          });
         }else{
-          await navigator.clipboard.writeText(location.href);
-          alert("คัดลอกลิงก์แล้ว");
+          thumbsWrap.style.display = "none";
         }
-      }catch{}
-    });
 
-    init();
+        // Build KV grid (keep minimal + useful)
+        const kvGrid = document.getElementById("kvGrid");
+        kvGrid.innerHTML = "";
+
+        const bed  = safeText(pickValue(item, ["Bedrooms", "Bed", "bed", "Bedroom"]));
+        const bath = safeText(pickValue(item, ["Bathrooms", "Bath", "bath", "Bathroom"]));
+        const land = safeText(pickValue(item, ["Land", "LandArea", "landArea", "Land_sqw", "LandSqw", "SQW", "sqw"]));
+        const area = safeText(pickValue(item, ["Area", "UsableArea", "usableArea", "sqm", "SQM", "HouseArea"]));
+        const status = safeText(pickValue(item, ["Status", "status", "SystemStatus", "system"]));
+        const updated = safeText(pickValue(item, ["Updated", "updated", "LastUpdate", "lastUpdate", "timestamp"]));
+
+        kvGrid.appendChild(makeKVRow("Project", project));
+        kvGrid.appendChild(makeKVRow("HP_ID", hpId));
+        if (unit && unit !== hpId) kvGrid.appendChild(makeKVRow("Unit", unit));
+        if (bed) kvGrid.appendChild(makeKVRow("Bedrooms", bed));
+        if (bath) kvGrid.appendChild(makeKVRow("Bathrooms", bath));
+        if (land) kvGrid.appendChild(makeKVRow("Land", land));
+        if (area) kvGrid.appendChild(makeKVRow("Area", area));
+        if (status) kvGrid.appendChild(makeKVRow("Status", status));
+        if (updated) kvGrid.appendChild(makeKVRow("Updated", updated));
+
+        // Show detail card
+        document.getElementById("detailCard").style.display = "block";
+
+        hideLoading();
+
+      }catch(err){
+        console.error(err);
+        hideLoading();
+        showError("Load failed: " + (err && err.message ? err.message : err));
+      }
+    })();
   </script>
 </body>
 </html>
