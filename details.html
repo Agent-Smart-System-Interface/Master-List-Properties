@@ -1,360 +1,380 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>UNIT DETAILS</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
-    :root{
-      --line-green:#06C755;
-      --line-bg:#EEF1F6;
-      --line-card:#FFFFFF;
-      --line-ink:#0f172a;
-      --line-muted:#64748b;
-      --line-border: rgba(15,23,42,.10);
-      --shadow: 0 12px 30px rgba(2,6,23,.10);
-      --r: 26px;
-    }
-    body{font-family:'Kanit',sans-serif;background:var(--line-bg);color:var(--line-ink)}
-    .card{background:var(--line-card);border:1px solid var(--line-border);border-radius:var(--r);box-shadow:var(--shadow)}
-    .pill{border-radius:999px;padding:10px 14px;font-weight:800;display:inline-flex;gap:8px;align-items:center}
-    .muted{color:var(--line-muted)}
-    .title{font-weight:900;letter-spacing:-.02em}
-    .heroWrap{position:relative;border-radius:var(--r);overflow:hidden;background:#e9edf4}
-    .heroImg{width:100%;height:clamp(260px,50vw,520px);object-fit:cover;display:block;user-select:none;-webkit-user-drag:none}
-    /* ✅ arrows: no white background */
-    .navArrow{
-      position:absolute;top:50%;transform:translateY(-50%);
-      width:52px;height:52px;border-radius:999px;
-      display:flex;align-items:center;justify-content:center;
-      color:rgba(255,255,255,.85);
-      background:transparent;          /* ✅ no bg */
-      border:none;
-      cursor:pointer;
-      text-shadow: 0 6px 18px rgba(0,0,0,.50);
-      -webkit-tap-highlight-color: transparent;
-    }
-    .navArrow:active{ transform:translateY(-50%) scale(.96); }
-    .navArrow svg{ width:28px;height:28px; filter: drop-shadow(0 6px 14px rgba(0,0,0,.35)); }
-    .navLeft{left:14px}
-    .navRight{right:14px}
+    body { font-family: 'Kanit', sans-serif; }
 
-    .thumbRow{display:flex;gap:10px;overflow:auto;padding:12px}
-    .thumbRow::-webkit-scrollbar{height:10px}
-    .thumbRow::-webkit-scrollbar-thumb{background:rgba(15,23,42,.18);border-radius:999px}
+    /* ✅ LINE-like Background + soft clouds */
+    body.line-bg{
+      background: linear-gradient(180deg,#8fb6e3 0%, #a9c9ef 35%, #cfe3f7 100%);
+      min-height: 100vh;
+    }
+    body.line-bg::before{
+      content:"";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .22;
+      background-repeat: repeat;
+      background-size: 900px 520px;
+      background-position: center top;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='520' viewBox='0 0 900 520'%3E%3Cg fill='%23ffffff'%3E%3Cpath opacity='.55' d='M160 150c-32 0-58 20-65 47-3-1-7-1-10-1-22 0-40 14-46 33-1 4-2 8-2 12 0 24 20 44 45 44h172c26 0 47-20 47-44s-21-44-47-44c-6 0-11 1-16 3-9-27-35-50-78-50z'/%3E%3Cpath opacity='.45' d='M630 110c-28 0-50 17-57 40-3-1-6-1-9-1-18 0-33 11-38 27-1 3-1 6-1 10 0 20 16 36 36 36h150c21 0 38-16 38-36s-17-36-38-36c-5 0-9 1-14 2-8-23-28-42-67-42z'/%3E%3Cpath opacity='.35' d='M500 320c-38 0-68 24-76 56-4-1-8-2-12-2-25 0-46 16-52 38-2 5-2 10-2 15 0 29 24 53 53 53h208c31 0 56-24 56-53s-25-53-56-53c-7 0-13 1-19 3-10-33-40-57-100-57z'/%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .card{
+      background: rgba(255,255,255,.92);
+      border-radius: 28px;
+      box-shadow: 0 14px 40px rgba(2,6,23,.12);
+      overflow: hidden;
+      backdrop-filter: blur(8px);
+    }
+
+    /* ✅ Arrow buttons: no white background, subtle */
+    .arrowBtn{
+      position:absolute;
+      top:50%;
+      transform: translateY(-50%);
+      width: 52px; height: 52px;
+      border-radius: 18px;
+      display:flex; align-items:center; justify-content:center;
+      background: rgba(15,23,42,.10);      /* จางๆ ไม่บังรูป */
+      border: 1px solid rgba(255,255,255,.28);
+      color: rgba(255,255,255,.85);
+      box-shadow: 0 10px 24px rgba(2,6,23,.18);
+      backdrop-filter: blur(6px);
+      transition: transform .12s ease, opacity .12s ease, background .12s ease;
+      -webkit-tap-highlight-color: transparent;
+      user-select:none;
+    }
+    .arrowBtn:hover{ background: rgba(15,23,42,.16); }
+    .arrowBtn:active{ transform: translateY(-50%) scale(.96); }
+    .arrowLeft{ left: 12px; }
+    .arrowRight{ right: 12px; }
+
+    /* thumbs */
     .thumb{
-      width:92px;height:72px;flex:0 0 auto;
-      border-radius:18px;overflow:hidden;
-      border:2px solid transparent;
-      background:#e9edf4;
-      cursor:pointer;
+      border-radius: 18px;
+      overflow:hidden;
+      border: 2px solid transparent;
+      background:#e2e8f0;
+      box-shadow: 0 8px 18px rgba(2,6,23,.10);
       -webkit-tap-highlight-color: transparent;
     }
-    .thumb.active{border-color: var(--line-green)}
-    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+    .thumb img{ width:100%; height:100%; object-fit:cover; display:block; }
+    .thumb.active{ border-color: rgba(15,23,42,.85); }
 
-    /* ✅ loading overlay */
-    .pageLoading{
-      position:fixed;inset:0;
-      background:rgba(238,241,246,.92);
-      display:flex;align-items:center;justify-content:center;
-      z-index:99;
+    /* main photo frame */
+    .hero{
+      position: relative;
+      border-radius: 28px;
+      overflow: hidden;
+      background: #e2e8f0;
     }
-    .loaderCard{
-      width:min(520px,92vw);
-      background:#fff;border:1px solid var(--line-border);
-      border-radius:22px;
-      box-shadow:var(--shadow);
-      padding:18px;
+    .hero img{
+      width: 100%;
+      height: clamp(260px, 42vw, 520px);
+      object-fit: cover;
+      display:block;
     }
-    .shimmer{
-      background:linear-gradient(90deg,#e9edf4 25%,#f8fafc 37%,#e9edf4 63%);
-      background-size:400% 100%;
-      animation:shimmer 1.2s ease infinite;
-    }
-    @keyframes shimmer{0%{background-position:100% 0}100%{background-position:0 0}}
-    .s1{height:18px;border-radius:12px}
-    .s2{height:12px;border-radius:12px}
-    .sHero{height:260px;border-radius:22px}
 
-    /* prevent any image click opening new page */
-    #heroImg{ pointer-events:none; }
+    /* photo loading overlay (prevents "broken" look before real image) */
+    .photoLoading{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      background: linear-gradient(90deg, rgba(226,232,240,.65) 25%, rgba(248,250,252,.75) 37%, rgba(226,232,240,.65) 63%);
+      background-size: 400% 100%;
+      animation: shimmer 1.2s ease infinite;
+      color:#334155;
+      font-weight: 700;
+      letter-spacing: .06em;
+    }
+    @keyframes shimmer { 0%{background-position:100% 0} 100%{background-position:0 0} }
+
+    /* counter */
+    .counterPill{
+      position:absolute;
+      bottom: 14px;
+      right: 14px;
+      background: rgba(255,255,255,.88);
+      color:#0f172a;
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-weight: 800;
+      box-shadow: 0 10px 22px rgba(2,6,23,.14);
+      backdrop-filter: blur(6px);
+    }
+
+    /* top right nav buttons */
+    .navBtn{
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow: 0 10px 24px rgba(2,6,23,.10);
+      -webkit-tap-highlight-color: transparent;
+      user-select:none;
+    }
   </style>
 </head>
-<body>
-  <!-- ✅ Loading overlay (ตอนช้า หน้าไม่ดูพัง) -->
-  <div id="pageLoading" class="pageLoading">
-    <div class="loaderCard">
-      <div class="flex items-center justify-between mb-3">
-        <div class="font-extrabold text-slate-900">Loading unit details…</div>
-        <div class="text-sm muted font-semibold">Please wait</div>
-      </div>
-      <div class="s1 shimmer w-2/3 mb-2"></div>
-      <div class="s2 shimmer w-1/2 mb-4"></div>
-      <div class="sHero shimmer w-full mb-4"></div>
-      <div class="s1 shimmer w-1/3 mb-2"></div>
-      <div class="s2 shimmer w-2/3"></div>
-    </div>
-  </div>
 
-  <div class="max-w-6xl mx-auto px-4 py-6">
-    <!-- Top bar -->
-    <div class="flex items-start justify-between gap-3 mb-4">
+<body class="line-bg">
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <div class="flex items-start justify-between mb-6">
       <div>
-        <div class="text-3xl md:text-5xl title italic">UNIT <span id="unitTitle">-</span></div>
-        <div class="mt-1 muted font-semibold">Project: <span id="projectName">-</span> • Unit: <span id="unitId">-</span></div>
+        <div class="text-5xl font-black italic tracking-tight text-slate-900" id="title">UNIT</div>
+        <div class="text-slate-500 font-semibold mt-2" id="subtitle">Project: - • Unit: -</div>
       </div>
-      <div class="flex gap-2">
-        <button id="btnBack" class="card px-4 py-3 font-extrabold rounded-2xl">←</button>
-        <button id="btnHome" class="card px-4 py-3 font-extrabold rounded-2xl">⌂</button>
+
+      <div class="flex gap-3">
+        <a class="navBtn bg-white/90" href="index.html" title="Back">
+          ←
+        </a>
+        <a class="navBtn bg-slate-900 text-white" href="index.html" title="Home">
+          ⌂
+        </a>
       </div>
     </div>
 
-    <!-- Hero -->
-    <div class="card p-4 md:p-5 mb-6">
-      <div class="mb-3 font-extrabold text-slate-900">Property photo</div>
-
-      <div class="heroWrap">
-        <img id="heroImg" class="heroImg" alt="property photo" src="" />
-        <!-- arrows -->
-        <button id="prevBtn" class="navArrow navLeft" aria-label="previous photo">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <button id="nextBtn" class="navArrow navRight" aria-label="next photo">
-          <svg viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-
-        <div id="countPill" class="pill" style="position:absolute;right:14px;bottom:14px;background:rgba(255,255,255,.90);">
-          <span id="countText" class="font-extrabold">1 / 1</span>
-        </div>
-
-        <div id="plotPill" class="pill" style="position:absolute;left:14px;top:14px;background:rgba(255,255,255,.90);">
-          <span id="plotText" class="font-extrabold">-</span>
-        </div>
-
-        <div id="statusPill" class="pill" style="position:absolute;right:14px;top:14px;background:rgba(220,252,231,.92);color:#047857;">
-          <span id="statusText" class="font-extrabold">-</span>
-        </div>
-      </div>
-
-      <!-- thumbs -->
-      <div id="thumbRow" class="thumbRow"></div>
+    <!-- error box -->
+    <div id="errBox" class="hidden card p-10 text-center">
+      <div class="text-2xl font-extrabold text-slate-900 mb-2">ไม่พบข้อมูล</div>
+      <div class="text-slate-600">กรุณากลับไปหน้า Index แล้วเลือกบ้านใหม่อีกครั้ง</div>
+      <a href="index.html" class="inline-block mt-6 bg-slate-900 text-white px-6 py-3 rounded-2xl font-semibold">กลับหน้า Index</a>
     </div>
 
-    <!-- Info cards -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-      <div class="card p-5 lg:col-span-2">
-        <div class="flex flex-wrap gap-2 mb-4">
-          <div id="badgePill" class="pill" style="background:rgba(99,102,241,.10);color:#4f46e5;">Badge: -</div>
-          <div id="sysPill" class="pill" style="background:rgba(15,23,42,.06);color:#0f172a;">System: -</div>
-          <div class="ml-auto muted font-semibold" id="updatedText">Updated: -</div>
-        </div>
+    <!-- main card -->
+    <div id="app" class="hidden card p-6 md:p-8">
+      <div class="hero">
+        <img id="mainImg" alt="main photo" />
+        <div id="photoLoading" class="photoLoading">LOADING PHOTO…</div>
 
-        <div class="text-4xl md:text-5xl font-black tracking-tight" id="priceText">฿0</div>
-        <div class="muted font-semibold mt-1">PRICE</div>
+        <div id="plotPill" class="absolute top-4 left-4 bg-white/90 px-4 py-2 rounded-full font-bold shadow">-</div>
+        <div id="statusPill" class="absolute top-4 right-4 px-4 py-2 rounded-full font-bold shadow">-</div>
 
-        <div class="mt-5 grid grid-cols-2 md:grid-cols-4 gap-2">
-          <div class="pill" style="background:rgba(15,23,42,.06);">🛏 <span id="bedText">-</span></div>
-          <div class="pill" style="background:rgba(15,23,42,.06);">🛁 <span id="bathText">-</span></div>
-          <div class="pill" style="background:rgba(15,23,42,.06);">📐 <span id="landText">-</span> sq.w</div>
-          <div class="pill" style="background:rgba(15,23,42,.06);">🏠 <span id="livingText">-</span> sqm</div>
-        </div>
+        <button id="prevBtn" class="arrowBtn arrowLeft" aria-label="previous">‹</button>
+        <button id="nextBtn" class="arrowBtn arrowRight" aria-label="next">›</button>
 
-        <div class="mt-6">
-          <div class="font-extrabold text-slate-900 mb-2">Description</div>
-          <div id="descText" class="muted font-medium leading-relaxed">-</div>
-        </div>
+        <div id="counter" class="counterPill">1 / 1</div>
       </div>
 
-      <div class="card p-5">
-        <div class="font-extrabold text-slate-900 mb-2">Links</div>
-        <a id="mapLink" class="block pill mb-2" style="background:rgba(6,199,85,.10);color:#047857;" target="_blank" rel="noopener">📍 Google Map</a>
-        <a id="fbLink" class="block pill mb-2" style="background:rgba(59,130,246,.10);color:#1d4ed8;" target="_blank" rel="noopener">📘 Facebook</a>
-        <a id="vtLink" class="block pill" style="background:rgba(245,158,11,.10);color:#b45309;" target="_blank" rel="noopener">🎥 Virtual Tour</a>
+      <div class="mt-4">
+        <div id="thumbRow" class="flex gap-3 overflow-x-auto pb-2"></div>
+      </div>
+
+      <div class="mt-6 flex flex-wrap gap-3">
+        <div id="badgePill" class="bg-violet-100 text-violet-700 px-5 py-3 rounded-full font-bold">Badge: -</div>
+        <div id="sysPill" class="bg-slate-100 text-slate-700 px-5 py-3 rounded-full font-bold">System: -</div>
+        <div id="updated" class="w-full text-slate-500 font-semibold mt-2">Updated: -</div>
+      </div>
+
+      <div class="mt-8">
+        <div class="text-5xl font-black text-slate-900" id="price">฿0</div>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <div class="bg-slate-100 px-4 py-2 rounded-full font-semibold">🛏 <span id="bed">-</span></div>
+          <div class="bg-slate-100 px-4 py-2 rounded-full font-semibold">🛁 <span id="bath">-</span></div>
+          <div class="bg-slate-100 px-4 py-2 rounded-full font-semibold">📐 <span id="landSqw">-</span> sq.w</div>
+          <div class="bg-slate-100 px-4 py-2 rounded-full font-semibold">🏠 <span id="livingSqm">-</span> sqm</div>
+        </div>
+
+        <div class="mt-6 text-slate-700 leading-relaxed font-medium" id="desc">-</div>
+
+        <div class="mt-8 flex gap-3 flex-wrap">
+          <a id="mapBtn" class="bg-slate-900 text-white px-6 py-3 rounded-2xl font-semibold" target="_blank" rel="noopener">Google Map</a>
+          <a id="fbBtn" class="bg-white text-slate-900 px-6 py-3 rounded-2xl font-semibold border border-slate-200" target="_blank" rel="noopener">Facebook</a>
+        </div>
       </div>
     </div>
   </div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
+  const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
 
-const qs = new URLSearchParams(location.search);
-const hpId = qs.get("id") || qs.get("hpId") || "";
-const project = qs.get("project") || "Project_0";
+  const qs = new URLSearchParams(location.search);
+  const ID = qs.get("id") || "";                 // details.html?id=HP-xxxx
+  const PROJECT = qs.get("project") || "Project_0";
 
-const elLoading = document.getElementById("pageLoading");
+  const app = document.getElementById("app");
+  const errBox = document.getElementById("errBox");
+  const photoLoading = document.getElementById("photoLoading");
 
-const elUnitTitle = document.getElementById("unitTitle");
-const elProjectName = document.getElementById("projectName");
-const elUnitId = document.getElementById("unitId");
+  let images = [];
+  let current = 0;
 
-const elHero = document.getElementById("heroImg");
-const elThumbRow = document.getElementById("thumbRow");
+  const priceFmt = v => {
+    const n = Number(v);
+    return (!n || n === 0) ? "฿0" : "฿" + n.toLocaleString();
+  };
 
-const elPlot = document.getElementById("plotText");
-const elStatus = document.getElementById("statusText");
+  const statusClass = s => {
+    s = String(s || "").toLowerCase();
+    if (s.includes("available")) return "bg-emerald-100 text-emerald-700";
+    if (s.includes("under")) return "bg-sky-100 text-sky-700";
+    if (s.includes("reserved")) return "bg-amber-100 text-amber-700";
+    if (s.includes("sold")) return "bg-rose-100 text-rose-700";
+    return "bg-white/90 text-slate-700";
+  };
 
-const elCount = document.getElementById("countText");
-const elPrev = document.getElementById("prevBtn");
-const elNext = document.getElementById("nextBtn");
-
-const elBadge = document.getElementById("badgePill");
-const elSys = document.getElementById("sysPill");
-const elUpdated = document.getElementById("updatedText");
-
-const elPrice = document.getElementById("priceText");
-const elBed = document.getElementById("bedText");
-const elBath = document.getElementById("bathText");
-const elLand = document.getElementById("landText");
-const elLiving = document.getElementById("livingText");
-const elDesc = document.getElementById("descText");
-
-const elMap = document.getElementById("mapLink");
-const elFB  = document.getElementById("fbLink");
-const elVT  = document.getElementById("vtLink");
-
-const btnBack = document.getElementById("btnBack");
-const btnHome = document.getElementById("btnHome");
-
-let GALLERY = [];
-let idx = 0;
-
-function priceFmt(v){
-  const n = Number(v);
-  return (!n || n===0) ? "฿0" : "฿" + n.toLocaleString();
-}
-
-function safeStr(v){
-  const s = String(v ?? "").trim();
-  return s ? s : "-";
-}
-
-function setStatusPill(status){
-  const s = String(status||"").toLowerCase();
-  const pill = document.getElementById("statusPill");
-  if (s.includes("available")){
-    pill.style.background = "rgba(220,252,231,.92)";
-    pill.style.color = "#047857";
-  }else if (s.includes("sold")){
-    pill.style.background = "rgba(254,226,226,.92)";
-    pill.style.color = "#b91c1c";
-  }else if (s.includes("pending") || s.includes("under")){
-    pill.style.background = "rgba(224,242,254,.92)";
-    pill.style.color = "#0369a1";
-  }else{
-    pill.style.background = "rgba(15,23,42,.06)";
-    pill.style.color = "#0f172a";
+  function cleanUrl(u){
+    return String(u || "").trim().replace(/^"+|"+$/g,'');
   }
-}
 
-function setHero(i){
-  if (!GALLERY.length){
-    elHero.src = "";
-    elCount.textContent = "1 / 1";
-    return;
+  function showApp(){ app.classList.remove("hidden"); }
+
+  function waitImageLoad(imgEl, src, timeoutMs=8000){
+    return new Promise((resolve) => {
+      let done = false;
+      const timer = setTimeout(() => { if(done) return; done = true; resolve(false); }, timeoutMs);
+
+      imgEl.onload = () => { if(done) return; done = true; clearTimeout(timer); resolve(true); };
+      imgEl.onerror = () => { if(done) return; done = true; clearTimeout(timer); resolve(false); };
+
+      imgEl.src = src;
+    });
   }
-  idx = (i + GALLERY.length) % GALLERY.length;
-  elHero.src = GALLERY[idx];
-  elCount.textContent = `${idx+1} / ${GALLERY.length}`;
-  // thumbs active
-  [...elThumbRow.querySelectorAll(".thumb")].forEach((t,ti)=>{
-    t.classList.toggle("active", ti===idx);
-  });
-}
 
-function buildThumbs(){
-  elThumbRow.innerHTML = GALLERY.map((u,i)=>`
-    <div class="thumb ${i===0?"active":""}" data-i="${i}">
-      <img src="${u}" alt="thumb" loading="lazy" decoding="async">
-    </div>
-  `).join("");
-  elThumbRow.addEventListener("click", (e)=>{
-    const t = e.target.closest(".thumb");
-    if(!t) return;
-    setHero(Number(t.getAttribute("data-i")));
-  });
-}
+  function setMain(i){
+    if(!images.length) return;
+    current = (i + images.length) % images.length;
 
-async function load(){
-  try{
-    if(!hpId){
-      throw new Error("Missing id");
+    photoLoading.classList.remove("hidden");
+    const mainImg = document.getElementById("mainImg");
+
+    waitImageLoad(mainImg, images[current]).then(() => {
+      photoLoading.classList.add("hidden");
+    });
+
+    document.getElementById("counter").textContent = `${current+1} / ${images.length}`;
+
+    const thumbs = document.querySelectorAll("[data-thumb]");
+    thumbs.forEach((t, idx) => idx === current ? t.classList.add("active") : t.classList.remove("active"));
+  }
+
+  function renderThumbs(){
+    const row = document.getElementById("thumbRow");
+    row.innerHTML = images.map((src, idx) => `
+      <button data-thumb class="thumb ${idx===0 ? "active" : ""} shrink-0 w-[92px] h-[64px] md:w-[120px] md:h-[78px]" title="Photo ${idx+1}">
+        <img src="${src}" alt="thumb ${idx+1}" loading="lazy" decoding="async">
+      </button>
+    `).join("");
+
+    row.querySelectorAll("[data-thumb]").forEach((btn, idx) => {
+      btn.addEventListener("click", () => setMain(idx));
+    });
+  }
+
+  function enableSwipe(){
+    const img = document.getElementById("mainImg");
+    let x0 = null;
+
+    img.addEventListener("touchstart", (e) => { x0 = e.touches[0].clientX; }, {passive:true});
+    img.addEventListener("touchend", (e) => {
+      if(x0 === null) return;
+      const x1 = e.changedTouches[0].clientX;
+      const dx = x1 - x0;
+      x0 = null;
+      if(Math.abs(dx) < 40) return;
+      if(dx > 0) setMain(current - 1);
+      else setMain(current + 1);
+    }, {passive:true});
+  }
+
+  async function load(){
+    if(!ID){
+      errBox.classList.remove("hidden");
+      showApp();
+      return;
     }
-    const url = `${API_URL}?mode=getUnitDetail&project=${encodeURIComponent(project)}&hpId=${encodeURIComponent(hpId)}&t=${Date.now()}`;
-    const res = await fetch(url);
-    const d = await res.json();
-    if(d && d.error) throw new Error(d.error);
 
-    // header
-    elUnitTitle.textContent = safeStr(d.Plot);
-    elProjectName.textContent = safeStr(project);
-    elUnitId.textContent = safeStr(d.HP_ID || hpId);
+    try{
+      const res = await fetch(`${API_URL}?mode=getUnitDetail&project=${encodeURIComponent(PROJECT)}&hpId=${encodeURIComponent(ID)}&t=${Date.now()}`);
+      const d = await res.json();
 
-    // pills
-    elPlot.textContent = safeStr(d.Plot);
-    elStatus.textContent = safeStr(d.Status);
-    setStatusPill(d.Status);
+      if(d.error){
+        errBox.classList.remove("hidden");
+        showApp();
+        return;
+      }
 
-    elBadge.textContent = `Badge: ${safeStr(d.Badge)}`;
-    elSys.textContent = `System: ${safeStr(d.System_Status)}`;
-    elUpdated.textContent = `Updated: ${safeStr(d.Last_Updated)}`;
+      const plot = d.Plot || d.plot || "-";
+      document.getElementById("title").textContent = `UNIT ${ID} • ${plot}`;
+      document.getElementById("subtitle").textContent = `Project: ${PROJECT} • Unit: ${ID}`;
+      document.getElementById("plotPill").textContent = plot;
 
-    // price + features
-    elPrice.textContent = priceFmt(d.Price);
-    elBed.textContent = safeStr(d.Bedrooms);
-    elBath.textContent = safeStr(d.Bathrooms);
-    elLand.textContent = safeStr(d.Land_Area_sq_w);
-    elLiving.textContent = safeStr(d.Living_Area_sq_m);
+      const status = d.Status || d.status || "-";
+      const statusPill = document.getElementById("statusPill");
+      statusPill.className = `absolute top-4 right-4 px-4 py-2 rounded-full font-bold shadow ${statusClass(status)}`;
+      statusPill.textContent = status;
 
-    elDesc.textContent = String(d.Description ?? "").trim() || "-";
+      document.getElementById("badgePill").textContent = `Badge: ${d.Badge || d.badge || "-"}`;
+      document.getElementById("sysPill").textContent = `System: ${d.System_Status || d.sysStatus || "-"}`;
+      document.getElementById("updated").textContent = `Updated: ${d.Last_Updated || d.lastUpdated || "-"}`;
 
-    // links
-    const map = String(d.Map_Link || "").trim();
-    const fb  = String(d.FBLink || "").trim();
-    const vt  = String(d.Virtual_Tour || "").trim();
-    elMap.style.display = map ? "inline-flex" : "none";
-    elFB.style.display  = fb ? "inline-flex" : "none";
-    elVT.style.display  = vt ? "inline-flex" : "none";
-    if(map) elMap.href = map;
-    if(fb)  elFB.href  = fb;
-    if(vt)  elVT.href  = vt;
+      document.getElementById("price").textContent = priceFmt(d.Price || d.price || 0);
+      document.getElementById("bed").textContent = d.Bedrooms || d.bedrooms || "-";
+      document.getElementById("bath").textContent = d.Bathrooms || d.bathrooms || "-";
+      document.getElementById("landSqw").textContent = d.Land_Area_sq_w || d.landSqw || "-";
+      document.getElementById("livingSqm").textContent = d.Living_Area_sq_m || d.livingSqm || "-";
+      document.getElementById("desc").textContent = d.Description || d.description || "-";
 
-    // gallery
-    const thumb = String(d.Thumbnail_Image || "").trim();
-    const list = String(d.Image_List || "").split(",").map(s=>s.trim()).filter(Boolean);
-    GALLERY = [];
-    if(thumb) GALLERY.push(thumb);
-    GALLERY = GALLERY.concat(list);
+      const map = d.Map_Link || "";
+      const fb  = d.FBLink || "";
+      const mapBtn = document.getElementById("mapBtn");
+      const fbBtn  = document.getElementById("fbBtn");
+      mapBtn.href = map ? map : "#";
+      fbBtn.href  = fb ? fb : "#";
+      if(!map) mapBtn.classList.add("opacity-40","pointer-events-none");
+      if(!fb)  fbBtn.classList.add("opacity-40","pointer-events-none");
 
-    // build
-    buildThumbs();
-    setHero(0);
+      const thumb = cleanUrl(d.Thumbnail_Image || d.thumbnail || "");
+      const listRaw = cleanUrl(d.Image_List || d.image_list || "");
+      const list = listRaw ? listRaw.split(",").map(s => cleanUrl(s)).filter(Boolean) : [];
 
-  }finally{
-    // hide loading (even error)
-    elLoading.style.display = "none";
+      const seen = new Set();
+      images = [];
+      [thumb, ...list].forEach(u => {
+        if(u && !seen.has(u)){
+          seen.add(u);
+          images.push(u);
+        }
+      });
+
+      if(!images.length){
+        images = ["https://via.placeholder.com/1200x700?text=No+Image"];
+      }
+
+      renderThumbs();
+      enableSwipe();
+      showApp();
+
+      setMain(0);
+
+      document.getElementById("prevBtn").addEventListener("click", () => setMain(current - 1));
+      document.getElementById("nextBtn").addEventListener("click", () => setMain(current + 1));
+
+      window.addEventListener("keydown", (e) => {
+        if(e.key === "ArrowLeft") setMain(current - 1);
+        if(e.key === "ArrowRight") setMain(current + 1);
+      });
+
+    }catch(err){
+      errBox.classList.remove("hidden");
+      showApp();
+    }
   }
-}
 
-elPrev.addEventListener("click", ()=>setHero(idx-1));
-elNext.addEventListener("click", ()=>setHero(idx+1));
-
-// swipe (mobile) without popup
-let startX = 0;
-elHero.addEventListener("touchstart", (e)=>{ startX = e.touches[0].clientX; }, {passive:true});
-elHero.addEventListener("touchend", (e)=>{
-  const dx = e.changedTouches[0].clientX - startX;
-  if(Math.abs(dx) < 35) return;
-  if(dx > 0) setHero(idx-1); else setHero(idx+1);
-}, {passive:true});
-
-// nav buttons
-btnBack.addEventListener("click", ()=> history.length>1 ? history.back() : (location.href = `index.html?project=${encodeURIComponent(project)}`));
-btnHome.addEventListener("click", ()=> location.href = `index.html?project=${encodeURIComponent(project)}`);
-
-load();
+  load();
 </script>
 </body>
 </html>
