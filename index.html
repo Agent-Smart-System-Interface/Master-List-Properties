@@ -10,147 +10,45 @@
 
   <style>
     body { font-family: 'Kanit', sans-serif; }
-    .price-text { font-size: clamp(1.9rem, 5vw, 2.8rem); font-weight: 500; letter-spacing: -0.02em; line-height: 1.1; }
+    .price-text {
+      font-size: clamp(1.9rem, 5vw, 2.8rem);
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
     .unit-text { font-size: 0.9rem; font-weight: 400; color: #94a3b8; margin-top: 0.3rem; }
     .feature { font-size: 0.85rem; font-weight: 400; padding: 0.45rem 0.7rem; }
     .status { font-size: 0.85rem; font-weight: 500; padding: 0.45rem 0.9rem; }
-
-    /* ====== HEADER CONTROL UI (ทำให้ตำแหน่งเหมือนภาพ) ====== */
-    .controls-wrap{
-      width: 100%;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 14px;
-      margin-bottom: 22px;
-    }
-    .controls-left{
-      flex: 1;
-      min-width: 0;
-    }
-    .flags-row{
-      display: flex;
-      justify-content: flex-end; /* ✅ ธงอยู่ด้านขวาบนตามภาพ */
-      gap: 8px;
-      margin-bottom: 10px;
-      padding-right: 6px;
-    }
-    .flag-btn{
-      width: 34px;
-      height: 34px;
-      border-radius: 12px;
-      border: 1px solid #e2e8f0;
-      background: #fff;
-      box-shadow: 0 8px 18px rgba(15,23,42,0.06);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      user-select: none;
-      transition: transform .12s ease;
-      font-size: 18px;
-      line-height: 1;
-    }
-    .flag-btn:active{ transform: scale(0.96); }
-
-    .select-row{
-      display: grid;
-      grid-template-columns: 1fr 1fr;  /* ✅ ช่อง 2 และ 3 อยู่แถวเดียวกัน */
-      gap: 14px;
-    }
-    .select-box{
-      background: #fff;
-      border: 1px solid #e2e8f0;
-      border-radius: 18px;
-      box-shadow: 0 10px 24px rgba(15,23,42,0.06);
-      padding: 10px;
-    }
-    .select-ui{
-      width: 100%;
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 12px 12px;
-      outline: none;
-      background: #fff;
-      font-size: 14px;
-    }
-    .select-ui:focus{ border-color:#3b82f6; }
-
-    /* ปุ่มโปรไฟล์ขวา */
-    .profile-btn{
-      width: 48px;
-      height: 48px;
-      border-radius: 18px;
-      background: #fff;
-      box-shadow: 0 10px 24px rgba(15,23,42,0.08);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      flex: 0 0 auto;
-      margin-top: 34px; /* ✅ ดันให้ระดับเดียวกับช่องเลือกตามภาพ */
-    }
-
-    /* มือถือ: ยังให้ 2 ช่องอยู่แถวเดียวกันตามภาพ */
-    @media (max-width: 480px){
-      .profile-btn{ margin-top: 34px; }
-      .flag-btn{ width: 32px; height: 32px; border-radius: 12px; }
-      .select-row{ gap: 12px; }
-      .select-box{ border-radius: 16px; }
-      .select-ui{ border-radius: 14px; padding: 12px; }
-    }
   </style>
 </head>
 
 <body class="bg-slate-50">
 <div class="max-w-6xl mx-auto px-4 py-8">
 
-  <!-- ✅ แทนที่ DIRECT HUB + คำอธิบาย ด้วยแถบควบคุม 1-2-3 ตามภาพ -->
-  <div class="controls-wrap">
-    <div class="controls-left">
-      <!-- (1) FLAGS -->
-      <div class="flags-row" aria-label="Translate buttons">
-        <button class="flag-btn" onclick="translateTo('th')" title="Thai">🇹🇭</button>
-        <button class="flag-btn" onclick="translateTo('en')" title="English">🇬🇧</button>
-        <button class="flag-btn" onclick="translateTo('de')" title="German">🇩🇪</button>
-        <button class="flag-btn" onclick="translateTo('ru')" title="Russian">🇷🇺</button>
-        <button class="flag-btn" onclick="translateTo('zh-CN')" title="Chinese (Simplified)">🇨🇳</button>
-        <button class="flag-btn" onclick="translateTo('fr')" title="French">🇫🇷</button>
-      </div>
-
-      <!-- (2) Bedrooms + (3) Price Sort -->
-      <div class="select-row">
-        <div class="select-box">
-          <select id="bedFilter" class="select-ui">
-            <option value="all">Bedrooms (All)</option>
-            <option value="1">1 Bedroom</option>
-            <option value="2">2 Bedrooms</option>
-            <option value="3">3 Bedrooms</option>
-            <option value="4">4 Bedrooms</option>
-            <option value="5+">5+ Bedrooms</option>
-          </select>
-        </div>
-
-        <div class="select-box">
-          <select id="priceSort" class="select-ui">
-            <option value="none">Sort Price (Default)</option>
-            <option value="desc">High → Low</option>
-            <option value="asc">Low → High</option>
-          </select>
-        </div>
-      </div>
+  <!-- HEADER -->
+  <div class="flex justify-between items-start mb-8">
+    <div>
+      <h1 class="text-4xl md:text-5xl font-semibold italic text-slate-900">
+        DIRECT HUB
+      </h1>
+      <p class="text-blue-700 text-lg mt-1">
+        ศูนย์รวมบ้านฝากขายตรงจากเจ้าของ
+      </p>
     </div>
 
-    <!-- ปุ่ม 👤 ขวาตามภาพ -->
-    <a href="https://agent-smart-system-interface.github.io/Master-List-Properties/gateway.html"
-       class="profile-btn"
-       title="Go to Gateway" aria-label="Gateway">
+    <a href="gateway.html"
+       class="w-12 h-12 rounded-2xl bg-white shadow flex items-center justify-center text-xl cursor-pointer"
+       title="Go to Gateway">
       👤
     </a>
   </div>
 
+  <!-- CARDS -->
   <div id="cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-  <div id="loading" class="text-center text-slate-400 py-10">Loading...</div>
+  <div id="loading" class="text-center text-slate-400 py-10">
+    Loading...
+  </div>
+
 </div>
 
 <script>
@@ -158,12 +56,12 @@ const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4S
 const PROJECT = new URLSearchParams(location.search).get("project") || "Project_0";
 
 const priceFmt = v => {
-  const n = Number(String(v ?? "").replace(/,/g,""));
+  const n = Number(v);
   return (!n || n === 0) ? "฿0" : "฿" + n.toLocaleString();
 };
 
 const statusClass = s => {
-  s = String(s ?? "").toLowerCase();
+  s = String(s).toLowerCase();
   if (s.includes("available")) return "bg-emerald-100 text-emerald-700";
   if (s.includes("under")) return "bg-sky-100 text-sky-700";
   if (s.includes("reserved")) return "bg-amber-100 text-amber-700";
@@ -171,112 +69,48 @@ const statusClass = s => {
   return "bg-slate-100 text-slate-700";
 };
 
-/* ========= (1) Translate by flags ========= */
-function getCanonicalUrl() {
-  try {
-    const u = new URL(location.href);
-    if (u.hostname.includes("translate.google")) {
-      const real = u.searchParams.get("u");
-      if (real) return real;
-    }
-  } catch (e) {}
-  return location.href;
-}
-function translateTo(tl) {
-  const target = encodeURIComponent(getCanonicalUrl());
-  const url = `https://translate.google.com/translate?sl=auto&tl=${encodeURIComponent(tl)}&u=${target}`;
-  location.href = url;
-}
+async function load(){
+  const res = await fetch(`${API_URL}?mode=getUnitList&project=${PROJECT}&t=${Date.now()}`);
+  const data = await res.json();
 
-/* ========= (2)(3) Filter & Sort ========= */
-let ALL = [];
-let bedFilter = "all";
-let priceSort = "none";
-
-function num(x){
-  const n = Number(String(x ?? "").replace(/,/g,"").trim());
-  return Number.isFinite(n) ? n : 0;
-}
-
-function applyFilterSort(list){
-  let out = Array.isArray(list) ? [...list] : [];
-
-  // filter bedrooms
-  if (bedFilter !== "all"){
-    if (bedFilter === "5+"){
-      out = out.filter(d => num(d.bedrooms) >= 5);
-    } else {
-      const b = num(bedFilter);
-      out = out.filter(d => num(d.bedrooms) === b);
-    }
-  }
-
-  // sort price
-  if (priceSort === "asc"){
-    out.sort((a,b) => num(a.price) - num(b.price));
-  } else if (priceSort === "desc"){
-    out.sort((a,b) => num(b.price) - num(a.price));
-  }
-
-  return out;
-}
-
-function render(list){
-  const data = applyFilterSort(list);
-
-  if (!data || data.length === 0){
-    document.getElementById("cards").innerHTML = `
-      <div class="col-span-full bg-white rounded-[2.3rem] shadow-lg overflow-hidden p-10 text-center text-slate-400">
-        No results
-      </div>
-    `;
-    return;
-  }
+  document.getElementById("loading").style.display = "none";
 
   document.getElementById("cards").innerHTML = data.map(d => `
     <div class="bg-white rounded-[2.3rem] shadow-lg overflow-hidden">
       <div class="relative">
-        <img src="${d.thumbnail}" class="w-full h-72 object-cover" alt="">
-        <div class="absolute top-4 left-4 bg-white/90 px-4 py-2 rounded-full font-medium">${d.plot ?? "-"}</div>
+        <img src="${d.thumbnail}" class="w-full h-72 object-cover">
+        <div class="absolute top-4 left-4 bg-white/90 px-4 py-2 rounded-full font-medium">
+          ${d.plot}
+        </div>
       </div>
 
       <div class="p-6">
         <div class="flex flex-wrap gap-2 mb-4">
-          <div class="feature bg-slate-100">🛏 ${d.bedrooms ?? "-"}</div>
-          <div class="feature bg-slate-100">🛁 ${d.bathrooms ?? "-"}</div>
-          <div class="feature bg-slate-100">📐 ${d.landSqw ?? "-"} sq.w</div>
-          <div class="feature bg-slate-100">🏠 ${d.livingSqm ?? "-"} sqm</div>
-          <div class="ml-auto status rounded-full ${statusClass(d.status)}">${d.status ?? "-"}</div>
+          <div class="feature bg-slate-100">🛏 ${d.bedrooms}</div>
+          <div class="feature bg-slate-100">🛁 ${d.bathrooms}</div>
+          <div class="feature bg-slate-100">📐 ${d.landSqw} sq.w</div>
+          <div class="feature bg-slate-100">🏠 ${d.livingSqm} sqm</div>
+          <div class="ml-auto status rounded-full ${statusClass(d.status)}">
+            ${d.status}
+          </div>
         </div>
 
-        <div class="price-text text-slate-900">${priceFmt(d.price)}</div>
-        <div class="unit-text">UNIT: ${d.id ?? "-"}</div>
+        <div class="price-text text-slate-900">
+          ${priceFmt(d.price)}
+        </div>
+        <div class="unit-text">
+          UNIT: ${d.id}
+        </div>
 
-        <a href="details.html?id=${encodeURIComponent(d.id ?? "")}&project=${encodeURIComponent(PROJECT)}"
-           class="block mt-6 text-center bg-slate-900 text-white py-4 rounded-2xl text-sm tracking-widest">
+        <!-- ✅ ลิงก์แก้เป็น details.html -->
+        <a href="details.html?id=${d.id}&project=${PROJECT}"
+           class="block mt-6 text-center bg-slate-900 text-white py-4 rounded-2xl text-sm tracking-widest hover:bg-slate-800 transition">
           VIEW FULL DETAILS
         </a>
       </div>
     </div>
   `).join("");
 }
-
-async function load(){
-  const res = await fetch(`${API_URL}?mode=getUnitList&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`);
-  const data = await res.json();
-  ALL = Array.isArray(data) ? data : [];
-  document.getElementById("loading").style.display = "none";
-  render(ALL);
-}
-
-document.getElementById("bedFilter").addEventListener("change", (e) => {
-  bedFilter = e.target.value;
-  render(ALL);
-});
-document.getElementById("priceSort").addEventListener("change", (e) => {
-  priceSort = e.target.value;
-  render(ALL);
-});
 
 load();
 </script>
