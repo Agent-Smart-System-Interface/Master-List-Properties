@@ -3,23 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PROPERTY DETAIL</title>
+  <title>DIRECT HUB - DETAILS</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <style>
-    body { font-family: 'Kanit', sans-serif; background: #f8fafc; }
+    body { font-family: 'Kanit', sans-serif; }
     .price-text { font-size: clamp(2.2rem, 6vw, 3.6rem); font-weight: 600; letter-spacing: -0.02em; line-height: 1.05; }
     .chip { font-size: 0.9rem; font-weight: 500; padding: .55rem .9rem; border-radius: 999px; }
     .feature { font-size: .95rem; font-weight: 500; padding: .65rem .85rem; border-radius: 1rem; }
+    .btn:active { transform: scale(.98); }
+    .no-select { user-select: none; -webkit-user-select: none; }
+    .thumb { width: 92px; height: 64px; object-fit: cover; border-radius: 1rem; cursor: pointer; }
+    .thumb-active { outline: 3px solid #0f172a; outline-offset: 2px; }
   </style>
 </head>
 
-<body class="p-4 md:p-10">
-  <div class="max-w-6xl mx-auto">
+<body class="bg-slate-50">
+  <div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
 
-    <!-- TOP -->
+    <!-- Header -->
     <div class="flex items-start justify-between gap-4 mb-6">
       <div class="min-w-0">
         <div id="titleLine" class="text-3xl md:text-5xl font-semibold italic text-slate-900 truncate">Loading...</div>
@@ -27,45 +31,46 @@
       </div>
 
       <div class="flex items-center gap-3 shrink-0">
-        <a id="backBtn" href="index.html" class="w-14 h-14 rounded-2xl bg-white shadow flex items-center justify-center text-xl active:scale-95">←</a>
-        <a id="homeBtn" href="index.html" class="w-14 h-14 rounded-2xl bg-slate-900 text-white shadow flex items-center justify-center text-xl active:scale-95">⌂</a>
+        <a id="backBtn" href="index.html" class="w-14 h-14 rounded-2xl bg-white shadow flex items-center justify-center text-xl btn">←</a>
+        <a id="homeBtn" href="index.html" class="w-14 h-14 rounded-2xl bg-slate-900 text-white shadow flex items-center justify-center text-xl btn">⌂</a>
       </div>
     </div>
 
-    <!-- LOADING -->
-    <div id="loading" class="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 p-10 text-center text-slate-300 font-bold animate-pulse uppercase">
-      🔄 Loading property detail...
+    <!-- Loading -->
+    <div id="loading" class="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 p-10 text-center text-slate-300 font-bold animate-pulse uppercase">
+      🔄 Loading property details...
     </div>
 
-    <!-- CONTENT -->
+    <!-- Content -->
     <div id="content" class="hidden space-y-6">
 
-      <!-- HERO -->
+      <!-- Card -->
       <div class="bg-white rounded-[2.7rem] shadow-2xl border border-slate-100 overflow-hidden">
+
+        <!-- HERO -->
         <div class="relative">
-          <img id="heroImg" src="" class="w-full h-[22rem] md:h-[28rem] object-cover cursor-pointer" alt="hero">
+          <img id="heroImg" src="" class="w-full h-[22rem] md:h-[28rem] object-cover cursor-pointer no-select" alt="hero">
 
-          <!-- Plot -->
-          <div id="plotPill" class="absolute top-4 left-4 bg-white/90 px-4 py-2 rounded-full font-semibold shadow">
-            -
-          </div>
+          <div id="plotPill" class="absolute top-4 left-4 bg-white/90 px-4 py-2 rounded-full font-semibold shadow">-</div>
+          <div id="statusPill" class="absolute top-4 right-4 chip bg-emerald-100 text-emerald-700 shadow">-</div>
+          <div id="countPill" class="absolute bottom-4 right-4 bg-white/90 px-4 py-2 rounded-full font-semibold shadow">0 Photos</div>
 
-          <!-- Status -->
-          <div id="statusPill" class="absolute top-4 right-4 chip bg-emerald-100 text-emerald-700 shadow">
-            Available
-          </div>
+          <!-- ✅ ลูกศรบนรูปใหญ่ -->
+          <button id="heroPrev"
+            class="absolute left-4 top-1/2 -translate-y-1/2 w-14 h-14 rounded-2xl bg-white/90 hover:bg-white text-slate-900 shadow flex items-center justify-center text-3xl btn"
+            aria-label="Previous photo" title="Previous">‹</button>
 
-          <!-- Count -->
-          <div id="countPill" class="absolute bottom-4 right-4 bg-white/90 px-4 py-2 rounded-full font-semibold shadow">
-            0 Photos
-          </div>
+          <button id="heroNext"
+            class="absolute right-4 top-1/2 -translate-y-1/2 w-14 h-14 rounded-2xl bg-white/90 hover:bg-white text-slate-900 shadow flex items-center justify-center text-3xl btn"
+            aria-label="Next photo" title="Next">›</button>
 
-          <!-- thumbnails strip -->
+          <!-- ✅ รูปเล็ก (คงไว้เหมือนเดิม) -->
           <div class="bg-white/95 backdrop-blur border-t border-slate-100 p-4">
             <div id="thumbStrip" class="flex gap-3 overflow-x-auto pb-1"></div>
           </div>
         </div>
 
+        <!-- INFO -->
         <div class="p-6 md:p-8 space-y-5">
           <div class="flex flex-wrap gap-2 items-center">
             <div id="badgePill" class="chip bg-violet-100 text-violet-700">Badge: -</div>
@@ -87,236 +92,271 @@
           </div>
 
           <div class="grid md:grid-cols-2 gap-4">
-            <a id="mapBtn" class="hidden text-center bg-white border border-slate-200 rounded-2xl py-4 font-bold text-slate-800 hover:bg-slate-50">
+            <a id="mapBtn" class="hidden text-center bg-white border border-slate-200 rounded-2xl py-4 font-bold text-slate-800 hover:bg-slate-50 btn">
               📍 OPEN MAP
             </a>
-            <a id="vrBtn" class="hidden text-center bg-slate-900 text-white rounded-2xl py-4 font-bold hover:bg-slate-800">
+            <a id="vrBtn" class="hidden text-center bg-slate-900 text-white rounded-2xl py-4 font-bold hover:bg-slate-800 btn">
               🌀 VIRTUAL TOUR
             </a>
           </div>
         </div>
-      </div>
 
+      </div>
     </div>
   </div>
 
-  <!-- LIGHTBOX -->
+  <!-- Lightbox -->
   <div id="lightbox" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm">
     <div class="w-full h-full flex items-center justify-center p-4">
       <div class="relative w-full max-w-5xl">
-        <button id="lbClose" class="absolute -top-4 right-0 md:right-2 w-12 h-12 rounded-2xl bg-white text-slate-900 shadow flex items-center justify-center text-xl active:scale-95">✕</button>
+        <button id="lbClose" class="absolute -top-4 right-0 md:right-2 w-12 h-12 rounded-2xl bg-white text-slate-900 shadow flex items-center justify-center text-xl btn">✕</button>
 
-        <!-- image -->
         <div class="bg-white rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/20">
           <div class="relative">
-            <img id="lbImg" src="" class="w-full max-h-[78vh] object-contain bg-slate-900">
+            <img id="lbImg" src="" class="w-full max-h-[78vh] object-contain bg-slate-900 no-select">
 
-            <!-- arrows (เข้าธีม) -->
-            <button id="lbPrev" class="absolute left-4 top-1/2 -translate-y-1/2 w-14 h-14 rounded-2xl bg-white/90 hover:bg-white text-slate-900 shadow flex items-center justify-center text-2xl active:scale-95">
-              ‹
-            </button>
-            <button id="lbNext" class="absolute right-4 top-1/2 -translate-y-1/2 w-14 h-14 rounded-2xl bg-white/90 hover:bg-white text-slate-900 shadow flex items-center justify-center text-2xl active:scale-95">
-              ›
-            </button>
+            <button id="lbPrev" class="absolute left-4 top-1/2 -translate-y-1/2 w-14 h-14 rounded-2xl bg-white/90 hover:bg-white text-slate-900 shadow flex items-center justify-center text-3xl btn"
+              aria-label="Previous photo">‹</button>
 
-            <div id="lbCounter" class="absolute bottom-4 left-4 bg-white/90 px-4 py-2 rounded-full font-semibold shadow">
+            <button id="lbNext" class="absolute right-4 top-1/2 -translate-y-1/2 w-14 h-14 rounded-2xl bg-white/90 hover:bg-white text-slate-900 shadow flex items-center justify-center text-3xl btn"
+              aria-label="Next photo">›</button>
+
+            <div id="lbCount" class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 px-4 py-2 rounded-full font-semibold shadow">
               1 / 1
             </div>
           </div>
         </div>
 
-        <div class="mt-3 text-center text-white/80 text-sm">Swipe/Click arrows to navigate</div>
       </div>
     </div>
   </div>
 
 <script>
   const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
-  const qs = new URLSearchParams(location.search);
-  const project = qs.get("project") || "Project_0";
-  const id = qs.get("id") || qs.get("hpId") || "";
 
-  // links
-  document.getElementById("backBtn").href = `index.html?project=${encodeURIComponent(project)}`;
-  document.getElementById("homeBtn").href = `index.html?project=${encodeURIComponent(project)}`;
+  const qs = new URLSearchParams(location.search);
+  const HP_ID = qs.get("id") || qs.get("hpId") || "";          // รองรับ id หรือ hpId
+  const PROJECT = qs.get("project") || "Project_0";
+
+  // ตั้ง back/home ให้กลับไป index พร้อม project
+  document.getElementById("backBtn").href = `index.html?project=${encodeURIComponent(PROJECT)}`;
+  document.getElementById("homeBtn").href = `index.html?project=${encodeURIComponent(PROJECT)}`;
 
   const priceFmt = v => {
-    const n = Number(v);
+    const n = Number(String(v).replace(/,/g,""));
     return (!n || n === 0) ? "฿0" : "฿" + n.toLocaleString();
   };
 
   const statusClass = s => {
     s = String(s || "").toLowerCase();
-    if (s.includes("available")) return "bg-emerald-100 text-emerald-700";
-    if (s.includes("under")) return "bg-sky-100 text-sky-700";
-    if (s.includes("reserved")) return "bg-amber-100 text-amber-700";
-    if (s.includes("sold")) return "bg-rose-100 text-rose-700";
-    return "bg-slate-100 text-slate-700";
+    if (s.includes("available")) return ["bg-emerald-100","text-emerald-700"];
+    if (s.includes("under")) return ["bg-sky-100","text-sky-700"];
+    if (s.includes("reserved")) return ["bg-amber-100","text-amber-700"];
+    if (s.includes("sold")) return ["bg-rose-100","text-rose-700"];
+    return ["bg-slate-100","text-slate-700"];
   };
 
   // gallery state
-  let gallery = [];
-  let currentIndex = 0;
+  let images = [];
+  let activeIndex = 0;
 
-  function setHero(i) {
-    if (!gallery.length) return;
-    currentIndex = (i + gallery.length) % gallery.length;
-    document.getElementById("heroImg").src = gallery[currentIndex];
-    document.getElementById("countPill").textContent = `${gallery.length} Photos`;
+  const heroImg = document.getElementById("heroImg");
+  const thumbStrip = document.getElementById("thumbStrip");
+  const countPill = document.getElementById("countPill");
+
+  function setHeroByIndex(i) {
+    if (!images.length) return;
+
+    activeIndex = (i + images.length) % images.length;
+    heroImg.src = images[activeIndex];
+
+    // highlight thumb
+    [...thumbStrip.querySelectorAll("img[data-idx]")].forEach(el => {
+      el.classList.toggle("thumb-active", Number(el.dataset.idx) === activeIndex);
+    });
+
+    // update count
+    countPill.textContent = `${images.length} Photos`;
   }
 
-  function renderThumbStrip() {
-    const strip = document.getElementById("thumbStrip");
-    if (!gallery.length) {
-      strip.innerHTML = `<div class="text-slate-400 font-semibold">No gallery photos</div>`;
-      return;
-    }
-
-    strip.innerHTML = gallery.map((url, idx) => `
-      <button class="shrink-0 rounded-2xl overflow-hidden border ${idx===currentIndex ? "border-slate-900" : "border-slate-100"} bg-slate-50"
-        onclick="window.__pick(${idx})"
-        title="View">
-        <img src="${url}" class="w-24 h-20 object-cover">
-      </button>
+  function buildThumbs() {
+    thumbStrip.innerHTML = images.map((url, idx) => `
+      <img src="${url}" class="thumb ${idx===0 ? "thumb-active" : ""}" data-idx="${idx}" alt="thumb-${idx}">
     `).join("");
+
+    thumbStrip.querySelectorAll("img[data-idx]").forEach(img => {
+      img.addEventListener("click", () => setHeroByIndex(Number(img.dataset.idx)));
+    });
   }
 
-  window.__pick = (idx) => {
-    setHero(idx);
-    renderThumbStrip();
-  };
+  // hero arrow buttons
+  document.getElementById("heroPrev").addEventListener("click", (e) => {
+    e.stopPropagation();
+    setHeroByIndex(activeIndex - 1);
+  });
+  document.getElementById("heroNext").addEventListener("click", (e) => {
+    e.stopPropagation();
+    setHeroByIndex(activeIndex + 1);
+  });
+
+  // swipe on hero (mobile)
+  let sx = 0, sy = 0;
+  heroImg.addEventListener("touchstart", (e) => {
+    sx = e.touches[0].clientX;
+    sy = e.touches[0].clientY;
+  }, {passive:true});
+
+  heroImg.addEventListener("touchend", (e) => {
+    const dx = e.changedTouches[0].clientX - sx;
+    const dy = e.changedTouches[0].clientY - sy;
+    if (Math.abs(dx) > 35 && Math.abs(dx) > Math.abs(dy)) {
+      if (dx < 0) setHeroByIndex(activeIndex + 1);
+      else setHeroByIndex(activeIndex - 1);
+    }
+  }, {passive:true});
 
   // lightbox
-  const lb = document.getElementById("lightbox");
+  const lightbox = document.getElementById("lightbox");
   const lbImg = document.getElementById("lbImg");
-  const lbCounter = document.getElementById("lbCounter");
+  const lbCount = document.getElementById("lbCount");
 
-  function openLightbox(idx) {
-    if (!gallery.length) return;
-    currentIndex = idx;
-    lb.classList.remove("hidden");
-    updateLightbox();
+  function openLB() {
+    if (!images.length) return;
+    lightbox.classList.remove("hidden");
+    lbImg.src = images[activeIndex];
+    lbCount.textContent = `${activeIndex+1} / ${images.length}`;
+  }
+  function closeLB() {
+    lightbox.classList.add("hidden");
+  }
+  function lbSet(i) {
+    if (!images.length) return;
+    activeIndex = (i + images.length) % images.length;
+    lbImg.src = images[activeIndex];
+    lbCount.textContent = `${activeIndex+1} / ${images.length}`;
+    // sync hero too
+    heroImg.src = images[activeIndex];
+    [...thumbStrip.querySelectorAll("img[data-idx]")].forEach(el => {
+      el.classList.toggle("thumb-active", Number(el.dataset.idx) === activeIndex);
+    });
   }
 
-  function closeLightbox() {
-    lb.classList.add("hidden");
-  }
+  heroImg.addEventListener("click", openLB);
+  document.getElementById("lbClose").addEventListener("click", closeLB);
+  lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLB(); });
 
-  function updateLightbox() {
-    lbImg.src = gallery[currentIndex];
-    lbCounter.textContent = `${currentIndex + 1} / ${gallery.length}`;
-  }
+  document.getElementById("lbPrev").addEventListener("click", (e) => { e.stopPropagation(); lbSet(activeIndex - 1); });
+  document.getElementById("lbNext").addEventListener("click", (e) => { e.stopPropagation(); lbSet(activeIndex + 1); });
 
-  function prev() {
-    currentIndex = (currentIndex - 1 + gallery.length) % gallery.length;
-    updateLightbox();
-  }
-
-  function next() {
-    currentIndex = (currentIndex + 1) % gallery.length;
-    updateLightbox();
-  }
-
-  document.getElementById("lbClose").addEventListener("click", closeLightbox);
-  document.getElementById("lbPrev").addEventListener("click", prev);
-  document.getElementById("lbNext").addEventListener("click", next);
-
-  // click outside close
-  lb.addEventListener("click", (e) => {
-    if (e.target === lb) closeLightbox();
+  // keyboard (desktop)
+  document.addEventListener("keydown", (e) => {
+    const lbOpen = !lightbox.classList.contains("hidden");
+    if (e.key === "Escape" && lbOpen) closeLB();
+    if (e.key === "ArrowLeft") {
+      if (lbOpen) lbSet(activeIndex - 1); else setHeroByIndex(activeIndex - 1);
+    }
+    if (e.key === "ArrowRight") {
+      if (lbOpen) lbSet(activeIndex + 1); else setHeroByIndex(activeIndex + 1);
+    }
   });
 
-  // hero click -> open lightbox
-  document.getElementById("heroImg").addEventListener("click", () => openLightbox(currentIndex));
+  // swipe on lightbox
+  let lbsx = 0, lbsy = 0;
+  lbImg.addEventListener("touchstart", (e) => {
+    lbsx = e.touches[0].clientX;
+    lbsy = e.touches[0].clientY;
+  }, {passive:true});
+  lbImg.addEventListener("touchend", (e) => {
+    const dx = e.changedTouches[0].clientX - lbsx;
+    const dy = e.changedTouches[0].clientY - lbsy;
+    if (Math.abs(dx) > 35 && Math.abs(dx) > Math.abs(dy)) {
+      if (dx < 0) lbSet(activeIndex + 1);
+      else lbSet(activeIndex - 1);
+    }
+  }, {passive:true});
 
-  // keyboard on desktop
-  window.addEventListener("keydown", (e) => {
-    if (lb.classList.contains("hidden")) return;
-    if (e.key === "Escape") closeLightbox();
-    if (e.key === "ArrowLeft") prev();
-    if (e.key === "ArrowRight") next();
-  });
-
-  async function load() {
-    if (!id) {
-      document.getElementById("loading").textContent = "⚠️ Missing id";
+  async function loadDetail() {
+    if (!HP_ID) {
+      document.getElementById("loading").textContent = "Missing id (HP_ID). Example: details.html?id=HP-Z001&project=Project_0";
       return;
     }
 
-    const res = await fetch(`${API_URL}?mode=getUnitDetail&project=${encodeURIComponent(project)}&hpId=${encodeURIComponent(id)}&t=${Date.now()}`);
+    const url = `${API_URL}?mode=getUnitDetail&project=${encodeURIComponent(PROJECT)}&hpId=${encodeURIComponent(HP_ID)}&t=${Date.now()}`;
+    const res = await fetch(url);
     const d = await res.json();
 
     if (d.error) {
-      document.getElementById("loading").textContent = "⚠️ " + d.error;
+      document.getElementById("loading").textContent = d.error;
       return;
     }
 
-    // data
-    const plot = d.Plot || "-";
-    const status = d.Status || "-";
-    const badge = d.Badge || "-";
-    const sys = d.System_Status || "-";
-    const updated = d.Last_Updated || "-";
+    // show UI
+    document.getElementById("loading").classList.add("hidden");
+    document.getElementById("content").classList.remove("hidden");
 
-    const thumb = d.Thumbnail_Image || "";
-    const list = String(d.Image_List || "").split(",").map(s => s.trim()).filter(Boolean);
+    const plot = d.Plot || d.plot || "-";
+    const status = d.Status || d.status || "-";
+    const badge = d.Badge || d.badge || "-";
+    const sys = d.System_Status || d.sysStatus || "-";
+    const updated = d.Last_Updated || d.lastUpdated || "-";
 
-    gallery = (list.length ? list : (thumb ? [thumb] : []));
-
-    // title
-    document.getElementById("titleLine").textContent = `UNIT ${id} • ${plot}`;
-    document.getElementById("subLine").textContent = `Project: ${project} • Unit: ${id}`;
+    // title / subtitle
+    document.getElementById("titleLine").textContent = `UNIT ${HP_ID} • ${plot}`;
+    document.getElementById("subLine").textContent = `Project: ${PROJECT} • Unit: ${HP_ID}`;
 
     // pills
     document.getElementById("plotPill").textContent = plot;
-    const st = document.getElementById("statusPill");
-    st.className = `absolute top-4 right-4 chip shadow ${statusClass(status)}`;
-    st.textContent = status;
+
+    const [bgc, txc] = statusClass(status);
+    const sp = document.getElementById("statusPill");
+    sp.className = `absolute top-4 right-4 chip shadow ${bgc} ${txc}`;
+    sp.textContent = status;
 
     document.getElementById("badgePill").textContent = `Badge: ${badge}`;
     document.getElementById("sysPill").textContent = `System: ${sys}`;
     document.getElementById("updatedPill").textContent = `Updated: ${updated}`;
 
-    // numbers
-    document.getElementById("price").textContent = priceFmt(d.Price || d.Price_SQM || 0);
-    document.getElementById("bed").textContent = d.Bedrooms || "-";
-    document.getElementById("bath").textContent = d.Bathrooms || "-";
-    document.getElementById("land").textContent = d.Land_Area_sq_w || "-";
-    document.getElementById("living").textContent = d.Living_Area_sq_m || "-";
+    // price & features
+    document.getElementById("price").textContent = priceFmt(d.Price || d.price || 0);
+    document.getElementById("bed").textContent = d.Bedrooms || d.bedrooms || "-";
+    document.getElementById("bath").textContent = d.Bathrooms || d.bathrooms || "-";
+    document.getElementById("land").textContent = d.Land_Area_sq_w || d.landSqw || "-";
+    document.getElementById("living").textContent = d.Living_Area_sq_m || d.livingSqm || "-";
 
     // description
-    document.getElementById("descBlock").textContent = d.Description || "—";
+    document.getElementById("descBlock").textContent = d.Description || d.description || "—";
 
-    // map / virtual
-    const map = d.Map_Link || "";
-    const vr = d.Virtual_Tour || "";
-    if (map) {
-      const a = document.getElementById("mapBtn");
-      a.href = map;
-      a.target = "_blank";
-      a.rel = "noopener";
-      a.classList.remove("hidden");
+    // map / vr
+    const map = d.Map_Link || d.map_link || d.Map || "";
+    const vr = d.Virtual_Tour || d.virtual_tour || "";
+
+    const mapBtn = document.getElementById("mapBtn");
+    if (map) { mapBtn.href = map; mapBtn.target = "_blank"; mapBtn.classList.remove("hidden"); }
+
+    const vrBtn = document.getElementById("vrBtn");
+    if (vr) { vrBtn.href = vr; vrBtn.target = "_blank"; vrBtn.classList.remove("hidden"); }
+
+    // images
+    const thumb = d.Thumbnail_Image || d.thumbnail || "";
+    const list = d.Image_List || d.image_list || "";
+    const arr = String(list || "").split(",").map(s => s.trim()).filter(Boolean);
+
+    // ให้ thumbnail อยู่หน้าแรกเสมอ ถ้ามี
+    images = [];
+    if (thumb) images.push(thumb);
+    arr.forEach(u => { if (u && !images.includes(u)) images.push(u); });
+
+    // fallback: ถ้าไม่มีรูปเลย
+    if (!images.length) {
+      images = ["https://via.placeholder.com/1600x900?text=No+Image"];
     }
-    if (vr) {
-      const a = document.getElementById("vrBtn");
-      a.href = vr;
-      a.target = "_blank";
-      a.rel = "noopener";
-      a.classList.remove("hidden");
-    }
 
-    // hero image
-    document.getElementById("heroImg").src = gallery[0] || "https://via.placeholder.com/1200x800?text=No+Image";
-    document.getElementById("countPill").textContent = `${gallery.length} Photos`;
-    currentIndex = 0;
-    renderThumbStrip();
-
-    // show
-    document.getElementById("loading").classList.add("hidden");
-    document.getElementById("content").classList.remove("hidden");
+    // build thumbs + set hero
+    buildThumbs();
+    setHeroByIndex(0);
   }
 
-  load();
+  loadDetail();
 </script>
 </body>
 </html>
