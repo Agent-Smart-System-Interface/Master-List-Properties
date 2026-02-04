@@ -1,134 +1,471 @@
-<!DOCTYPE html>
-<html lang="th">
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>DIRECT HUB - PROPERTIES</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <title>Smart Properties System</title>
 
+  <!-- Tailwind (kept, but UI is mostly custom to match LINE look) -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Fonts: closest practical match across iOS/Android/PC for Thai+English -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
-    body { font-family: 'Kanit', sans-serif; }
-
-    /* ✅ LINE-like Background + soft clouds (light, not too many) */
-    body.line-bg{
-      background: linear-gradient(180deg,#8fb6e3 0%, #a9c9ef 35%, #cfe3f7 100%);
-      min-height: 100vh;
+    :root{
+      --line-bg:#8fb2d6;           /* chat sky */
+      --line-card:rgba(255,255,255,.92);
+      --line-text:#111827;
+      --line-sub:#6b7280;
+      --line-green:#06C755;        /* LINE-ish green */
+      --line-dark:#0f172a;
+      --line-border:rgba(17,24,39,.08);
+      --radius-xl:26px;
+      --radius-lg:18px;
     }
-    body.line-bg::before{
-      content:"";
+
+    html,body{height:100%;}
+    body{
+      font-family:"Noto Sans Thai","Noto Sans",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      color:var(--line-text);
+      background: var(--line-bg);
+      /* subtle cloud layer (few clouds only) */
+      background-image:
+        url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22900%22%20height%3D%221600%22%20viewBox%3D%220%200%20900%201600%22%3E%0A%20%20%3Crect%20width%3D%22900%22%20height%3D%221600%22%20fill%3D%22%238fb2d6%22/%3E%0A%20%20%3Cg%20fill%3D%22white%22%20opacity%3D%220.18%22%3E%0A%20%20%20%20%3Cellipse%20cx%3D%22170%22%20cy%3D%22380%22%20rx%3D%22190%22%20ry%3D%22110%22/%3E%0A%20%20%20%20%3Cellipse%20cx%3D%22320%22%20cy%3D%22365%22%20rx%3D%22160%22%20ry%3D%2295%22/%3E%0A%20%20%20%20%3Cellipse%20cx%3D%22280%22%20cy%3D%22420%22%20rx%3D%22210%22%20ry%3D%22120%22/%3E%0A%0A%20%20%20%20%3Cellipse%20cx%3D%22680%22%20cy%3D%22820%22%20rx%3D%22210%22%20ry%3D%22120%22/%3E%0A%20%20%20%20%3Cellipse%20cx%3D%22560%22%20cy%3D%22830%22%20rx%3D%22170%22%20ry%3D%22100%22/%3E%0A%20%20%20%20%3Cellipse%20cx%3D%22640%22%20cy%3D%22890%22%20rx%3D%22240%22%20ry%3D%22130%22/%3E%0A%0A%20%20%20%20%3Cellipse%20cx%3D%22260%22%20cy%3D%221180%22%20rx%3D%22230%22%20ry%3D%22130%22/%3E%0A%20%20%20%20%3Cellipse%20cx%3D%22420%22%20cy%3D%221160%22%20rx%3D%22190%22%20ry%3D%22115%22/%3E%0A%20%20%20%20%3Cellipse%20cx%3D%22380%22%20cy%3D%221220%22%20rx%3D%22260%22%20ry%3D%22145%22/%3E%0A%20%20%3C/g%3E%0A%3C/svg%3E");
+      background-size: cover;
+      background-attachment: fixed;
+    }
+
+    /* safe-area paddings for mobile */
+    .safe-top{ padding-top: max(14px, env(safe-area-inset-top)); }
+    .safe-bottom{ padding-bottom: max(18px, env(safe-area-inset-bottom)); }
+
+    /* Top bar (LINE-ish) */
+    .topbar{
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: rgba(255,255,255,.96);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line-border);
+    }
+    .topbar-inner{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 14px 16px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .topbar-title{
+      font-size: 20px;
+      line-height: 1.1;
+      font-weight: 800;
+      letter-spacing: .2px;
+    }
+    .topbar-sub{
+      font-size: 12.5px;
+      color: var(--line-sub);
+      margin-top: 2px;
+      font-weight: 600;
+    }
+    .icon-btn{
+      width: 40px; height: 40px;
+      border-radius: 14px;
+      display:grid; place-items:center;
+      border: 1px solid var(--line-border);
+      background: white;
+      box-shadow: 0 6px 18px rgba(15,23,42,.06);
+      flex: 0 0 auto;
+    }
+    .icon{
+      width: 20px; height: 20px;
+      fill: none;
+      stroke: #111827;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: .95;
+    }
+
+    /* Glass panel for controls */
+    .panel{
+      background: rgba(255,255,255,.78);
+      border: 1px solid var(--line-border);
+      border-radius: var(--radius-xl);
+      box-shadow: 0 16px 40px rgba(15,23,42,.10);
+      backdrop-filter: blur(10px);
+    }
+
+    /* Card */
+    .unit-card{
+      background: var(--line-card);
+      border: 1px solid var(--line-border);
+      border-radius: 28px;
+      overflow:hidden;
+      box-shadow: 0 18px 40px rgba(15,23,42,.10);
+    }
+    .unit-card .thumb{
+      height: 210px;
+      width: 100%;
+      object-fit: cover;
+      background:#e5e7eb;
+    }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      border: 1px solid rgba(17,24,39,.08);
+      background: rgba(255,255,255,.78);
+      backdrop-filter: blur(8px);
+    }
+    .chip.badge{ color:#6d28d9; background: rgba(237,233,254,.9); }
+    .chip.sys{ color:#334155; background: rgba(241,245,249,.9); }
+
+    .status-pill{
+      margin-left:auto;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      border: 1px solid rgba(17,24,39,.10);
+      background: rgba(255,255,255,.85);
+    }
+    .st-available{ color:#047857; background: rgba(209,250,229,.92); }
+    .st-sold{ color:#b91c1c; background: rgba(254,226,226,.92); }
+    .st-pending{ color:#92400e; background: rgba(254,243,199,.92); }
+    .st-other{ color:#334155; background: rgba(241,245,249,.92); }
+
+    .price{
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      line-height: 1.05;
+      margin-top: 14px;
+    }
+    .unit{
+      margin-top: 6px;
+      font-size: 13px;
+      letter-spacing: .18em;
+      font-weight: 900;
+      color: rgba(17,24,39,.75);
+    }
+    .meta{
+      margin-top: 10px;
+      display:flex;
+      flex-wrap: wrap;
+      gap:10px;
+      color: rgba(17,24,39,.85);
+      font-weight: 800;
+      font-size: 13px;
+    }
+    .meta span{
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(17,24,39,.08);
+      display:inline-flex; align-items:center; gap:8px;
+    }
+
+    .btn-primary{
+      display:block;
+      width:100%;
+      text-align:center;
+      padding: 14px 16px;
+      border-radius: 18px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      font-size: 13px;
+      background: var(--line-dark);
+      color: white;
+      box-shadow: 0 16px 30px rgba(15,23,42,.22);
+    }
+    .btn-primary:active{ transform: translateY(1px); }
+
+    .btn-line{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      padding: 12px 14px;
+      border-radius: 18px;
+      font-weight: 900;
+      font-size: 13px;
+      border: 1px solid rgba(17,24,39,.10);
+      background: white;
+      box-shadow: 0 14px 28px rgba(15,23,42,.10);
+    }
+
+    /* Modal */
+    .modal-overlay{
       position: fixed;
       inset: 0;
-      pointer-events: none;
-      opacity: .22; /* เมฆบางๆ */
-      background-repeat: repeat;
-      background-size: 900px 520px;
-      background-position: center top;
-      /* simple cloud svg pattern */
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='520' viewBox='0 0 900 520'%3E%3Cg fill='%23ffffff'%3E%3Cpath opacity='.55' d='M160 150c-32 0-58 20-65 47-3-1-7-1-10-1-22 0-40 14-46 33-1 4-2 8-2 12 0 24 20 44 45 44h172c26 0 47-20 47-44s-21-44-47-44c-6 0-11 1-16 3-9-27-35-50-78-50z'/%3E%3Cpath opacity='.45' d='M630 110c-28 0-50 17-57 40-3-1-6-1-9-1-18 0-33 11-38 27-1 3-1 6-1 10 0 20 16 36 36 36h150c21 0 38-16 38-36s-17-36-38-36c-5 0-9 1-14 2-8-23-28-42-67-42z'/%3E%3Cpath opacity='.35' d='M500 320c-38 0-68 24-76 56-4-1-8-2-12-2-25 0-46 16-52 38-2 5-2 10-2 15 0 29 24 53 53 53h208c31 0 56-24 56-53s-25-53-56-53c-7 0-13 1-19 3-10-33-40-57-100-57z'/%3E%3C/g%3E%3C/svg%3E");
+      background: rgba(15,23,42,.42);
+      display:none;
+      z-index: 60;
+      padding: 18px;
+      padding-top: max(18px, env(safe-area-inset-top));
+      padding-bottom: max(18px, env(safe-area-inset-bottom));
     }
-
-    .price-text {
-      font-size: clamp(1.9rem, 5vw, 2.8rem);
-      font-weight: 500;
-      letter-spacing: -0.02em;
-      line-height: 1.1;
+    .modal{
+      max-width: 720px;
+      margin: 0 auto;
+      height: min(78vh, 680px);
+      background: rgba(255,255,255,.96);
+      border-radius: 28px;
+      border: 1px solid rgba(17,24,39,.10);
+      box-shadow: 0 30px 70px rgba(15,23,42,.30);
+      overflow:hidden;
+      display:flex;
+      flex-direction: column;
     }
-    .unit-text { font-size: 0.9rem; font-weight: 400; color: #94a3b8; margin-top: 0.3rem; }
-    .feature { font-size: 0.85rem; font-weight: 400; padding: 0.45rem 0.7rem; }
-    .status { font-size: 0.85rem; font-weight: 500; padding: 0.45rem 0.9rem; }
+    .modal-head{
+      padding: 14px 16px;
+      display:flex; align-items:center; gap:12px;
+      border-bottom: 1px solid rgba(17,24,39,.08);
+    }
+    .modal-title{
+      font-weight: 900;
+      font-size: 16px;
+      letter-spacing: .2px;
+    }
+    .modal-list{
+      overflow:auto;
+      padding: 12px;
+    }
+    .plot-row{
+      width:100%;
+      text-align:left;
+      background: rgba(255,255,255,.9);
+      border: 1px solid rgba(17,24,39,.08);
+      border-radius: 20px;
+      padding: 12px 12px;
+      display:flex;
+      align-items:flex-start;
+      gap: 12px;
+      box-shadow: 0 12px 26px rgba(15,23,42,.08);
+      margin-bottom: 10px;
+    }
+    .plot-left{
+      min-width: 78px;
+      font-weight: 1000;
+      font-size: 18px;
+      letter-spacing: .2px;
+    }
+    .plot-right{
+      flex:1;
+      display:flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .plot-top{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .plot-price{
+      font-weight: 1000;
+      font-size: 16px;
+    }
+    .plot-feat{
+      display:flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-weight: 800;
+      color: rgba(17,24,39,.80);
+      font-size: 13px;
+    }
+    .plot-feat span{
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(241,245,249,.9);
+      border: 1px solid rgba(17,24,39,.06);
+      display:inline-flex; align-items:center; gap:6px;
+    }
+    .muted{ color: rgba(17,24,39,.55); font-weight:800; font-size: 12px; }
+    .loading-dots::after{
+      content:"";
+      display:inline-block;
+      width: 1.3em;
+      text-align:left;
+      animation: dots 1.2s steps(4,end) infinite;
+    }
+    @keyframes dots{
+      0%{ content:""; }
+      25%{ content:"."; }
+      50%{ content:".."; }
+      75%{ content:"..."; }
+      100%{ content:""; }
+    }
   </style>
 </head>
 
-<body class="line-bg">
-<div class="max-w-6xl mx-auto px-4 py-8">
+<body class="safe-bottom">
+  <!-- Topbar -->
+  <div class="topbar safe-top">
+    <div class="topbar-inner">
+      <button class="icon-btn" onclick="history.back()" aria-label="Back">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
 
-  <!-- HEADER -->
-  <div class="flex justify-between items-start mb-8">
-    <div>
-      <h1 class="text-4xl md:text-5xl font-semibold italic text-slate-900">
-        DIRECT HUB
-      </h1>
-      <p class="text-blue-700 text-lg mt-1">
-        ศูนย์รวมบ้านฝากขายตรงจากเจ้าของ
-      </p>
-    </div>
-
-    <a href="gateway.html"
-       class="w-12 h-12 rounded-2xl bg-white/90 shadow flex items-center justify-center text-xl cursor-pointer"
-       title="Go to Gateway">
-      👤
-    </a>
-  </div>
-
-  <!-- CARDS -->
-  <div id="cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-  <div id="loading" class="text-center text-slate-600 py-10 font-semibold">
-    Loading...
-  </div>
-
-</div>
-
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
-const PROJECT = new URLSearchParams(location.search).get("project") || "Project_0";
-
-const priceFmt = v => {
-  const n = Number(v);
-  return (!n || n === 0) ? "฿0" : "฿" + n.toLocaleString();
-};
-
-const statusClass = s => {
-  s = String(s).toLowerCase();
-  if (s.includes("available")) return "bg-emerald-100 text-emerald-700";
-  if (s.includes("under")) return "bg-sky-100 text-sky-700";
-  if (s.includes("reserved")) return "bg-amber-100 text-amber-700";
-  if (s.includes("sold")) return "bg-rose-100 text-rose-700";
-  return "bg-slate-100 text-slate-700";
-};
-
-async function load(){
-  const res = await fetch(`${API_URL}?mode=getUnitList&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`);
-  const data = await res.json();
-
-  document.getElementById("loading").style.display = "none";
-
-  document.getElementById("cards").innerHTML = data.map(d => `
-    <div class="bg-white/95 rounded-[2.3rem] shadow-lg overflow-hidden backdrop-blur-sm">
-      <div class="relative">
-        <img src="${d.thumbnail}" class="w-full h-72 object-cover" loading="lazy" decoding="async">
-        <div class="absolute top-4 left-4 bg-white/90 px-4 py-2 rounded-full font-medium">
-          ${d.plot}
-        </div>
+      <div class="min-w-0">
+        <div class="topbar-title truncate">Smart Properties System</div>
+        <div class="topbar-sub truncate">Catalog • LINE-style UI</div>
       </div>
 
-      <div class="p-6">
-        <div class="flex flex-wrap gap-2 mb-4">
-          <div class="feature bg-slate-100">🛏 ${d.bedrooms}</div>
-          <div class="feature bg-slate-100">🛁 ${d.bathrooms}</div>
-          <div class="feature bg-slate-100">📐 ${d.landSqw} sq.w</div>
-          <div class="feature bg-slate-100">🏠 ${d.livingSqm} sqm</div>
-          <div class="ml-auto status rounded-full ${statusClass(d.status)}">
-            ${d.status}
-          </div>
+      <div class="ml-auto flex items-center gap-10">
+        <button id="btnPlots" class="btn-line" type="button" aria-label="Project Plots">
+          <span>📋</span><span>PROJECT PLOTS</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <main class="max-w-5xl mx-auto px-4 pb-10 pt-4">
+    <div id="loading" class="panel px-4 py-4 text-sm font-extrabold tracking-wide text-slate-700">
+      Loading latest data<span class="loading-dots"></span>
+    </div>
+
+    <div id="cards" class="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
+  </main>
+
+  <!-- Modal: Project Plots -->
+  <div id="plotsOverlay" class="modal-overlay" role="dialog" aria-modal="true" aria-label="Project Plots">
+    <div class="modal">
+      <div class="modal-head">
+        <div class="modal-title">Project Plots</div>
+        <div class="muted">tap a row to open details</div>
+        <button id="plotsClose" class="icon-btn ml-auto" type="button" aria-label="Close">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div id="plotsList" class="modal-list"></div>
+    </div>
+  </div>
+
+<script>
+const PROJECT = new URLSearchParams(location.search).get("project") || "Project_0";
+const API = "https://script.google.com/macros/s/AKfycbyL_n91C0WQwg6SO1O6VQkY0xjH5hE0UyP3l4n_CGmVGk9tq3o1o9qUqKcR4exDPSW9/exec";
+
+const $cards = document.getElementById("cards");
+const $loading = document.getElementById("loading");
+const $btnPlots = document.getElementById("btnPlots");
+const $plotsOverlay = document.getElementById("plotsOverlay");
+const $plotsClose = document.getElementById("plotsClose");
+const $plotsList = document.getElementById("plotsList");
+
+let RAW = [];
+
+function priceFmt(v){
+  const n = Number(String(v).replace(/[^0-9.]/g,""));
+  if(!isFinite(n)) return String(v||"");
+  return "฿" + n.toLocaleString("en-US");
+}
+
+function statusClass(s){
+  const t = String(s||"").toLowerCase();
+  if(t.includes("avail")) return "st-available";
+  if(t.includes("sold")) return "st-sold";
+  if(t.includes("pend")) return "st-pending";
+  return "st-other";
+}
+
+function normPlot(p){
+  return String(p||"").trim() || "-";
+}
+
+function openPlots(){
+  $plotsOverlay.style.display = "block";
+  document.body.style.overflow = "hidden";
+}
+function closePlots(){
+  $plotsOverlay.style.display = "none";
+  document.body.style.overflow = "";
+}
+
+$btnPlots.addEventListener("click", openPlots);
+$plotsClose.addEventListener("click", closePlots);
+$plotsOverlay.addEventListener("click", (e)=>{ if(e.target === $plotsOverlay) closePlots(); });
+
+function renderCards(){
+  $cards.innerHTML = RAW.map(d => `
+    <div class="unit-card">
+      <img class="thumb" src="${d.thumbnail || ""}" alt="thumbnail" loading="lazy" onerror="this.style.display='none'">
+      <div class="p-5">
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="chip badge">${d.badge ? "Badge: " + d.badge : "Badge: -"}</span>
+          <span class="chip sys">${d.sysStatus ? "System: " + d.sysStatus : "System: -"}</span>
+          <div class="status-pill ${statusClass(d.status)}">${d.status || "Unknown"}</div>
         </div>
 
-        <div class="price-text text-slate-900">
-          ${priceFmt(d.price)}
-        </div>
-        <div class="unit-text">
-          UNIT: ${d.id}
+        <div class="price">${priceFmt(d.price)}</div>
+        <div class="unit">UNIT: ${d.id}</div>
+
+        <div class="meta">
+          <span>🛏️ ${d.bedrooms || "-"}</span>
+          <span>🛁 ${d.bathrooms || "-"}</span>
+          <span>📐 ${d.landSqw || "-"} sq.w</span>
+          <span>🏠 ${d.livingSqm || "-"} m&sup2;</span>
+          <span>📍 ${normPlot(d.plot)}</span>
         </div>
 
-        <!-- ✅ ลิงก์ไป details.html (ถูกต้อง) -->
-        <a href="details.html?id=${encodeURIComponent(d.id)}&project=${encodeURIComponent(PROJECT)}"
-           class="block mt-6 text-center bg-slate-900 text-white py-4 rounded-2xl text-sm tracking-widest hover:bg-slate-800 transition">
+        <a class="btn-primary mt-5" href="details.html?id=${encodeURIComponent(d.id)}&project=${encodeURIComponent(PROJECT)}">
           VIEW FULL DETAILS
         </a>
       </div>
     </div>
   `).join("");
+}
+
+function renderPlots(){
+  const list = [...RAW]
+    .filter(x => String(x.id||"").trim() !== "")
+    .sort((a,b)=> String(a.plot||"").localeCompare(String(b.plot||""), undefined, {numeric:true, sensitivity:"base"}));
+
+  $plotsList.innerHTML = list.map(d => `
+    <button class="plot-row" type="button" onclick="location.href='details.html?id=${encodeURIComponent(d.id)}&project=${encodeURIComponent(PROJECT)}'">
+      <div class="plot-left">${normPlot(d.plot)}</div>
+      <div class="plot-right">
+        <div class="plot-top">
+          <div class="plot-price">${priceFmt(d.price)}</div>
+          <div class="status-pill ${statusClass(d.status)}">${d.status || "Unknown"}</div>
+        </div>
+        <div class="plot-feat">
+          <span>🛏️ ${d.bedrooms || "-"}</span>
+          <span>🛁 ${d.bathrooms || "-"}</span>
+          <span>🏠 ${d.livingSqm || "-"} m&sup2;</span>
+          <span>📐 ${d.landSqw || "-"} sq.w</span>
+          <span>UNIT ${d.id}</span>
+        </div>
+      </div>
+    </button>
+  `).join("");
+}
+
+async function load(){
+  try{
+    $loading.style.display = "block";
+    $cards.innerHTML = "";
+    const url = `${API}?mode=listUnits&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`;
+    const res = await fetch(url);
+    RAW = await res.json();
+
+    $loading.style.display = "none";
+    renderCards();
+    renderPlots();
+  }catch(err){
+    $loading.textContent = "Load error: " + err;
+  }
 }
 
 load();
