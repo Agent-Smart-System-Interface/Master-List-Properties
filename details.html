@@ -3,20 +3,58 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>DIRECT HUB - DETAILS</title>
+  <title>UNIT DETAILS</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     body { font-family: 'Kanit', sans-serif; }
-    .price-text { font-size: clamp(2.2rem, 6vw, 3.6rem); font-weight: 600; letter-spacing: -0.02em; line-height: 1.05; }
-    .chip { font-size: 0.9rem; font-weight: 500; padding: .55rem .9rem; border-radius: 999px; }
-    .feature { font-size: .95rem; font-weight: 500; padding: .65rem .85rem; border-radius: 1rem; }
-    .btn:active { transform: scale(.98); }
-    .no-select { user-select: none; -webkit-user-select: none; }
-    .thumb { width: 92px; height: 64px; object-fit: cover; border-radius: 1rem; cursor: pointer; }
-    .thumb-active { outline: 3px solid #0f172a; outline-offset: 2px; }
+    .price-text { font-size: clamp(2.2rem, 5vw, 3.3rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; }
+    .muted { color:#94a3b8; }
+    .pill { padding:.55rem 1rem; border-radius:999px; font-weight:600; font-size:.95rem; }
+    .soft-card { border-radius: 2.2rem; overflow:hidden; box-shadow: 0 10px 30px rgba(2,6,23,.10); }
+    .thumb { border-radius: 1.25rem; overflow:hidden; border: 2px solid transparent; }
+    .thumb.active { border-color:#0f172a; }
+    .thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+
+    /* ✅ Arrow buttons: no white background, subtle, not blocking photo */
+    .nav-btn{
+      position:absolute;
+      top:50%;
+      transform: translateY(-50%);
+      width:56px;
+      height:56px;
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: transparent;          /* <— no background */
+      border: none;
+      color: rgba(255,255,255,.85);     /* light arrow */
+      font-size: 44px;
+      line-height: 1;
+      cursor:pointer;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+      text-shadow: 0 6px 18px rgba(0,0,0,.40); /* make arrow visible on bright images */
+      transition: transform .12s ease, color .12s ease, opacity .12s ease;
+      opacity: .85;
+    }
+    .nav-btn:hover{ opacity: 1; transform: translateY(-50%) scale(1.04); }
+    .nav-btn:active{ transform: translateY(-50%) scale(.96); }
+    .nav-left{ left: 14px; }
+    .nav-right{ right: 14px; }
+
+    /* Mobile smaller arrows */
+    @media (max-width: 640px){
+      .nav-btn{ width:46px; height:46px; font-size:38px; }
+      .nav-left{ left: 10px; }
+      .nav-right{ right: 10px; }
+    }
+
+    /* Ensure no accidental "popup-like" behaviors */
+    img { -webkit-user-drag: none; }
   </style>
 </head>
 
@@ -26,337 +64,272 @@
     <!-- Header -->
     <div class="flex items-start justify-between gap-4 mb-6">
       <div class="min-w-0">
-        <div id="titleLine" class="text-3xl md:text-5xl font-semibold italic text-slate-900 truncate">Loading...</div>
-        <div id="subLine" class="text-slate-400 mt-2 text-sm md:text-base">—</div>
+        <h1 id="title" class="text-3xl md:text-5xl font-extrabold italic text-slate-900 truncate">
+          UNIT
+        </h1>
+        <div id="subtitle" class="mt-2 text-base md:text-lg muted">
+          Project: - • Unit: -
+        </div>
       </div>
 
-      <div class="flex items-center gap-3 shrink-0">
-        <a id="backBtn" href="index.html" class="w-14 h-14 rounded-2xl bg-white shadow flex items-center justify-center text-xl btn">←</a>
-        <a id="homeBtn" href="index.html" class="w-14 h-14 rounded-2xl bg-slate-900 text-white shadow flex items-center justify-center text-xl btn">⌂</a>
+      <div class="flex gap-3 shrink-0">
+        <button onclick="history.back()"
+          class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white shadow flex items-center justify-center text-xl"
+          title="Back">←</button>
+
+        <a id="homeBtn" href="index.html"
+          class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-slate-900 text-white shadow flex items-center justify-center text-xl"
+          title="Home">⌂</a>
       </div>
     </div>
 
-    <!-- Loading -->
-    <div id="loading" class="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 p-10 text-center text-slate-300 font-bold animate-pulse uppercase">
-      🔄 Loading property details...
-    </div>
+    <!-- Main gallery card -->
+    <div class="soft-card bg-white">
+      <div class="relative">
+        <img id="mainImg" src="" alt="Property photo" class="w-full h-[320px] sm:h-[420px] md:h-[520px] object-cover">
 
-    <!-- Content -->
-    <div id="content" class="hidden space-y-6">
-
-      <!-- Card -->
-      <div class="bg-white rounded-[2.7rem] shadow-2xl border border-slate-100 overflow-hidden">
-
-        <!-- HERO -->
-        <div class="relative">
-          <img id="heroImg" src="" class="w-full h-[22rem] md:h-[28rem] object-cover cursor-pointer no-select" alt="hero">
-
-          <div id="plotPill" class="absolute top-4 left-4 bg-white/90 px-4 py-2 rounded-full font-semibold shadow">-</div>
-          <div id="statusPill" class="absolute top-4 right-4 chip bg-emerald-100 text-emerald-700 shadow">-</div>
-          <div id="countPill" class="absolute bottom-4 right-4 bg-white/90 px-4 py-2 rounded-full font-semibold shadow">0 Photos</div>
-
-          <!-- ✅ ลูกศรบนรูปใหญ่ -->
-          <button id="heroPrev"
-            class="absolute left-4 top-1/2 -translate-y-1/2 w-14 h-14 rounded-2xl bg-white/90 hover:bg-white text-slate-900 shadow flex items-center justify-center text-3xl btn"
-            aria-label="Previous photo" title="Previous">‹</button>
-
-          <button id="heroNext"
-            class="absolute right-4 top-1/2 -translate-y-1/2 w-14 h-14 rounded-2xl bg-white/90 hover:bg-white text-slate-900 shadow flex items-center justify-center text-3xl btn"
-            aria-label="Next photo" title="Next">›</button>
-
-          <!-- ✅ รูปเล็ก (คงไว้เหมือนเดิม) -->
-          <div class="bg-white/95 backdrop-blur border-t border-slate-100 p-4">
-            <div id="thumbStrip" class="flex gap-3 overflow-x-auto pb-1"></div>
-          </div>
+        <!-- plot pill -->
+        <div id="plotPill" class="absolute top-4 left-4 bg-white/90 px-4 py-2 rounded-full font-semibold">
+          -
         </div>
 
-        <!-- INFO -->
-        <div class="p-6 md:p-8 space-y-5">
-          <div class="flex flex-wrap gap-2 items-center">
-            <div id="badgePill" class="chip bg-violet-100 text-violet-700">Badge: -</div>
-            <div id="sysPill" class="chip bg-slate-100 text-slate-700">System: -</div>
-            <div id="updatedPill" class="text-slate-400 font-semibold">Updated: -</div>
-          </div>
-
-          <div id="price" class="price-text text-slate-900">฿0</div>
-
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div class="feature bg-slate-50 border border-slate-100">🛏 <span id="bed">-</span></div>
-            <div class="feature bg-slate-50 border border-slate-100">🛁 <span id="bath">-</span></div>
-            <div class="feature bg-slate-50 border border-slate-100">📐 <span id="land">-</span> sq.w</div>
-            <div class="feature bg-slate-50 border border-slate-100">🏠 <span id="living">-</span> sqm</div>
-          </div>
-
-          <div id="descBlock" class="bg-slate-50 border border-slate-100 rounded-[2rem] p-6 text-slate-700 leading-relaxed">
-            —
-          </div>
-
-          <div class="grid md:grid-cols-2 gap-4">
-            <a id="mapBtn" class="hidden text-center bg-white border border-slate-200 rounded-2xl py-4 font-bold text-slate-800 hover:bg-slate-50 btn">
-              📍 OPEN MAP
-            </a>
-            <a id="vrBtn" class="hidden text-center bg-slate-900 text-white rounded-2xl py-4 font-bold hover:bg-slate-800 btn">
-              🌀 VIRTUAL TOUR
-            </a>
-          </div>
+        <!-- status pill -->
+        <div id="statusPill" class="absolute top-4 right-4 px-4 py-2 rounded-full font-semibold">
+          -
         </div>
 
-      </div>
-    </div>
-  </div>
+        <!-- ✅ arrows (no background) -->
+        <button id="prevBtn" class="nav-btn nav-left" aria-label="Previous photo" title="Previous">‹</button>
+        <button id="nextBtn" class="nav-btn nav-right" aria-label="Next photo" title="Next">›</button>
 
-  <!-- Lightbox -->
-  <div id="lightbox" class="hidden fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm">
-    <div class="w-full h-full flex items-center justify-center p-4">
-      <div class="relative w-full max-w-5xl">
-        <button id="lbClose" class="absolute -top-4 right-0 md:right-2 w-12 h-12 rounded-2xl bg-white text-slate-900 shadow flex items-center justify-center text-xl btn">✕</button>
-
-        <div class="bg-white rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/20">
-          <div class="relative">
-            <img id="lbImg" src="" class="w-full max-h-[78vh] object-contain bg-slate-900 no-select">
-
-            <button id="lbPrev" class="absolute left-4 top-1/2 -translate-y-1/2 w-14 h-14 rounded-2xl bg-white/90 hover:bg-white text-slate-900 shadow flex items-center justify-center text-3xl btn"
-              aria-label="Previous photo">‹</button>
-
-            <button id="lbNext" class="absolute right-4 top-1/2 -translate-y-1/2 w-14 h-14 rounded-2xl bg-white/90 hover:bg-white text-slate-900 shadow flex items-center justify-center text-3xl btn"
-              aria-label="Next photo">›</button>
-
-            <div id="lbCount" class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/90 px-4 py-2 rounded-full font-semibold shadow">
-              1 / 1
-            </div>
-          </div>
+        <!-- counter -->
+        <div id="counter" class="absolute bottom-4 right-4 bg-white/90 px-4 py-2 rounded-full font-semibold">
+          1 / 1
         </div>
+      </div>
 
+      <!-- thumbs row -->
+      <div class="p-4 md:p-6">
+        <div id="thumbRow" class="flex gap-3 overflow-x-auto pb-2">
+          <!-- thumbs injected -->
+        </div>
       </div>
     </div>
+
+    <!-- Info card -->
+    <div class="mt-6 bg-white soft-card p-6 md:p-8">
+      <div class="flex flex-wrap gap-3 mb-5">
+        <div id="badgePill" class="pill bg-violet-100 text-violet-700">Badge: -</div>
+        <div id="sysPill" class="pill bg-slate-100 text-slate-700">System: -</div>
+        <div id="updated" class="w-full muted font-semibold">Updated: -</div>
+      </div>
+
+      <div class="price-text text-slate-900" id="price">฿0</div>
+      <div class="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+        <div class="bg-slate-100 rounded-2xl p-4"><div class="muted">Bedrooms</div><div id="bed" class="text-lg font-semibold">-</div></div>
+        <div class="bg-slate-100 rounded-2xl p-4"><div class="muted">Bathrooms</div><div id="bath" class="text-lg font-semibold">-</div></div>
+        <div class="bg-slate-100 rounded-2xl p-4"><div class="muted">Land (sq.w)</div><div id="landSqw" class="text-lg font-semibold">-</div></div>
+        <div class="bg-slate-100 rounded-2xl p-4"><div class="muted">Living (sqm)</div><div id="livingSqm" class="text-lg font-semibold">-</div></div>
+      </div>
+
+      <div class="mt-6">
+        <div class="text-sm muted font-semibold mb-2">Description</div>
+        <div id="desc" class="text-slate-800 leading-relaxed">-</div>
+      </div>
+
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a id="mapBtn" href="#" target="_blank"
+           class="px-5 py-3 rounded-2xl bg-slate-900 text-white font-semibold">
+          OPEN MAP
+        </a>
+        <a id="fbBtn" href="#" target="_blank"
+           class="px-5 py-3 rounded-2xl bg-blue-600 text-white font-semibold">
+          FACEBOOK / LISTING
+        </a>
+      </div>
+    </div>
+
+    <div id="loading" class="text-center text-slate-400 py-10">Loading...</div>
   </div>
 
 <script>
   const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
 
   const qs = new URLSearchParams(location.search);
-  const HP_ID = qs.get("id") || qs.get("hpId") || "";          // รองรับ id หรือ hpId
   const PROJECT = qs.get("project") || "Project_0";
 
-  // ตั้ง back/home ให้กลับไป index พร้อม project
-  document.getElementById("backBtn").href = `index.html?project=${encodeURIComponent(PROJECT)}`;
+  // ✅ you use details.html not detail.html
+  // home button keeps project
   document.getElementById("homeBtn").href = `index.html?project=${encodeURIComponent(PROJECT)}`;
 
+  const ID = qs.get("id") || qs.get("hpId") || "";
+  const loadingEl = document.getElementById("loading");
+
   const priceFmt = v => {
-    const n = Number(String(v).replace(/,/g,""));
+    const n = Number(v);
     return (!n || n === 0) ? "฿0" : "฿" + n.toLocaleString();
   };
 
   const statusClass = s => {
     s = String(s || "").toLowerCase();
-    if (s.includes("available")) return ["bg-emerald-100","text-emerald-700"];
-    if (s.includes("under")) return ["bg-sky-100","text-sky-700"];
-    if (s.includes("reserved")) return ["bg-amber-100","text-amber-700"];
-    if (s.includes("sold")) return ["bg-rose-100","text-rose-700"];
-    return ["bg-slate-100","text-slate-700"];
+    if (s.includes("available")) return "bg-emerald-100 text-emerald-700";
+    if (s.includes("under")) return "bg-sky-100 text-sky-700";
+    if (s.includes("reserved")) return "bg-amber-100 text-amber-700";
+    if (s.includes("sold")) return "bg-rose-100 text-rose-700";
+    return "bg-slate-100 text-slate-700";
   };
 
-  // gallery state
   let images = [];
-  let activeIndex = 0;
+  let current = 0;
 
-  const heroImg = document.getElementById("heroImg");
-  const thumbStrip = document.getElementById("thumbStrip");
-  const countPill = document.getElementById("countPill");
-
-  function setHeroByIndex(i) {
-    if (!images.length) return;
-
-    activeIndex = (i + images.length) % images.length;
-    heroImg.src = images[activeIndex];
-
-    // highlight thumb
-    [...thumbStrip.querySelectorAll("img[data-idx]")].forEach(el => {
-      el.classList.toggle("thumb-active", Number(el.dataset.idx) === activeIndex);
-    });
-
-    // update count
-    countPill.textContent = `${images.length} Photos`;
+  function cleanUrl(u){
+    return String(u||"").trim();
   }
 
-  function buildThumbs() {
-    thumbStrip.innerHTML = images.map((url, idx) => `
-      <img src="${url}" class="thumb ${idx===0 ? "thumb-active" : ""}" data-idx="${idx}" alt="thumb-${idx}">
+  function setMain(i){
+    if(!images.length) return;
+    current = (i + images.length) % images.length;
+    const mainImg = document.getElementById("mainImg");
+    mainImg.src = images[current];
+    document.getElementById("counter").textContent = `${current+1} / ${images.length}`;
+
+    // thumbs active state
+    const thumbs = document.querySelectorAll("[data-thumb]");
+    thumbs.forEach((t, idx) => {
+      if(idx === current) t.classList.add("active");
+      else t.classList.remove("active");
+    });
+  }
+
+  function renderThumbs(){
+    const row = document.getElementById("thumbRow");
+    row.innerHTML = images.map((src, idx) => `
+      <button data-thumb class="thumb ${idx===0 ? "active" : ""} shrink-0 w-[92px] h-[64px] md:w-[120px] md:h-[78px] bg-slate-200"
+              title="Photo ${idx+1}">
+        <img src="${src}" alt="thumb ${idx+1}">
+      </button>
     `).join("");
 
-    thumbStrip.querySelectorAll("img[data-idx]").forEach(img => {
-      img.addEventListener("click", () => setHeroByIndex(Number(img.dataset.idx)));
+    const thumbs = row.querySelectorAll("[data-thumb]");
+    thumbs.forEach((btn, idx) => {
+      btn.addEventListener("click", () => setMain(idx));
     });
   }
 
-  // hero arrow buttons
-  document.getElementById("heroPrev").addEventListener("click", (e) => {
-    e.stopPropagation();
-    setHeroByIndex(activeIndex - 1);
-  });
-  document.getElementById("heroNext").addEventListener("click", (e) => {
-    e.stopPropagation();
-    setHeroByIndex(activeIndex + 1);
-  });
+  // ✅ No popup: no modal code at all.
+  // Add swipe support (mobile)
+  function enableSwipe(){
+    const img = document.getElementById("mainImg");
+    let x0 = null;
 
-  // swipe on hero (mobile)
-  let sx = 0, sy = 0;
-  heroImg.addEventListener("touchstart", (e) => {
-    sx = e.touches[0].clientX;
-    sy = e.touches[0].clientY;
-  }, {passive:true});
+    img.addEventListener("touchstart", (e) => {
+      x0 = e.touches[0].clientX;
+    }, {passive:true});
 
-  heroImg.addEventListener("touchend", (e) => {
-    const dx = e.changedTouches[0].clientX - sx;
-    const dy = e.changedTouches[0].clientY - sy;
-    if (Math.abs(dx) > 35 && Math.abs(dx) > Math.abs(dy)) {
-      if (dx < 0) setHeroByIndex(activeIndex + 1);
-      else setHeroByIndex(activeIndex - 1);
-    }
-  }, {passive:true});
-
-  // lightbox
-  const lightbox = document.getElementById("lightbox");
-  const lbImg = document.getElementById("lbImg");
-  const lbCount = document.getElementById("lbCount");
-
-  function openLB() {
-    if (!images.length) return;
-    lightbox.classList.remove("hidden");
-    lbImg.src = images[activeIndex];
-    lbCount.textContent = `${activeIndex+1} / ${images.length}`;
-  }
-  function closeLB() {
-    lightbox.classList.add("hidden");
-  }
-  function lbSet(i) {
-    if (!images.length) return;
-    activeIndex = (i + images.length) % images.length;
-    lbImg.src = images[activeIndex];
-    lbCount.textContent = `${activeIndex+1} / ${images.length}`;
-    // sync hero too
-    heroImg.src = images[activeIndex];
-    [...thumbStrip.querySelectorAll("img[data-idx]")].forEach(el => {
-      el.classList.toggle("thumb-active", Number(el.dataset.idx) === activeIndex);
-    });
+    img.addEventListener("touchend", (e) => {
+      if(x0 === null) return;
+      const x1 = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0].clientX : x0;
+      const dx = x1 - x0;
+      x0 = null;
+      if(Math.abs(dx) < 40) return;
+      if(dx > 0) setMain(current - 1);
+      else setMain(current + 1);
+    }, {passive:true});
   }
 
-  heroImg.addEventListener("click", openLB);
-  document.getElementById("lbClose").addEventListener("click", closeLB);
-  lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLB(); });
+  async function load(){
+    try{
+      if(!ID){
+        loadingEl.textContent = "Missing id (e.g. ?id=HP-Z001&project=Project_0)";
+        return;
+      }
 
-  document.getElementById("lbPrev").addEventListener("click", (e) => { e.stopPropagation(); lbSet(activeIndex - 1); });
-  document.getElementById("lbNext").addEventListener("click", (e) => { e.stopPropagation(); lbSet(activeIndex + 1); });
+      // API expects hpId
+      const res = await fetch(`${API_URL}?mode=getUnitDetail&project=${encodeURIComponent(PROJECT)}&hpId=${encodeURIComponent(ID)}&t=${Date.now()}`);
+      const d = await res.json();
 
-  // keyboard (desktop)
-  document.addEventListener("keydown", (e) => {
-    const lbOpen = !lightbox.classList.contains("hidden");
-    if (e.key === "Escape" && lbOpen) closeLB();
-    if (e.key === "ArrowLeft") {
-      if (lbOpen) lbSet(activeIndex - 1); else setHeroByIndex(activeIndex - 1);
+      if(d.error){
+        loadingEl.textContent = d.error;
+        return;
+      }
+
+      // Title
+      const plot = d.Plot || d.plot || "-";
+      document.getElementById("title").textContent = `UNIT ${ID} • ${plot}`;
+      document.getElementById("subtitle").textContent = `Project: ${PROJECT} • Unit: ${ID}`;
+
+      // Pills
+      document.getElementById("plotPill").textContent = plot;
+
+      const status = d.Status || d.status || "-";
+      const statusPill = document.getElementById("statusPill");
+      statusPill.className = `absolute top-4 right-4 px-4 py-2 rounded-full font-semibold ${statusClass(status)}`;
+      statusPill.textContent = status;
+
+      document.getElementById("badgePill").textContent = `Badge: ${d.Badge || d.badge || "-"}`;
+      document.getElementById("sysPill").textContent = `System: ${d.System_Status || d.sysStatus || "-"}`;
+      document.getElementById("updated").textContent = `Updated: ${d.Last_Updated || d.lastUpdated || "-"}`;
+
+      // Price and facts
+      document.getElementById("price").textContent = priceFmt(d.Price || d.price || 0);
+      document.getElementById("bed").textContent = d.Bedrooms || d.bedrooms || "-";
+      document.getElementById("bath").textContent = d.Bathrooms || d.bathrooms || "-";
+      document.getElementById("landSqw").textContent = d.Land_Area_sq_w || d.landSqw || "-";
+      document.getElementById("livingSqm").textContent = d.Living_Area_sq_m || d.livingSqm || "-";
+      document.getElementById("desc").textContent = d.Description || d.description || "-";
+
+      // Links
+      const map = d.Map_Link || d.map_link || d.map || "";
+      const fb  = d.FBLink || d.fblink || d.fb || "";
+      const mapBtn = document.getElementById("mapBtn");
+      const fbBtn  = document.getElementById("fbBtn");
+
+      mapBtn.href = map ? map : "#";
+      fbBtn.href  = fb ? fb : "#";
+      if(!map) mapBtn.classList.add("opacity-40","pointer-events-none");
+      if(!fb)  fbBtn.classList.add("opacity-40","pointer-events-none");
+
+      // Images: Thumbnail + Image_List
+      const thumb = cleanUrl(d.Thumbnail_Image || d.thumbnail || "");
+      const listRaw = cleanUrl(d.Image_List || d.image_list || "");
+      const list = listRaw ? listRaw.split(",").map(s => cleanUrl(s)).filter(Boolean) : [];
+
+      // Ensure unique and keep order
+      const seen = new Set();
+      images = [];
+      [thumb, ...list].forEach(u => {
+        if(u && !seen.has(u)){
+          seen.add(u);
+          images.push(u);
+        }
+      });
+
+      if(!images.length){
+        images = ["https://via.placeholder.com/1200x700?text=No+Image"];
+      }
+
+      renderThumbs();
+      setMain(0);
+      enableSwipe();
+
+      // Arrows
+      document.getElementById("prevBtn").addEventListener("click", () => setMain(current - 1));
+      document.getElementById("nextBtn").addEventListener("click", () => setMain(current + 1));
+
+      // Keyboard (desktop)
+      window.addEventListener("keydown", (e) => {
+        if(e.key === "ArrowLeft") setMain(current - 1);
+        if(e.key === "ArrowRight") setMain(current + 1);
+      });
+
+      loadingEl.style.display = "none";
+
+    }catch(err){
+      loadingEl.textContent = "Load error: " + err;
     }
-    if (e.key === "ArrowRight") {
-      if (lbOpen) lbSet(activeIndex + 1); else setHeroByIndex(activeIndex + 1);
-    }
-  });
-
-  // swipe on lightbox
-  let lbsx = 0, lbsy = 0;
-  lbImg.addEventListener("touchstart", (e) => {
-    lbsx = e.touches[0].clientX;
-    lbsy = e.touches[0].clientY;
-  }, {passive:true});
-  lbImg.addEventListener("touchend", (e) => {
-    const dx = e.changedTouches[0].clientX - lbsx;
-    const dy = e.changedTouches[0].clientY - lbsy;
-    if (Math.abs(dx) > 35 && Math.abs(dx) > Math.abs(dy)) {
-      if (dx < 0) lbSet(activeIndex + 1);
-      else lbSet(activeIndex - 1);
-    }
-  }, {passive:true});
-
-  async function loadDetail() {
-    if (!HP_ID) {
-      document.getElementById("loading").textContent = "Missing id (HP_ID). Example: details.html?id=HP-Z001&project=Project_0";
-      return;
-    }
-
-    const url = `${API_URL}?mode=getUnitDetail&project=${encodeURIComponent(PROJECT)}&hpId=${encodeURIComponent(HP_ID)}&t=${Date.now()}`;
-    const res = await fetch(url);
-    const d = await res.json();
-
-    if (d.error) {
-      document.getElementById("loading").textContent = d.error;
-      return;
-    }
-
-    // show UI
-    document.getElementById("loading").classList.add("hidden");
-    document.getElementById("content").classList.remove("hidden");
-
-    const plot = d.Plot || d.plot || "-";
-    const status = d.Status || d.status || "-";
-    const badge = d.Badge || d.badge || "-";
-    const sys = d.System_Status || d.sysStatus || "-";
-    const updated = d.Last_Updated || d.lastUpdated || "-";
-
-    // title / subtitle
-    document.getElementById("titleLine").textContent = `UNIT ${HP_ID} • ${plot}`;
-    document.getElementById("subLine").textContent = `Project: ${PROJECT} • Unit: ${HP_ID}`;
-
-    // pills
-    document.getElementById("plotPill").textContent = plot;
-
-    const [bgc, txc] = statusClass(status);
-    const sp = document.getElementById("statusPill");
-    sp.className = `absolute top-4 right-4 chip shadow ${bgc} ${txc}`;
-    sp.textContent = status;
-
-    document.getElementById("badgePill").textContent = `Badge: ${badge}`;
-    document.getElementById("sysPill").textContent = `System: ${sys}`;
-    document.getElementById("updatedPill").textContent = `Updated: ${updated}`;
-
-    // price & features
-    document.getElementById("price").textContent = priceFmt(d.Price || d.price || 0);
-    document.getElementById("bed").textContent = d.Bedrooms || d.bedrooms || "-";
-    document.getElementById("bath").textContent = d.Bathrooms || d.bathrooms || "-";
-    document.getElementById("land").textContent = d.Land_Area_sq_w || d.landSqw || "-";
-    document.getElementById("living").textContent = d.Living_Area_sq_m || d.livingSqm || "-";
-
-    // description
-    document.getElementById("descBlock").textContent = d.Description || d.description || "—";
-
-    // map / vr
-    const map = d.Map_Link || d.map_link || d.Map || "";
-    const vr = d.Virtual_Tour || d.virtual_tour || "";
-
-    const mapBtn = document.getElementById("mapBtn");
-    if (map) { mapBtn.href = map; mapBtn.target = "_blank"; mapBtn.classList.remove("hidden"); }
-
-    const vrBtn = document.getElementById("vrBtn");
-    if (vr) { vrBtn.href = vr; vrBtn.target = "_blank"; vrBtn.classList.remove("hidden"); }
-
-    // images
-    const thumb = d.Thumbnail_Image || d.thumbnail || "";
-    const list = d.Image_List || d.image_list || "";
-    const arr = String(list || "").split(",").map(s => s.trim()).filter(Boolean);
-
-    // ให้ thumbnail อยู่หน้าแรกเสมอ ถ้ามี
-    images = [];
-    if (thumb) images.push(thumb);
-    arr.forEach(u => { if (u && !images.includes(u)) images.push(u); });
-
-    // fallback: ถ้าไม่มีรูปเลย
-    if (!images.length) {
-      images = ["https://via.placeholder.com/1600x900?text=No+Image"];
-    }
-
-    // build thumbs + set hero
-    buildThumbs();
-    setHeroByIndex(0);
   }
 
-  loadDetail();
+  load();
 </script>
 </body>
 </html>
