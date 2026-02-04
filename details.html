@@ -1,728 +1,547 @@
 <!doctype html>
-<html lang="en">
+<html lang="th">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <title>Smart Properties System - Details</title>
-
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600;700;800&family=Noto+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>smart properties system</title>
 
   <style>
     :root{
-      --line-bg:#8fb2d6;
-      --line-card:rgba(255,255,255,.92);
-      --line-border:rgba(17,24,39,.08);
-      --line-text:#111827;
-      --line-sub:#6b7280;
-      --line-dark:#0f172a;
-      --line-green:#06C755;
-      --radius-xl:28px;
-      --radius-lg:20px;
+      --line-bg:#8CABD9;
+      --cloud-a:rgba(244,252,255,.26);
+      --cloud-b:rgba(244,252,255,.18);
+      --chat-green:#9DE593;
+      --line-green:#06c755;
+      --text:#111827;
+      --muted:rgba(17,24,39,.55);
+      --card:#ffffff;
+      --stroke:rgba(0,0,0,.06);
+      --shadow:0 10px 26px rgba(0,0,0,.10);
+      --radius:30px;
+      --font:"LINE Seed Sans TH","LINE Seed Sans","Noto Sans Thai","Noto Sans Thai UI",
+              system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
     }
-
-    html,body{height:100%;}
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
-      font-family:"Noto Sans Thai","Noto Sans",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
-      color:var(--line-text);
-      background: var(--line-bg);
-      background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22900%22%20height%3D%221600%22%20viewBox%3D%220%200%20900%201600%22%3E%0A%20%20%3Crect%20width%3D%22900%22%20height%3D%221600%22%20fill%3D%22%238fb2d6%22/%3E%0A%20%20%3Cg%20fill%3D%22white%22%20opacity%3D%220.18%22%3E%0A%20%20%20%20%3Cellipse%20cx%3D%22170%22%20cy%3D%22380%22%20rx%3D%22190%22%20ry%3D%22110%22/%3E%0A%20%20%20%20%3Cellipse%20cx%3D%22320%22%20cy%3D%22365%22%20rx%3D%22160%22%20ry%3D%2295%22/%3E%0A%20%20%20%20%3Cellipse%20cx%3D%22280%22%20cy%3D%22420%22%20rx%3D%22210%22%20ry%3D%22120%22/%3E%0A%0A%20%20%20%20%3Cellipse%20cx%3D%22680%22%20cy%3D%22820%22%20rx%3D%22210%22%20ry%3D%22120%22/%3E%0A%20%20%20%20%3Cellipse%20cx%3D%22560%22%20cy%3D%22830%22%20rx%3D%22170%22%20ry%3D%22100%22/%3E%0A%20%20%20%20%3Cellipse%20cx%3D%22640%22%20cy%3D%22890%22%20rx%3D%22240%22%20ry%3D%22130%22/%3E%0A%0A%20%20%20%20%3Cellipse%20cx%3D%22260%22%20cy%3D%221180%22%20rx%3D%22230%22%20ry%3D%22130%22/%3E%0A%20%20%20%20%3Cellipse%20cx%3D%22420%22%20cy%3D%221160%22%20rx%3D%22190%22%20ry%3D%22115%22/%3E%0A%20%20%20%20%3Cellipse%20cx%3D%22380%22%20cy%3D%221220%22%20rx%3D%22260%22%20ry%3D%22145%22/%3E%0A%20%20%3C/g%3E%0A%3C/svg%3E");
-      background-size: cover;
-      background-attachment: fixed;
+      margin:0;
+      font-family:var(--font);
+      background:var(--line-bg);
+      color:var(--text);
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(120px 80px at 12% 22%, var(--cloud-a) 0 60%, transparent 61%),
+        radial-gradient(160px 100px at 30% 24%, var(--cloud-a) 0 58%, transparent 59%),
+        radial-gradient(130px 90px at 50% 20%, var(--cloud-b) 0 56%, transparent 57%),
+        radial-gradient(200px 120px at 85% 28%, var(--cloud-a) 0 56%, transparent 57%),
+        radial-gradient(160px 110px at 78% 62%, var(--cloud-b) 0 56%, transparent 57%),
+        radial-gradient(220px 140px at 18% 78%, var(--cloud-a) 0 56%, transparent 57%),
+        radial-gradient(180px 120px at 62% 86%, var(--cloud-b) 0 56%, transparent 57%);
     }
 
-    .safe-top{ padding-top: max(14px, env(safe-area-inset-top)); }
-    .safe-bottom{ padding-bottom: max(18px, env(safe-area-inset-bottom)); }
-
-    .topbar{
-      position: sticky;
-      top: 0;
-      z-index: 30;
-      background: rgba(255,255,255,.96);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--line-border);
+    .wrap{
+      max-width:420px;
+      margin:0 auto;
+      padding:14px 14px 22px;
     }
-    .topbar-inner{
-      max-width: 920px;
-      margin: 0 auto;
-      padding: 14px 16px;
+
+    /* top (เหมือนหน้าเปิดเว็บใน LINE) */
+    .topRow{
       display:flex;
       align-items:center;
-      gap:12px;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
     }
-    .icon-btn{
-      width: 44px; height: 44px;
-      border-radius: 16px;
-      display:grid; place-items:center;
-      border: 1px solid var(--line-border);
-      background: white;
-      box-shadow: 0 10px 22px rgba(15,23,42,.08);
-      flex: 0 0 auto;
-    }
-    .icon{
-      width: 22px; height: 22px;
-      fill: none;
-      stroke: #111827;
-      stroke-width: 2.2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      opacity: .95;
-    }
-    .titlebar{
-      min-width:0;
+    .leftGroup{display:flex; align-items:center; gap:10px}
+    .iconBtn{
+      width:44px; height:44px;
+      border:none;
+      border-radius:18px;
+      background:rgba(255,255,255,.85);
+      box-shadow:0 10px 26px rgba(0,0,0,.10);
       display:flex;
-      flex-direction:column;
-      gap:2px;
-    }
-    .t1{ font-weight: 1000; font-size: 18px; line-height:1.1; }
-    .t2{ color: var(--line-sub); font-weight: 700; font-size: 12.5px; }
-
-    .card{
-      background: var(--line-card);
-      border: 1px solid var(--line-border);
-      border-radius: var(--radius-xl);
-      box-shadow: 0 18px 44px rgba(15,23,42,.12);
-      overflow:hidden;
-    }
-
-    .chip{
-      display:inline-flex;
       align-items:center;
       justify-content:center;
-      gap:8px;
-      padding: 10px 14px;
-      border-radius: 999px;
-      font-size: 13px;
-      font-weight: 900;
-      border: 1px solid rgba(17,24,39,.08);
-      background: rgba(255,255,255,.78);
-      backdrop-filter: blur(8px);
-      max-width: 100%;
+      cursor:pointer;
+      user-select:none;
     }
-    .chip.badge{ color:#6d28d9; background: rgba(237,233,254,.9); }
-    .chip.sys{ color:#334155; background: rgba(241,245,249,.9); }
-    .chip.plot{ color:#0f172a; background: rgba(255,255,255,.86); }
-
-    .status-pill{
-      margin-left:auto;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 1000;
-      border: 1px solid rgba(17,24,39,.10);
-      background: rgba(255,255,255,.85);
-      white-space: nowrap;
+    .iconBtn:active{transform:translateY(1px)}
+    .headText{min-width:0}
+    .hTitle{
+      margin:0;
+      font-size:14px;
+      font-weight:900;
+      letter-spacing:.2px;
+      color:rgba(17,24,39,.95);
     }
-    .st-available{ color:#047857; background: rgba(209,250,229,.92); }
-    .st-sold{ color:#b91c1c; background: rgba(254,226,226,.92); }
-    .st-pending{ color:#92400e; background: rgba(254,243,199,.92); }
-    .st-other{ color:#334155; background: rgba(241,245,249,.92); }
-
-    .price{
-      font-weight: 1000;
-      letter-spacing: -0.8px;
-      line-height: 1.05;
-      font-size: clamp(44px, 8vw, 72px); /* never overflow on mobile */
-      word-break: break-word;
-    }
-
-    .meta{
-      margin-top: 14px;
-      display:flex;
-      flex-wrap: wrap;
-      gap:10px;
-      font-weight: 900;
-      font-size: 13px;
-      color: rgba(17,24,39,.85);
-    }
-    .meta span{
-      padding: 10px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.72);
-      border: 1px solid rgba(17,24,39,.08);
-      display:inline-flex; align-items:center; gap:8px;
-    }
-
-    .btn{
-      width: 100%;
-      padding: 14px 16px;
-      border-radius: 18px;
-      font-weight: 1000;
-      letter-spacing: .08em;
-      font-size: 13px;
-      border: 1px solid rgba(17,24,39,.10);
-      box-shadow: 0 14px 28px rgba(15,23,42,.10);
-    }
-    .btn-dark{ background: var(--line-dark); color: white; border-color: rgba(255,255,255,.06); }
-    .btn-ghost{ background: rgba(255,255,255,.92); color: rgba(15,23,42,.78); }
-
-    .gallery{
-      position: relative;
-      border-radius: 26px;
+    .hSub{
+      margin:3px 0 0;
+      font-size:12px;
+      font-weight:800;
+      color:rgba(17,24,39,.55);
       overflow:hidden;
-      background:#e5e7eb;
+      white-space:nowrap;
+      text-overflow:ellipsis;
     }
-    .gallery img{ width:100%; height: 240px; object-fit: cover; display:block; }
-    @media(min-width:640px){ .gallery img{ height: 310px; } }
 
-    .navbtn{
+    .panel{
+      background:rgba(255,255,255,.94);
+      border:1px solid var(--stroke);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
+    }
+
+    /* slider */
+    .slider{
+      position:relative;
+      border-radius:26px;
+      overflow:hidden;
+      background:rgba(0,0,0,.06);
+      aspect-ratio: 16 / 10;
+    }
+    .slider img{
+      width:100%; height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    /* ปุ่มลูกศรแบบใส (ไม่มีกรอบขาว) */
+    .navBtn{
       position:absolute;
       top:50%;
-      transform: translateY(-50%);
-      width: 54px; height: 54px;
-      border-radius: 18px;
-      display:grid; place-items:center;
-      background: rgba(17,24,39,.38);
-      backdrop-filter: blur(6px);
-      border: 1px solid rgba(255,255,255,.22);
-      color:white;
-      font-size: 26px;
-      font-weight: 900;
+      transform:translateY(-50%);
+      width:48px; height:48px;
+      border:none;
+      border-radius:18px;
+      cursor:pointer;
+      background:rgba(17,24,39,.22);
+      backdrop-filter:blur(10px);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
-    .navbtn:active{ transform: translateY(-50%) scale(.98); }
-    .navbtn.left{ left: 12px; }
-    .navbtn.right{ right: 12px; }
+    .navBtn:active{transform:translateY(-50%) scale(.98)}
+    .navPrev{left:10px}
+    .navNext{right:10px}
 
     .counter{
       position:absolute;
-      right: 12px;
-      top: 12px;
-      padding: 10px 14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.80);
-      border: 1px solid rgba(17,24,39,.08);
-      font-weight: 1000;
+      right:10px; top:10px;
+      background:rgba(255,255,255,.88);
+      color:rgba(17,24,39,.95);
+      border:1px solid rgba(0,0,0,.06);
+      padding:8px 12px;
+      font-weight:900;
+      border-radius:18px;
+      font-size:14px;
     }
 
-    .thumb-row{
+    .thumbs{
       display:flex;
-      gap: 10px;
+      gap:10px;
+      margin-top:10px;
       overflow:auto;
-      padding-bottom: 4px;
-      scrollbar-width: none;
+      padding-bottom:2px;
     }
-    .thumb-row::-webkit-scrollbar{ display:none; }
-    .thumb{
-      width: 106px;
-      height: 70px;
-      border-radius: 16px;
-      object-fit: cover;
-      border: 2px solid rgba(17,24,39,.10);
-      opacity: .92;
-      flex: 0 0 auto;
-      background:#e5e7eb;
-    }
-    .thumb.active{ border-color: rgba(15,23,42,.55); opacity: 1; }
-
-    .loading-wrap{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:12px;
-      padding: 16px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.85);
-      border: 1px solid rgba(17,24,39,.08);
-      font-weight: 900;
-      color: rgba(17,24,39,.75);
-    }
-    .dots::after{
-      content:"";
-      display:inline-block;
-      width: 1.3em;
-      text-align:left;
-      animation: dots 1.2s steps(4,end) infinite;
-    }
-    @keyframes dots{
-      0%{ content:""; }
-      25%{ content:"."; }
-      50%{ content:".."; }
-      75%{ content:"..."; }
-      100%{ content:""; }
-    }
-  </style>
-</head>
-
-<body class="safe-bottom">
-  <div class="topbar safe-top">
-    <div class="topbar-inner">
-      <button class="icon-btn" onclick="history.back()" aria-label="Back">
-        <svg class="icon" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>
-      </button>
-
-      <div class="titlebar">
-        <div id="title" class="t1 truncate">UNIT DETAILS</div>
-        <div id="subtitle" class="t2 truncate">Smart Properties System</div>
-      </div>
-
-      <div class="ml-auto flex items-center gap-2">
-        <button id="homeBtn" class="icon-btn" type="button" aria-label="Home">
-          <svg class="icon" viewBox="0 0 24 24"><path d="M3 10.5l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <main class="max-w-3xl mx-auto px-4 pt-4 pb-10">
-    <div id="pageLoading" class="loading-wrap"><span>Loading details</span><span class="dots"></span></div>
-    <div id="errBox" class="hidden mt-3 loading-wrap" style="border-color: rgba(220,38,38,.25); color: rgba(185,28,28,.95); background: rgba(254,226,226,.85);"></div>
-
-    <div id="app" class="hidden space-y-4">
-      <div id="galleryCard" class="card p-4">
-        <div class="gallery">
-          <img id="mainImg" src="" alt="property" />
-          <button id="prevBtn" class="navbtn left" type="button" aria-label="Previous">‹</button>
-          <button id="nextBtn" class="navbtn right" type="button" aria-label="Next">›</button>
-          <div id="counter" class="counter">1/1</div>
-        </div>
-
-        <div id="photoLoading" class="mt-3 loading-wrap"><span>Loading photos</span><span class="dots"></span></div>
-        <div id="thumbRow" class="thumb-row mt-3"></div>
-      </div>
-
-      <div class="card p-5">
-        <div class="flex items-center gap-2 flex-wrap">
-          <span id="badgePill" class="chip badge">Badge: -</span>
-          <span id="sysPill" class="chip sys">System: -</span>
-          <span id="plotPill" class="chip plot">Plot: -</span>
-          <div id="statusPill" class="status-pill st-other">Unknown</div>
-        </div>
-
-        <div class="mt-3 text-sm font-extrabold text-slate-600">Updated: <span id="updated">-</span></div>
-
-        <div id="price" class="price mt-6">฿-</div>
-
-        <div class="meta">
-          <span>🛏️ <span id="bed">-</span></span>
-          <span>🛁 <span id="bath">-</span></span>
-          <span>📐 <span id="landSqw">-</span> sq.w</span>
-          <span>🏠 <span id="livingSqm">-</span> m&sup2;</span>
-        </div>
-
-        <div id="desc" class="mt-5 text-[15px] leading-relaxed font-semibold text-slate-700 whitespace-pre-wrap"></div>
-
-        <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <button id="mapBtn" class="btn btn-dark" type="button">GOOGLE MAP</button>
-          <button id="fbBtn" class="btn btn-ghost" type="button">FACEBOOK</button>
-        </div>
-      </div>
-
-      <div id="errBox2" class="hidden"></div>
-    </div>
-  </main>
-
-  <div class="h-6"></div>
-
-<script>
-<script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-  <style>
-    body { font-family: 'Kanit', sans-serif; }
-    .price-text { font-size: clamp(2.2rem, 5vw, 3.3rem); font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; }
-    .muted { color:#94a3b8; }
-    .pill { padding:.55rem 1rem; border-radius:999px; font-weight:600; font-size:.95rem; }
-    .soft-card { border-radius: 2.2rem; overflow:hidden; box-shadow: 0 10px 30px rgba(2,6,23,.10); }
-    .thumb { border-radius: 1.25rem; overflow:hidden; border: 2px solid transparent; }
-    .thumb.active { border-color:#0f172a; }
-    .thumb img { width:100%; height:100%; object-fit:cover; display:block; }
-    img { -webkit-user-drag: none; }
-
-    /* ✅ Arrow buttons: subtle, no white background */
-    .nav-btn{
-      position:absolute;
-      top:50%;
-      transform: translateY(-50%);
-      width:56px; height:56px;
-      border-radius:999px;
-      display:flex; align-items:center; justify-content:center;
-      background: transparent;
-      border: none;
-      color: rgba(255,255,255,.85);
-      font-size: 44px;
-      line-height: 1;
+    .thumbMini{
+      width:84px; height:54px;
+      border-radius:14px;
+      overflow:hidden;
+      border:2px solid transparent;
+      background:rgba(0,0,0,.06);
+      flex:0 0 auto;
       cursor:pointer;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-      text-shadow: 0 6px 18px rgba(0,0,0,.40);
-      transition: transform .12s ease, opacity .12s ease;
-      opacity: .85;
     }
-    .nav-btn:hover{ opacity: 1; transform: translateY(-50%) scale(1.04); }
-    .nav-btn:active{ transform: translateY(-50%) scale(.96); }
-    .nav-left{ left: 14px; }
-    .nav-right{ right: 14px; }
+    .thumbMini img{width:100%; height:100%; object-fit:cover}
+    .thumbMini.active{border-color:rgba(17,24,39,.65)}
 
-    @media (max-width: 640px){
-      .nav-btn{ width:46px; height:46px; font-size:38px; }
-      .nav-left{ left: 10px; }
-      .nav-right{ right: 10px; }
+    .section{
+      margin-top:12px;
+    }
+    .pills{
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .pill{
+      border-radius:999px;
+      padding:10px 14px;
+      font-weight:900;
+      border:1px solid rgba(0,0,0,.06);
+      background:rgba(17,24,39,.06);
+      font-size:14px;
+    }
+    .pillBadge{background:rgba(157,229,147,.60)}
+    .pillSoft{background:rgba(17,24,39,.04)}
+    .bigPrice{
+      margin:14px 0 6px;
+      font-size:44px;
+      font-weight:1000;
+      letter-spacing:-.5px;
+      line-height:1;
+    }
+    .gridChips{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:10px;
+    }
+    .chip{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      padding:10px 14px;
+      font-weight:900;
+      border:1px solid rgba(0,0,0,.06);
+      background:rgba(17,24,39,.04);
+      font-size:16px;
     }
 
-    /* ✅ Skeleton shimmer */
-    .shimmer {
-      background: linear-gradient(90deg, #eef2f7 25%, #f8fafc 37%, #eef2f7 63%);
-      background-size: 400% 100%;
-      animation: shimmer 1.25s ease infinite;
+    .label{
+      margin-top:12px;
+      font-size:18px;
+      font-weight:1000;
+      letter-spacing:.2px;
+      color:rgba(17,24,39,.85);
     }
-    @keyframes shimmer {
-      0% { background-position: 100% 0; }
-      100% { background-position: 0 0; }
+    .desc{
+      margin-top:8px;
+      font-size:14px;
+      font-weight:800;
+      color:rgba(17,24,39,.65);
+      line-height:1.55;
+      white-space:pre-wrap;
     }
 
-    /* ✅ Photo loading overlay */
-    .photo-overlay {
-      position:absolute; inset:0;
-      display:flex; align-items:center; justify-content:center;
-      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.28), rgba(0,0,0,.18));
-      backdrop-filter: blur(6px);
-      color: rgba(255,255,255,.95);
-      font-weight:700;
-      letter-spacing:.04em;
+    .btnRow{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:12px;
     }
-    .photo-overlay.hidden{ display:none; }
-
-    /* ✅ Page loading overlay (clean, not "broken") */
-    .page-loading {
-      position: fixed; inset:0;
-      background: #f8fafc;
+    .actionBtn{
+      text-decoration:none;
       display:flex;
       align-items:center;
       justify-content:center;
-      z-index: 9999;
-      padding: 16px;
+      border-radius:18px;
+      padding:12px 12px;
+      font-weight:1000;
+      border:1px solid rgba(0,0,0,.06);
+      background:rgba(255,255,255,.92);
+      color:rgba(17,24,39,.90);
+      box-shadow:0 10px 26px rgba(0,0,0,.08);
     }
-    .page-loading.hidden{ display:none; }
+    .actionBtn.primary{
+      background:rgba(17,24,39,.18);
+      color:#fff;
+      border-color:rgba(255,255,255,.12);
+    }
+    .actionBtn.disabled{
+      opacity:.45;
+      pointer-events:none;
+    }
+
+    .skeleton{
+      background:linear-gradient(90deg, rgba(255,255,255,.55), rgba(255,255,255,.25), rgba(255,255,255,.55));
+      background-size:200% 100%;
+      animation:shimmer 1.2s infinite;
+      border-radius:16px;
+    }
+    @keyframes shimmer{0%{background-position:0% 0}100%{background-position:-200% 0}}
+    .skLine{height:14px; margin-top:10px}
+    .skBig{height:56px; margin-top:12px; border-radius:22px}
+
+    .errBox{
+      margin-top:12px;
+      background:rgba(255,255,255,.94);
+      border:1px solid rgba(255,255,255,.16);
+      border-radius:24px;
+      padding:14px;
+      box-shadow:var(--shadow);
+      font-weight:900;
+    }
   </style>
 </head>
 
-<body class="bg-slate-50">
+<body>
+  <div class="wrap">
 
-  <!-- ✅ FULL PAGE LOADING (shows first, looks clean) -->
-  <div id="pageLoading" class="page-loading">
-    <div class="w-full max-w-3xl">
-      <div class="flex items-start justify-between mb-6">
-        <div class="w-1/2">
-          <div class="h-10 w-48 rounded-2xl shimmer"></div>
-          <div class="h-5 w-64 mt-3 rounded-xl shimmer"></div>
-        </div>
-        <div class="flex gap-3">
-          <div class="w-12 h-12 rounded-2xl shimmer"></div>
-          <div class="w-12 h-12 rounded-2xl shimmer"></div>
-        </div>
-      </div>
-
-      <div class="soft-card bg-white">
-        <div class="h-[320px] sm:h-[420px] md:h-[520px] shimmer"></div>
-        <div class="p-6">
-          <div class="h-6 w-40 rounded-xl shimmer mb-3"></div>
-          <div class="h-6 w-56 rounded-xl shimmer"></div>
+    <div class="topRow">
+      <div class="leftGroup">
+        <button class="iconBtn" id="btnBack" aria-label="Back" title="Back">
+          <!-- chevron -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M15 18l-6-6 6-6" stroke="rgba(17,24,39,.9)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="headText">
+          <p class="hTitle" id="headTitle">UNIT DETAILS</p>
+          <p class="hSub" id="headSub">กำลังโหลด...</p>
         </div>
       </div>
 
-      <div class="mt-6 soft-card bg-white p-6">
-        <div class="h-12 w-56 rounded-2xl shimmer mb-4"></div>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div class="h-20 rounded-2xl shimmer"></div>
-          <div class="h-20 rounded-2xl shimmer"></div>
-          <div class="h-20 rounded-2xl shimmer"></div>
-          <div class="h-20 rounded-2xl shimmer"></div>
-        </div>
-      </div>
-
-      <div class="text-center muted mt-6 font-semibold">Loading data & photos…</div>
+      <button class="iconBtn" id="btnHome" aria-label="Home" title="Home">
+        <!-- home -->
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M3 11l9-8 9 8" stroke="rgba(17,24,39,.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M5 10.5V21h14V10.5" stroke="rgba(17,24,39,.9)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </div>
-  </div>
 
-  <!-- ✅ MAIN CONTENT (hidden until ready) -->
-  <div id="app" class="opacity-0 transition-opacity duration-200">
-    <div class="max-w-6xl mx-auto px-4 py-6 md:py-10">
+    <div class="panel" id="content">
 
-      <!-- Header -->
-      <div class="flex items-start justify-between gap-4 mb-6">
-        <div class="min-w-0">
-          <h1 id="title" class="text-3xl md:text-5xl font-extrabold italic text-slate-900 truncate">UNIT</h1>
-          <div id="subtitle" class="mt-2 text-base md:text-lg muted">Project: - • Unit: -</div>
-        </div>
-
-        <div class="flex gap-3 shrink-0">
-          <button onclick="history.back()"
-            class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white shadow flex items-center justify-center text-xl"
-            title="Back">←</button>
-
-          <a id="homeBtn" href="index.html"
-            class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-slate-900 text-white shadow flex items-center justify-center text-xl"
-            title="Home">⌂</a>
-        </div>
+      <!-- Skeleton while loading -->
+      <div id="sk">
+        <div class="skeleton" style="aspect-ratio:16/10; border-radius:26px;"></div>
+        <div class="skLine skeleton" style="width:55%"></div>
+        <div class="skLine skeleton" style="width:78%"></div>
+        <div class="skBig skeleton" style="width:95%"></div>
+        <div class="skLine skeleton" style="width:88%"></div>
+        <div class="skLine skeleton" style="width:66%"></div>
       </div>
 
-      <!-- Error card (if missing id) -->
-      <div id="errBox" class="hidden bg-white soft-card p-6 md:p-8">
-        <div class="text-2xl font-extrabold text-slate-900 mb-2">Missing Unit ID</div>
-        <div class="muted mb-4">กรุณาเปิดลิงก์แบบนี้: <b>details.html?id=HP-Z001&project=Project_0</b></div>
-        <a href="index.html" class="inline-block px-5 py-3 rounded-2xl bg-slate-900 text-white font-semibold">Back to Index</a>
-      </div>
+      <!-- Real UI -->
+      <div id="ui" style="display:none;">
+        <div class="slider" id="slider">
+          <img id="mainImg" alt="">
+          <button class="navBtn navPrev" id="prevBtn" aria-label="Prev">‹</button>
+          <button class="navBtn navNext" id="nextBtn" aria-label="Next">›</button>
+          <div class="counter" id="counter">1/1</div>
+        </div>
 
-      <!-- Main gallery card -->
-      <div id="galleryCard" class="soft-card bg-white">
-        <div class="relative">
-          <img id="mainImg" src="" alt="Property photo"
-               class="w-full h-[320px] sm:h-[420px] md:h-[520px] object-cover"
-               decoding="async" loading="eager">
+        <div class="thumbs" id="thumbs"></div>
 
-          <!-- ✅ overlay while photo loads (prevents "broken" feeling) -->
-          <div id="photoLoading" class="photo-overlay">
-            Loading photo…
+        <div class="section">
+          <div class="pills" id="pills"></div>
+
+          <div class="bigPrice" id="price">-</div>
+
+          <div class="gridChips" id="chips"></div>
+
+          <div class="label" id="title2">รายละเอียด</div>
+          <div class="desc" id="desc">-</div>
+
+          <div class="btnRow">
+            <a class="actionBtn primary" id="btnMap" href="#" target="_blank" rel="noopener">Google Map</a>
+            <a class="actionBtn disabled" id="btnFB" href="#" target="_blank" rel="noopener">Facebook</a>
           </div>
-
-          <div id="plotPill" class="absolute top-4 left-4 bg-white/90 px-4 py-2 rounded-full font-semibold">-</div>
-          <div id="statusPill" class="absolute top-4 right-4 px-4 py-2 rounded-full font-semibold">-</div>
-
-          <button id="prevBtn" class="nav-btn nav-left" aria-label="Previous photo" title="Previous">‹</button>
-          <button id="nextBtn" class="nav-btn nav-right" aria-label="Next photo" title="Next">›</button>
-
-          <div id="counter" class="absolute bottom-4 right-4 bg-white/90 px-4 py-2 rounded-full font-semibold">1 / 1</div>
-        </div>
-
-        <div class="p-4 md:p-6">
-          <div id="thumbRow" class="flex gap-3 overflow-x-auto pb-2"></div>
         </div>
       </div>
 
-      <!-- Info card -->
-      <div class="mt-6 bg-white soft-card p-6 md:p-8">
-        <div class="flex flex-wrap gap-3 mb-5">
-          <div id="badgePill" class="pill bg-violet-100 text-violet-700">Badge: -</div>
-          <div id="sysPill" class="pill bg-slate-100 text-slate-700">System: -</div>
-          <div id="updated" class="w-full muted font-semibold">Updated: -</div>
-        </div>
-
-        <div class="price-text text-slate-900" id="price">฿0</div>
-
-        <div class="mt-5 grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-          <div class="bg-slate-100 rounded-2xl p-4"><div class="muted">Bedrooms</div><div id="bed" class="text-lg font-semibold">-</div></div>
-          <div class="bg-slate-100 rounded-2xl p-4"><div class="muted">Bathrooms</div><div id="bath" class="text-lg font-semibold">-</div></div>
-          <div class="bg-slate-100 rounded-2xl p-4"><div class="muted">Land (sq.w)</div><div id="landSqw" class="text-lg font-semibold">-</div></div>
-          <div class="bg-slate-100 rounded-2xl p-4"><div class="muted">Living (sqm)</div><div id="livingSqm" class="text-lg font-semibold">-</div></div>
-        </div>
-
-        <div class="mt-6">
-          <div class="text-sm muted font-semibold mb-2">Description</div>
-          <div id="desc" class="text-slate-800 leading-relaxed">-</div>
-        </div>
-
-        <div class="mt-6 flex flex-wrap gap-3">
-          <a id="mapBtn" href="#" target="_blank"
-             class="px-5 py-3 rounded-2xl bg-slate-900 text-white font-semibold">OPEN MAP</a>
-          <a id="fbBtn" href="#" target="_blank"
-             class="px-5 py-3 rounded-2xl bg-blue-600 text-white font-semibold">FACEBOOK / LISTING</a>
-        </div>
-      </div>
-
-      <div id="loadingText" class="text-center text-slate-400 py-10 hidden">Loading...</div>
     </div>
+
+    <div id="err" style="display:none;" class="errBox"></div>
   </div>
 
 <script>
+  // ✅ API URL ของคุณ (ใส่ให้แล้ว)
   const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
 
+  const $ = (id)=>document.getElementById(id);
+
   const qs = new URLSearchParams(location.search);
-  const PROJECT = qs.get("project") || "Project_0";
-  const ID = qs.get("id") || qs.get("hpId") || "";
+  const hpId = qs.get("hpId") || qs.get("id") || "";
+  const project = qs.get("project") || "Project_0";
 
-  document.getElementById("homeBtn").href = `index.html?project=${encodeURIComponent(PROJECT)}`;
+  // navigation
+  $("btnBack").addEventListener("click", ()=>{
+    if(history.length > 1) history.back();
+    else location.href = "index.html?project=" + encodeURIComponent(project);
+  });
+  $("btnHome").addEventListener("click", ()=>{
+    location.href = "index.html?project=" + encodeURIComponent(project);
+  });
 
-  const pageLoading = document.getElementById("pageLoading");
-  const app = document.getElementById("app");
-  const errBox = document.getElementById("errBox");
-  const galleryCard = document.getElementById("galleryCard");
-  const photoLoading = document.getElementById("photoLoading");
+  function safeText(v){ return (v===undefined || v===null) ? "" : String(v); }
 
-  const priceFmt = v => {
-    const n = Number(v);
-    return (!n || n === 0) ? "฿0" : "฿" + n.toLocaleString();
-  };
+  function formatPriceTHB(n){
+    const raw = String(n ?? "").trim();
+    const num = Number(raw.replace(/,/g,""));
+    if(!raw) return "-";
+    if(!isFinite(num)) return raw;
+    return "฿" + num.toLocaleString("en-US");
+  }
 
-  const statusClass = s => {
-    s = String(s || "").toLowerCase();
-    if (s.includes("available")) return "bg-emerald-100 text-emerald-700";
-    if (s.includes("under")) return "bg-sky-100 text-sky-700";
-    if (s.includes("reserved")) return "bg-amber-100 text-amber-700";
-    if (s.includes("sold")) return "bg-rose-100 text-rose-700";
-    return "bg-slate-100 text-slate-700";
-  };
+  function parseGallery(detail){
+    // รองรับหลายชื่อคีย์ เพราะ normKey ใน Apps Script
+    const thumb = safeText(detail.Thumbnail_Image || detail.thumbnail_image || detail.thumbnail || "");
+    const listStr = safeText(detail.Image_List || detail.image_list || "");
+    const links = listStr.split(",").map(s=>s.trim()).filter(Boolean);
+    const all = [];
+    if(thumb) all.push(thumb);
+    for(const u of links){
+      if(!all.includes(u)) all.push(u);
+    }
+    return all.length ? all : (thumb ? [thumb] : []);
+  }
 
+  async function fetchDetail(){
+    if(!hpId) throw new Error("Missing id (hpId). ตัวอย่าง: details.html?id=HP-0003&project=Project_0");
+    const url = `${API_URL}?mode=getUnitDetail&project=${encodeURIComponent(project)}&hpId=${encodeURIComponent(hpId)}&t=${Date.now()}`;
+    const res = await fetch(url, { cache:"no-store" });
+    const data = await res.json();
+    if(data && data.error) throw new Error(data.error);
+    return data || {};
+  }
+
+  // slider state
   let images = [];
-  let current = 0;
-
-  function cleanUrl(u){ return String(u||"").trim(); }
-
-  function showApp(){
-    pageLoading.classList.add("hidden");
-    app.classList.remove("opacity-0");
-  }
-
-  function waitImageLoad(imgEl, src){
-    return new Promise((resolve) => {
-      let done = false;
-      const timer = setTimeout(() => { if(!done){ done = true; resolve(false); } }, 12000);
-
-      imgEl.onload = () => { if(done) return; done = true; clearTimeout(timer); resolve(true); };
-      imgEl.onerror = () => { if(done) return; done = true; clearTimeout(timer); resolve(false); };
-
-      imgEl.src = src;
-    });
-  }
+  let idx = 0;
 
   function setMain(i){
     if(!images.length) return;
-    current = (i + images.length) % images.length;
+    idx = (i + images.length) % images.length;
+    $("mainImg").src = images[idx];
+    $("counter").textContent = `${idx+1}/${images.length}`;
 
-    // show photo overlay until loaded
-    photoLoading.classList.remove("hidden");
-    const mainImg = document.getElementById("mainImg");
-    waitImageLoad(mainImg, images[current]).then(() => {
-      photoLoading.classList.add("hidden");
-    });
-
-    document.getElementById("counter").textContent = `${current+1} / ${images.length}`;
-
-    const thumbs = document.querySelectorAll("[data-thumb]");
-    thumbs.forEach((t, idx) => idx === current ? t.classList.add("active") : t.classList.remove("active"));
+    // thumbs active
+    const nodes = $("thumbs").querySelectorAll(".thumbMini");
+    nodes.forEach((n, k)=> n.classList.toggle("active", k===idx));
   }
 
-  function renderThumbs(){
-    const row = document.getElementById("thumbRow");
-    row.innerHTML = images.map((src, idx) => `
-      <button data-thumb class="thumb ${idx===0 ? "active" : ""} shrink-0 w-[92px] h-[64px] md:w-[120px] md:h-[78px] bg-slate-200"
-              title="Photo ${idx+1}">
-        <img src="${src}" alt="thumb ${idx+1}" loading="lazy" decoding="async">
-      </button>
+  function buildThumbs(){
+    $("thumbs").innerHTML = images.map((src, i)=>`
+      <div class="thumbMini ${i===0?'active':''}" data-i="${i}">
+        <img src="${src}" alt="">
+      </div>
     `).join("");
 
-    row.querySelectorAll("[data-thumb]").forEach((btn, idx) => {
-      btn.addEventListener("click", () => setMain(idx));
-    });
+    $("thumbs").addEventListener("click",(e)=>{
+      const box = e.target.closest(".thumbMini");
+      if(!box) return;
+      const i = Number(box.getAttribute("data-i"));
+      setMain(i);
+    }, { once:false });
   }
 
-  function enableSwipe(){
-    const img = document.getElementById("mainImg");
-    let x0 = null;
+  function setLink(btn, url){
+    if(url && String(url).trim()){
+      btn.href = url;
+      btn.classList.remove("disabled");
+    }else{
+      btn.href = "#";
+      btn.classList.add("disabled");
+    }
+  }
 
-    img.addEventListener("touchstart", (e) => { x0 = e.touches[0].clientX; }, {passive:true});
-    img.addEventListener("touchend", (e) => {
-      if(x0 === null) return;
-      const x1 = e.changedTouches[0].clientX;
-      const dx = x1 - x0;
-      x0 = null;
-      if(Math.abs(dx) < 40) return;
-      if(dx > 0) setMain(current - 1);
-      else setMain(current + 1);
+  function render(detail){
+    // header
+    const plot = safeText(detail.Plot || detail.plot || "-");
+    const hp = safeText(detail.HP_ID || detail.hp_id || hpId);
+    const projectName = safeText(detail.Project_Name || detail.project_name || project);
+    $("headTitle").textContent = "UNIT DETAILS";
+    $("headSub").textContent = `${projectName} • ${hp} • ${plot}`;
+
+    // images
+    images = parseGallery(detail);
+    if(!images.length){
+      images = ["data:image/svg+xml;charset=utf-8," + encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="750">
+          <rect width="100%" height="100%" fill="#e5e7eb"/>
+          <text x="50%" y="50%" font-family="Arial" font-size="48" fill="#6b7280" text-anchor="middle">No Image</text>
+        </svg>
+      `)];
+    }
+    buildThumbs();
+    setMain(0);
+
+    // pills
+    const badge = safeText(detail.Badge || detail.badge || "");
+    const status = safeText(detail.Status || detail.status || "");
+    const sysStatus = safeText(detail.System_Status || detail.system_status || "");
+    const last = safeText(detail.Last_Updated || detail.last_updated || "");
+
+    const pills = [];
+    if(badge) pills.push(`<div class="pill pillBadge">Badge: ${badge}</div>`);
+    if(sysStatus) pills.push(`<div class="pill pillSoft">System: ${sysStatus}</div>`);
+    if(last) pills.push(`<div class="pill pillSoft">Updated: ${last}</div>`);
+    if(status) pills.push(`<div class="pill pillSoft">Status: ${status}</div>`);
+    $("pills").innerHTML = pills.join("");
+
+    // price
+    $("price").textContent = formatPriceTHB(detail.Price || detail.price || "");
+
+    // chips
+    const b = safeText(detail.Bedrooms || detail.bedrooms || "-");
+    const ba = safeText(detail.Bathrooms || detail.bathrooms || "-");
+    const land = safeText(detail.Land_Area_sq_w || detail.land_area_sq_w || "-");
+    const living = safeText(detail.Living_Area_sq_m || detail.living_area_sq_m || "-");
+
+    $("chips").innerHTML = `
+      <div class="chip">🛏 ${b}</div>
+      <div class="chip">🛁 ${ba}</div>
+      <div class="chip">📐 ${land} sq.w</div>
+      <div class="chip">🏠 ${living} sqm</div>
+    `;
+
+    // desc
+    const desc = safeText(detail.Description || detail.description || "");
+    $("desc").textContent = desc || "-";
+
+    // links
+    setLink($("btnMap"), safeText(detail.Map_Link || detail.map_link || ""));
+    setLink($("btnFB"), safeText(detail.FBLink || detail.fblink || detail.fb_link || ""));
+
+    // show ui
+    $("sk").style.display = "none";
+    $("ui").style.display = "block";
+  }
+
+  // slider controls
+  $("prevBtn").addEventListener("click", ()=> setMain(idx-1));
+  $("nextBtn").addEventListener("click", ()=> setMain(idx+1));
+
+  // swipe (มือถือ)
+  (function enableSwipe(){
+    const el = $("slider");
+    let startX = 0, startY = 0, moved = false;
+
+    el.addEventListener("touchstart",(e)=>{
+      const t = e.touches[0];
+      startX = t.clientX; startY = t.clientY; moved=false;
     }, {passive:true});
-  }
 
-  async function load(){
-    // ✅ if missing id, show clean error page
-    if(!ID){
-      galleryCard.classList.add("hidden");
-      errBox.classList.remove("hidden");
-      showApp();
-      return;
-    }
+    el.addEventListener("touchmove",(e)=>{
+      const t = e.touches[0];
+      const dx = t.clientX - startX;
+      const dy = t.clientY - startY;
+      if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 18) moved=true;
+    }, {passive:true});
 
+    el.addEventListener("touchend",(e)=>{
+      if(!moved) return;
+      // ใช้ endX จาก changedTouches
+      const t = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0] : null;
+      if(!t) return;
+      const dx = t.clientX - startX;
+      if(dx > 24) setMain(idx-1);
+      else if(dx < -24) setMain(idx+1);
+    }, {passive:true});
+  })();
+
+  // init
+  (async function init(){
     try{
-      const res = await fetch(`${API_URL}?mode=getUnitDetail&project=${encodeURIComponent(PROJECT)}&hpId=${encodeURIComponent(ID)}&t=${Date.now()}`);
-      const d = await res.json();
-
-      if(d.error){
-        galleryCard.classList.add("hidden");
-        errBox.classList.remove("hidden");
-        showApp();
-        return;
-      }
-
-      const plot = d.Plot || d.plot || "-";
-      document.getElementById("title").textContent = `UNIT ${ID} • ${plot}`;
-      document.getElementById("subtitle").textContent = `Project: ${PROJECT} • Unit: ${ID}`;
-
-      document.getElementById("plotPill").textContent = plot;
-
-      const status = d.Status || d.status || "-";
-      const statusPill = document.getElementById("statusPill");
-      statusPill.className = `absolute top-4 right-4 px-4 py-2 rounded-full font-semibold ${statusClass(status)}`;
-      statusPill.textContent = status;
-
-      document.getElementById("badgePill").textContent = `Badge: ${d.Badge || d.badge || "-"}`;
-      document.getElementById("sysPill").textContent = `System: ${d.System_Status || d.sysStatus || "-"}`;
-      document.getElementById("updated").textContent = `Updated: ${d.Last_Updated || d.lastUpdated || "-"}`;
-
-      document.getElementById("price").textContent = priceFmt(d.Price || d.price || 0);
-      document.getElementById("bed").textContent = d.Bedrooms || d.bedrooms || "-";
-      document.getElementById("bath").textContent = d.Bathrooms || d.bathrooms || "-";
-      document.getElementById("landSqw").textContent = d.Land_Area_sq_w || d.landSqw || "-";
-      document.getElementById("livingSqm").textContent = d.Living_Area_sq_m || d.livingSqm || "-";
-      document.getElementById("desc").textContent = d.Description || d.description || "-";
-
-      const map = d.Map_Link || "";
-      const fb  = d.FBLink || "";
-      const mapBtn = document.getElementById("mapBtn");
-      const fbBtn  = document.getElementById("fbBtn");
-      mapBtn.href = map ? map : "#";
-      fbBtn.href  = fb ? fb : "#";
-      if(!map) mapBtn.classList.add("opacity-40","pointer-events-none");
-      if(!fb)  fbBtn.classList.add("opacity-40","pointer-events-none");
-
-      // Images
-      const thumb = cleanUrl(d.Thumbnail_Image || d.thumbnail || "");
-      const listRaw = cleanUrl(d.Image_List || d.image_list || "");
-      const list = listRaw ? listRaw.split(",").map(s => cleanUrl(s)).filter(Boolean) : [];
-
-      const seen = new Set();
-      images = [];
-      [thumb, ...list].forEach(u => {
-        if(u && !seen.has(u)){
-          seen.add(u);
-          images.push(u);
-        }
-      });
-
-      if(!images.length){
-        images = ["https://via.placeholder.com/1200x700?text=No+Image"];
-      }
-
-      renderThumbs();
-      enableSwipe();
-
-      // ✅ show app immediately (not broken), but keep photo overlay until first image loads
-      showApp();
-
-      // First image
-      setMain(0);
-
-      // Arrows
-      document.getElementById("prevBtn").addEventListener("click", () => setMain(current - 1));
-      document.getElementById("nextBtn").addEventListener("click", () => setMain(current + 1));
-
-      // Keyboard (desktop)
-      window.addEventListener("keydown", (e) => {
-        if(e.key === "ArrowLeft") setMain(current - 1);
-        if(e.key === "ArrowRight") setMain(current + 1);
-      });
-
+      const detail = await fetchDetail();
+      render(detail);
     }catch(err){
-      galleryCard.classList.add("hidden");
-      errBox.classList.remove("hidden");
-      showApp();
+      $("content").style.display = "none";
+      $("err").style.display = "block";
+      $("err").textContent = "Error: " + err.message;
+      $("headSub").textContent = "โหลดไม่สำเร็จ";
     }
-  }
+  })();
+</script>
 
-  load();
-</script>
-</body>
-</html>
-</script>
 </body>
 </html>
