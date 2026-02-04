@@ -7,13 +7,12 @@
 
   <link rel="preconnect" href="https://script.google.com">
   <link rel="preconnect" href="https://lh3.googleusercontent.com">
+
   <style>
     :root{
       --bg:#a8bdd6;
-      --card:#ffffff;
-      --muted:#6b7c93;
       --text:#0f172a;
-      --pill:#eef2f7;
+      --muted:#6b7c93;
       --green:#19b45b;
       --softGreen:#c9f3dd;
       --radius:22px;
@@ -26,69 +25,105 @@
       background: radial-gradient(ellipse at top, rgba(255,255,255,.25), rgba(255,255,255,0) 55%) , var(--bg);
       color:var(--text);
     }
-    .wrap{max-width:1200px; margin:0 auto; padding:16px 14px 28px;}
+    .wrap{max-width:1200px; margin:0 auto; padding:12px 12px 28px;}
+
+    /* ✅ (1) ทำหัวให้เล็กลง + เอาข้อความส่วนเกินออก */
     .topbar{
       display:flex; align-items:center; justify-content:space-between;
-      padding:14px 12px;
+      padding:10px 10px;
       border-radius: 18px;
       background: rgba(255,255,255,.18);
       backdrop-filter: blur(10px);
     }
-    .brand{display:flex; gap:12px; align-items:center;}
+    .brand{display:flex; gap:10px; align-items:center;}
     .logo{
-      width:44px; height:44px; border-radius:999px; background:rgba(255,255,255,.55);
-      display:grid; place-items:center; font-weight:800;
+      width:40px; height:40px; border-radius:999px; background:rgba(255,255,255,.55);
+      display:grid; place-items:center; font-weight:900;
       letter-spacing:.5px;
+      flex:0 0 auto;
     }
-    .titles h1{margin:0; font-size:28px; line-height:1.1; font-weight:900;}
-    .titles .sub{color:rgba(15,23,42,.7); font-weight:600; margin-top:2px;}
+    .titles{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      min-width: 0;
+    }
+    .titles .projectName{
+      margin:0;
+      font-size:18px;      /* เล็กลง */
+      line-height:1.1;
+      font-weight:1000;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .titles .hint{
+      margin:0;
+      font-size:12px;
+      font-weight:900;
+      color:rgba(15,23,42,.62);
+    }
+
+    /* ✅ (2) ไอคอนคน คลิกไป Gateway */
     .avatarBtn{
-      width:44px; height:44px; border-radius:999px;
+      width:40px; height:40px; border-radius:999px;
       border:0;
       background: rgba(255,255,255,.55);
       display:grid; place-items:center;
       cursor:pointer;
+      font-size:18px;
+      flex:0 0 auto;
     }
 
+    /* ✅ (3) ตัวเลือก 2 ช่องในบรรทัดเดียว + Pop-up */
     .controls{
-      margin-top:14px;
-      display:flex;
+      margin-top:10px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
       gap:10px;
-      align-items:center;
-      flex-wrap:wrap;
+      align-items:stretch;
     }
     .pill{
-      flex:1;
-      min-width:260px;
-      background: rgba(255,255,255,.35);
-      border:1px solid rgba(255,255,255,.45);
+      background: rgba(255,255,255,.38);
+      border:1px solid rgba(255,255,255,.52);
       border-radius: 18px;
-      padding:10px 12px;
+      padding:12px 12px;
       display:flex; align-items:center; justify-content:space-between;
       gap:10px;
-    }
-    .pill strong{font-size:22px}
-    .pill .meta{color:rgba(15,23,42,.6); font-weight:700}
-    .btn{
-      border:0;
-      border-radius: 18px;
-      padding:14px 18px;
-      font-weight:900;
       cursor:pointer;
+      min-height:48px;
     }
-    .btn.green{background: var(--green); color:#fff; box-shadow: var(--shadow);}
-    .select{
-      border:0;
-      border-radius: 18px;
-      padding:14px 14px;
+    .pill .left{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+    .pill .title{
+      font-size:15px;
+      font-weight:1000;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .pill .sub{
+      font-size:12px;
       font-weight:900;
-      background: rgba(255,255,255,.55);
-      cursor:pointer;
-      min-width:140px;
+      color:rgba(15,23,42,.62);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .pill .caret{
+      font-weight:1000;
+      color:rgba(15,23,42,.65);
     }
 
+    /* ✅ (4) เอาปุ่มโหลดรายการ/ล่าสุดออกแล้ว จึงไม่มีปุ่มด้านบน */
+
+    /* Grid */
     .grid{
-      margin-top:14px;
+      margin-top:12px;
       display:grid;
       grid-template-columns: 1fr;
       gap:14px;
@@ -98,31 +133,54 @@
     }
 
     .card{
-      background: rgba(255,255,255,.82);
+      background: rgba(255,255,255,.86);
       border:1px solid rgba(255,255,255,.65);
       border-radius: var(--radius);
       overflow:hidden;
       box-shadow: 0 10px 25px rgba(0,0,0,.10);
     }
-    .thumb{
+
+    /* ✅ (5) ภาพ: placeholder ก่อน แล้วค่อยโหลดจริง */
+    .thumbWrap{
       width:100%;
       aspect-ratio: 16 / 9;
       background: #e6edf6;
       display:block;
-      object-fit:cover;
+      position:relative;
+      overflow:hidden;
     }
+    .thumb{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      transform: scale(1.02);
+    }
+    .thumbBlur{
+      position:absolute; inset:0;
+      background: linear-gradient(90deg, rgba(255,255,255,.55), rgba(255,255,255,.25), rgba(255,255,255,.55));
+      background-size: 200% 100%;
+      animation: shimmer 1.1s infinite linear;
+    }
+    .thumbLoaded .thumbBlur{display:none;}
+
+    @keyframes shimmer{
+      0%{background-position: 200% 0;}
+      100%{background-position: -200% 0;}
+    }
+
     .cardBody{padding:14px 14px 12px;}
     .row1{display:flex; align-items:flex-end; justify-content:space-between; gap:10px;}
-    .hp{font-size:22px; font-weight:1000; letter-spacing:.4px;}
-    .price{font-size:20px; font-weight:1000;}
-    .iconsRow{display:flex; gap:10px; margin-top:10px;}
+    .hp{font-size:20px; font-weight:1000; letter-spacing:.4px;}
+    .price{font-size:18px; font-weight:1000;}
+    .iconsRow{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;}
     .miniPill{
       background: rgba(15,23,42,.06);
       border:1px solid rgba(15,23,42,.06);
-      padding:10px 12px;
+      padding:9px 11px;
       border-radius: 999px;
       display:flex; align-items:center; gap:8px;
-      font-weight:900;
+      font-weight:1000;
       min-width: 84px;
       justify-content:center;
     }
@@ -133,22 +191,11 @@
       border:0;
       border-radius: 16px;
       padding:14px 14px;
-      font-weight:1000;
+      font-weight:1100;
       cursor:pointer;
     }
 
-    /* loader */
-    .skeleton{
-      background: linear-gradient(90deg, rgba(255,255,255,.55), rgba(255,255,255,.25), rgba(255,255,255,.55));
-      background-size: 200% 100%;
-      animation: shimmer 1.2s infinite linear;
-    }
-    @keyframes shimmer{
-      0%{background-position: 200% 0;}
-      100%{background-position: -200% 0;}
-    }
-
-    /* Modal (แก้ pop up เลื่อนลงผิดปกติ) */
+    /* Modal */
     .modalBackdrop{
       position:fixed; inset:0;
       display:none;
@@ -176,16 +223,16 @@
       backdrop-filter: blur(10px);
       z-index:2;
     }
-    .modalHeader h2{margin:0; font-size:22px; font-weight:1000;}
+    .modalHeader h2{margin:0; font-size:18px; font-weight:1100;}
     .closeBtn{
       border:0; border-radius: 999px;
       padding:10px 14px;
-      font-weight:1000;
+      font-weight:1100;
       background:#f04a3a; color:#fff;
       cursor:pointer;
     }
-    .plotList{display:flex; flex-direction:column; gap:10px; padding:8px 6px 12px;}
-    .plotItem{
+    .list{display:flex; flex-direction:column; gap:10px; padding:8px 6px 12px;}
+    .item{
       display:flex; align-items:center; justify-content:space-between;
       gap:10px;
       padding:12px;
@@ -194,26 +241,24 @@
       border:1px solid rgba(15,23,42,.06);
       cursor:pointer;
     }
-    .plotLeft .plot{font-size:22px; font-weight:1000;}
-    .plotLeft .mini{display:flex; gap:10px; margin-top:6px; color:rgba(15,23,42,.75); font-weight:800; flex-wrap:wrap;}
-    .badge{
+    .item .left .title{font-size:18px; font-weight:1100;}
+    .item .left .sub{font-size:12px; font-weight:900; color:rgba(15,23,42,.62); margin-top:4px;}
+    .tag{
       padding:8px 12px;
       border-radius: 999px;
-      font-weight:1000;
+      font-weight:1100;
       background: rgba(25,180,91,.12);
       color: rgba(25,120,70,1);
       white-space:nowrap;
     }
-    .badge.sold{background: rgba(240,74,58,.12); color: rgba(180,45,35,1);}
-    .muted{color:rgba(15,23,42,.55); font-weight:800;}
-
+    .tag.gray{background: rgba(15,23,42,.08); color: rgba(15,23,42,.7);}
     .errorBox{
-      margin-top:14px;
-      padding:14px;
+      margin-top:10px;
+      padding:12px;
       border-radius: 18px;
       background: rgba(255,255,255,.7);
       border:1px solid rgba(255,255,255,.65);
-      font-weight:900;
+      font-weight:1000;
       color:#8b1d1d;
       display:none;
     }
@@ -225,51 +270,60 @@
       <div class="brand">
         <div class="logo">SP</div>
         <div class="titles">
-          <h1>smart properties system</h1>
-          <div class="sub">Catalog · รายการบ้านแบบ feel LINE</div>
+          <!-- ✅ (1) เหลือแค่ชื่อโปรเจกต์ -->
+          <p class="projectName" id="projectName">Project_0</p>
+          <p class="hint" id="countText">0 รายการ</p>
         </div>
       </div>
-      <!-- จุดที่ 1: ไอคอนคน (ไปหน้า Gateway/Edit) -->
-      <button class="avatarBtn" id="btnGateway" title="Gateway / Edit">
-        👤
-      </button>
+
+      <!-- ✅ (2) ไอคอนคนไป Gateway -->
+      <button class="avatarBtn" id="btnGateway" title="Gateway">👤</button>
     </div>
 
     <div class="controls">
+      <!-- ✅ (3) ช่องเลือก PLOT -->
       <div class="pill" id="plotPill" role="button" tabindex="0">
-        <div>
-          <strong id="projectName">Project_0</strong>
-          <span class="muted">· เลือก PLOT</span>
-          <span class="muted" id="countText">0 รายการ</span>
+        <div class="left">
+          <div class="title" id="plotTitle">เลือก PLOT</div>
+          <div class="sub" id="plotSub">Project_0</div>
         </div>
-        <div class="meta">▼</div>
+        <div class="caret">▼</div>
       </div>
 
-      <button class="btn green" id="btnLoad">โหลดรายการ</button>
-
-      <select class="select" id="sortSelect">
-        <option value="latest">ล่าสุด</option>
-        <option value="price_desc">ราคาสูง→ต่ำ</option>
-        <option value="price_asc">ราคาต่ำ→สูง</option>
-        <option value="plot_asc">Plot A→Z</option>
-      </select>
+      <!-- ✅ (3) ช่องเลือก Sort -->
+      <div class="pill" id="sortPill" role="button" tabindex="0">
+        <div class="left">
+          <div class="title" id="sortTitle">เรียงลำดับ</div>
+          <div class="sub" id="sortSub">ล่าสุด</div>
+        </div>
+        <div class="caret">▼</div>
+      </div>
     </div>
 
     <div class="errorBox" id="errBox"></div>
 
-    <div class="grid" id="grid">
-      <!-- cards -->
-    </div>
+    <div class="grid" id="grid"></div>
   </div>
 
   <!-- Plot Modal -->
   <div class="modalBackdrop" id="plotModal">
     <div class="modal">
       <div class="modalHeader">
-        <h2>Project Plots (Project_0)</h2>
+        <h2>เลือก PLOT (Project_0)</h2>
         <button class="closeBtn" id="closePlot">CLOSE</button>
       </div>
-      <div class="plotList" id="plotList"></div>
+      <div class="list" id="plotList"></div>
+    </div>
+  </div>
+
+  <!-- Sort Modal -->
+  <div class="modalBackdrop" id="sortModal">
+    <div class="modal">
+      <div class="modalHeader">
+        <h2>เรียงลำดับ</h2>
+        <button class="closeBtn" id="closeSort">CLOSE</button>
+      </div>
+      <div class="list" id="sortList"></div>
     </div>
   </div>
 
@@ -277,30 +331,26 @@
 /** =========================
  * CONFIG
  * ========================= */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
 const PROJECT = "Project_0";
 
-// เปลี่ยนได้ตามระบบคุณ
-const GATEWAY_URL = "https://agent-smart-system-interface.github.io/Master-List-Properties/"; // หรือหน้า gateway จริง
+/** ✅ แก้ตรงนี้เป็น Gateway ของคุณจริง */
+const GATEWAY_URL = "https://agent-smart-system-interface.github.io/Master-List-Properties/";
 
 /** =========================
- * JSONP Helper (แก้ CORS)
+ * JSONP (กัน CORS)
  * ========================= */
 function jsonp(url, timeoutMs = 20000){
   return new Promise((resolve, reject) => {
     const cb = "cb_" + Math.random().toString(36).slice(2);
     const script = document.createElement("script");
-    const timer = setTimeout(() => {
-      cleanup();
-      reject(new Error("timeout"));
-    }, timeoutMs);
+    const timer = setTimeout(() => { cleanup(); reject(new Error("timeout")); }, timeoutMs);
 
     function cleanup(){
       clearTimeout(timer);
       if (script.parentNode) script.parentNode.removeChild(script);
       try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
     }
-
     window[cb] = (data) => { cleanup(); resolve(data); };
 
     const sep = url.includes("?") ? "&" : "?";
@@ -311,7 +361,7 @@ function jsonp(url, timeoutMs = 20000){
 }
 
 /** =========================
- * Utilities
+ * Utils
  * ========================= */
 function toNumber(x){
   const s = String(x ?? "").replace(/,/g,"").trim();
@@ -325,10 +375,8 @@ function moneyTHB(x){
 function cleanDriveImage(url){
   const u = String(url || "").trim();
   if(!u) return "";
-  // already googleusercontent direct
   if (u.includes("lh3.googleusercontent.com/d/")) return u;
 
-  // drive file id patterns
   let id = "";
   const m1 = u.match(/\/d\/([a-zA-Z0-9_-]+)/);
   if (m1) id = m1[1];
@@ -336,20 +384,27 @@ function cleanDriveImage(url){
   if (!id && m2) id = m2[1];
   const m3 = u.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
   if (!id && m3) id = m3[1];
-
   if (id) return "https://lh3.googleusercontent.com/d/" + id;
+
   return u;
 }
 function firstImageFromList(imageList){
   const arr = String(imageList||"").split(",").map(s=>s.trim()).filter(Boolean);
   return arr.length ? cleanDriveImage(arr[0]) : "";
 }
+const NO_IMAGE = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(
+  `<svg xmlns='http://www.w3.org/2000/svg' width='800' height='450'>
+    <rect width='100%' height='100%' fill='#e6edf6'/>
+    <text x='50%' y='50%' text-anchor='middle' fill='#8aa0bb' font-size='32' font-family='Arial'>no image</text>
+  </svg>`
+);
 
 /** =========================
  * State
  * ========================= */
 let ALL = [];
 let FILTER_PLOT = "ALL";
+let SORT_MODE = "latest";
 
 /** =========================
  * DOM
@@ -357,34 +412,20 @@ let FILTER_PLOT = "ALL";
 const grid = document.getElementById("grid");
 const errBox = document.getElementById("errBox");
 const countText = document.getElementById("countText");
+
 const plotPill = document.getElementById("plotPill");
 const plotModal = document.getElementById("plotModal");
 const plotList = document.getElementById("plotList");
-const sortSelect = document.getElementById("sortSelect");
 
-document.getElementById("btnGateway").addEventListener("click", () => {
-  // ไปหน้า Gateway/Edit
-  window.location.href = GATEWAY_URL;
-});
+const sortPill = document.getElementById("sortPill");
+const sortModal = document.getElementById("sortModal");
+const sortList = document.getElementById("sortList");
 
-/** เปิด/ปิด modal */
-function openPlotModal(){
-  plotModal.classList.add("show");
-  document.body.style.overflow = "hidden";
-}
-function closePlotModal(){
-  plotModal.classList.remove("show");
-  document.body.style.overflow = "";
-}
-document.getElementById("closePlot").addEventListener("click", closePlotModal);
-plotModal.addEventListener("click", (e) => {
-  if(e.target === plotModal) closePlotModal();
-});
-plotPill.addEventListener("click", openPlotModal);
-plotPill.addEventListener("keydown", (e)=>{ if(e.key==="Enter") openPlotModal(); });
+const plotTitle = document.getElementById("plotTitle");
+const sortSub = document.getElementById("sortSub");
 
 /** =========================
- * Render
+ * Error
  * ========================= */
 function showError(msg){
   errBox.style.display = "block";
@@ -395,19 +436,84 @@ function hideError(){
   errBox.textContent = "";
 }
 
+/** =========================
+ * Gateway (2)
+ * ========================= */
+document.getElementById("btnGateway").addEventListener("click", () => {
+  window.location.href = GATEWAY_URL;
+});
+
+/** =========================
+ * Modal Controls
+ * ========================= */
+function openModal(el){
+  el.classList.add("show");
+  document.body.style.overflow = "hidden";
+}
+function closeModal(el){
+  el.classList.remove("show");
+  document.body.style.overflow = "";
+}
+
+document.getElementById("closePlot").addEventListener("click", ()=>closeModal(plotModal));
+plotModal.addEventListener("click", (e)=>{ if(e.target===plotModal) closeModal(plotModal); });
+
+document.getElementById("closeSort").addEventListener("click", ()=>closeModal(sortModal));
+sortModal.addEventListener("click", (e)=>{ if(e.target===sortModal) closeModal(sortModal); });
+
+plotPill.addEventListener("click", ()=>openModal(plotModal));
+plotPill.addEventListener("keydown", (e)=>{ if(e.key==="Enter") openModal(plotModal); });
+
+sortPill.addEventListener("click", ()=>openModal(sortModal));
+sortPill.addEventListener("keydown", (e)=>{ if(e.key==="Enter") openModal(sortModal); });
+
+/** =========================
+ * Sort
+ * ========================= */
+function sortLabel(mode){
+  if(mode==="latest") return "ล่าสุด";
+  if(mode==="price_desc") return "ราคาสูง → ต่ำ";
+  if(mode==="price_asc") return "ราคาต่ำ → สูง";
+  if(mode==="plot_asc") return "Plot A → Z";
+  return "ล่าสุด";
+}
 function sortUnits(arr){
-  const mode = sortSelect.value;
   const a = [...arr];
-  if(mode==="latest"){
+  if(SORT_MODE==="latest"){
     a.sort((x,y)=> String(y.lastUpdated||"").localeCompare(String(x.lastUpdated||"")));
-  }else if(mode==="price_desc"){
+  }else if(SORT_MODE==="price_desc"){
     a.sort((x,y)=> toNumber(y.price)-toNumber(x.price));
-  }else if(mode==="price_asc"){
+  }else if(SORT_MODE==="price_asc"){
     a.sort((x,y)=> toNumber(x.price)-toNumber(y.price));
-  }else if(mode==="plot_asc"){
+  }else if(SORT_MODE==="plot_asc"){
     a.sort((x,y)=> String(x.plot||"").localeCompare(String(y.plot||"")));
   }
   return a;
+}
+
+/** =========================
+ * (5) Lazy image loader
+ * ========================= */
+let io = null;
+function setupObserver(){
+  if(io) return;
+  io = new IntersectionObserver((entries)=>{
+    for(const e of entries){
+      if(!e.isIntersecting) continue;
+      const img = e.target;
+      const src = img.getAttribute("data-src");
+      if(src){
+        img.src = src;
+        img.removeAttribute("data-src");
+        img.decode?.().catch(()=>{});
+        img.addEventListener("load", ()=>{
+          const wrap = img.closest(".thumbWrap");
+          if(wrap) wrap.classList.add("thumbLoaded");
+        }, {once:true});
+      }
+      io.unobserve(img);
+    }
+  }, {rootMargin:"250px 0px"});
 }
 
 function renderGrid(){
@@ -416,29 +522,44 @@ function renderGrid(){
     : ALL.filter(u => String(u.plot||"").trim() === FILTER_PLOT);
 
   countText.textContent = `${list.length} รายการ`;
+  plotTitle.textContent = (FILTER_PLOT==="ALL") ? "เลือก PLOT (ทั้งหมด)" : `PLOT: ${FILTER_PLOT}`;
+  sortSub.textContent = sortLabel(SORT_MODE);
 
   const sorted = sortUnits(list);
 
   grid.innerHTML = "";
   if(!sorted.length){
-    grid.innerHTML = `<div class="card" style="padding:18px; border-radius:18px;">
-      <b>ไม่พบรายการ</b><div class="muted">ลองเลือก Plot อื่น หรือกดโหลดรายการ</div>
+    grid.innerHTML = `<div class="card" style="padding:16px; border-radius:18px;">
+      <b>ไม่พบรายการ</b><div style="color:rgba(15,23,42,.62); font-weight:900; margin-top:6px;">ลองเลือก PLOT อื่น</div>
     </div>`;
     return;
   }
 
+  setupObserver();
   const frag = document.createDocumentFragment();
+
   for(const u of sorted){
-    const img = cleanDriveImage(u.thumbnail) || firstImageFromList(u.imageList) || "";
+    const imgReal = cleanDriveImage(u.thumbnail) || firstImageFromList(u.imageList) || "";
+
     const card = document.createElement("div");
     card.className = "card";
 
-    const imgEl = document.createElement("img");
-    imgEl.className = "thumb";
-    imgEl.loading = "lazy";
-    imgEl.decoding = "async";
-    imgEl.alt = u.id || "no image";
-    imgEl.src = img || "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='800' height='450'><rect width='100%' height='100%' fill='#e6edf6'/><text x='50%' y='50%' text-anchor='middle' fill='#8aa0bb' font-size='32' font-family='Arial'>no image</text></svg>`);
+    const wrap = document.createElement("div");
+    wrap.className = "thumbWrap";
+
+    const img = document.createElement("img");
+    img.className = "thumb";
+    img.alt = u.id || "no image";
+    img.loading = "lazy";
+    img.decoding = "async";
+    img.src = NO_IMAGE;                 // placeholder
+    img.setAttribute("data-src", imgReal || NO_IMAGE);
+
+    const shimmer = document.createElement("div");
+    shimmer.className = "thumbBlur";
+
+    wrap.appendChild(img);
+    wrap.appendChild(shimmer);
 
     const body = document.createElement("div");
     body.className = "cardBody";
@@ -454,134 +575,142 @@ function renderGrid(){
       </div>
       <button class="btnDetail">ดูรายละเอียด</button>
     `;
-
     body.querySelector(".btnDetail").addEventListener("click", () => {
       window.location.href = `details.html?id=${encodeURIComponent(u.id)}&project=${encodeURIComponent(PROJECT)}`;
     });
 
-    card.appendChild(imgEl);
+    card.appendChild(wrap);
     card.appendChild(body);
     frag.appendChild(card);
+
+    if(io) io.observe(img);
   }
+
   grid.appendChild(frag);
 }
 
-/** Plot List Modal */
+/** =========================
+ * Plot Modal (3)
+ * ========================= */
 function renderPlotModal(){
-  const items = [];
-
-  // ✅ สร้างกลุ่ม Plot จาก Project_0 เท่านั้น
   const plots = new Map();
   for(const u of ALL){
     const plot = String(u.plot||"").trim() || "-";
     if(!plots.has(plot)) plots.set(plot, u);
   }
-
-  // ALL item
-  items.push({
-    plot:"ALL",
-    unit:null
-  });
-
-  const sortedPlots = [...plots.keys()].sort((a,b)=>a.localeCompare(b));
-  for(const p of sortedPlots){
-    items.push({ plot:p, unit: plots.get(p) });
-  }
+  const keys = [...plots.keys()].sort((a,b)=>a.localeCompare(b));
 
   plotList.innerHTML = "";
-  for(const it of items){
-    const div = document.createElement("div");
-    div.className = "plotItem";
-    if(it.plot==="ALL"){
-      div.innerHTML = `
-        <div class="plotLeft">
-          <div class="plot">ALL</div>
-          <div class="mini"><span class="muted">${ALL.length} units</span> <span class="muted">Project_0</span></div>
-        </div>
-        <div class="badge">เลือก</div>
-      `;
-    }else{
-      const u = it.unit || {};
-      const status = String(u.status||"").toLowerCase().includes("sold") ? "sold" : "";
-      const badgeText = u.status ? String(u.status) : "Available";
-      div.innerHTML = `
-        <div class="plotLeft">
-          <div class="plot">${it.plot}</div>
-          <div class="mini">
-            <span>🛏️ ${u.bedrooms||"-"} Bed</span>
-            <span>🚿 ${u.bathrooms||"-"} Bath</span>
-            <span>🏠 ${u.livingSqm||"-"} m²</span>
-          </div>
-        </div>
-        <div style="text-align:right">
-          <div style="font-weight:1000; font-size:18px;">${moneyTHB(u.price||0)}</div>
-          <div class="badge ${status}">${badgeText}</div>
-        </div>
-      `;
-    }
 
+  // ALL
+  {
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `
+      <div class="left">
+        <div class="title">ALL</div>
+        <div class="sub">${ALL.length} units · Project_0</div>
+      </div>
+      <div class="tag gray">เลือก</div>
+    `;
     div.addEventListener("click", ()=>{
-      FILTER_PLOT = it.plot;
-      closePlotModal();
+      FILTER_PLOT = "ALL";
+      closeModal(plotModal);
       renderGrid();
     });
+    plotList.appendChild(div);
+  }
 
+  for(const p of keys){
+    const u = plots.get(p) || {};
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `
+      <div class="left">
+        <div class="title">${p}</div>
+        <div class="sub">🛏️ ${u.bedrooms||"-"} · 🚿 ${u.bathrooms||"-"} · 🏠 ${u.livingSqm||"-"} m²</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-weight:1100">${moneyTHB(u.price||0)}</div>
+        <div class="tag">${u.status ? String(u.status) : "Available"}</div>
+      </div>
+    `;
+    div.addEventListener("click", ()=>{
+      FILTER_PLOT = p;
+      closeModal(plotModal);
+      renderGrid();
+    });
     plotList.appendChild(div);
   }
 }
 
-/** Skeleton */
-function renderSkeleton(){
-  grid.innerHTML = "";
-  for(let i=0;i<6;i++){
-    const s = document.createElement("div");
-    s.className = "card";
-    s.innerHTML = `
-      <div class="thumb skeleton"></div>
-      <div class="cardBody">
-        <div class="row1"><div class="hp skeleton" style="width:120px;height:22px;border-radius:10px;"></div>
-        <div class="price skeleton" style="width:120px;height:22px;border-radius:10px;"></div></div>
-        <div class="iconsRow">
-          <div class="miniPill skeleton" style="height:40px;"></div>
-          <div class="miniPill skeleton" style="height:40px;"></div>
-          <div class="miniPill skeleton" style="height:40px;"></div>
-        </div>
-        <div class="btnDetail skeleton" style="height:46px;"></div>
+/** =========================
+ * Sort Modal (3)
+ * ========================= */
+function renderSortModal(){
+  const options = [
+    {key:"latest", label:"ล่าสุด"},
+    {key:"price_desc", label:"ราคาสูง → ต่ำ"},
+    {key:"price_asc", label:"ราคาต่ำ → สูง"},
+    {key:"plot_asc", label:"Plot A → Z"},
+  ];
+  sortList.innerHTML = "";
+  for(const o of options){
+    const div = document.createElement("div");
+    div.className = "item";
+    div.innerHTML = `
+      <div class="left">
+        <div class="title">${o.label}</div>
+        <div class="sub">${o.key}</div>
       </div>
+      <div class="tag gray">เลือก</div>
     `;
-    grid.appendChild(s);
+    div.addEventListener("click", ()=>{
+      SORT_MODE = o.key;
+      closeModal(sortModal);
+      renderGrid();
+    });
+    sortList.appendChild(div);
   }
 }
 
 /** =========================
- * Data Load (เร็วขึ้น + cache)
+ * Load data (auto) (4)
  * ========================= */
 let _cache = null;
 let _cacheTime = 0;
 
-async function loadUnits(force=false){
+async function loadUnits(){
   hideError();
-  renderSkeleton();
 
   const now = Date.now();
-  if(!force && _cache && (now - _cacheTime) < 60_000){
+  if(_cache && (now - _cacheTime) < 60_000){
     ALL = _cache;
-    renderGrid();
     renderPlotModal();
+    renderSortModal();
+    renderGrid();
     return;
   }
 
   const url = `${SCRIPT_URL}?mode=getUnitList&project=${encodeURIComponent(PROJECT)}`;
-  const data = await jsonp(url).catch(err=>{
-    throw new Error("โหลดข้อมูลไม่สำเร็จ (ตรวจ Deploy Apps Script ให้เป็น Anyone และใช้ /exec) : " + err.message);
-  });
+
+  let data;
+  try{
+    data = await jsonp(url);
+  }catch(err){
+    showError("โหลดข้อมูลไม่สำเร็จ: ตรวจ Deploy Apps Script (Anyone) และ URL /exec");
+    return;
+  }
 
   if(data && data.error){
-    throw new Error(String(data.error));
+    showError("โหลดข้อมูลไม่สำเร็จ: " + data.error);
+    return;
   }
-  if(!Array.isArray(data)) throw new Error("รูปแบบข้อมูลไม่ถูกต้อง");
+  if(!Array.isArray(data)){
+    showError("ข้อมูลผิดรูปแบบ (ไม่ใช่ array)");
+    return;
+  }
 
-  // normalize
   ALL = data.map(u => ({
     ...u,
     thumbnail: cleanDriveImage(u.thumbnail),
@@ -591,15 +720,18 @@ async function loadUnits(force=false){
   _cache = ALL;
   _cacheTime = now;
 
-  renderGrid();
   renderPlotModal();
+  renderSortModal();
+
+  // render เบา ๆ ลดกระตุก
+  if("requestIdleCallback" in window){
+    requestIdleCallback(()=>renderGrid(), {timeout:800});
+  }else{
+    setTimeout(renderGrid, 0);
+  }
 }
 
-document.getElementById("btnLoad").addEventListener("click", ()=>loadUnits(true));
-sortSelect.addEventListener("change", renderGrid);
-
-/** Auto load on start */
-loadUnits(false).catch(err=>showError(err.message));
+loadUnits();
 </script>
 </body>
 </html>
