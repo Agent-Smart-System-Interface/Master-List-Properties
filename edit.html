@@ -2,401 +2,42 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>FULL PROPERTY EDITOR | MASTER SYSTEM</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
-
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Redirecting · Editor</title>
   <style>
-    body { font-family: 'Kanit', sans-serif; background:#f0f2f5; }
-    .tab-active { border-bottom:4px solid #1e293b; color:#1e293b; }
-    .input-card { background:white; padding:1.5rem; border-radius:1.5rem; box-shadow:0 4px 6px -1px rgba(0,0,0,.1); }
-    .field-label { font-size:.75rem; font-weight:700; color:#64748b; text-transform:uppercase; margin-bottom:.5rem; display:block; }
-    .field-input { width:100%; border:1px solid #e2e8f0; border-radius:.75rem; padding:.75rem; outline:none; transition:all .2s; }
-    .field-input:focus { border-color:#3b82f6; }
-    .field-input[disabled]{ background:#f8fafc; cursor:not-allowed; opacity:.9; }
+    body{font-family:system-ui;margin:0;display:grid;place-items:center;height:100vh;background:#f3f6fb;color:#0b1320}
+    .box{background:#fff;border:1px solid #e6edf7;border-radius:18px;padding:18px 16px;max-width:520px;width:92vw}
+    .h{font-weight:900;font-size:16px}
+    .p{margin-top:6px;color:#5b6b82;font-weight:700;font-size:13px;line-height:1.4}
+    .btn{margin-top:12px;width:100%;border:0;border-radius:14px;padding:12px 12px;font-weight:900;cursor:pointer;background:#0b1320;color:#fff}
   </style>
 </head>
-
-<body class="p-4 md:p-10 italic">
-  <div class="max-w-5xl mx-auto">
-
-    <div class="bg-slate-900 rounded-[2.5rem] p-6 sm:p-8 md:p-12 text-white flex justify-between items-center mb-8 shadow-2xl">
-      <div>
-        <p class="text-blue-400 font-bold uppercase tracking-widest text-xs mb-2">Master Database Editor</p>
-        <h1 id="displayId" class="text-3xl sm:text-4xl font-bold tracking-tighter italic">HP-XXXX</h1>
-      </div>
-      <button onclick="history.back()" class="bg-white/10 hover:bg-white/20 p-4 rounded-2xl transition-all" title="Close">✕</button>
-    </div>
-
-    <div class="flex gap-8 mb-6 border-b border-slate-200">
-      <button onclick="switchTab('photo')" id="btn-photo" class="pb-4 font-bold text-slate-400 tab-active">COVER &amp; GALLERY</button>
-      <button onclick="switchTab('info')" id="btn-info" class="pb-4 font-bold text-slate-400">PROPERTY DATA</button>
-    </div>
-
-    <!-- TAB: PHOTO -->
-    <div id="tab-photo" class="space-y-6">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="input-card">
-          <span class="field-label">Main Cover Thumbnail</span>
-          <div id="thumbPreview" class="h-48 bg-slate-50 rounded-2xl border-2 border-dashed flex items-center justify-center overflow-hidden mb-4">
-            <span class="text-4xl text-slate-200">🖼️</span>
-          </div>
-          <input type="file" id="file_thumb" class="hidden" accept="image/*" onchange="previewFile(this,'thumbPreview')">
-          <button onclick="document.getElementById('file_thumb').click()" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold uppercase text-xs">
-            Upload Cover
-          </button>
-        </div>
-
-        <div class="input-card">
-          <span class="field-label">Project Gallery Album</span>
-          <div id="galleryPreview" class="h-48 bg-slate-50 rounded-2xl border-2 border-dashed p-2 grid grid-cols-4 gap-2 overflow-y-auto mb-4">
-            <span class="text-4xl text-slate-200 col-span-4 self-center justify-self-center">🗂️</span>
-          </div>
-          <input type="file" id="file_gallery" class="hidden" multiple accept="image/*" onchange="previewGallery(this)">
-          <button onclick="document.getElementById('file_gallery').click()" class="w-full py-3 bg-purple-600 text-white rounded-xl font-bold uppercase text-xs">
-            Add Gallery Photos
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB: INFO -->
-    <div id="tab-info" class="hidden space-y-6">
-      <div class="input-card grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div><span class="field-label">Plot</span><input id="Plot" class="field-input"></div>
-        <div><span class="field-label">Type</span><input id="Type" class="field-input"></div>
-        <div><span class="field-label">Project Name</span><input id="Project_Name" class="field-input"></div>
-
-        <div><span class="field-label">Bedrooms</span><input type="number" id="Bedrooms" class="field-input"></div>
-        <div><span class="field-label">Bathrooms</span><input type="number" id="Bathrooms" class="field-input"></div>
-        <div><span class="field-label">Parking</span><input id="Parking" class="field-input"></div>
-
-        <div><span class="field-label">Land (sq.w)</span><input id="Land_Area_sq_w" class="field-input"></div>
-        <div><span class="field-label">Land (sq.m)</span><input id="Land_Area_sq_m" class="field-input"></div>
-        <div><span class="field-label">Living (sq.m)</span><input id="Living_Area_sq_m" class="field-input"></div>
-
-        <div><span class="field-label">Pool Size</span><input id="Pool_Size" class="field-input"></div>
-        <div><span class="field-label">Pool Depth</span><input id="Pool_Depth" class="field-input"></div>
-
-        <!-- ✅ Furnishing: Dropdown -->
-        <div>
-          <span class="field-label">Furnishing</span>
-          <select id="Furnishing" class="field-input">
-            <option value="">-- Select Furnishing --</option>
-            <option value="Ready to Move">Ready to Move</option>
-            <option value="Fully Furnished">Fully Furnished</option>
-            <option value="Partially Furnished">Partially Furnished</option>
-            <option value="Unfurnished">Unfurnished</option>
-          </select>
-        </div>
-
-        <div class="col-span-full"><span class="field-label">Address</span><input id="Address" class="field-input"></div>
-
-        <div class="bg-blue-50 p-4 rounded-xl">
-          <span class="field-label text-blue-600">Price (THB)</span>
-          <input id="Price" class="field-input border-blue-200 font-bold">
-        </div>
-
-        <div><span class="field-label">Price/SQM</span><input id="Price_SQM" class="field-input"></div>
-
-        <!-- ✅ Status: Dropdown -->
-        <div>
-          <span class="field-label">Status</span>
-          <select id="Status" class="field-input">
-            <option value="">-- Select Status --</option>
-            <option value="Available">Available</option>
-            <option value="Under Con">Under Con</option>
-            <option value="Reserved">Reserved</option>
-            <option value="Sold">Sold</option>
-          </select>
-        </div>
-
-        <!-- Badge: (ปล่อยเป็นช่องกรอกอิสระตามเดิม) -->
-        <div><span class="field-label">Badge</span><input id="Badge" class="field-input" placeholder="NEW / HOT / ..."></div>
-
-        <div class="col-span-full"><span class="field-label">Description</span><textarea id="Description" rows="4" class="field-input"></textarea></div>
-
-        <!-- ✅ District: Dropdown -->
-        <div>
-          <span class="field-label">District</span>
-          <select id="District" class="field-input">
-            <option value="">-- Select District --</option>
-            <option value="Hua Hin">Hua Hin</option>
-            <option value="Cha-am">Cha-am</option>
-            <option value="Pranburi">Pranburi</option>
-          </select>
-        </div>
-
-        <!-- ✅ Sub-District: Dropdown (เปลี่ยนอัตโนมัติ) -->
-        <div>
-          <span class="field-label">Sub-District</span>
-          <select id="SubDistrict" class="field-input" disabled>
-            <option value="">-- Select Sub-District --</option>
-          </select>
-        </div>
-
-        <div><span class="field-label">Commission</span><input id="Commission" class="field-input"></div>
-
-        <div class="col-span-full border-t pt-6"><span class="field-label">External Links</span></div>
-        <div><span class="field-label">FB Link</span><input id="FBLink" class="field-input"></div>
-        <div><span class="field-label">Map Link</span><input id="Map_Link" class="field-input"></div>
-        <div><span class="field-label">Virtual Tour</span><input id="Virtual_Tour" class="field-input"></div>
-
-        <div class="col-span-full">
-          <span class="field-label">System Status (Read Only)</span>
-          <input id="System_Status" class="field-input font-bold bg-slate-50" disabled value="Pending">
-          <p class="text-xs text-slate-400 mt-2 italic">
-            Offline = ไม่แสดงออนไลน์ | Pending = ยังไม่แสดงออนไลน์แต่แก้ไขข้อมูลได้ | Online = ข้อมูลพร้อมแล้ว (กำหนดโดย Master ใหญ่)
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <button onclick="updateData()" id="saveBtn"
-      class="w-full mt-10 py-6 sm:py-8 bg-slate-900 text-white rounded-[2.5rem] font-bold uppercase tracking-[0.4em] sm:tracking-[0.5em] shadow-2xl hover:bg-blue-600 transition-all active:scale-95">
-      Update Master Database
-    </button>
+<body>
+  <div class="box">
+    <div class="h">กำลังพาไปหน้า Editor…</div>
+    <div class="p" id="txt"></div>
+    <button class="btn" id="btn">ไปต่อทันที</button>
   </div>
 
-  <div id="successPopup" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-    <div class="bg-white rounded-[3rem] p-10 sm:p-12 text-center max-w-sm w-full shadow-2xl border-t-8 border-green-500">
-      <div class="w-24 h-24 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-inner">✓</div>
-      <h2 class="text-2xl font-bold mb-2">บันทึกสำเร็จ!</h2>
-      <p class="text-slate-400 text-sm mb-8 font-bold uppercase tracking-wider">
-        ข้อมูลและรูปภาพถูกซิงค์ไปยัง <br>Google Drive &amp; Sheets แล้ว
-      </p>
-      <button onclick="history.back()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-slate-800 transition-all">
-        กลับสู่หน้าหลัก
-      </button>
-    </div>
-  </div>
+<script>
+const qs = new URLSearchParams(location.search);
+const id = (qs.get("id") || "").trim();
+const project = (qs.get("project") || "Project_0").trim();
 
-  <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
-    const urlParams = new URLSearchParams(location.search);
-    const HP_ID = urlParams.get("id");
-    const PROJECT = urlParams.get("project");
+/* ✅ ใส่ URL editor เดิมของคุณตรงนี้ ถ้าต้องการให้ชี้ไปของจริง */
+const TARGET_EDIT_URL = ""; // เช่น "https://agent-smart-system-interface.github.io/Master-List-Properties-Editor/edit.html"
 
-    // ✅ ตำบลตาม District (แก้/เพิ่มได้ง่าย)
-    const SUBDISTRICTS_BY_DISTRICT = {
-      "Hua Hin": [
-        "Hua Hin",
-        "Nong Kae",
-        "Hin Lek Fai",
-        "Thap Tai",
-        "Huai Sat Yai",
-        "Bueng Nakhon",
-        "Nong Phlap"
-      ],
-      "Cha-am": [
-        "Cha-am",
-        "Bang Kao",
-        "Na Yang",
-        "Khao Yai",
-        "Nong Sala",
-        "Huai Sai Nuea",
-        "Rai Mai Phatthana"
-      ],
-      "Pranburi": [
-        "Pran Buri",
-        "Pak Nam Pran",
-        "Wang Phong",
-        "Nong Ta Taem",
-        "Nong Din Daeng",
-        "Khao Noi",
-        "Khao Chao"
-      ]
-    };
+const next = TARGET_EDIT_URL
+  ? `${TARGET_EDIT_URL}?id=${encodeURIComponent(id)}&project=${encodeURIComponent(project)}`
+  : `gateway.html?project=${encodeURIComponent(project)}`;
 
-    function switchTab(tab) {
-      document.getElementById("tab-photo").classList.toggle("hidden", tab !== "photo");
-      document.getElementById("tab-info").classList.toggle("hidden", tab !== "info");
-      document.getElementById("btn-photo").classList.toggle("tab-active", tab === "photo");
-      document.getElementById("btn-info").classList.toggle("tab-active", tab === "info");
-    }
+document.getElementById("txt").innerHTML =
+  `ID: <b>${id || "-"}</b><br>Project: <b>${project}</b>`;
 
-    // ✅ เติมรายการตำบลให้ SubDistrict เมื่อเลือก District
-    function setSubDistrictOptions(selectedDistrict, selectedSubDistrict = "") {
-      const subSel = document.getElementById("SubDistrict");
-      const list = SUBDISTRICTS_BY_DISTRICT[selectedDistrict] || [];
+document.getElementById("btn").addEventListener("click", ()=> location.href = next);
 
-      subSel.innerHTML = `<option value="">-- Select Sub-District --</option>`;
-
-      if (!selectedDistrict || list.length === 0) {
-        subSel.disabled = true;
-        subSel.value = "";
-        return;
-      }
-
-      list.forEach(name => {
-        const opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name;
-        subSel.appendChild(opt);
-      });
-
-      subSel.disabled = false;
-
-      if (selectedSubDistrict) {
-        subSel.value = selectedSubDistrict;
-        if (subSel.value !== selectedSubDistrict) {
-          // ถ้าค่าที่โหลดมาจากชีตไม่อยู่ใน list ให้เพิ่มแบบ custom เพื่อไม่ให้หาย
-          const custom = document.createElement("option");
-          custom.value = selectedSubDistrict;
-          custom.textContent = selectedSubDistrict + " (custom)";
-          subSel.appendChild(custom);
-          subSel.value = selectedSubDistrict;
-        }
-      }
-    }
-
-    // ✅ event: เมื่อเปลี่ยน District -> เปลี่ยน SubDistrict อัตโนมัติ
-    function bindDistrictChange() {
-      const districtSel = document.getElementById("District");
-      districtSel.addEventListener("change", () => {
-        setSubDistrictOptions(districtSel.value, "");
-      });
-    }
-
-    async function loadData() {
-      document.getElementById("displayId").innerText = HP_ID || "HP-XXXX";
-      if (!HP_ID || !PROJECT) return alert("Missing id/project in URL");
-
-      try {
-        const res = await fetch(`${API_URL}?mode=getUnitDetail&hpId=${encodeURIComponent(HP_ID)}&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`);
-        const data = await res.json();
-        if (data && data.error) throw new Error(data.error);
-
-        // เติมค่าตาม id
-        Object.keys(data || {}).forEach(k => {
-          const el = document.getElementById(k);
-          if (el) el.value = (data[k] ?? "");
-        });
-
-        // ✅ หลังโหลดค่า District/SubDistrict แล้ว จัดการ dropdown ตำบลให้ถูกต้อง
-        const districtVal = (data.District ?? "").toString().trim();
-        const subDistrictVal = (data.SubDistrict ?? "").toString().trim();
-        if (districtVal) {
-          document.getElementById("District").value = districtVal;
-          setSubDistrictOptions(districtVal, subDistrictVal);
-        } else {
-          setSubDistrictOptions("", "");
-        }
-
-        // normalize System_Status
-        const rawSys = (data.System_Status ?? "").toString().trim();
-        const mapSys = { "Live":"Online", "Online (Live)":"Online", "Online":"Online", "Pending":"Pending", "Offline":"Offline" };
-        const normalized = mapSys[rawSys] || (rawSys ? rawSys : "Pending");
-        document.getElementById("System_Status").value = normalized;
-
-        if (data.Thumbnail_Image) {
-          document.getElementById("thumbPreview").innerHTML = `<img src="${data.Thumbnail_Image}" class="w-full h-full object-cover">`;
-        }
-        if (data.Image_List) {
-          const list = String(data.Image_List).split(",").map(s => s.trim()).filter(Boolean);
-          const box = document.getElementById("galleryPreview");
-          box.innerHTML = list.length
-            ? list.map(u => `<img src="${u}" class="w-full h-12 object-cover rounded-lg">`).join("")
-            : `<span class="text-4xl text-slate-200 col-span-4 self-center justify-self-center">🗂️</span>`;
-        }
-      } catch (e) {
-        alert("Error loading data: " + e.message);
-      }
-    }
-
-    function previewFile(input, targetId) {
-      const file = input.files && input.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = e => document.getElementById(targetId).innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
-      reader.readAsDataURL(file);
-    }
-
-    function previewGallery(input) {
-      const box = document.getElementById("galleryPreview");
-      box.innerHTML = "";
-      Array.from(input.files || []).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = e => box.innerHTML += `<img src="${e.target.result}" class="w-full h-12 object-cover rounded-lg">`;
-        reader.readAsDataURL(file);
-      });
-    }
-
-    const toBase64 = file => new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve({ data: reader.result.split(",")[1], type: file.type });
-      reader.readAsDataURL(file);
-    });
-
-    async function updateData() {
-      const btn = document.getElementById("saveBtn");
-      btn.disabled = true;
-      const oldText = btn.innerText;
-      btn.innerText = "UPDATING DATABASE...";
-
-      const payload = {
-        mode: "updateUnit",
-        project: PROJECT,
-        hpId: HP_ID,
-
-        Plot: document.getElementById("Plot").value,
-        Type: document.getElementById("Type").value,
-        Address: document.getElementById("Address").value,
-        Project_Name: document.getElementById("Project_Name").value,
-        Bedrooms: document.getElementById("Bedrooms").value,
-        Bathrooms: document.getElementById("Bathrooms").value,
-        Parking: document.getElementById("Parking").value,
-
-        Land_Area_sq_w: document.getElementById("Land_Area_sq_w").value,
-        Land_Area_sq_m: document.getElementById("Land_Area_sq_m").value,
-        Living_Area_sq_m: document.getElementById("Living_Area_sq_m").value,
-
-        Pool_Size: document.getElementById("Pool_Size").value,
-        Pool_Depth: document.getElementById("Pool_Depth").value,
-
-        // ✅ dropdown values
-        Furnishing: document.getElementById("Furnishing").value,
-        Status: document.getElementById("Status").value,
-        District: document.getElementById("District").value,
-        SubDistrict: document.getElementById("SubDistrict").value,
-
-        Price: document.getElementById("Price").value,
-        Price_SQM: document.getElementById("Price_SQM").value,
-        Badge: document.getElementById("Badge").value,
-
-        Description: document.getElementById("Description").value,
-        FBLink: document.getElementById("FBLink").value,
-        Map_Link: document.getElementById("Map_Link").value,
-        Virtual_Tour: document.getElementById("Virtual_Tour").value,
-        Commission: document.getElementById("Commission").value,
-
-        file_thumb: null,
-        files_gallery: []
-      };
-
-      const thumb = document.getElementById("file_thumb").files[0];
-      if (thumb) payload.file_thumb = await toBase64(thumb);
-
-      const galleryFiles = document.getElementById("file_gallery").files;
-      for (const f of (galleryFiles || [])) payload.files_gallery.push(await toBase64(f));
-
-      try {
-        const res = await fetch(API_URL, { method:"POST", body: JSON.stringify(payload) });
-        const out = await res.json().catch(() => ({}));
-        if (!res.ok || out.error) throw new Error(out.error || "Save failed");
-        document.getElementById("successPopup").classList.remove("hidden");
-      } catch (e) {
-        alert("Save Failed: " + e.message);
-        btn.disabled = false;
-        btn.innerText = oldText;
-      }
-    }
-
-    window.onload = () => {
-      bindDistrictChange();   // ✅ สำคัญ: ผูก event dropdown
-      loadData();
-    };
-  </script>
+// auto redirect
+setTimeout(()=> location.href = next, 700);
+</script>
 </body>
 </html>
