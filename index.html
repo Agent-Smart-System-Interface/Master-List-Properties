@@ -79,6 +79,77 @@
     .goog-te-banner-frame.skiptranslate{ display:none !important; }
     body{ top:0 !important; }
     #google_translate_element{ position:absolute; left:-9999px; top:-9999px; height:1px; width:1px; overflow:hidden; }
+
+    /* ===== Project Plots Modal (ให้ใกล้เคียงตัวอย่าง) ===== */
+    .modal-backdrop{
+      position: fixed;
+      inset: 0;
+      background: rgba(15,23,42,.55);
+      display:none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 9999;
+    }
+    .modal{
+      width: min(860px, 100%);
+      max-height: 86vh;
+      overflow: hidden;
+      background: #fff;
+      border-radius: 28px;
+      box-shadow: 0 24px 70px rgba(2,6,23,.35);
+    }
+    .modal-inner{
+      max-height: 86vh;
+      overflow: auto;
+    }
+    .modal-inner::-webkit-scrollbar{ height: 10px; width: 10px; }
+    .modal-inner::-webkit-scrollbar-thumb{ background: rgba(2,6,23,.15); border-radius: 999px; }
+    .plot-row{
+      padding: 18px 18px;
+      border-top: 1px solid rgba(15,23,42,.08);
+    }
+    .plot-title{
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: .2px;
+    }
+    .plot-price{
+      font-size: 28px;
+      font-weight: 900;
+      color: #0f172a;
+    }
+    .mini{
+      display:flex;
+      align-items:center;
+      gap: 14px;
+      margin-top: 8px;
+      color: #64748b;
+      font-weight: 600;
+      flex-wrap: wrap;
+    }
+    .mini span{ display:flex; align-items:center; gap: 8px; }
+    .pill{
+      border-radius: 999px;
+      padding: 8px 16px;
+      font-weight: 800;
+      font-size: 14px;
+      margin-left: auto;
+    }
+    .btn-plots{
+      width: 100%;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 1.2rem;
+      padding: 14px 16px;
+      font-weight: 800;
+      color: #0f172a;
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 10px;
+    }
   </style>
 </head>
 
@@ -97,14 +168,13 @@
        title="Go to Gateway">👤</a>
   </div>
 
-  <!-- ✅ CONTROL BAR (จุด 1/2/3 ตามที่ต้องการ) -->
+  <!-- ✅ CONTROL BAR (จุด 1/2/3) -->
   <div class="ctrl-card mb-8">
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
       <!-- (1) FLAGS -->
       <div class="flex items-center gap-2">
         <div class="text-xs font-semibold text-slate-500 mr-1">LANG</div>
 
-        <!-- 6 flags -->
         <button class="flag-btn" title="Thai" data-lang="th"><img alt="TH" src="https://flagcdn.com/w40/th.png"></button>
         <button class="flag-btn" title="English" data-lang="en"><img alt="EN" src="https://flagcdn.com/w40/us.png"></button>
         <button class="flag-btn" title="German" data-lang="de"><img alt="DE" src="https://flagcdn.com/w40/de.png"></button>
@@ -113,18 +183,16 @@
         <button class="flag-btn" title="French" data-lang="fr"><img alt="FR" src="https://flagcdn.com/w40/fr.png"></button>
       </div>
 
-      <!-- (2) BEDROOM FILTER -->
+      <!-- (2) ✅ PROJECT PLOTS (แทน Bedrooms) -->
       <div>
-        <label class="text-xs font-semibold text-slate-500">BEDROOMS</label>
-        <select id="bedFilter"
-          class="mt-1 w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 font-semibold text-slate-900">
-          <option value="all">All bedrooms</option>
-          <option value="1">1 bedroom</option>
-          <option value="2">2 bedrooms</option>
-          <option value="3">3 bedrooms</option>
-          <option value="4">4 bedrooms</option>
-          <option value="5">5+ bedrooms</option>
-        </select>
+        <label class="text-xs font-semibold text-slate-500">PROJECT PLOTS</label>
+        <button id="btnOpenPlots" class="btn-plots mt-1" type="button">
+          <span class="flex items-center gap-2">
+            <span class="text-slate-400">📋</span>
+            <span>Open Project Plots</span>
+          </span>
+          <span class="text-slate-400">›</span>
+        </button>
       </div>
 
       <!-- (3) PRICE SORT -->
@@ -151,6 +219,28 @@
   <div id="google_translate_element"></div>
 </div>
 
+<!-- ✅ PROJECT PLOTS MODAL -->
+<div id="plotsBackdrop" class="modal-backdrop" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="p-6">
+      <div class="flex items-center justify-between gap-4">
+        <div class="text-2xl md:text-3xl font-extrabold text-slate-900">Project Plots</div>
+
+        <!-- CLOSE red button (ตามตัวอย่าง) -->
+        <button id="btnClosePlots"
+          class="px-8 py-3 rounded-full font-extrabold text-white"
+          style="background:#ef4444;">
+          CLOSE
+        </button>
+      </div>
+
+      <div class="mt-5 border-t border-slate-200"></div>
+    </div>
+
+    <div class="modal-inner" id="plotsList"></div>
+  </div>
+</div>
+
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
 const PROJECT = new URLSearchParams(location.search).get("project") || "Project_0";
@@ -158,8 +248,6 @@ const PROJECT = new URLSearchParams(location.search).get("project") || "Project_
 const elCards = document.getElementById("cards");
 const elLoading = document.getElementById("loading");
 const elError = document.getElementById("errorBox");
-
-const elBedFilter = document.getElementById("bedFilter");
 const elPriceSort = document.getElementById("priceSort");
 
 let RAW = []; // keep original data
@@ -175,6 +263,7 @@ const statusClass = s => {
   if (s.includes("under")) return "bg-sky-100 text-sky-700";
   if (s.includes("reserved")) return "bg-amber-100 text-amber-700";
   if (s.includes("sold")) return "bg-rose-100 text-rose-700";
+  if (s.includes("pending")) return "bg-amber-100 text-amber-700";
   return "bg-slate-100 text-slate-700";
 };
 
@@ -200,17 +289,7 @@ function renderSkeleton(n=6){
 function getFilteredSorted(){
   let list = [...RAW];
 
-  // Filter bedrooms
-  const bed = elBedFilter.value;
-  if (bed !== "all") {
-    if (bed === "5") {
-      list = list.filter(d => Number(d.bedrooms) >= 5);
-    } else {
-      list = list.filter(d => String(d.bedrooms) === bed);
-    }
-  }
-
-  // Sort price
+  // Sort price only (ลบ Bedrooms แล้ว)
   const sort = elPriceSort.value;
   if (sort === "asc") {
     list.sort((a,b) => Number(a.price||0) - Number(b.price||0));
@@ -255,7 +334,6 @@ function render(list){
         <div class="price-text text-slate-900">${priceFmt(d.price)}</div>
         <div class="unit-text">UNIT: ${d.id}</div>
 
-        <!-- ✅ ลิงก์แก้เป็น details.html + encode -->
         <a href="details.html?id=${encodeURIComponent(d.id)}&project=${encodeURIComponent(PROJECT)}"
            class="block mt-6 text-center bg-slate-900 text-white py-4 rounded-2xl text-sm tracking-widest hover:bg-slate-800 transition">
           VIEW FULL DETAILS
@@ -297,38 +375,129 @@ async function load(){
   }
 }
 
-elBedFilter.addEventListener("change", applyUI);
 elPriceSort.addEventListener("change", applyUI);
-
 load();
 
 /* ==============================
    GOOGLE TRANSLATE (Flags)
    ============================== */
 function setGoogleTranslateLang(lang){
-  // cookie method (works with translate element)
-  // format: /source/target
   document.cookie = `googtrans=/th/${lang};path=/`;
   document.cookie = `googtrans=/th/${lang};path=/;domain=${location.hostname}`;
   location.reload();
 }
-
-// bind flags
 document.querySelectorAll("[data-lang]").forEach(btn => {
   btn.addEventListener("click", () => setGoogleTranslateLang(btn.getAttribute("data-lang")));
 });
-
-// init translate element (kept hidden)
 function googleTranslateElementInit() {
   new google.translate.TranslateElement(
     { pageLanguage: 'th', autoDisplay: false },
     'google_translate_element'
   );
 }
+
+/* ==============================
+   PROJECT PLOTS MODAL
+   ============================== */
+const plotsBackdrop = document.getElementById("plotsBackdrop");
+const plotsList = document.getElementById("plotsList");
+const btnOpenPlots = document.getElementById("btnOpenPlots");
+const btnClosePlots = document.getElementById("btnClosePlots");
+
+function openPlots(){
+  buildPlotsList();
+  plotsBackdrop.style.display = "flex";
+  document.body.style.overflow = "hidden";
+}
+function closePlots(){
+  plotsBackdrop.style.display = "none";
+  document.body.style.overflow = "";
+}
+btnOpenPlots.addEventListener("click", openPlots);
+btnClosePlots.addEventListener("click", closePlots);
+plotsBackdrop.addEventListener("click", (e) => {
+  if (e.target === plotsBackdrop) closePlots();
+});
+
+// ESC ปิด
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && plotsBackdrop.style.display === "flex") closePlots();
+});
+
+function pickAreaForModal(d){
+  // ในตัวอย่างแสดง m² ตัวเดียว -> ใช้ livingSqm ก่อน ถ้าไม่มีค่อย fallback
+  const living = Number(d.livingSqm || 0);
+  if (living) return { label: `${living} m²` };
+  const landSqm = Number(d.landSqm || 0);
+  if (landSqm) return { label: `${landSqm} m²` };
+  return { label: `- m²` };
+}
+
+function buildPlotsList(){
+  // ทำรายการ "พอร์ตทั้งหมด" จากข้อมูลที่มี
+  // ถ้ามี plot ซ้ำหลายยูนิต -> เลือกตัวที่ "ล่าสุด/หรือราคาสูงสุด" (ให้ดูมีค่ามากสุดในพอร์ต)
+  const map = new Map();
+
+  RAW.forEach(d => {
+    const key = String(d.plot || "").trim();
+    if(!key) return;
+
+    if(!map.has(key)){
+      map.set(key, d);
+    } else {
+      // เลือกตัวที่ราคามากกว่าไว้โชว์ (คุณสามารถเปลี่ยนเงื่อนไขได้ภายหลัง)
+      const cur = map.get(key);
+      if(Number(d.price||0) > Number(cur.price||0)) map.set(key, d);
+    }
+  });
+
+  const arr = Array.from(map.values());
+
+  // เรียงตาม plot (M16, M17...) ให้ใกล้เคียงตัวอย่าง
+  arr.sort((a,b) => String(a.plot||"").localeCompare(String(b.plot||""), undefined, {numeric:true, sensitivity:"base"}));
+
+  plotsList.innerHTML = arr.map(d => {
+    const area = pickAreaForModal(d).label;
+
+    // status pill color ให้เหมือนแนวเดิม
+    let pillClass = "bg-slate-100 text-slate-700";
+    const s = String(d.status||"").toLowerCase();
+    if (s.includes("available")) pillClass = "bg-emerald-100 text-emerald-700";
+    else if (s.includes("sold")) pillClass = "bg-rose-100 text-rose-700";
+    else if (s.includes("pending")) pillClass = "bg-amber-100 text-amber-700";
+    else if (s.includes("under")) pillClass = "bg-sky-100 text-sky-700";
+    else if (s.includes("reserved")) pillClass = "bg-amber-100 text-amber-700";
+
+    return `
+      <div class="plot-row">
+        <div class="flex items-start justify-between gap-4">
+          <div class="plot-title">${d.plot || "-"}</div>
+          <div class="plot-price">${priceFmt(d.price)}</div>
+        </div>
+
+        <div class="mini">
+          <span>🛏 ${d.bedrooms ?? "-"} Bed</span>
+          <span>🚿 ${d.bathrooms ?? "-"} Bath</span>
+          <span>🏠 ${area}</span>
+
+          <span class="pill ${pillClass}">
+            ${d.status || "-"}
+          </span>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  if(!arr.length){
+    plotsList.innerHTML = `
+      <div class="p-8 text-center text-slate-500">
+        ไม่พบข้อมูล Plot ในโครงการนี้
+      </div>
+    `;
+  }
+}
 </script>
 
-<!-- load google translate -->
 <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
 </body>
 </html>
