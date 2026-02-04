@@ -1,683 +1,414 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="th">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>smart properties system • details</title>
-
-  <!--
-    ✅ Fix: Gallery not showing even though images exist
-    What changed (no logic breaking):
-    - Robust parsing of Image_List (comma/newline/pipe/semicolon/JSON array)
-    - Normalize Google Drive share links to direct-view URLs
-    - Remove dependency on via.placeholder (often blocked in in-app browsers)
-    - Safe fallbacks + lazy-loading
-  -->
-
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>smart properties system · details</title>
+  <meta name="theme-color" content="#6f86a6" />
   <style>
     :root{
-      --line-blue:#8FA9CC;
-      --line-blue-dark:#6f87ad;
-      --card:#ffffff;
-      --text:#0f172a;
-      --muted:#64748b;
-      --shadow: 0 14px 40px rgba(15, 23, 42, .12);
-      --radius:28px;
+      --bg1:#9fb6d6; --bg2:#8aa5c7; --cloud:rgba(255,255,255,.28);
+      --card:#ffffff; --ink:#0f172a; --muted:#64748b;
+      --shadow:0 16px 40px rgba(15,23,42,.12);
+      --radius:22px;
+      --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Thai", "Noto Sans", Arial, sans-serif;
     }
-
-    html,body{height:100%;}
+    *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
-      color:var(--text);
-      font-family:
-        system-ui, -apple-system, BlinkMacSystemFont,
-        "Segoe UI", Roboto, "Noto Sans", Arial,
-        "Helvetica Neue", sans-serif;
+      font-family:var(--font);
+      color:var(--ink);
       background:
-        radial-gradient(120px 90px at 12% 18%, rgba(255,255,255,.32) 0 62%, transparent 63%),
-        radial-gradient(170px 120px at 70% 26%, rgba(255,255,255,.26) 0 60%, transparent 61%),
-        radial-gradient(140px 100px at 34% 74%, rgba(255,255,255,.22) 0 60%, transparent 61%),
-        radial-gradient(180px 130px at 86% 78%, rgba(255,255,255,.18) 0 60%, transparent 61%),
-        linear-gradient(180deg, var(--line-blue) 0%, #b7c8df 70%, #c8d6e8 100%);
-      background-attachment: fixed;
+        radial-gradient(120px 60px at 20% 30%, var(--cloud) 0 60%, transparent 62%),
+        radial-gradient(180px 90px at 78% 36%, var(--cloud) 0 60%, transparent 62%),
+        radial-gradient(220px 100px at 30% 72%, rgba(255,255,255,.22) 0 60%, transparent 62%),
+        radial-gradient(200px 90px at 78% 78%, rgba(255,255,255,.20) 0 60%, transparent 62%),
+        linear-gradient(180deg, var(--bg2), var(--bg1));
+      min-height:100%;
+      padding:16px;
     }
+    .wrap{max-width:1200px;margin:0 auto}
+    .topbar{display:flex;align-items:center;gap:12px;padding:10px 6px 18px}
+    .avatar{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.7);
+      box-shadow:0 10px 22px rgba(15,23,42,.10);font-weight:900}
+    .titleblock{flex:1;min-width:0}
+    .title{margin:0;font-size:24px;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .subtitle{margin:2px 0 0;color:rgba(15,23,42,.6);font-size:14px;font-weight:700;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .iconBtn{width:46px;height:46px;border-radius:18px;border:0;cursor:pointer;background:rgba(255,255,255,.75);
+      box-shadow:0 10px 22px rgba(15,23,42,.10);display:grid;place-items:center}
+    .iconBtn:active{transform:scale(.98)}
+    @media (min-width: 980px){ body{padding:22px} .title{font-size:28px} }
 
-    .topbar{
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      padding: 18px 14px 12px;
-      background: linear-gradient(180deg, rgba(111,135,173,.82), rgba(111,135,173,.40));
-      backdrop-filter: blur(10px);
-    }
+    .layout{display:grid;grid-template-columns:1fr;gap:14px}
+    @media (min-width: 980px){ .layout{grid-template-columns:repeat(3, minmax(0, 1fr));gap:18px} }
 
-    .topbar-inner{
-      max-width: 980px;
-      margin: 0 auto;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 10px;
-    }
+    .card{background:rgba(255,255,255,.92);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid rgba(255,255,255,.65);
+      overflow:hidden;backdrop-filter: blur(6px)}
+    .pad{padding:16px}
+    .heroImg{width:100%;aspect-ratio:16/9;object-fit:cover;background:#e5e7eb;display:block}
+    .h1{font-size:34px;margin:0;font-weight:1100;letter-spacing:.2px}
+    .price{font-size:44px;margin:8px 0 0;font-weight:1200}
+    .meta{margin:14px 0 0;display:flex;gap:10px;flex-wrap:wrap}
+    .chip{padding:10px 12px;border-radius:999px;background:rgba(15,23,42,.06);font-weight:1000}
+    .sectionTitle{margin:0 0 10px;font-size:18px;font-weight:1100}
+    .kv{display:grid;gap:10px}
+    .kvRow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-radius:18px;background:rgba(15,23,42,.05)}
+    .kvRow span{font-weight:900;color:rgba(15,23,42,.55)}
+    .kvRow b{font-weight:1100}
+    .btn{width:100%;border:0;border-radius:18px;padding:14px 16px;font-weight:1100;font-size:18px;cursor:pointer}
+    .btnGhost{background:rgba(15,23,42,.06)}
+    .btn:active{transform:scale(.99)}
 
-    .brand{
-      display:flex;
-      align-items:center;
-      gap: 12px;
-      min-width: 0;
-    }
+    .gallery{display:grid;grid-template-columns:repeat(3, minmax(0,1fr));gap:10px}
+    @media (min-width: 980px){ .gallery{grid-template-columns:repeat(4, minmax(0,1fr))} }
+    .gImg{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:16px;background:#e5e7eb;display:block;cursor:pointer}
+    .error{margin:14px 6px;color:#b91c1c;font-weight:1000}
+    .skeleton{animation:pulse 1.2s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:.55}50%{opacity:1}}
 
-    .avatar{
-      width: 44px;
-      height: 44px;
-      border-radius: 16px;
-      background: rgba(255,255,255,.65);
-      display:grid;
-      place-items:center;
-      font-weight: 900;
-      letter-spacing:.5px;
-      color:#0b1220;
-      user-select:none;
-      flex: 0 0 auto;
-    }
-
-    .brand-text{
-      min-width:0;
-      display:flex;
-      flex-direction:column;
-      gap: 2px;
-    }
-
-    .brand-title{
-      font-size: 22px;
-      line-height: 1.1;
-      font-weight: 900;
-      color:#0b1220;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      text-transform: lowercase;
-    }
-
-    .brand-sub{
-      font-size: 13px;
-      color: rgba(0,0,0,.55);
-      font-weight: 600;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .actions{
-      display:flex;
-      gap: 10px;
-      flex: 0 0 auto;
-    }
-
-    .icon-btn{
-      width: 44px;
-      height: 44px;
-      border-radius: 16px;
-      border: 0;
-      cursor: pointer;
-      background: rgba(255,255,255,.78);
-      box-shadow: 0 6px 18px rgba(15, 23, 42, .10);
-      display:grid;
-      place-items:center;
-    }
-    .icon-btn:active{ transform: scale(.98); }
-
-    .wrap{
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 12px 14px 60px;
-    }
-
-    .card{
-      background: rgba(255,255,255,.92);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-
-    .card + .card{ margin-top: 14px; }
-
-    .hero{
-      padding: 12px;
-    }
-
-    .hero-img{
-      width:100%;
-      height: 240px;
-      object-fit: cover;
-      border-radius: 22px;
-      background:#e5e7eb;
-      display:block;
-    }
-
-    .thumbs{
-      display:flex;
-      gap: 10px;
-      margin-top: 12px;
-      overflow-x:auto;
-      padding-bottom: 6px;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .thumb{
-      width: 120px;
-      height: 74px;
-      border-radius: 18px;
-      object-fit: cover;
-      background:#e5e7eb;
-      flex: 0 0 auto;
-      cursor:pointer;
-      border: 2px solid transparent;
-    }
-    .thumb.active{ border-color: rgba(15,23,42,.22); }
-
-    .content{
-      padding: 18px 18px 22px;
-    }
-
-    .titleRow{
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap: 10px;
-    }
-
-    .hpid{
-      font-size: 36px;
-      letter-spacing:.3px;
-      margin: 0;
-      font-weight: 1000;
-    }
-
-    .price{
-      margin: 0;
-      font-size: 42px;
-      font-weight: 1000;
-    }
-
-    .muted{ color: var(--muted); font-weight: 700; }
-
-    .sectionTitle{
-      margin: 18px 0 10px;
-      font-size: 22px;
-      font-weight: 900;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-
-    .kv{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 12px;
-      background: rgba(241,245,249,.9);
-      border-radius: 18px;
-      padding: 12px 14px;
-      border: 1px solid rgba(15,23,42,.06);
-    }
-
-    .k{
-      font-weight: 900;
-      color: rgba(15,23,42,.55);
-      letter-spacing:.2px;
-    }
-
-    .v{
-      font-weight: 1000;
-      color: rgba(15,23,42,.95);
-      text-align:right;
-      word-break: break-word;
-    }
-
-    .btnRow{
-      display:flex;
-      gap: 10px;
-      margin-top: 16px;
-      flex-wrap: wrap;
-    }
-
-    .btn{
-      border:0;
-      cursor:pointer;
-      padding: 14px 16px;
-      border-radius: 18px;
-      font-weight: 1000;
-      min-width: 160px;
-      box-shadow: 0 12px 26px rgba(15,23,42,.12);
-    }
-
-    .btn.primary{ background:#111827; color:#fff; }
-    .btn.ghost{ background: rgba(255,255,255,.82); color:#111827; border: 1px solid rgba(15,23,42,.10); }
-
-    .loadingWrap{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 26px 0 0;
-    }
-
-    .dot{
-      width: 10px;
-      height: 10px;
-      border-radius: 99px;
-      background: rgba(255,255,255,.86);
-      box-shadow: 0 8px 20px rgba(15,23,42,.14);
-      margin: 0 6px;
-      animation: bounce 1s infinite;
-    }
-    .dot:nth-child(2){ animation-delay: .15s; }
-    .dot:nth-child(3){ animation-delay: .3s; }
-    @keyframes bounce{
-      0%,100%{ transform: translateY(0); opacity:.65; }
-      50%{ transform: translateY(-8px); opacity: 1; }
-    }
-
-    .err{
-      margin-top: 12px;
-      padding: 14px 14px;
-      background: rgba(255,255,255,.9);
-      border-radius: 18px;
-      border: 1px solid rgba(220,38,38,.22);
-      color: #991b1b;
-      font-weight: 900;
-    }
-
-    @media (min-width: 860px){
-      .grid{ grid-template-columns: 1fr 1fr; }
-      .hero-img{ height: 340px; }
-      .thumb{ width: 160px; height: 92px; }
-    }
+    /* lightbox */
+    .lbBack{position:fixed;inset:0;background:rgba(15,23,42,.75);display:none;place-items:center;z-index:70;padding:14px}
+    .lb{width:min(980px, 100%);max-height:86vh;background:#0b1220;border-radius:18px;overflow:hidden;display:grid}
+    .lb img{width:100%;height:86vh;object-fit:contain;background:#0b1220}
   </style>
 </head>
-
 <body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <div class="avatar">SP</div>
-        <div class="brand-text">
-          <div class="brand-title" id="brandTitle">smart properties system</div>
-          <div class="brand-sub" id="brandSub">Details • feel LINE</div>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="avatar">SP</div>
+      <div class="titleblock">
+        <h1 class="title">smart properties system</h1>
+        <div class="subtitle">
+          <span>Details · feel LINE</span>
+          <span style="width:6px;height:6px;border-radius:999px;background:rgba(255,255,255,.95);display:inline-block"></span>
+          <b id="hpMini">HP-</b>
         </div>
       </div>
 
-      <div class="actions">
-        <button class="icon-btn" id="btnBack" title="Back" aria-label="Back">
-          <!-- left arrow -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M15 18l-6-6 6-6" stroke="#0b1220" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
+      <!-- ปุ่มกลับ -->
+      <button class="iconBtn" id="btnBack" aria-label="Back" title="Back">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M15 18l-6-6 6-6" stroke="rgba(15,23,42,.75)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
 
-        <button class="icon-btn" id="btnGateway" title="Gateway" aria-label="Gateway">
-          <!-- user icon -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M20 21a8 8 0 10-16 0" stroke="#0b1220" stroke-width="2.2" stroke-linecap="round"/>
-            <path d="M12 12a4 4 0 100-8 4 4 0 000 8z" stroke="#0b1220" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-
-        <button class="icon-btn" id="btnEdit" title="Edit" aria-label="Edit">
-          <!-- pencil icon -->
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M12 20h9" stroke="#0b1220" stroke-width="2.2" stroke-linecap="round"/>
-            <path d="M16.5 3.5a2.1 2.1 0 013 3L8 18l-4 1 1-4 11.5-11.5z" stroke="#0b1220" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-  </header>
-
-  <main class="wrap">
-    <div class="loadingWrap" id="loading">
-      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <!-- ตามคำขอ: เอาไอคอนคน + ดินสอ ออก (ไม่ใส่ในหน้านี้) -->
     </div>
 
-    <div class="err" id="err" style="display:none;"></div>
+    <div id="error" class="error" style="display:none"></div>
 
-    <section class="card" id="heroCard" style="display:none;">
-      <div class="hero">
-        <img id="mainImage" class="hero-img" alt="no image" />
-        <div class="thumbs" id="thumbs" style="display:none;"></div>
+    <div class="layout">
+      <!-- column 1 -->
+      <div class="card">
+        <img id="heroImg" class="heroImg skeleton" alt="cover" />
       </div>
-    </section>
 
-    <section class="card" id="detailCard" style="display:none;">
-      <div class="content">
-        <div class="titleRow">
-          <h1 class="hpid" id="hpid">—</h1>
-          <p class="price" id="price">—</p>
-        </div>
-
-        <div class="muted" id="subtitle" style="margin-top:10px;">Project: — • Unit: —</div>
-
-        <div class="sectionTitle">ข้อมูลเพิ่มเติม</div>
-        <div class="grid" id="kvGrid"></div>
-
-        <div class="btnRow">
-          <button class="btn primary" id="btnMap">Google Map</button>
-          <button class="btn ghost" id="btnFacebook">Facebook</button>
+      <!-- column 2 -->
+      <div class="card">
+        <div class="pad">
+          <div class="h1" id="hpTitle">HP-</div>
+          <div class="price" id="priceText">฿0</div>
+          <div class="meta" id="meta"></div>
         </div>
       </div>
-    </section>
-  </main>
 
-  <script>
-    // ======== CONFIG ========
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
+      <!-- column 3 -->
+      <div class="card">
+        <div class="pad">
+          <div class="sectionTitle">ข้อมูลเพิ่มเติม</div>
+          <div class="kv" id="kv"></div>
+          <div style="height:12px"></div>
+          <button class="btn btnGhost" id="btnMap">Google Map</button>
+          <div style="height:10px"></div>
+          <button class="btn btnGhost" id="btnFb">Facebook</button>
+        </div>
+      </div>
 
-    // ✅ Data-URI fallback image (no external dependency)
-    const FALLBACK_IMG = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`
-      <svg xmlns='http://www.w3.org/2000/svg' width='1200' height='700'>
-        <defs>
-          <linearGradient id='g' x1='0' y1='0' x2='0' y2='1'>
-            <stop offset='0' stop-color='#e5e7eb'/>
-            <stop offset='1' stop-color='#cbd5e1'/>
-          </linearGradient>
-        </defs>
-        <rect width='100%' height='100%' fill='url(#g)'/>
-        <g fill='none' stroke='#94a3b8' stroke-width='10' stroke-linecap='round' stroke-linejoin='round' opacity='.9'>
-          <path d='M420 370h360'/>
-          <path d='M510 310h180'/>
-          <path d='M470 450h260'/>
-          <rect x='430' y='240' width='340' height='260' rx='40' />
-          <path d='M470 440l90-90 70 70 70-70 100 100' />
-          <circle cx='525' cy='310' r='22' />
-        </g>
-        <text x='50%' y='88%' text-anchor='middle' font-family='Arial, sans-serif' font-size='52' fill='#475569' opacity='.9'>NO IMAGE</text>
-      </svg>
-    `);
+      <!-- full width gallery -->
+      <div class="card" style="grid-column: 1 / -1">
+        <div class="pad">
+          <div class="sectionTitle">Project Gallery Final</div>
+          <div id="galleryNote" class="muted" style="font-weight:900;margin-bottom:10px">กำลังโหลดอัลบั้ม…</div>
+          <div class="gallery" id="gallery"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    // ======== HELPERS ========
-    function qs(key){
-      return new URLSearchParams(location.search).get(key);
-    }
+  <div class="lbBack" id="lbBack" role="dialog" aria-modal="true">
+    <div class="lb"><img id="lbImg" alt="preview" /></div>
+  </div>
 
-    function showError(msg){
-      const el = document.getElementById('err');
-      el.style.display = 'block';
-      el.textContent = msg;
-    }
+<script>
+(() => {
+  const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
+  const PROJECT = "Project_0";
+  const GALLERY_FOLDER_ID = "1kdgsHds6H_KHXiFAw_IzOoLMdMDPyJr0";
 
-    function hideLoading(){
-      document.getElementById('loading').style.display = 'none';
-    }
+  const qs = new URLSearchParams(location.search);
+  const HP_ID = (qs.get("id") || qs.get("hpId") || "").trim();
 
-    function safeText(v){
-      if (v === null || v === undefined) return "";
-      return String(v);
-    }
+  const elError = document.getElementById("error");
+  const elHpMini = document.getElementById("hpMini");
+  const elHpTitle = document.getElementById("hpTitle");
+  const elPrice = document.getElementById("priceText");
+  const elMeta = document.getElementById("meta");
+  const elKv = document.getElementById("kv");
+  const elHero = document.getElementById("heroImg");
+  const elGallery = document.getElementById("gallery");
+  const elGalleryNote = document.getElementById("galleryNote");
 
-    function fmtPrice(v){
-      const n = Number(String(v).replace(/[^0-9.]/g,''));
-      if (!isFinite(n)) return safeText(v) || "—";
-      return "฿" + n.toLocaleString('en-US');
-    }
+  const btnBack = document.getElementById("btnBack");
+  const btnMap = document.getElementById("btnMap");
+  const btnFb = document.getElementById("btnFb");
 
-    function normalizeDriveUrl(url){
-      if (!url) return "";
-      let u = String(url).trim();
+  const lbBack = document.getElementById("lbBack");
+  const lbImg = document.getElementById("lbImg");
+  lbBack.addEventListener("click", (e) => { if(e.target === lbBack) lbBack.style.display="none"; });
 
-      // already data uri / direct http(s)
-      if (u.startsWith("data:")) return u;
+  btnBack.addEventListener("click", () => {
+    if (history.length > 1) history.back();
+    else location.href = "index.html";
+  });
 
-      // Convert Google Drive share links to direct-view
-      // Patterns:
-      // 1) https://drive.google.com/file/d/FILEID/view?...
-      // 2) https://drive.google.com/open?id=FILEID
-      // 3) https://drive.google.com/uc?id=FILEID&export=download
-      // 4) https://lh3.googleusercontent.com/d/FILEID (already ok)
-      let fileId = "";
+  if(!HP_ID){
+    elError.textContent = "ไม่พบพารามิเตอร์ id (ตัวอย่าง: details.html?id=HP-Z001)";
+    elError.style.display = "block";
+    return;
+  }
 
-      const m1 = u.match(/drive\\.google\\.com\\/file\\/d\\/([a-zA-Z0-9_-]+)/);
-      if (m1 && m1[1]) fileId = m1[1];
+  elHpMini.textContent = HP_ID;
+  elHpTitle.textContent = HP_ID;
 
-      const m2 = u.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-      if (!fileId && m2 && m2[1]) fileId = m2[1];
+  function parsePrice(v){
+    if (v == null) return 0;
+    const n = String(v).replace(/[^\d.]/g, "");
+    return Number(n || 0);
+  }
 
-      const m3 = u.match(/lh3\\.googleusercontent\\.com\\/d\\/([a-zA-Z0-9_-]+)/);
-      if (!fileId && m3 && m3[1]) fileId = m3[1];
+  function safeUrl(s){
+    if(!s) return "";
+    const t = String(s).trim();
+    if(!t) return "";
+    return t;
+  }
 
-      if (fileId){
-        // Most compatible:
-        return `https://drive.google.com/uc?export=view&id=${fileId}`;
+  function splitImageList(v){
+    if(!v) return [];
+    if(Array.isArray(v)) return v.filter(Boolean);
+    const s = String(v).trim();
+    if(!s) return [];
+    return s.split(/\s*[,|\n]\s*/g).map(x => x.trim()).filter(Boolean);
+  }
+
+  async function fetchJson(url, timeoutMs=18000){
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+    try{
+      const res = await fetch(url, {signal: ctrl.signal, cache:"no-store"});
+      const txt = await res.text();
+      try { return JSON.parse(txt); } catch(_e) {
+        const cleaned = txt.replace(/^\)\]\}'\n?/, "");
+        return JSON.parse(cleaned);
       }
-
-      // Some users store multiple URLs with spaces; keep as-is if http(s)
-      if (/^https?:\\/\\//i.test(u)) return u;
-
-      return u;
+    } finally {
+      clearTimeout(timer);
     }
+  }
 
-    function parseImageList(raw){
-      if (!raw) return [];
-      const s = String(raw).trim();
-      if (!s) return [];
+  // จุดที่ 4: เร่งความเร็วด้วย cache
+  const cacheKey = `unitDetail::${PROJECT}::${HP_ID}`;
+  const cacheTtlMs = 3 * 60 * 1000;
 
-      // If JSON array: ["url1","url2"]
-      if (s.startsWith("[") && s.endsWith("]")){
-        try{
-          const arr = JSON.parse(s);
-          if (Array.isArray(arr)) return arr.map(x => normalizeDriveUrl(x)).filter(Boolean);
-        }catch(e){}
-      }
+  function saveCache(obj){
+    try{ sessionStorage.setItem(cacheKey, JSON.stringify({ts:Date.now(), data:obj})); }catch(_e){}
+  }
+  function loadCache(){
+    try{
+      const raw = sessionStorage.getItem(cacheKey);
+      if(!raw) return null;
+      const obj = JSON.parse(raw);
+      if(!obj?.ts || !obj?.data) return null;
+      if(Date.now() - obj.ts > cacheTtlMs) return null;
+      return obj.data;
+    }catch(_e){ return null; }
+  }
 
-      // Otherwise split by common separators
-      const parts = s
-        .split(/[,\\n\\r\\t\\|;]+/g)
-        .map(x => normalizeDriveUrl(x))
-        .map(x => x.trim())
-        .filter(Boolean);
-
-      // de-duplicate
-      return [...new Set(parts)];
+  function setCover(url){
+    const u = safeUrl(url);
+    elHero.classList.remove("skeleton");
+    if(!u){
+      elHero.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='675'%3E%3Crect width='100%25' height='100%25' fill='%23e5e7eb'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' font-family='Arial' font-size='44' fill='%2394a3b8'%3Eno image%3C/text%3E%3C/svg%3E";
+      return;
     }
+    elHero.src = u;
+  }
 
-    async function fetchUnitDetail(hpId){
-      // Try cache first
-      const cacheKey = `DETAIL_${hpId}`;
-      try{
-        const cached = sessionStorage.getItem(cacheKey);
-        if (cached){
-          const obj = JSON.parse(cached);
-          if (obj && obj._t && (Date.now()-obj._t) < 3*60*1000 && obj.data) return obj.data;
-        }
-      }catch(e){}
+  function renderMeta(row){
+    const beds = row.Bed || row.Bedrooms || row.Bedroom || row.bed || "-";
+    const baths = row.Bath || row.Bathrooms || row.Bathroom || row.bath || "-";
+    const land = row.Land_sq_w || row.Land || row.LandSize || row.land || "-";
+    const area = row.Area_sqm || row.Area || row.Usable || row.usable || "";
+    elMeta.innerHTML = "";
+    const items = [
+      ["🛏️", beds],
+      ["🛁", baths],
+      ["📐", land],
+      area ? ["🏡", area] : null
+    ].filter(Boolean);
+    items.forEach(([icon,val]) => {
+      const d = document.createElement("div");
+      d.className="chip";
+      d.textContent = `${icon} ${val}`;
+      elMeta.appendChild(d);
+    });
+  }
 
-      // Many GAS backends accept different params. We'll send both id + hpId.
-      const url = new URL(WEB_APP_URL);
-      url.searchParams.set("action", "getUnitDetail");
-      url.searchParams.set("hpId", hpId);
-      url.searchParams.set("id", hpId);
+  function renderKV(row){
+    const pairs = [
+      ["Project", row.Project || row.project || PROJECT],
+      ["HP_ID", row.HP_ID || row.hpId || HP_ID],
+      ["Plot", row.Plot || row.Plot_No || row.PlotName || row.Unit || ""],
+      ["Badge", row.Badge || row.badge || ""],
+      ["Status", row.Status || row.system || row.System || ""],
+      ["Updated", row.Updated || row.updated || ""],
+    ].filter(p => p[1] !== "");
+    elKv.innerHTML = "";
+    pairs.forEach(([k,v]) => {
+      const r = document.createElement("div");
+      r.className="kvRow";
+      r.innerHTML = `<span>${k}</span><b>${String(v)}</b>`;
+      elKv.appendChild(r);
+    });
+  }
 
-      const res = await fetch(url.toString(), { cache: "no-store" });
-      if (!res.ok) throw new Error("Fetch failed: " + res.status);
-      const data = await res.json();
+  function wireButtons(row){
+    const mapUrl = safeUrl(row.Google_Map || row.GoogleMap || row.Map || row.map || "");
+    const fbUrl  = safeUrl(row.Facebook || row.FB || row.fb || "");
+    btnMap.disabled = !mapUrl;
+    btnFb.disabled = !fbUrl;
+    btnMap.onclick = () => { if(mapUrl) window.open(mapUrl, "_blank", "noopener"); };
+    btnFb.onclick  = () => { if(fbUrl) window.open(fbUrl, "_blank", "noopener"); };
+  }
 
-      // Store cache
-      try{
-        sessionStorage.setItem(cacheKey, JSON.stringify({ _t: Date.now(), data }));
-      }catch(e){}
-
-      return data;
+  function renderGallery(urls){
+    elGallery.innerHTML = "";
+    if(!urls.length){
+      elGalleryNote.textContent = "ไม่พบรูปในอัลบั้ม (โปรดตรวจสอบโฟลเดอร์ Project_Gallery_Final หรือโหมด API)";
+      return;
     }
-
-    function buildThumb(imgUrl, idx, onPick){
-      const im = document.createElement("img");
-      im.className = "thumb";
-      im.loading = "lazy";
-      im.decoding = "async";
-      im.alt = "thumb " + (idx+1);
-      im.src = imgUrl;
-      im.addEventListener("click", () => onPick(idx));
-      im.addEventListener("error", () => { im.src = FALLBACK_IMG; });
-      return im;
-    }
-
-    function setMainImage(url){
-      const main = document.getElementById("mainImage");
-      main.src = url || FALLBACK_IMG;
-    }
-
-    function makeKVRow(k, v){
-      const row = document.createElement("div");
-      row.className = "kv";
-
-      const left = document.createElement("div");
-      left.className = "k";
-      left.textContent = k;
-
-      const right = document.createElement("div");
-      right.className = "v";
-      right.textContent = v || "—";
-
-      row.appendChild(left);
-      row.appendChild(right);
-      return row;
-    }
-
-    function pickValue(obj, keys){
-      for (const k of keys){
-        if (obj && obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== "") return obj[k];
-      }
-      return "";
-    }
-
-    function toSafeUrl(maybeUrl){
-      const u = normalizeDriveUrl(maybeUrl);
-      if (!u) return "";
-      if (u.startsWith("data:")) return u;
-      if (/^https?:\\/\\//i.test(u)) return u;
-      return "";
-    }
-
-    // ======== MAIN ========
-    (async function init(){
-      const hpId = qs("id") || qs("hpId") || qs("HP_ID") || "";
-      if (!hpId){
-        hideLoading();
-        showError("Missing id. Example: details.html?id=HP-Z001");
-        return;
-      }
-
-      // Buttons
-      document.getElementById("btnBack").addEventListener("click", () => history.back());
-      document.getElementById("btnGateway").addEventListener("click", () => {
-        // Keep your original routing convention; adjust if your gateway expects params
-        window.location.href = "gateway.html?id=" + encodeURIComponent(hpId);
+    elGalleryNote.textContent = `${urls.length} รูป`;
+    urls.forEach((u, idx) => {
+      const img = document.createElement("img");
+      img.className = "gImg";
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.src = u;
+      img.alt = `gallery-${idx+1}`;
+      img.addEventListener("click", () => {
+        lbImg.src = u;
+        lbBack.style.display = "grid";
       });
-      document.getElementById("btnEdit").addEventListener("click", () => {
-        window.location.href = "edit.html?id=" + encodeURIComponent(hpId);
-      });
+      elGallery.appendChild(img);
+    });
+  }
 
-      const mainImg = document.getElementById("mainImage");
-      mainImg.addEventListener("error", () => { mainImg.src = FALLBACK_IMG; });
+  async function getDetail(){
+    const cached = loadCache();
+    if(cached) return cached;
 
+    const tries = [
+      `${API_URL}?mode=getUnitDetail&project=${encodeURIComponent(PROJECT)}&hpId=${encodeURIComponent(HP_ID)}`,
+      `${API_URL}?mode=getUnitDetail&project=${encodeURIComponent(PROJECT)}&id=${encodeURIComponent(HP_ID)}`,
+      `${API_URL}?action=getUnitDetail&project=${encodeURIComponent(PROJECT)}&hpId=${encodeURIComponent(HP_ID)}`,
+      `${API_URL}?action=getUnitDetail&project=${encodeURIComponent(PROJECT)}&id=${encodeURIComponent(HP_ID)}`,
+      `${API_URL}?mode=getProperty&id=${encodeURIComponent(HP_ID)}`,
+      `${API_URL}?action=getProperty&id=${encodeURIComponent(HP_ID)}`
+    ];
+
+    let lastErr=null;
+    for(const u of tries){
       try{
-        const payload = await fetchUnitDetail(hpId);
-
-        // Some backends return { success:true, data:{...} } or directly {...}
-        const item = payload && payload.data ? payload.data : payload;
-
-        // Headline
-        const project = safeText(pickValue(item, ["Project", "project", "PROJECT", "ProjectName"])) || "—";
-        const unit = safeText(pickValue(item, ["Unit", "unit", "UNIT", "Plot", "PlotNo", "Plot_No", "PlotName"])) || hpId;
-        const priceRaw = pickValue(item, ["Price", "price", "PRICE", "SellingPrice", "SalePrice"]);
-
-        document.getElementById("hpid").textContent = hpId;
-        document.getElementById("price").textContent = fmtPrice(priceRaw) || "—";
-        document.getElementById("subtitle").textContent = `Project: ${project} • Unit: ${unit}`;
-
-        // Map / FB
-        const mapUrl = toSafeUrl(pickValue(item, ["GoogleMap", "googleMap", "Map", "MapUrl", "Google_Map", "GoogleMapUrl"]));
-        const fbUrl  = toSafeUrl(pickValue(item, ["Facebook", "facebook", "FB", "FacebookUrl", "FBUrl"]));
-
-        document.getElementById("btnMap").addEventListener("click", () => {
-          if (mapUrl) window.open(mapUrl, "_blank");
-          else alert("No Google Map link");
-        });
-        document.getElementById("btnFacebook").addEventListener("click", () => {
-          if (fbUrl) window.open(fbUrl, "_blank");
-          else alert("No Facebook link");
-        });
-
-        // Images
-        const cover = normalizeDriveUrl(pickValue(item, ["Thumbnail_Image", "Cover", "cover", "CoverImage", "Cover_Image", "thumbnail", "thumb"]));
-        const rawList = pickValue(item, ["Image_List", "Images", "images", "Gallery", "gallery", "Gallery_List"]);
-        const list = parseImageList(rawList);
-
-        const allImages = [];
-        if (cover) allImages.push(cover);
-        for (const u of list) allImages.push(u);
-        const images = [...new Set(allImages)].filter(Boolean);
-
-        // Show hero
-        document.getElementById("heroCard").style.display = "block";
-        setMainImage(images[0] || cover || FALLBACK_IMG);
-
-        const thumbsWrap = document.getElementById("thumbs");
-        thumbsWrap.innerHTML = "";
-
-        if (images.length > 1){
-          thumbsWrap.style.display = "flex";
-          let active = 0;
-
-          const renderActive = (idx) => {
-            active = idx;
-            setMainImage(images[active] || FALLBACK_IMG);
-            [...thumbsWrap.children].forEach((el, i) => el.classList.toggle("active", i === active));
-          };
-
-          images.forEach((imgUrl, i) => {
-            const th = buildThumb(imgUrl, i, renderActive);
-            if (i === 0) th.classList.add("active");
-            thumbsWrap.appendChild(th);
-          });
-        }else{
-          thumbsWrap.style.display = "none";
+        const out = await fetchJson(u);
+        const row = Array.isArray(out) ? out[0] : (out?.data || out?.item || out);
+        if(row && typeof row === "object" && (row.HP_ID || row.hpId || row.id || out?.ok)){
+          saveCache(row);
+          return row;
         }
+        if(out?.error) lastErr = new Error(out.error);
+      }catch(e){ lastErr=e; }
+    }
+    throw lastErr || new Error("Cannot load detail");
+  }
 
-        // Build KV grid (keep minimal + useful)
-        const kvGrid = document.getElementById("kvGrid");
-        kvGrid.innerHTML = "";
+  async function getGalleryFallback(row){
+    const fromSheet = splitImageList(row.Image_List || row.Gallery || row.Images || row.gallery || "");
+    if(fromSheet.length) return fromSheet;
 
-        const bed  = safeText(pickValue(item, ["Bedrooms", "Bed", "bed", "Bedroom"]));
-        const bath = safeText(pickValue(item, ["Bathrooms", "Bath", "bath", "Bathroom"]));
-        const land = safeText(pickValue(item, ["Land", "LandArea", "landArea", "Land_sqw", "LandSqw", "SQW", "sqw"]));
-        const area = safeText(pickValue(item, ["Area", "UsableArea", "usableArea", "sqm", "SQM", "HouseArea"]));
-        const status = safeText(pickValue(item, ["Status", "status", "SystemStatus", "system"]));
-        const updated = safeText(pickValue(item, ["Updated", "updated", "LastUpdate", "lastUpdate", "timestamp"]));
+    const folderId = row.Project_Gallery_Final || row.Gallery_Folder || row.FolderId || row.folderId || "";
+    const useFolderId = (folderId && String(folderId).length > 10) ? String(folderId) : GALLERY_FOLDER_ID;
 
-        kvGrid.appendChild(makeKVRow("Project", project));
-        kvGrid.appendChild(makeKVRow("HP_ID", hpId));
-        if (unit && unit !== hpId) kvGrid.appendChild(makeKVRow("Unit", unit));
-        if (bed) kvGrid.appendChild(makeKVRow("Bedrooms", bed));
-        if (bath) kvGrid.appendChild(makeKVRow("Bathrooms", bath));
-        if (land) kvGrid.appendChild(makeKVRow("Land", land));
-        if (area) kvGrid.appendChild(makeKVRow("Area", area));
-        if (status) kvGrid.appendChild(makeKVRow("Status", status));
-        if (updated) kvGrid.appendChild(makeKVRow("Updated", updated));
+    // เรียก API ให้ดึงรูปจาก Drive (รองรับหลายชื่อโหมด)
+    const tries = [
+      `${API_URL}?mode=getGalleryFinal&folderId=${encodeURIComponent(useFolderId)}&hpId=${encodeURIComponent(HP_ID)}`,
+      `${API_URL}?action=getGalleryFinal&folderId=${encodeURIComponent(useFolderId)}&hpId=${encodeURIComponent(HP_ID)}`,
+      `${API_URL}?mode=listGallery&folderId=${encodeURIComponent(useFolderId)}&hpId=${encodeURIComponent(HP_ID)}`,
+      `${API_URL}?action=listGallery&folderId=${encodeURIComponent(useFolderId)}&hpId=${encodeURIComponent(HP_ID)}`,
+      `${API_URL}?mode=getImages&folderId=${encodeURIComponent(useFolderId)}&hpId=${encodeURIComponent(HP_ID)}`,
+      `${API_URL}?action=getImages&folderId=${encodeURIComponent(useFolderId)}&hpId=${encodeURIComponent(HP_ID)}`,
+      `${API_URL}?mode=getGallery&folderId=${encodeURIComponent(useFolderId)}&hpId=${encodeURIComponent(HP_ID)}`,
+      `${API_URL}?action=getGallery&folderId=${encodeURIComponent(useFolderId)}&hpId=${encodeURIComponent(HP_ID)}`
+    ];
 
-        // Show detail card
-        document.getElementById("detailCard").style.display = "block";
+    for(const u of tries){
+      try{
+        const out = await fetchJson(u);
+        const urls =
+          (Array.isArray(out) ? out :
+          Array.isArray(out?.data) ? out.data :
+          Array.isArray(out?.items) ? out.items :
+          Array.isArray(out?.urls) ? out.urls : null);
+        if(urls && urls.length) return urls.filter(Boolean);
+      }catch(_e){}
+    }
+    return [];
+  }
 
-        hideLoading();
+  function setPrice(row){
+    const price = parsePrice(row.Price || row.Sale_Price || row.price || 0);
+    elPrice.textContent = `฿${price.toLocaleString("en-US")}`;
+  }
 
-      }catch(err){
-        console.error(err);
-        hideLoading();
-        showError("Load failed: " + (err && err.message ? err.message : err));
-      }
-    })();
-  </script>
+  async function main(){
+    try{
+      const row = await getDetail();
+
+      const cover = safeUrl(row.Thumbnail_Image || row.Cover || row.Cover_Image || row.Image || "");
+      setCover(cover);
+
+      setPrice(row);
+      renderMeta(row);
+      renderKV(row);
+      wireButtons(row);
+
+      elGalleryNote.textContent = "กำลังโหลดอัลบั้ม…";
+      const urls = await getGalleryFallback(row);
+
+      if(!cover && urls.length) setCover(urls[0]);
+      renderGallery(urls);
+
+    }catch(err){
+      elError.textContent = "โหลดข้อมูลไม่สำเร็จ: ตรวจสอบโหมด API / สิทธิ์ Web App / HP_ID";
+      elError.style.display = "block";
+      console.error(err);
+      elGalleryNote.textContent = "โหลดอัลบั้มไม่สำเร็จ";
+      setCover("");
+    }
+  }
+
+  main();
+})();
+</script>
 </body>
 </html>
