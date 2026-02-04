@@ -79,6 +79,7 @@
     .tagTopLeft{left:14px; top:14px;}
     .tagTopRight{right:14px; top:14px;}
     .tagBottomRight{right:14px; bottom:14px; font-size:20px;}
+
     .thumbStrip{
       background: rgba(255,255,255,.78);
       padding:10px;
@@ -144,9 +145,105 @@
       0%{background-position: 200% 0;}
       100%{background-position: -200% 0;}
     }
+
+    /* =========================================================
+       ✅ จุดที่ 1: LOADING OVERLAY (ดุ๊กดิ๊ก) แบบเดียวกับหน้า Index
+       - background เดิม
+       - ข้อความ Smart Properties System
+       ========================================================= */
+    .pageLoader{
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: radial-gradient(ellipse at top, rgba(255,255,255,.25), rgba(255,255,255,0) 55%) , var(--bg);
+      z-index:99999;
+    }
+    .loaderInner{
+      text-align:center;
+      padding:18px 18px;
+    }
+    .loaderEmojis{
+      display:flex;
+      gap:18px;
+      justify-content:center;
+      align-items:center;
+      font-size:52px;
+      line-height:1;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,.18));
+    }
+    .loaderEmojis span{
+      display:inline-block;
+      animation: bounce 0.9s ease-in-out infinite;
+    }
+    .loaderEmojis span:nth-child(2){ animation-delay: .12s; }
+    .loaderEmojis span:nth-child(3){ animation-delay: .24s; }
+    @keyframes bounce{
+      0%,100%{ transform: translateY(0); opacity:.95; }
+      50%{ transform: translateY(-12px); opacity:1; }
+    }
+    .loaderText{
+      margin-top:14px;
+      font-weight:1100;
+      letter-spacing:1px;
+      color: rgba(255,255,255,.92);
+      text-shadow: 0 10px 22px rgba(0,0,0,.22);
+      font-size:28px;
+      white-space:nowrap;
+    }
+    @media (max-width:420px){
+      .loaderEmojis{font-size:44px}
+      .loaderText{font-size:22px}
+    }
+
+    /* =========================================================
+       ✅ จุดที่ 2: ปุ่มลูกศรโปร่งแสง ซ้าย/ขวา ในอัลบั้มรูป
+       ========================================================= */
+    .navArrow{
+      position:absolute;
+      top:50%;
+      transform: translateY(-50%);
+      width:54px;
+      height:54px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.55);
+      background: rgba(255,255,255,.22);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 10px 22px rgba(0,0,0,.14);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      user-select:none;
+      z-index:5; /* อยู่เหนือรูป */
+    }
+    .navArrow:active{ transform: translateY(-50%) scale(.98); }
+    .navArrow svg{
+      width:24px;height:24px;
+      stroke: rgba(255,255,255,.95);
+      opacity:.95;
+    }
+    .navLeft{ left:14px; }
+    .navRight{ right:14px; }
+    /* ถ้าจอเล็กมาก ลดขนาด */
+    @media (max-width:420px){
+      .navArrow{ width:48px;height:48px; }
+      .navArrow svg{ width:22px;height:22px; }
+    }
   </style>
 </head>
 <body>
+
+  <!-- ✅ จุดที่ 1: Loading overlay -->
+  <div class="pageLoader" id="pageLoader" aria-label="loading">
+    <div class="loaderInner">
+      <div class="loaderEmojis" aria-hidden="true">
+        <span>🏠</span><span>✨</span><span>🌴</span>
+      </div>
+      <div class="loaderText">Smart Properties System</div>
+    </div>
+  </div>
+
   <div class="wrap">
     <div class="topbar">
       <div class="brand">
@@ -167,7 +264,20 @@
         <div class="tagTopLeft" id="tagPlot">-</div>
         <div class="tagTopRight" id="tagStatus">-</div>
         <div class="tagBottomRight" id="tagCount">0 / 0</div>
+
+        <!-- ✅ จุดที่ 2: ปุ่มลูกศรโปร่งแสง -->
+        <div class="navArrow navLeft" id="btnPrev" aria-label="previous">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6"></path>
+          </svg>
+        </div>
+        <div class="navArrow navRight" id="btnNext" aria-label="next">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 6l6 6-6 6"></path>
+          </svg>
+        </div>
       </div>
+
       <div class="thumbStrip" id="thumbStrip"></div>
 
       <div class="content">
@@ -191,6 +301,16 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh6
 const qs = new URLSearchParams(location.search);
 const hpId = qs.get("id") || qs.get("hpId") || "";
 const project = qs.get("project") || "Project_0";
+
+/** ✅ จุดที่ 1: loader helpers */
+function showLoader(){
+  const el = document.getElementById("pageLoader");
+  if(el) el.style.display = "flex";
+}
+function hideLoader(){
+  const el = document.getElementById("pageLoader");
+  if(el) el.style.display = "none";
+}
 
 /** JSONP */
 function jsonp(url, timeoutMs = 20000){
@@ -334,9 +454,11 @@ function renderInfo(detail){
 /** LOAD */
 (async function init(){
   hideError();
+  showLoader(); // ✅ จุดที่ 1: เริ่มโชว์ loader
 
   if(!hpId){
     showError("ลิงก์ไม่ถูกต้อง: ไม่มี id เช่น details.html?id=HP-Z001");
+    hideLoader();
     return;
   }
 
@@ -349,11 +471,13 @@ function renderInfo(detail){
     detail = await jsonp(url);
   }catch(err){
     showError("โหลดข้อมูลไม่สำเร็จ (ตรวจ Deploy Apps Script ให้เป็น Anyone และใช้ /exec)");
+    hideLoader();
     return;
   }
 
   if(detail && detail.error){
     showError("โหลดข้อมูลไม่สำเร็จ: " + detail.error);
+    hideLoader();
     return;
   }
 
@@ -377,12 +501,21 @@ function renderInfo(detail){
 
   // render gallery
   const mainImg = document.getElementById("mainImg");
+
+  // ✅ จุดที่ 1: ซ่อน loader เมื่อรูปแรกโหลดสำเร็จ/ล้มเหลว (กันค้าง)
+  mainImg.onload = () => { hideLoader(); };
+  mainImg.onerror = () => { hideLoader(); };
+
   mainImg.src = images[0];
   mainImg.classList.remove("skeleton");
 
   renderThumbs();
   setMain(0);
   enableSwipe();
+
+  // ✅ จุดที่ 2: ปุ่มลูกศรคลิกเลื่อนซ้าย/ขวา
+  document.getElementById("btnPrev").addEventListener("click", ()=> setMain(idx-1));
+  document.getElementById("btnNext").addEventListener("click", ()=> setMain(idx+1));
 
   // preload next image for speed
   if(images[1]){
