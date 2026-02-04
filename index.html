@@ -6,19 +6,79 @@
   <title>DIRECT HUB - PROPERTIES</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     body { font-family: 'Kanit', sans-serif; }
     .price-text {
       font-size: clamp(1.9rem, 5vw, 2.8rem);
-      font-weight: 500;
+      font-weight: 600;
       letter-spacing: -0.02em;
       line-height: 1.1;
     }
     .unit-text { font-size: 0.9rem; font-weight: 400; color: #94a3b8; margin-top: 0.3rem; }
     .feature { font-size: 0.85rem; font-weight: 400; padding: 0.45rem 0.7rem; }
-    .status { font-size: 0.85rem; font-weight: 500; padding: 0.45rem 0.9rem; }
+    .status { font-size: 0.85rem; font-weight: 600; padding: 0.45rem 0.9rem; }
+
+    /* top control ui */
+    .ctrl-card{
+      background:#fff;
+      border-radius: 1.6rem;
+      box-shadow: 0 10px 28px rgba(2,6,23,.08);
+      padding: 12px;
+    }
+    .flag-btn{
+      width: 36px; height: 26px;
+      border-radius: 10px;
+      overflow:hidden;
+      border: 1px solid rgba(15,23,42,.15);
+      box-shadow: 0 6px 14px rgba(2,6,23,.08);
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#fff;
+      transition: transform .08s ease, box-shadow .12s ease;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .flag-btn:active{ transform: scale(.96); }
+    .flag-btn img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+    select{
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background-image:
+        linear-gradient(45deg, transparent 50%, #0f172a 50%),
+        linear-gradient(135deg, #0f172a 50%, transparent 50%),
+        linear-gradient(to right, transparent, transparent);
+      background-position:
+        calc(100% - 18px) calc(1.1em),
+        calc(100% - 12px) calc(1.1em),
+        calc(100% - 2.5em) 0.5em;
+      background-size:
+        6px 6px,
+        6px 6px,
+        1px 1.5em;
+      background-repeat: no-repeat;
+    }
+
+    /* skeleton */
+    .shimmer {
+      background: linear-gradient(90deg, #eef2f7 25%, #f8fafc 37%, #eef2f7 63%);
+      background-size: 400% 100%;
+      animation: shimmer 1.25s ease infinite;
+    }
+    @keyframes shimmer {
+      0% { background-position: 100% 0; }
+      100% { background-position: 0 0; }
+    }
+
+    /* hide Google translate bar */
+    .goog-te-banner-frame.skiptranslate{ display:none !important; }
+    body{ top:0 !important; }
+    #google_translate_element{ position:absolute; left:-9999px; top:-9999px; height:1px; width:1px; overflow:hidden; }
   </style>
 </head>
 
@@ -26,34 +86,83 @@
 <div class="max-w-6xl mx-auto px-4 py-8">
 
   <!-- HEADER -->
-  <div class="flex justify-between items-start mb-8">
+  <div class="flex justify-between items-start mb-5">
     <div>
-      <h1 class="text-4xl md:text-5xl font-semibold italic text-slate-900">
-        DIRECT HUB
-      </h1>
-      <p class="text-blue-700 text-lg mt-1">
-        ศูนย์รวมบ้านฝากขายตรงจากเจ้าของ
-      </p>
+      <h1 class="text-4xl md:text-5xl font-semibold italic text-slate-900">DIRECT HUB</h1>
+      <p class="text-blue-700 text-lg mt-1">ศูนย์รวมบ้านฝากขายตรงจากเจ้าของ</p>
     </div>
 
     <a href="gateway.html"
        class="w-12 h-12 rounded-2xl bg-white shadow flex items-center justify-center text-xl cursor-pointer"
-       title="Go to Gateway">
-      👤
-    </a>
+       title="Go to Gateway">👤</a>
+  </div>
+
+  <!-- ✅ CONTROL BAR (จุด 1/2/3 ตามที่ต้องการ) -->
+  <div class="ctrl-card mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
+      <!-- (1) FLAGS -->
+      <div class="flex items-center gap-2">
+        <div class="text-xs font-semibold text-slate-500 mr-1">LANG</div>
+
+        <!-- 6 flags -->
+        <button class="flag-btn" title="Thai" data-lang="th"><img alt="TH" src="https://flagcdn.com/w40/th.png"></button>
+        <button class="flag-btn" title="English" data-lang="en"><img alt="EN" src="https://flagcdn.com/w40/us.png"></button>
+        <button class="flag-btn" title="German" data-lang="de"><img alt="DE" src="https://flagcdn.com/w40/de.png"></button>
+        <button class="flag-btn" title="Russian" data-lang="ru"><img alt="RU" src="https://flagcdn.com/w40/ru.png"></button>
+        <button class="flag-btn" title="Chinese" data-lang="zh-CN"><img alt="ZH" src="https://flagcdn.com/w40/cn.png"></button>
+        <button class="flag-btn" title="French" data-lang="fr"><img alt="FR" src="https://flagcdn.com/w40/fr.png"></button>
+      </div>
+
+      <!-- (2) BEDROOM FILTER -->
+      <div>
+        <label class="text-xs font-semibold text-slate-500">BEDROOMS</label>
+        <select id="bedFilter"
+          class="mt-1 w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 font-semibold text-slate-900">
+          <option value="all">All bedrooms</option>
+          <option value="1">1 bedroom</option>
+          <option value="2">2 bedrooms</option>
+          <option value="3">3 bedrooms</option>
+          <option value="4">4 bedrooms</option>
+          <option value="5">5+ bedrooms</option>
+        </select>
+      </div>
+
+      <!-- (3) PRICE SORT -->
+      <div>
+        <label class="text-xs font-semibold text-slate-500">SORT PRICE</label>
+        <select id="priceSort"
+          class="mt-1 w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 font-semibold text-slate-900">
+          <option value="none">Default</option>
+          <option value="desc">High → Low</option>
+          <option value="asc">Low → High</option>
+        </select>
+      </div>
+    </div>
   </div>
 
   <!-- CARDS -->
   <div id="cards" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
-  <div id="loading" class="text-center text-slate-400 py-10">
-    Loading...
-  </div>
 
+  <!-- LOADING / ERROR -->
+  <div id="loading" class="text-center text-slate-400 py-10">Loading...</div>
+  <div id="errorBox" class="hidden text-center text-rose-600 py-10 font-semibold"></div>
+
+  <!-- hidden google translate -->
+  <div id="google_translate_element"></div>
 </div>
 
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbwvCiaEKxvRI9rQCXMR_F4SHqmkJT4CnAuoVgEr6RYACmfgKerp7r06m-ltBMu4GFD4/exec";
 const PROJECT = new URLSearchParams(location.search).get("project") || "Project_0";
+
+const elCards = document.getElementById("cards");
+const elLoading = document.getElementById("loading");
+const elError = document.getElementById("errorBox");
+
+const elBedFilter = document.getElementById("bedFilter");
+const elPriceSort = document.getElementById("priceSort");
+
+let RAW = []; // keep original data
 
 const priceFmt = v => {
   const n = Number(v);
@@ -61,7 +170,7 @@ const priceFmt = v => {
 };
 
 const statusClass = s => {
-  s = String(s).toLowerCase();
+  s = String(s || "").toLowerCase();
   if (s.includes("available")) return "bg-emerald-100 text-emerald-700";
   if (s.includes("under")) return "bg-sky-100 text-sky-700";
   if (s.includes("reserved")) return "bg-amber-100 text-amber-700";
@@ -69,41 +178,85 @@ const statusClass = s => {
   return "bg-slate-100 text-slate-700";
 };
 
-async function load(){
-  const res = await fetch(`${API_URL}?mode=getUnitList&project=${PROJECT}&t=${Date.now()}`);
-  const data = await res.json();
+function renderSkeleton(n=6){
+  elCards.innerHTML = Array.from({length:n}).map(() => `
+    <div class="bg-white rounded-[2.3rem] shadow-lg overflow-hidden">
+      <div class="h-72 shimmer"></div>
+      <div class="p-6">
+        <div class="flex gap-2 mb-4">
+          <div class="h-10 w-20 rounded-2xl shimmer"></div>
+          <div class="h-10 w-20 rounded-2xl shimmer"></div>
+          <div class="h-10 w-24 rounded-2xl shimmer"></div>
+          <div class="h-10 w-24 rounded-2xl shimmer"></div>
+        </div>
+        <div class="h-10 w-40 rounded-2xl shimmer mb-3"></div>
+        <div class="h-5 w-28 rounded-xl shimmer"></div>
+        <div class="h-12 w-full rounded-2xl shimmer mt-6"></div>
+      </div>
+    </div>
+  `).join("");
+}
 
-  document.getElementById("loading").style.display = "none";
+function getFilteredSorted(){
+  let list = [...RAW];
 
-  document.getElementById("cards").innerHTML = data.map(d => `
+  // Filter bedrooms
+  const bed = elBedFilter.value;
+  if (bed !== "all") {
+    if (bed === "5") {
+      list = list.filter(d => Number(d.bedrooms) >= 5);
+    } else {
+      list = list.filter(d => String(d.bedrooms) === bed);
+    }
+  }
+
+  // Sort price
+  const sort = elPriceSort.value;
+  if (sort === "asc") {
+    list.sort((a,b) => Number(a.price||0) - Number(b.price||0));
+  } else if (sort === "desc") {
+    list.sort((a,b) => Number(b.price||0) - Number(a.price||0));
+  }
+
+  return list;
+}
+
+function render(list){
+  if (!list.length){
+    elCards.innerHTML = `
+      <div class="col-span-full text-center text-slate-500 py-16">
+        <div class="text-2xl font-extrabold text-slate-900 mb-2">No results</div>
+        ไม่พบบ้านตามเงื่อนไขที่เลือก
+      </div>
+    `;
+    return;
+  }
+
+  elCards.innerHTML = list.map(d => `
     <div class="bg-white rounded-[2.3rem] shadow-lg overflow-hidden">
       <div class="relative">
-        <img src="${d.thumbnail}" class="w-full h-72 object-cover">
+        <img src="${d.thumbnail || ""}" class="w-full h-72 object-cover" loading="lazy" decoding="async" alt="thumb">
         <div class="absolute top-4 left-4 bg-white/90 px-4 py-2 rounded-full font-medium">
-          ${d.plot}
+          ${d.plot || "-"}
         </div>
       </div>
 
       <div class="p-6">
         <div class="flex flex-wrap gap-2 mb-4">
-          <div class="feature bg-slate-100">🛏 ${d.bedrooms}</div>
-          <div class="feature bg-slate-100">🛁 ${d.bathrooms}</div>
-          <div class="feature bg-slate-100">📐 ${d.landSqw} sq.w</div>
-          <div class="feature bg-slate-100">🏠 ${d.livingSqm} sqm</div>
+          <div class="feature bg-slate-100">🛏 ${d.bedrooms ?? "-"}</div>
+          <div class="feature bg-slate-100">🛁 ${d.bathrooms ?? "-"}</div>
+          <div class="feature bg-slate-100">📐 ${d.landSqw ?? "-"} sq.w</div>
+          <div class="feature bg-slate-100">🏠 ${d.livingSqm ?? "-"} sqm</div>
           <div class="ml-auto status rounded-full ${statusClass(d.status)}">
-            ${d.status}
+            ${d.status || "-"}
           </div>
         </div>
 
-        <div class="price-text text-slate-900">
-          ${priceFmt(d.price)}
-        </div>
-        <div class="unit-text">
-          UNIT: ${d.id}
-        </div>
+        <div class="price-text text-slate-900">${priceFmt(d.price)}</div>
+        <div class="unit-text">UNIT: ${d.id}</div>
 
-        <!-- ✅ ลิงก์แก้เป็น details.html -->
-        <a href="details.html?id=${d.id}&project=${PROJECT}"
+        <!-- ✅ ลิงก์แก้เป็น details.html + encode -->
+        <a href="details.html?id=${encodeURIComponent(d.id)}&project=${encodeURIComponent(PROJECT)}"
            class="block mt-6 text-center bg-slate-900 text-white py-4 rounded-2xl text-sm tracking-widest hover:bg-slate-800 transition">
           VIEW FULL DETAILS
         </a>
@@ -112,7 +265,70 @@ async function load(){
   `).join("");
 }
 
+function applyUI(){
+  const list = getFilteredSorted();
+  render(list);
+}
+
+async function load(){
+  elError.classList.add("hidden");
+  elLoading.style.display = "block";
+  renderSkeleton(6);
+
+  try{
+    const url = `${API_URL}?mode=getUnitList&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (!Array.isArray(data)) {
+      throw new Error((data && data.error) ? data.error : "Invalid API response");
+    }
+
+    RAW = data;
+    elLoading.style.display = "none";
+    applyUI();
+
+  }catch(err){
+    elLoading.style.display = "none";
+    elCards.innerHTML = "";
+    elError.textContent = "โหลดข้อมูลไม่สำเร็จ กรุณาลองใหม่อีกครั้ง";
+    elError.classList.remove("hidden");
+    console.error(err);
+  }
+}
+
+elBedFilter.addEventListener("change", applyUI);
+elPriceSort.addEventListener("change", applyUI);
+
 load();
+
+/* ==============================
+   GOOGLE TRANSLATE (Flags)
+   ============================== */
+function setGoogleTranslateLang(lang){
+  // cookie method (works with translate element)
+  // format: /source/target
+  document.cookie = `googtrans=/th/${lang};path=/`;
+  document.cookie = `googtrans=/th/${lang};path=/;domain=${location.hostname}`;
+  location.reload();
+}
+
+// bind flags
+document.querySelectorAll("[data-lang]").forEach(btn => {
+  btn.addEventListener("click", () => setGoogleTranslateLang(btn.getAttribute("data-lang")));
+});
+
+// init translate element (kept hidden)
+function googleTranslateElementInit() {
+  new google.translate.TranslateElement(
+    { pageLanguage: 'th', autoDisplay: false },
+    'google_translate_element'
+  );
+}
 </script>
+
+<!-- load google translate -->
+<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
 </body>
 </html>
