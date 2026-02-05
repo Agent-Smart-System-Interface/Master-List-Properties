@@ -1,59 +1,22 @@
 <script>
-  /**********************************************************
-   * CONFIG
-   **********************************************************/
-  const API_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
+/**********************************************************
+ * SAFE CONFIG (กันหน้าขาว)
+ **********************************************************/
+const API_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
 
-  // ✅ NEW: อ่าน project จาก URL และตั้งค่าเริ่มต้นเป็น project_000
-  const qs = new URLSearchParams(location.search);
-  const PROJECT = qs.get("project") || "project_000";
+// ✅ กัน error ตั้งแต่บรรทัดแรก
+let PROJECT = "project_000";
+try {
+  const qs = new URLSearchParams(window.location.search);
+  PROJECT = qs.get("project") || "project_000";
+} catch(e){
+  PROJECT = "project_000";
+}
 
-  // ✅ ส่ง project ไป gateway แบบพ่วงพารามิเตอร์
-  const GATEWAY_URL = "https://agent-smart-system-interface.github.io/Master-List-Properties/gateway.html?project=" + encodeURIComponent(PROJECT);
+// ✅ cache key ต้องอยู่หลัง PROJECT เท่านั้น
+const CACHE_KEY = "SP_UNITLIST_" + PROJECT + "_v1";
+</script>
 
-  // ✅ details ต้องพ่วง project ด้วยเสมอ
-  function goDetails(hpId){
-    location.href = "details.html?id=" + encodeURIComponent(hpId) + "&project=" + encodeURIComponent(PROJECT);
-  }
-
-  /**********************************************************
-   * HELPERS
-   **********************************************************/
-  const $ = (id)=>document.getElementById(id);
-
-  function showLoader(on){
-    const el = $("loader");
-    if(!el) return;
-    if(on) el.classList.remove("hide");
-    else el.classList.add("hide");
-  }
-
-  function toast(msg){
-    const el = $("toast");
-    el.textContent = msg;
-    el.classList.add("show");
-    clearTimeout(toast._t);
-    toast._t = setTimeout(()=>el.classList.remove("show"), 2200);
-  }
-
-  function fmtPrice(v){
-    const n = Number(String(v||"").replace(/,/g,""));
-    if (!isFinite(n) || n<=0) return "฿0";
-    return "฿" + n.toLocaleString("en-US");
-  }
-
-  function statusStyle(statusRaw){
-    const s = String(statusRaw||"").trim().toLowerCase();
-    if (s.includes("available")) return {bg:"rgba(192,255,222,.92)", fg:"rgba(0,90,55,1)"};
-    if (s.includes("under"))     return {bg:"rgba(255,240,195,.92)", fg:"rgba(120,70,0,1)"};
-    if (s.includes("reserved"))  return {bg:"rgba(213,232,255,.92)", fg:"rgba(0,60,120,1)"};
-    if (s.includes("sold"))      return {bg:"rgba(255,208,208,.92)", fg:"rgba(130,0,0,1)"};
-    return {bg:"rgba(255,255,255,.75)", fg:"rgba(11,19,32,.80)"};
-  }
-
-  function normalizePlot(p){
-    return String(p||"").trim();
-  }
 
   // ✅ cache key ต้องผูกกับ project ใหม่ (กันชนกันหลายโปรเจกต์)
   const CACHE_KEY = "SP_UNITLIST_" + PROJECT + "_v1";
