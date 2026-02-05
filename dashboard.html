@@ -1,239 +1,350 @@
-<!-- dashboard.html (โค้ดเต็มแบบพร้อมใช้งาน) -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Smart Properties System · Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PROJECT DASHBOARD</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
   <style>
-    :root{
-      --bg:#a8bdd6;
-      --card:#ffffff;
-      --text:#0f172a;
-      --muted:#6b7c93;
-      --radius:22px;
-      --shadow: 0 12px 30px rgba(0,0,0,.12);
-      --soft:#f3f6fb;
-      --line:rgba(255,255,255,.45);
-      --accent:#0ea5e9;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans Thai", sans-serif;
-      background: radial-gradient(ellipse at top, rgba(255,255,255,.25), rgba(255,255,255,0) 55%) , var(--bg);
-      color:var(--text);
-    }
-    .wrap{max-width:1100px; margin:0 auto; padding:16px 14px 30px;}
-
-    .topbar{
-      display:flex; align-items:center; justify-content:space-between;
-      padding:12px 12px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.18);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--line);
-      gap:10px;
-    }
-    .brand{display:flex; gap:12px; align-items:center; min-width:0;}
-    .logo{
-      width:44px; height:44px; border-radius:999px; background:rgba(255,255,255,.55);
-      display:grid; place-items:center; font-weight:900;
-      flex:0 0 auto;
-    }
-    .titles{min-width:0}
-    .titles h1{
-      margin:0;
-      font-size:18px;
-      line-height:1.15;
-      font-weight:1100;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      letter-spacing:.2px;
-    }
-    .titles .sub{
-      margin-top:2px;
-      font-size:12px;
-      color: rgba(15,23,42,.6);
-      font-weight:900;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .grid{
-      margin-top:14px;
-      display:grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap:12px;
-    }
-    @media(min-width:900px){
-      .grid{ grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    }
-    .card{
-      border-radius: 18px;
-      background: rgba(255,255,255,.92);
-      border: 1px solid rgba(15,23,42,.06);
-      box-shadow: 0 10px 22px rgba(0,0,0,.08);
-      padding:14px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      cursor:pointer;
-      user-select:none;
-      transition: transform .12s ease;
-      min-height:120px;
-    }
-    .card:active{ transform: scale(.985); }
-    .cardTitle{
-      font-weight:1100;
-      font-size:14px;
-      color: rgba(15,23,42,.92);
-      letter-spacing:.2px;
-    }
-    .cardDesc{
-      font-weight:900;
-      font-size:12px;
-      color: rgba(15,23,42,.55);
-      line-height:1.35;
-      flex:1 1 auto;
-    }
-    .pill{
-      align-self:flex-start;
-      padding:6px 10px;
-      border-radius: 999px;
-      font-weight:1100;
-      font-size:12px;
-      border: 2px solid rgba(14,165,233,.35);
-      color: rgba(2,132,199,1);
-      background: rgba(255,255,255,.85);
-    }
-
-    .footerNote{
-      margin-top:14px;
-      padding:12px 14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.55);
-      border: 1px solid rgba(255,255,255,.65);
-      color: rgba(15,23,42,.72);
-      font-weight:900;
-      font-size:12px;
-      line-height:1.4;
-    }
-    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+    body { font-family: 'Kanit', sans-serif; background: #f8fafc; }
   </style>
 </head>
-<body>
-  <div class="wrap">
-    <div class="topbar">
-      <div class="brand">
-        <div class="logo">SP</div>
-        <div class="titles">
-          <h1>Smart Properties System</h1>
-          <div class="sub" id="subTitle">Dashboard · Project: -</div>
-        </div>
+
+<body class="p-4 md:p-10 italic">
+  <div class="max-w-6xl mx-auto">
+
+    <!-- TOP BAR: ONLY PROJECT NAME + HOME ICON -->
+    <div class="bg-slate-900 rounded-[2.2rem] px-6 py-6 md:px-10 md:py-7 text-white mb-6 shadow-2xl flex items-center justify-between">
+      <div id="projectTitle" class="text-xl md:text-2xl font-bold tracking-tight italic truncate">
+        Loading...
       </div>
+
+      <!-- Home Icon (กลับหน้าแรก) -->
+      <a id="homeBtn" href="index.html"
+         class="w-14 h-14 md:w-14 md:h-14 rounded-2xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all active:scale-95"
+         aria-label="Home">
+        <i class="fa-solid fa-house text-xl"></i>
+      </a>
     </div>
 
-    <div class="grid" id="grid">
-      <div class="card" id="goIndex">
-        <div class="cardTitle">Property List</div>
-        <div class="cardDesc">Open the project list page (index.html) to view all units.</div>
-        <div class="pill">Go</div>
-      </div>
-
-      <div class="card" id="goGateway">
-        <div class="cardTitle">Gateway</div>
-        <div class="cardDesc">Open gateway.html (entry) for this project.</div>
-        <div class="pill">Go</div>
-      </div>
-
-      <div class="card" id="goEdit">
-        <div class="cardTitle">Edit Unit</div>
-        <div class="cardDesc">Open edit.html (need id=HP-xxxx) for this project.</div>
-        <div class="pill">Go</div>
-      </div>
-
-      <div class="card" id="goDetails">
-        <div class="cardTitle">Details</div>
-        <div class="cardDesc">Open details.html (need id=HP-xxxx) for this project.</div>
-        <div class="pill">Go</div>
-      </div>
+    <!-- LOADING -->
+    <div id="loadingBlock" class="bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-8 text-center text-slate-300 font-bold animate-pulse uppercase">
+      🔄 Syncing database...
     </div>
 
-    <div class="footerNote">
-      Tip: ใช้พารามิเตอร์ <span class="mono">?project=project_000</span> (หรือ project_001..004) เพื่อกำหนดโปรเจค
-      <br/>
-      รองรับลิงก์เก่า: <span class="mono">Project_0 / Project_A / Project_B / Project_C / Project_D</span> ด้วย
+    <!-- MOBILE (Cards) -->
+    <div id="mobileList" class="hidden space-y-4"></div>
+
+    <!-- DESKTOP (Table) -->
+    <div id="desktopTableWrap" class="hidden bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100">
+      <table class="w-full text-center">
+        <thead class="bg-slate-900 text-white text-[10px] uppercase">
+          <tr>
+            <th class="py-6 pl-8 text-left">Cover</th>
+            <th class="text-left">Unit ID</th>
+            <th class="text-left">Plot</th>
+            <th>Status</th>
+            <th>Visibility</th>
+            <th>Manage</th>
+          </tr>
+        </thead>
+        <tbody id="unitTableBody" class="text-xs"></tbody>
+      </table>
     </div>
+
   </div>
 
-<script>
-/** =========================
- * CONFIG
- * ========================= */
-const urlParams = new URLSearchParams(location.search);
+  <script>
+    // ================================
+    // CONFIG
+    // ================================
+    const API_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
+    const urlParams = new URLSearchParams(window.location.search);
+    const PROJECT_ID = urlParams.get("project") || "Project_0";
 
-    /** =====================================================
-     * ✅ Project Tab Mapping (รองรับชื่อแท็บใหม่ + ของเดิม)
-     * ใหม่:
-     *  - project_000 ... project_004
-     * เดิม (ยังรองรับเพื่อกันลิงก์เก่า):
-     *  - Project_0, Project_A, Project_B, Project_C, Project_D
-     * ===================================================== */
-    function normalizeProject(p){
-      const raw = String(p || "").trim();
-      if(!raw) return "project_000";
+    const HOME_URL = "index.html";
+    document.getElementById("homeBtn").href = HOME_URL;
 
-      const map = {
-        "project_0": "project_000",
-        "project_a": "project_001",
-        "project_b": "project_002",
-        "project_c": "project_003",
-        "project_d": "project_004",
-        "project_000": "project_000",
-        "project_001": "project_001",
-        "project_002": "project_002",
-        "project_003": "project_003",
-        "project_004": "project_004",
-      };
+    // ================================
+    // HELPERS: Badge Colors
+    // ================================
+    function statusBadge(status) {
+      const raw = (status ?? "").toString().trim();
+      const s = raw.toLowerCase();
 
-      const key = raw.replace(/-/g,"_").toLowerCase();
-      return map[key] || raw;
+      if (!raw || raw === "-") {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-100 text-slate-500">
+                  <span class="w-2 h-2 rounded-full bg-slate-300"></span> -
+                </span>`;
+      }
+
+      if (s.includes("available")) {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-emerald-50 text-emerald-700">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Available
+                </span>`;
+      }
+
+      if (s.includes("under") || s.includes("construct")) {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-sky-50 text-sky-700">
+                  <span class="w-2 h-2 rounded-full bg-sky-500"></span> Under Construction
+                </span>`;
+      }
+
+      if (s.includes("reserved")) {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-amber-50 text-amber-700">
+                  <span class="w-2 h-2 rounded-full bg-amber-500"></span> Reserved
+                </span>`;
+      }
+
+      if (s.includes("sold")) {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-rose-50 text-rose-700">
+                  <span class="w-2 h-2 rounded-full bg-rose-500"></span> Sold
+                </span>`;
+      }
+
+      return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-50 text-slate-700">
+                <span class="w-2 h-2 rounded-full bg-slate-400"></span> ${escapeHtml(raw)}
+              </span>`;
     }
 
-const PROJECT_ID = normalizeProject(urlParams.get("project") || "project_000");
+    function visibilityBadge(v) {
+      const raw = (v ?? "").toString().trim();
+      const s = raw.toLowerCase();
 
-/** =========================
- * UI
- * ========================= */
-document.getElementById("subTitle").textContent = `Dashboard · Project: ${PROJECT_ID}`;
+      if (!raw || raw === "-") {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-100 text-slate-500">
+                  <span class="w-2 h-2 rounded-full bg-slate-300"></span> -
+                </span>`;
+      }
 
-// Link builders
-function withProject(url){
-  const u = new URL(url, location.href);
-  u.searchParams.set("project", PROJECT_ID);
-  return u.toString();
-}
+      if (s.includes("live") || s.includes("online")) {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-blue-50 text-blue-700">
+                  <span class="w-2 h-2 rounded-full bg-blue-500"></span> Live
+                </span>`;
+      }
 
-document.getElementById("goIndex").addEventListener("click", ()=>{
-  location.href = withProject("index.html");
-});
-document.getElementById("goGateway").addEventListener("click", ()=>{
-  location.href = withProject("gateway.html");
-});
-document.getElementById("goEdit").addEventListener("click", ()=>{
-  // ตัวอย่าง — ผู้ใช้ต้องใส่ id เองใน URL ถ้าต้องการ
-  const id = prompt("Enter HP_ID (เช่น HP-Z001):", "");
-  if(!id) return;
-  location.href = withProject(`edit.html?id=${encodeURIComponent(id)}`);
-});
-document.getElementById("goDetails").addEventListener("click", ()=>{
-  const id = prompt("Enter HP_ID (เช่น HP-Z001):", "");
-  if(!id) return;
-  location.href = withProject(`details.html?id=${encodeURIComponent(id)}`);
-});
-</script>
+      if (s.includes("pending") || s.includes("review")) {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-amber-50 text-amber-700">
+                  <span class="w-2 h-2 rounded-full bg-amber-500"></span> Pending
+                </span>`;
+      }
+
+      if (s.includes("off") || s.includes("offline") || s.includes("hide")) {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-100 text-slate-600">
+                  <span class="w-2 h-2 rounded-full bg-slate-400"></span> Offline
+                </span>`;
+      }
+
+      return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-50 text-slate-700">
+                <span class="w-2 h-2 rounded-full bg-slate-400"></span> ${escapeHtml(raw)}
+              </span>`;
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function isMobile() {
+      return window.matchMedia("(max-width: 768px)").matches;
+    }
+
+    // ================================
+    // THUMBNAIL HELPERS
+    // ================================
+    function pickThumb(u) {
+      return (u.Thumbnail_Image || u.thumbnail || u.thumb || u.thumbUrl || "").toString().trim();
+    }
+
+    function thumbTag(url, size = "mobile") {
+      const base = (size === "desktop")
+        ? "w-10 h-14 rounded-xl"
+        : "w-16 h-20 rounded-2xl";
+
+      if (!url) {
+        return `<div class="${base} bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-300 font-bold">🏠</div>`;
+      }
+
+      return `<img src="${url}" class="${base} object-cover border border-slate-200 shadow-sm" loading="lazy" decoding="async">`;
+    }
+
+    // ================================
+    // RENDERERS
+    // ================================
+    function renderDesktop(units) {
+      const tbody = document.getElementById("unitTableBody");
+
+      if (!units || units.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="py-16 text-slate-400 font-bold">No data</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = units.map(u => {
+        const id = u.id || "-";
+        const plot = u.plot || "-";
+        const unitStatus = u.status || u.unitStatus || "-";
+        const sysStatus = u.sysStatus || "-";
+        const thumb = pickThumb(u);
+
+        return `
+          <tr class="hover:bg-slate-50 border-b">
+            <td class="py-4 pl-8 text-left">
+              ${thumbTag(thumb, "desktop")}
+            </td>
+
+            <!-- ✅ FIX: ให้ HP-xxx เล็กลงเท่ากับ label (11px) -->
+            <td class="text-left font-bold text-slate-900 text-[11px]">${escapeHtml(id)}</td>
+
+            <td class="text-left font-extrabold text-slate-800 text-[15px]">${escapeHtml(plot)}</td>
+
+            <td>${statusBadge(unitStatus)}</td>
+            <td>${visibilityBadge(sysStatus)}</td>
+            <td>
+              <button
+                onclick="window.location.href='edit.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(PROJECT_ID)}'"
+                class="p-2 text-orange-500 hover:scale-110 transition-all"
+                aria-label="Edit"
+              >
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function renderMobile(units) {
+      const list = document.getElementById("mobileList");
+
+      if (!units || units.length === 0) {
+        list.innerHTML = `<div class="bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-8 text-center text-slate-400 font-bold">No data</div>`;
+        return;
+      }
+
+      list.innerHTML = units.map(u => {
+        const id = u.id || "-";
+        const plot = u.plot || "-";
+        const unitStatus = u.status || u.unitStatus || "-";
+        const sysStatus = u.sysStatus || "-";
+        const thumb = pickThumb(u);
+
+        return `
+          <div class="bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-4">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex gap-4 min-w-0">
+                <div class="shrink-0">
+                  ${thumbTag(thumb, "mobile")}
+                </div>
+
+                <div class="min-w-0">
+                  <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Unit ID</div>
+
+                  <!-- ✅ FIX: ให้ HP-xxx เท่ากับ UNIT ID / PLOT (11px) -->
+                  <div class="text-[11px] font-bold text-slate-900 italic truncate">${escapeHtml(id)}</div>
+
+                  <div class="mt-2">
+                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Plot</div>
+                    <div class="text-[22px] font-extrabold text-slate-900 italic leading-tight">${escapeHtml(plot)}</div>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onclick="window.location.href='edit.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(PROJECT_ID)}'"
+                class="w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center hover:bg-orange-100 transition-all active:scale-95 shrink-0"
+                aria-label="Edit"
+              >
+                <i class="fa-solid fa-pen"></i>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mt-4">
+              <div class="bg-slate-50 rounded-2xl p-3">
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Visibility</div>
+                <div class="mt-2">${visibilityBadge(sysStatus)}</div>
+              </div>
+
+              <div class="bg-slate-50 rounded-2xl p-3">
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status</div>
+                <div class="mt-2">${statusBadge(unitStatus)}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function showLoading(on) {
+      const lb = document.getElementById("loadingBlock");
+      if (on) {
+        lb.classList.remove("hidden");
+        lb.classList.add("animate-pulse");
+        lb.innerText = "🔄 Syncing database...";
+      } else {
+        lb.classList.add("hidden");
+      }
+    }
+
+    // ================================
+    // LOAD + CACHE + SMART RESIZE (NO RELOAD)
+    // ================================
+    let CACHE_UNITS = [];
+    let CURRENT_MOBILE = isMobile();
+
+    function renderByViewport() {
+      const nowMobile = isMobile();
+
+      document.getElementById("mobileList").classList.toggle("hidden", !nowMobile);
+      document.getElementById("desktopTableWrap").classList.toggle("hidden", nowMobile);
+
+      if (nowMobile) renderMobile(CACHE_UNITS);
+      else renderDesktop(CACHE_UNITS);
+
+      CURRENT_MOBILE = nowMobile;
+    }
+
+    async function init() {
+      try {
+        showLoading(true);
+
+        const res = await fetch(`${API_URL}?mode=getUnitList&project=${encodeURIComponent(PROJECT_ID)}&t=${Date.now()}`);
+        const data = await res.json();
+
+        let projectName = "";
+        if (Array.isArray(data) && data.length > 0) {
+          projectName = (data.find(x => x && x.projectName && String(x.projectName).trim() !== "")?.projectName) || "";
+        }
+        document.getElementById("projectTitle").innerText = projectName ? projectName : PROJECT_ID;
+
+        CACHE_UNITS = Array.isArray(data) ? data : [];
+        showLoading(false);
+
+        renderByViewport();
+
+      } catch (e) {
+        document.getElementById("projectTitle").innerText = PROJECT_ID;
+        const lb = document.getElementById("loadingBlock");
+        lb.classList.remove("animate-pulse");
+        lb.innerText = "⚠️ Connection Error";
+      }
+    }
+
+    window.addEventListener("resize", () => {
+      const nowMobile = isMobile();
+      if (nowMobile !== CURRENT_MOBILE) {
+        renderByViewport();
+      }
+    });
+
+    window.onload = init;
+  </script>
 </body>
 </html>
