@@ -813,9 +813,9 @@ function renderInfo(detail){
     return "";
   };
 
-  // ✅ จุดที่ 3: ดึง 2 ค่าเพื่อโชว์ “แถวเดียวกัน”
-  const landW = safe(pick(detail, ["Land_Area_sq_w","Land_Area_SQW","LandAreaSQW","Land_sq_w"]));
-  const livingM = safe(pick(detail, ["Living_Area_sq_m","Living_Area_SQM","LivingAreaSQM","Living_sq_m"]));
+  // ✅ จุดที่ 1 (แก้ตามที่ขอ): ดึง Land (sq.m) และ Living (sq.m)
+  const landM = safe(pick(detail, ["Land_Area_sq_m","Land_Area_SQM","LandAreaSQM","Land_sq_m","Land Area (sq.m)"]));
+  const livingM = safe(pick(detail, ["Living_Area_sq_m","Living_Area_SQM","LivingAreaSQM","Living_sq_m","Living Area (sq.m)"]));
 
   const items = [
     ["Project_Name", safe(pick(detail, ["Project_Name","ProjectName","Project_Name_En","Project_Name_TH","Project"]))],
@@ -828,13 +828,12 @@ function renderInfo(detail){
     ["Bedrooms", safe(pick(detail, ["Bedrooms","Bedroom","beds"]))],
     ["Bathrooms", safe(pick(detail, ["Bathrooms","Bathroom","baths"]))],
 
-    // ✅ จุดที่ 3: 2 อย่างในแถวเดียวกัน
+    // ✅ จุดที่ 1 (แก้ตามที่ขอ): แสดงเป็น Land (sq.m)xxxxx   Living (sq.m)xxxxx
     ["__DOUBLE__", {
-      k1: "Land Area (sq.w)", v1: landW,
-      k2: "Living Area (sq.m)", v2: livingM
+      k1: "Land (sq.m)", v1: landM,
+      k2: "Living (sq.m)", v2: livingM
     }],
 
-    ["Land Area (sq.m)", safe(pick(detail, ["Land_Area_sq_m","Land_Area_SQM","LandAreaSQM","Land_sq_m"]))],
     ["Pool Size", safe(pick(detail, ["Pool_Size","PoolSize"]))],
     ["Pool Depth", safe(pick(detail, ["Pool_Depth","PoolDepth"]))],
     ["Furnishing", safe(pick(detail, ["Furnishing","furnishing"]))],
@@ -847,7 +846,6 @@ function renderInfo(detail){
 
   grid.innerHTML = "";
   for(const [k,v] of items){
-    // ✅ จุดที่ 3: วาดกล่อง 2 คอลัมน์ในกล่องเดียว
     if(k === "__DOUBLE__"){
       const box = document.createElement("div");
       box.className = "infoBox double";
