@@ -98,7 +98,7 @@
       left:14px; top:14px;
     }
 
-    /* ✅ (ข้อ 2) ทำตัวเลขนับรูปเล็กลง + ไม่มี background */
+    /* ✅ ทำตัวเลขนับรูปเล็กลง + ไม่มี background */
     .tagBottomRight{
       position:absolute;
       right:14px;
@@ -139,41 +139,47 @@
 
     .content{padding:14px;}
 
-    /* แถวราคา + สถานะ (ย้าย Available ลงล่างตามที่ทำเครื่องหมายไว้) */
+    /* =========================
+       ✅ จุดที่ 1-2: ราคาเล็กลง + Available อยู่แถวเดียวกัน (ไม่ตกบรรทัด)
+       ========================= */
     .headRow{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
+      gap:10px;
+      flex-wrap:nowrap;          /* ✅ สำคัญ: ให้อยู่บรรทัดเดียว */
     }
     .hp{display:none;}
+
     .price{
-      font-size:34px;
+      font-size:28px;            /* ✅ ลดขนาดลง */
       font-weight:1100;
       letter-spacing:.2px;
+      white-space:nowrap;
+      flex:1 1 auto;
+      min-width:0;
     }
 
-    /* ✅ (ข้อ 1) ป้าย Available แบบด้านล่าง */
     .statusBelow{
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      min-width: 160px;
-      padding:12px 18px;
-      border-radius: 14px;
+      padding:8px 12px;          /* ✅ ให้เล็กลง */
+      border-radius: 12px;
       font-weight:1100;
-      font-size:22px;
+      font-size:16px;            /* ✅ ให้เล็กลง */
       line-height:1;
       background: rgba(255,255,255,.92);
       border: 2px solid rgba(16,185,129,.55);
       color: rgba(5,150,105,1);
-      box-shadow: 0 12px 24px rgba(0,0,0,.10);
+      box-shadow: 0 10px 20px rgba(0,0,0,.10);
       white-space:nowrap;
+      flex:0 0 auto;
     }
+
     @media (max-width:420px){
-      .price{font-size:30px}
-      .statusBelow{font-size:18px; min-width:140px; padding:10px 14px;}
+      .price{font-size:24px}
+      .statusBelow{font-size:14px; padding:7px 10px;}
     }
 
     .gridInfo{
@@ -301,7 +307,105 @@
     }
 
     /* =========================
-       ✅ (ข้อ 2) Share icons row (8 icons) + scroll
+       ✅ จุดที่ 3: Other Plots (2 คอลัมน์ / สูงสุด 5 แถว)
+       ========================= */
+    .otherSection{
+      margin-top:14px;
+      padding:14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.65);
+      border: 1px solid rgba(255,255,255,.65);
+    }
+    .otherTitle{
+      font-weight:1100;
+      letter-spacing:.3px;
+      color: rgba(15,23,42,.88);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .otherHint{
+      font-weight:900;
+      color: rgba(15,23,42,.55);
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .otherGrid{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));  /* ✅ 2 คอลัมน์ */
+      gap:12px;
+    }
+    .otherCard{
+      border-radius: 18px;
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(15,23,42,.06);
+      box-shadow: 0 10px 22px rgba(0,0,0,.08);
+      overflow:hidden;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .12s ease;
+    }
+    .otherCard:active{ transform: scale(.985); }
+    .otherImg{
+      width:100%;
+      aspect-ratio: 16/10;
+      object-fit:cover;
+      display:block;
+      background:#e8f0fb;
+    }
+    .otherBody{
+      padding:10px 10px 12px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .otherTopRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .otherPlot{
+      font-weight:1100;
+      color: rgba(15,23,42,.95);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:60%;
+    }
+    .otherStatus{
+      padding:6px 10px;
+      border-radius: 999px;
+      font-weight:1100;
+      font-size:12px;
+      background: rgba(255,255,255,.92);
+      border: 2px solid rgba(15,23,42,.15);
+      color: rgba(15,23,42,.88);
+      white-space:nowrap;
+      flex:0 0 auto;
+    }
+    .otherPrice{
+      font-weight:1100;
+      font-size:16px;
+      color: rgba(15,23,42,.92);
+      white-space:nowrap;
+    }
+    .otherId{
+      font-weight:900;
+      font-size:12px;
+      color: rgba(15,23,42,.55);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    @media (max-width:360px){
+      .otherGrid{ grid-template-columns: 1fr; } /* จอเล็กมากค่อยตกเป็น 1 */
+    }
+
+    /* =========================
+       ✅ Share icons row (8 icons) + scroll
        ========================= */
     .shareSection{
       margin-top:14px;
@@ -406,7 +510,7 @@
       <div class="thumbStrip" id="thumbStrip"></div>
 
       <div class="content">
-        <!-- ✅ (ข้อ 1) ย้าย Available มาอยู่ด้านล่างในแถวราคา -->
+        <!-- ✅ จุดที่ 1-2: ราคาเล็กลง + Available อยู่แถวเดียวกัน -->
         <div class="headRow">
           <div class="hp" id="hpText">...</div>
           <div class="price" id="priceText">฿0</div>
@@ -417,10 +521,18 @@
           <!-- info -->
         </div>
 
-        <!-- ✅ (ข้อ 2) Share icons: 8 icons / centered / scrollable -->
+        <!-- ✅ จุดที่ 3: Other Plots (2 columns / max 5 rows) -->
+        <div class="otherSection" id="otherSection">
+          <div class="otherTitle">
+            <div>Other Plots</div>
+            <div class="otherHint">Tap to view details</div>
+          </div>
+          <div class="otherGrid" id="otherGrid"></div>
+        </div>
+
+        <!-- ✅ Share icons: 8 icons / centered / scrollable -->
         <div class="shareSection" id="shareSection">
           <div class="shareTopIcon" aria-hidden="true" title="Share">
-            <!-- share icon -->
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="18" cy="5" r="2"></circle>
               <circle cx="6" cy="12" r="2"></circle>
@@ -595,7 +707,7 @@ function cleanDriveImage(url){
   return u;
 }
 
-/* ใช้กำหนดสีสถานะ (ยังคง logic เดิมแบบง่าย) */
+/* ใช้กำหนดสีสถานะ */
 function statusStyle(statusRaw){
   const s = String(statusRaw||"").trim().toLowerCase();
   if (s.includes("available")) return {border:"rgba(16,185,129,.65)", text:"rgba(5,150,105,1)"};
@@ -659,7 +771,7 @@ function enableSwipe(){
   });
 }
 
-/** ✅ (ข้อ 1) จัดเรียง + แสดงครบตามลิสต์ที่กำหนด 100% */
+/** จัดเรียงข้อมูล (ตามโค้ดเดิมของคุณ) */
 function renderInfo(detail){
   const grid = document.getElementById("infoGrid");
 
@@ -709,13 +821,94 @@ function renderInfo(detail){
 }
 
 /** =========================
- * ✅ (ข้อ 3) สร้างภาพแชร์เป็น “การ์ด” 2 คอลัมน์ / สูงสุด 5 แถว
+ * ✅ จุดที่ 3: โหลด “Other Plots” และแสดง 2 คอลัมน์ / สูงสุด 5 แถว
+ * ========================= */
+function getUnitId(u){
+  return String(u?.HP_ID || u?.id || u?.hpId || u?.Unit_ID || "").trim();
+}
+function getPlot(u){
+  return String(u?.Plot || u?.plot || u?.Unit_Plot || u?.Plot_No || "").trim();
+}
+function getThumb(u){
+  return cleanDriveImage(u?.Thumbnail_Image || u?.thumbnail || u?.thumb || u?.thumbUrl || "");
+}
+function getStatus(u){
+  return String(u?.Status || u?.status || u?.unitStatus || "-").trim() || "-";
+}
+function getPrice(u){
+  return u?.Price ?? u?.price ?? 0;
+}
+
+function renderOtherUnits(units){
+  const grid = document.getElementById("otherGrid");
+  const section = document.getElementById("otherSection");
+
+  if(!Array.isArray(units) || units.length === 0){
+    // ถ้าไม่มีข้อมูล ก็ซ่อนทั้ง section เพื่อไม่กินพื้นที่
+    section.style.display = "none";
+    return;
+  }
+
+  section.style.display = "block";
+  grid.innerHTML = "";
+
+  for(const u of units){
+    const id = getUnitId(u);
+    const plot = getPlot(u) || id || "-";
+    const thumb = getThumb(u);
+    const st = getStatus(u);
+    const price = moneyTHB(getPrice(u));
+
+    const pill = statusStyle(st);
+
+    const card = document.createElement("div");
+    card.className = "otherCard";
+    card.innerHTML = `
+      <img class="otherImg" src="${thumb || "data:image/svg+xml;charset=utf-8," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='800'><rect width='100%' height='100%' fill='#e6edf6'/><text x='50%' y='50%' text-anchor='middle' fill='#8aa0bb' font-size='40' font-family='Arial'>no image</text></svg>")}" alt="thumb" loading="lazy" decoding="async">
+      <div class="otherBody">
+        <div class="otherTopRow">
+          <div class="otherPlot">${plot}</div>
+          <div class="otherStatus" style="border-color:${pill.border}; color:${pill.text};">${st}</div>
+        </div>
+        <div class="otherPrice">${price}</div>
+        <div class="otherId">${id}</div>
+      </div>
+    `;
+    card.addEventListener("click", ()=>{
+      const url = `details.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(project)}`;
+      location.href = url;
+    });
+    grid.appendChild(card);
+  }
+}
+
+async function loadOtherUnits(){
+  try{
+    const url = `${SCRIPT_URL}?mode=getUnitList&project=${encodeURIComponent(project)}`;
+    const data = await jsonp(url);
+
+    if(!Array.isArray(data)){
+      document.getElementById("otherSection").style.display = "none";
+      return;
+    }
+
+    const filtered = data
+      .filter(u => getUnitId(u) && getUnitId(u) !== String(hpId).trim())
+      .slice(0, 10); // ✅ 2 คอลัมน์ x 5 แถว = 10 ใบ
+
+    renderOtherUnits(filtered);
+  }catch(e){
+    document.getElementById("otherSection").style.display = "none";
+  }
+}
+
+/** =========================
+ * ✅ Share image (เดิมของคุณ)
  * ========================= */
 async function buildShareImageBlob(detail){
   const canvas = document.getElementById("shareCanvas");
   const ctx = canvas.getContext("2d");
 
-  // เตรียมข้อมูล (2 คอลัมน์ / 5 แถว)
   const safe = (v)=> {
     if (v === undefined || v === null) return "-";
     const s = String(v).trim();
@@ -748,17 +941,14 @@ async function buildShareImageBlob(detail){
     ["Price", price, "Status", status],
   ];
 
-  // พื้นหลัง
   ctx.clearRect(0,0,canvas.width,canvas.height);
   ctx.fillStyle = "#0f172a";
   ctx.fillRect(0,0,canvas.width,canvas.height);
 
-  // แถบรูปด้านบน
   const imgH = 340;
   ctx.fillStyle = "#111827";
   ctx.fillRect(0,0,canvas.width,imgH);
 
-  // โหลดรูปหลัก (พยายาม)
   try{
     const src = images && images.length ? images[0] : "";
     if(src){
@@ -767,25 +957,17 @@ async function buildShareImageBlob(detail){
       img.src = src;
       await new Promise((res, rej)=>{ img.onload=res; img.onerror=rej; });
 
-      // cover
       const cw = canvas.width, ch = imgH;
       const ir = img.width / img.height;
       const cr = cw / ch;
       let dw, dh, dx, dy;
       if(ir > cr){
-        dh = ch;
-        dw = dh * ir;
-        dx = (cw - dw)/2;
-        dy = 0;
+        dh = ch; dw = dh * ir; dx = (cw - dw)/2; dy = 0;
       }else{
-        dw = cw;
-        dh = dw / ir;
-        dx = 0;
-        dy = (ch - dh)/2;
+        dw = cw; dh = dw / ir; dx = 0; dy = (ch - dh)/2;
       }
       ctx.drawImage(img, dx, dy, dw, dh);
 
-      // overlay gradient
       const g = ctx.createLinearGradient(0, imgH-140, 0, imgH);
       g.addColorStop(0, "rgba(15,23,42,0)");
       g.addColorStop(1, "rgba(15,23,42,.65)");
@@ -793,12 +975,10 @@ async function buildShareImageBlob(detail){
       ctx.fillRect(0, imgH-140, canvas.width, 140);
     }
   }catch(e){
-    // ถ้าโหลดรูปไม่ได้ ก็ไม่พัง (แชร์แบบไม่มีรูปได้)
     ctx.fillStyle = "#1f2937";
     ctx.fillRect(0,0,canvas.width,imgH);
   }
 
-  // หัวเรื่อง
   ctx.fillStyle = "rgba(255,255,255,.98)";
   ctx.font = "900 46px system-ui, -apple-system, Segoe UI, Roboto, Arial";
   ctx.fillText("Smart Properties System", 46, 72);
@@ -807,7 +987,6 @@ async function buildShareImageBlob(detail){
   ctx.font = "800 38px system-ui, -apple-system, Segoe UI, Roboto, Arial";
   ctx.fillText(`Plot: ${plot}`, 46, 122);
 
-  // Badge สถานะเล็กๆ
   const pillX = 46, pillY = 152, pillW = 360, pillH = 54, r = 18;
   ctx.fillStyle = "rgba(255,255,255,.92)";
   roundRect(ctx, pillX, pillY, pillW, pillH, r, true, false);
@@ -815,7 +994,6 @@ async function buildShareImageBlob(detail){
   ctx.fillStyle = "#0f172a";
   ctx.fillText(status, pillX + 20, pillY + 37);
 
-  // กล่องข้อมูลด้านล่าง (2 คอลัมน์ / 5 แถว)
   const pad = 38;
   const boxY = imgH + 22;
   const boxX = 30;
@@ -825,12 +1003,10 @@ async function buildShareImageBlob(detail){
   ctx.fillStyle = "rgba(255,255,255,.92)";
   roundRect(ctx, boxX, boxY, boxW, boxH, 26, true, false);
 
-  // title ในกล่อง
   ctx.fillStyle = "#0f172a";
   ctx.font = "900 34px system-ui, -apple-system, Segoe UI, Roboto, Arial";
   ctx.fillText(projectName, boxX + pad, boxY + 52);
 
-  // เส้นคั่น
   ctx.strokeStyle = "rgba(15,23,42,.10)";
   ctx.lineWidth = 2;
   ctx.beginPath();
@@ -838,7 +1014,6 @@ async function buildShareImageBlob(detail){
   ctx.lineTo(boxX + boxW - pad, boxY + 72);
   ctx.stroke();
 
-  // ตาราง 2 คอลัมน์
   const startY = boxY + 112;
   const rowH = 74;
   const colGap = 28;
@@ -847,13 +1022,9 @@ async function buildShareImageBlob(detail){
   for(let i=0;i<rows.length && i<5;i++){
     const y = startY + i*rowH;
 
-    // ซ้าย
     drawKV(ctx, boxX + pad, y, colW, rows[i][0], rows[i][1]);
-
-    // ขวา
     drawKV(ctx, boxX + pad + colW + colGap, y, colW, rows[i][2], rows[i][3]);
 
-    // เส้นคั่นแถว
     ctx.strokeStyle = "rgba(15,23,42,.08)";
     ctx.lineWidth = 1;
     ctx.beginPath();
@@ -862,13 +1033,11 @@ async function buildShareImageBlob(detail){
     ctx.stroke();
   }
 
-  // URL เล็กๆ
   const urlText = location.href;
   ctx.fillStyle = "rgba(15,23,42,.65)";
   ctx.font = "700 20px system-ui, -apple-system, Segoe UI, Roboto, Arial";
   ctx.fillText(urlText.length > 70 ? (urlText.slice(0,67)+"...") : urlText, boxX + pad, boxY + boxH - 18);
 
-  // ส่งออก
   return await new Promise((resolve) => {
     canvas.toBlob((blob)=> resolve(blob), "image/png", 0.92);
   });
@@ -896,7 +1065,6 @@ function drawKV(ctx, x, y, w, key, val){
   ctx.font = "900 26px system-ui, -apple-system, Segoe UI, Roboto, Arial";
 
   const text = String(val || "-");
-  // ตัดบรรทัดแบบง่าย (1 บรรทัด)
   const maxW = w;
   let out = text;
   while(ctx.measureText(out).width > maxW && out.length > 3){
@@ -906,9 +1074,7 @@ function drawKV(ctx, x, y, w, key, val){
   ctx.fillText(out, x, y + 34);
 }
 
-/** =========================
- * ✅ Share handlers
- * ========================= */
+/** Share handlers (เดิมของคุณ) */
 function buildShareText(detail){
   const safe = (v)=> (v===undefined || v===null || String(v).trim()==="" ? "-" : String(v).trim());
   const projectName = safe(detail.Project_Name || detail.ProjectName || detail.Project || project);
@@ -922,7 +1088,6 @@ async function shareNative(detail){
   const title = "Smart Properties System";
   const text = buildShareText(detail);
 
-  // พยายามแชร์แบบมีรูป (file share)
   try{
     const blob = await buildShareImageBlob(detail);
     if(blob && navigator.canShare){
@@ -933,17 +1098,12 @@ async function shareNative(detail){
         return;
       }
     }
-  }catch(e){
-    // ถ้าแชร์ไฟล์ไม่ได้ ให้ตกไปแชร์ปกติ
-  }
+  }catch(e){}
 
-  // แชร์แบบลิงก์/ข้อความ
   if (navigator.share){
     await navigator.share({ title, text, url: location.href });
     return;
   }
-
-  // fallback
   window.open(location.href, "_blank");
 }
 
@@ -956,7 +1116,6 @@ function openShareUrl(type, detail){
     return;
   }
   if(type === "messenger"){
-    // ไม่มี app_id (จึงใช้ fallback เป็น share link)
     window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank");
     return;
   }
@@ -985,7 +1144,6 @@ async function copyLink(){
     await navigator.clipboard.writeText(location.href);
     alert("คัดลอกลิงก์แล้ว");
   }catch(e){
-    // fallback
     const ta = document.createElement("textarea");
     ta.value = location.href;
     document.body.appendChild(ta);
@@ -1008,7 +1166,6 @@ function wireShareButtons(){
     if(type === "copy") return copyLink();
     if(type === "native") return shareNative(CURRENT_DETAIL);
 
-    // platform share via URL
     openShareUrl(type, CURRENT_DETAIL);
   });
 }
@@ -1051,7 +1208,7 @@ function wireShareButtons(){
   // ✅ ราคา
   document.getElementById("priceText").textContent = moneyTHB(detail.Price || 0);
 
-  // ✅ (ข้อ 1) สถานะย้ายลงล่าง
+  // ✅ สถานะ (อยู่แถวเดียวกับราคาแล้ว)
   const stText = String(detail.Status || "Available").trim() || "Available";
   const stEl = document.getElementById("statusBelow");
   stEl.textContent = stText;
@@ -1091,8 +1248,10 @@ function wireShareButtons(){
     pre.src = images[1];
   }
 
-  // ✅ (ข้อ 1) แสดงข้อมูลตามลิสต์ที่กำหนด
   renderInfo(detail);
+
+  // ✅ จุดที่ 3: โหลดรายการอื่นๆ
+  loadOtherUnits();
 })();
 </script>
 </body>
