@@ -153,6 +153,22 @@
           </select>
         </div>
 
+        <!-- ✅ NEW: Zone (Dropdown) -->
+        <div>
+          <span class="field-label">Zone</span>
+          <select id="Zone" class="field-input">
+            <option value="">-- Select Zone --</option>
+            <option value="Hua Hin">Hua Hin</option>
+            <option value="Pranburi">Pranburi</option>
+            <option value="Cha-am">Cha-am</option>
+            <option value="Beachside">Beachside</option>
+            <option value="Nature">Nature</option>
+            <option value="City">City</option>
+            <option value="Quiet">Quiet</option>
+          </select>
+        </div>
+        <!-- ✅ END NEW -->
+
         <div><span class="field-label">Commission</span><input id="Commission" class="field-input"></div>
 
         <div class="col-span-full border-t pt-6"><span class="field-label">External Links</span></div>
@@ -422,6 +438,9 @@
         Status: document.getElementById("Status").value,
         District: document.getElementById("District").value,
         SubDistrict: document.getElementById("SubDistrict").value,
+
+        // ✅ NEW: Zone ส่งเข้าหลังบ้าน
+        Zone: document.getElementById("Zone").value,
 
         Price: document.getElementById("Price").value,
         Price_SQM: document.getElementById("Price_SQM").value,
