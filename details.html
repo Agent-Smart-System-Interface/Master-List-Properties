@@ -333,7 +333,6 @@
 
     /* =========================
        ✅ Other Plots
-       ✅ จุดที่ 1: ลดขนาด Plot + ลดขนาดป้ายสถานะ และอนุญาตให้ Plot ขึ้นบรรทัดใหม่เพื่อเห็นครบ
        ========================= */
     .otherSection{
       margin-top:14px;
@@ -392,23 +391,23 @@
       align-items:flex-start;
       justify-content:space-between;
       gap:8px;
-      flex-wrap:wrap;            /* ✅ ให้ Plot แสดงครบ (ยอมขึ้นบรรทัดใหม่ได้) */
+      flex-wrap:wrap;
     }
     .otherPlot{
       font-weight:1100;
-      font-size:13px;            /* ✅ ลดขนาด Plot */
+      font-size:13px;
       color: rgba(15,23,42,.95);
-      white-space:normal;        /* ✅ ไม่ตัด ... */
+      white-space:normal;
       overflow:visible;
       text-overflow:clip;
       flex:1 1 auto;
       min-width:0;
     }
     .otherStatus{
-      padding:5px 8px;           /* ✅ ลดขนาดป้ายสถานะ */
+      padding:5px 8px;
       border-radius: 999px;
       font-weight:1100;
-      font-size:11px;            /* ✅ ลดขนาดตัวอักษรสถานะ */
+      font-size:11px;
       background: rgba(255,255,255,.92);
       border: 2px solid rgba(15,23,42,.15);
       color: rgba(15,23,42,.88);
@@ -421,14 +420,18 @@
       color: rgba(15,23,42,.92);
       white-space:nowrap;
     }
+
+    /* ✅ จุดที่ 1: ทำ Land/Living ให้เล็กลง + บางลง และพยายามให้โชว์ครบใน 1 แถว */
     .otherId{
-      font-weight:900;
-      font-size:12px;
+      font-weight:600;                 /* ✅ บางลง */
+      font-size:11px;                  /* ✅ เล็กลง */
+      letter-spacing:-0.2px;
       color: rgba(15,23,42,.55);
-      white-space:nowrap;
+      white-space:nowrap;              /* ✅ 1 แถว */
       overflow:hidden;
-      text-overflow:ellipsis;
+      text-overflow:clip;              /* ✅ ไม่ใส่ ... */
     }
+
     @media (max-width:360px){
       .otherGrid{ grid-template-columns: 1fr; }
     }
@@ -847,7 +850,6 @@ function renderInfo(detail){
 
   grid.innerHTML = "";
   for(const [k,v] of items){
-    // ✅ จุดที่ 3: วาดกล่อง 2 คอลัมน์ในกล่องเดียว
     if(k === "__DOUBLE__"){
       const box = document.createElement("div");
       box.className = "infoBox double";
@@ -924,7 +926,7 @@ function renderOtherUnits(units){
   grid.innerHTML = "";
 
   for(const u of units){
-    const id = getUnitId(u);                 // (คงไว้สำหรับลิงก์/กรอง)
+    const id = getUnitId(u);
     const plot = getPlot(u) || id || "-";
     const thumb = getThumb(u);
     const st = getStatus(u);
@@ -932,10 +934,10 @@ function renderOtherUnits(units){
 
     const pill = statusStyle(st);
 
-    // ✅ จุดที่ 1: แทนที่ “HP-Z002” ด้วย Land/Living (sq.m)
+    // ✅ จุดที่ 1: เปลี่ยนเป็น Land / Living ให้สั้นลงเพื่อโชว์ครบ 1 แถว
     const landM = safeText(getLandSqm(u));
     const livingM = safeText(getLivingSqm(u));
-    const landLivingText = `Land (sq.m) ${landM}   Living (sq.m) ${livingM}`;
+    const landLivingText = `Land ${landM} · Living ${livingM}`;
 
     const card = document.createElement("div");
     card.className = "otherCard";
