@@ -19,11 +19,18 @@
       ระบบจัดการข้อมูลฝากขายตรง<br>Authorized Personnel Only
     </p>
 
-    <a href="dashboard.html?project=Project_0"
+    <a id="goDash" href="dashboard.html?project=project_000"
        class="group block w-full py-6 bg-slate-900 text-white rounded-[2rem] font-bold uppercase text-[11px] tracking-widest
               hover:bg-blue-600 transition-all shadow-2xl active:scale-95">
       Login to Dashboard <span class="inline-block ml-2 group-hover:translate-x-2 transition-transform">➜</span>
     </a>
   </div>
+
+  <script>
+    // ✅ NEW: ส่งผ่าน project จาก URL ถ้ามี (ถ้าไม่มีก็ใช้ project_000)
+    const qs = new URLSearchParams(location.search);
+    const p = qs.get("project") || "project_000";
+    document.getElementById("goDash").href = "dashboard.html?project=" + encodeURIComponent(p);
+  </script>
 </body>
 </html>
