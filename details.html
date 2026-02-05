@@ -82,12 +82,14 @@
       display:block;
     }
 
+    /* ✅ จุดที่ 1: ทำ Plot บนรูปให้เล็กลงนิด เพื่อไม่บังเลข */
     .tagTopLeft{
       position:absolute;
-      padding:10px 14px;
+      padding:8px 12px;
       border-radius: 999px;
       background: rgba(255,255,255,.78);
       font-weight:1100;
+      font-size:14px;               /* ✅ ลดขนาดตัวอักษร Plot */
       box-shadow: 0 10px 20px rgba(0,0,0,.12);
       backdrop-filter: blur(8px);
       border:1px solid rgba(255,255,255,.65);
@@ -147,12 +149,12 @@
       align-items:center;
       justify-content:space-between;
       gap:10px;
-      flex-wrap:nowrap;          /* ✅ สำคัญ: ให้อยู่บรรทัดเดียว */
+      flex-wrap:nowrap;
     }
     .hp{display:none;}
 
     .price{
-      font-size:28px;            /* ✅ ลดขนาดลง */
+      font-size:28px;
       font-weight:1100;
       letter-spacing:.2px;
       white-space:nowrap;
@@ -164,10 +166,10 @@
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      padding:8px 12px;          /* ✅ ให้เล็กลง */
+      padding:8px 12px;
       border-radius: 12px;
       font-weight:1100;
-      font-size:16px;            /* ✅ ให้เล็กลง */
+      font-size:16px;
       line-height:1;
       background: rgba(255,255,255,.92);
       border: 2px solid rgba(16,185,129,.55);
@@ -180,6 +182,7 @@
     @media (max-width:420px){
       .price{font-size:24px}
       .statusBelow{font-size:14px; padding:7px 10px;}
+      .tagTopLeft{font-size:13px; padding:7px 10px;}
     }
 
     .gridInfo{
@@ -201,6 +204,28 @@
     }
     .k{color:rgba(15,23,42,.55); font-weight:900;}
     .v{color:rgba(15,23,42,.95); font-weight:1100; text-align:right; white-space:pre-wrap;}
+
+    /* ✅ จุดที่ 3: แถวเดียวกัน 2 ค่า (Land sq.w + Living sqm) */
+    .infoBox.double{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      align-items:start;
+    }
+    .infoPair{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      min-width:0;
+    }
+    .infoPair .k{white-space:nowrap;}
+    .infoPair .v{
+      text-align:right;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      min-width:0;
+    }
 
     .errorBox{
       margin-top:14px;
@@ -307,7 +332,8 @@
     }
 
     /* =========================
-       ✅ จุดที่ 3: Other Plots (2 คอลัมน์ / สูงสุด 5 แถว)
+       ✅ Other Plots
+       ✅ จุดที่ 1: ลดขนาด Plot + ลดขนาดป้ายสถานะ และอนุญาตให้ Plot ขึ้นบรรทัดใหม่เพื่อเห็นครบ
        ========================= */
     .otherSection{
       margin-top:14px;
@@ -334,7 +360,7 @@
     .otherGrid{
       margin-top:12px;
       display:grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));  /* ✅ 2 คอลัมน์ */
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap:12px;
     }
     .otherCard{
@@ -363,23 +389,26 @@
     }
     .otherTopRow{
       display:flex;
-      align-items:center;
+      align-items:flex-start;
       justify-content:space-between;
-      gap:10px;
+      gap:8px;
+      flex-wrap:wrap;            /* ✅ ให้ Plot แสดงครบ (ยอมขึ้นบรรทัดใหม่ได้) */
     }
     .otherPlot{
       font-weight:1100;
+      font-size:13px;            /* ✅ ลดขนาด Plot */
       color: rgba(15,23,42,.95);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width:60%;
+      white-space:normal;        /* ✅ ไม่ตัด ... */
+      overflow:visible;
+      text-overflow:clip;
+      flex:1 1 auto;
+      min-width:0;
     }
     .otherStatus{
-      padding:6px 10px;
+      padding:5px 8px;           /* ✅ ลดขนาดป้ายสถานะ */
       border-radius: 999px;
       font-weight:1100;
-      font-size:12px;
+      font-size:11px;            /* ✅ ลดขนาดตัวอักษรสถานะ */
       background: rgba(255,255,255,.92);
       border: 2px solid rgba(15,23,42,.15);
       color: rgba(15,23,42,.88);
@@ -401,7 +430,7 @@
       text-overflow:ellipsis;
     }
     @media (max-width:360px){
-      .otherGrid{ grid-template-columns: 1fr; } /* จอเล็กมากค่อยตกเป็น 1 */
+      .otherGrid{ grid-template-columns: 1fr; }
     }
 
     /* =========================
@@ -461,7 +490,6 @@
 
     /* ซ่อน canvas */
     #shareCanvas{ display:none; }
-
   </style>
 </head>
 <body>
@@ -510,27 +538,15 @@
       <div class="thumbStrip" id="thumbStrip"></div>
 
       <div class="content">
-        <!-- ✅ จุดที่ 1-2: ราคาเล็กลง + Available อยู่แถวเดียวกัน -->
         <div class="headRow">
           <div class="hp" id="hpText">...</div>
           <div class="price" id="priceText">฿0</div>
           <div class="statusBelow" id="statusBelow">-</div>
         </div>
 
-        <div class="gridInfo" id="infoGrid">
-          <!-- info -->
-        </div>
+        <div class="gridInfo" id="infoGrid"></div>
 
-        <!-- ✅ จุดที่ 3: Other Plots (2 columns / max 5 rows) -->
-        <div class="otherSection" id="otherSection">
-          <div class="otherTitle">
-            <div>Other Plots</div>
-            <div class="otherHint">Tap to view details</div>
-          </div>
-          <div class="otherGrid" id="otherGrid"></div>
-        </div>
-
-        <!-- ✅ Share icons: 8 icons / centered / scrollable -->
+        <!-- ✅ จุดที่ 2: ย้ายชุด Share ขึ้นมาไว้ “ใต้ข้อมูล/ก่อน Grid Other Plots” -->
         <div class="shareSection" id="shareSection">
           <div class="shareTopIcon" aria-hidden="true" title="Share">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -625,6 +641,15 @@
           </div>
 
           <canvas id="shareCanvas" width="1200" height="630"></canvas>
+        </div>
+
+        <!-- Other Plots -->
+        <div class="otherSection" id="otherSection">
+          <div class="otherTitle">
+            <div>Other Plots</div>
+            <div class="otherHint">Tap to view details</div>
+          </div>
+          <div class="otherGrid" id="otherGrid"></div>
         </div>
       </div>
     </div>
@@ -771,7 +796,7 @@ function enableSwipe(){
   });
 }
 
-/** จัดเรียงข้อมูล (ตามโค้ดเดิมของคุณ) */
+/** จัดเรียงข้อมูล (ปรับเฉพาะข้อที่ขอ) */
 function renderInfo(detail){
   const grid = document.getElementById("infoGrid");
 
@@ -788,6 +813,10 @@ function renderInfo(detail){
     return "";
   };
 
+  // ✅ จุดที่ 3: ดึง 2 ค่าเพื่อโชว์ “แถวเดียวกัน”
+  const landW = safe(pick(detail, ["Land_Area_sq_w","Land_Area_SQW","LandAreaSQW","Land_sq_w"]));
+  const livingM = safe(pick(detail, ["Living_Area_sq_m","Living_Area_SQM","LivingAreaSQM","Living_sq_m"]));
+
   const items = [
     ["Project_Name", safe(pick(detail, ["Project_Name","ProjectName","Project_Name_En","Project_Name_TH","Project"]))],
     ["District", safe(pick(detail, ["District","district"]))],
@@ -798,9 +827,14 @@ function renderInfo(detail){
     ["SubDistrict", safe(pick(detail, ["SubDistrict","Sub_District","subdistrict"]))],
     ["Bedrooms", safe(pick(detail, ["Bedrooms","Bedroom","beds"]))],
     ["Bathrooms", safe(pick(detail, ["Bathrooms","Bathroom","baths"]))],
-    ["Land Area (sq.w)", safe(pick(detail, ["Land_Area_sq_w","Land_Area_SQW","LandAreaSQW","Land_sq_w"]))],
+
+    // ✅ จุดที่ 3: 2 อย่างในแถวเดียวกัน
+    ["__DOUBLE__", {
+      k1: "Land Area (sq.w)", v1: landW,
+      k2: "Living Area (sq.m)", v2: livingM
+    }],
+
     ["Land Area (sq.m)", safe(pick(detail, ["Land_Area_sq_m","Land_Area_SQM","LandAreaSQM","Land_sq_m"]))],
-    ["Living Area (sq.m)", safe(pick(detail, ["Living_Area_sq_m","Living_Area_SQM","LivingAreaSQM","Living_sq_m"]))],
     ["Pool Size", safe(pick(detail, ["Pool_Size","PoolSize"]))],
     ["Pool Depth", safe(pick(detail, ["Pool_Depth","PoolDepth"]))],
     ["Furnishing", safe(pick(detail, ["Furnishing","furnishing"]))],
@@ -813,6 +847,18 @@ function renderInfo(detail){
 
   grid.innerHTML = "";
   for(const [k,v] of items){
+    // ✅ จุดที่ 3: วาดกล่อง 2 คอลัมน์ในกล่องเดียว
+    if(k === "__DOUBLE__"){
+      const box = document.createElement("div");
+      box.className = "infoBox double";
+      box.innerHTML = `
+        <div class="infoPair"><div class="k">${v.k1}</div><div class="v">${v.v1}</div></div>
+        <div class="infoPair"><div class="k">${v.k2}</div><div class="v">${v.v2}</div></div>
+      `;
+      grid.appendChild(box);
+      continue;
+    }
+
     const box = document.createElement("div");
     box.className = "infoBox";
     box.innerHTML = `<div class="k">${k}</div><div class="v">${v}</div>`;
@@ -821,7 +867,7 @@ function renderInfo(detail){
 }
 
 /** =========================
- * ✅ จุดที่ 3: โหลด “Other Plots” และแสดง 2 คอลัมน์ / สูงสุด 5 แถว
+ * Other Plots
  * ========================= */
 function getUnitId(u){
   return String(u?.HP_ID || u?.id || u?.hpId || u?.Unit_ID || "").trim();
@@ -844,7 +890,6 @@ function renderOtherUnits(units){
   const section = document.getElementById("otherSection");
 
   if(!Array.isArray(units) || units.length === 0){
-    // ถ้าไม่มีข้อมูล ก็ซ่อนทั้ง section เพื่อไม่กินพื้นที่
     section.style.display = "none";
     return;
   }
@@ -894,7 +939,7 @@ async function loadOtherUnits(){
 
     const filtered = data
       .filter(u => getUnitId(u) && getUnitId(u) !== String(hpId).trim())
-      .slice(0, 10); // ✅ 2 คอลัมน์ x 5 แถว = 10 ใบ
+      .slice(0, 10);
 
     renderOtherUnits(filtered);
   }catch(e){
@@ -903,7 +948,7 @@ async function loadOtherUnits(){
 }
 
 /** =========================
- * ✅ Share image (เดิมของคุณ)
+ * Share image (เดิมของคุณ)
  * ========================= */
 async function buildShareImageBlob(detail){
   const canvas = document.getElementById("shareCanvas");
@@ -1205,10 +1250,8 @@ function wireShareButtons(){
   document.getElementById("pageTitle").textContent = `Detail Plot: ${plotText}`;
   document.getElementById("tagPlot").textContent = plotText;
 
-  // ✅ ราคา
   document.getElementById("priceText").textContent = moneyTHB(detail.Price || 0);
 
-  // ✅ สถานะ (อยู่แถวเดียวกับราคาแล้ว)
   const stText = String(detail.Status || "Available").trim() || "Available";
   const stEl = document.getElementById("statusBelow");
   stEl.textContent = stText;
@@ -1217,7 +1260,6 @@ function wireShareButtons(){
   stEl.style.borderColor = st.border;
   stEl.style.color = st.text;
 
-  // รูปหลัก + รูปใน Image_List
   const thumb = cleanDriveImage(detail.Thumbnail_Image || "");
   const list = String(detail.Image_List || "")
     .split(",").map(s=>cleanDriveImage(s.trim()))
@@ -1249,8 +1291,6 @@ function wireShareButtons(){
   }
 
   renderInfo(detail);
-
-  // ✅ จุดที่ 3: โหลดรายการอื่นๆ
   loadOtherUnits();
 })();
 </script>
