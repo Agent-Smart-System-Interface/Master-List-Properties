@@ -1,610 +1,350 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>smart properties system · details</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PROJECT DASHBOARD</title>
 
-  <link rel="preconnect" href="https://script.google.com">
-  <link rel="preconnect" href="https://lh3.googleusercontent.com">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    :root{
-      --bg:#a8bdd6;
-      --card:#ffffff;
-      --text:#0f172a;
-      --muted:#6b7c93;
-      --radius:22px;
-      --shadow: 0 12px 30px rgba(0,0,0,.12);
-      --soft:#f3f6fb;
-      --line:rgba(255,255,255,.45);
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans Thai", sans-serif;
-      background: radial-gradient(ellipse at top, rgba(255,255,255,.25), rgba(255,255,255,0) 55%) , var(--bg);
-      color:var(--text);
-    }
-    .wrap{max-width:1100px; margin:0 auto; padding:16px 14px 30px;}
-
-    .topbar{
-      display:flex; align-items:center; justify-content:space-between;
-      padding:12px 12px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.18);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--line);
-    }
-    .brand{display:flex; gap:12px; align-items:center;}
-    .logo{
-      width:44px; height:44px; border-radius:999px; background:rgba(255,255,255,.55);
-      display:grid; place-items:center; font-weight:800;
-      flex:0 0 auto;
-    }
-    .titles{min-width:0}
-    .titles h1{
-      margin:0;
-      font-size:20px;
-      line-height:1.15;
-      font-weight:1100;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      letter-spacing:.2px;
-    }
-    .titles .sub{display:none;}
-    .backBtn{
-      width:44px; height:44px; border-radius:999px;
-      border:0; background: rgba(255,255,255,.55);
-      cursor:pointer; font-size:18px; font-weight:900;
-      flex:0 0 auto;
-    }
-
-    .card{
-      margin-top:14px;
-      background: rgba(255,255,255,.88);
-      border:1px solid rgba(255,255,255,.65);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-
-    /* Gallery */
-    .gallery{
-      position:relative;
-      background:#dfe9f6;
-    }
-    .mainSlide{
-      width:100%;
-      aspect-ratio: 16/10;
-      object-fit:cover;
-      display:block;
-    }
-
-    .tagTopLeft{
-      position:absolute;
-      padding:10px 14px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.78);
-      font-weight:1000;
-      box-shadow: 0 10px 20px rgba(0,0,0,.12);
-      backdrop-filter: blur(8px);
-      border:1px solid rgba(255,255,255,.65);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width: 78%;
-      left:14px; top:14px;
-    }
-
-    /* ✅ (ข้อ 2) ทำตัวเลขนับรูปเล็กลง + ไม่มี background */
-    .tagBottomRight{
-      position:absolute;
-      right:14px;
-      bottom:14px;
-      padding:0;
-      border-radius:0;
-      background: transparent;
-      box-shadow:none;
-      backdrop-filter:none;
-      border:0;
-      font-weight:1100;
-      font-size:14px;
-      color: rgba(255,255,255,.98);
-      text-shadow: 0 10px 18px rgba(0,0,0,.45);
-      user-select:none;
-      pointer-events:none;
-    }
-
-    .thumbStrip{
-      background: rgba(255,255,255,.78);
-      padding:10px;
-      display:flex;
-      gap:10px;
-      overflow:auto;
-      scroll-snap-type: x mandatory;
-    }
-    .thumb{
-      width:92px; height:64px;
-      flex:0 0 auto;
-      border-radius: 16px;
-      object-fit:cover;
-      border:3px solid transparent;
-      cursor:pointer;
-      scroll-snap-align: start;
-      background:#e8f0fb;
-    }
-    .thumb.active{border-color:#0f172a;}
-
-    .content{padding:14px;}
-
-    /* แถวราคา + สถานะ (ย้าย Available ลงล่างตามที่ทำเครื่องหมายไว้) */
-    .headRow{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      flex-wrap:wrap;
-    }
-    .hp{display:none;}
-    .price{
-      font-size:34px;
-      font-weight:1100;
-      letter-spacing:.2px;
-    }
-
-    /* ✅ (ข้อ 1) ป้าย Available แบบด้านล่าง */
-    .statusBelow{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      min-width: 160px;
-      padding:12px 18px;
-      border-radius: 14px;
-      font-weight:1100;
-      font-size:22px;
-      line-height:1;
-      background: rgba(255,255,255,.92);
-      border: 2px solid rgba(16,185,129,.55);
-      color: rgba(5,150,105,1);
-      box-shadow: 0 12px 24px rgba(0,0,0,.10);
-      white-space:nowrap;
-    }
-    @media (max-width:420px){
-      .price{font-size:30px}
-      .statusBelow{font-size:18px; min-width:140px; padding:10px 14px;}
-    }
-
-    .gridInfo{
-      margin-top:14px;
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:10px;
-    }
-    @media(min-width:900px){
-      .gridInfo{grid-template-columns: repeat(3, 1fr);}
-    }
-    .infoBox{
-      background: rgba(15,23,42,.05);
-      border:1px solid rgba(15,23,42,.06);
-      border-radius: 18px;
-      padding:12px 12px;
-      display:flex; justify-content:space-between; gap:10px;
-      font-weight:1000;
-    }
-    .k{color:rgba(15,23,42,.55); font-weight:900;}
-    .v{color:rgba(15,23,42,.95); font-weight:1100; text-align:right;}
-
-    .errorBox{
-      margin-top:14px;
-      padding:14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.7);
-      border:1px solid rgba(255,255,255,.65);
-      font-weight:1000;
-      color:#8b1d1d;
-      display:none;
-    }
-    .skeleton{
-      background: linear-gradient(90deg, rgba(255,255,255,.55), rgba(255,255,255,.25), rgba(255,255,255,.55));
-      background-size: 200% 100%;
-      animation: shimmer 1.2s infinite linear;
-    }
-    @keyframes shimmer{
-      0%{background-position: 200% 0;}
-      100%{background-position: -200% 0;}
-    }
-
-    /* Loading overlay (คงเดิม) */
-    .pageLoader{
-      position:fixed;
-      inset:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background: radial-gradient(ellipse at top, rgba(255,255,255,.25), rgba(255,255,255,0) 55%) , var(--bg);
-      z-index:99999;
-    }
-    .loaderPanel{
-      text-align:center;
-      padding:18px 22px;
-      border-radius: 26px;
-      background: rgba(255,255,255,.18);
-      border: 1px solid var(--line);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 18px 40px rgba(0,0,0,.16);
-      max-width: 92vw;
-    }
-    .loaderEmojis{
-      display:flex;
-      gap:18px;
-      justify-content:center;
-      align-items:center;
-      font-size:52px;
-      line-height:1;
-      filter: drop-shadow(0 10px 20px rgba(0,0,0,.18));
-    }
-    .loaderEmojis span{
-      display:inline-block;
-      animation: bounce 0.9s ease-in-out infinite;
-    }
-    .loaderEmojis span:nth-child(2){ animation-delay: .12s; }
-    .loaderEmojis span:nth-child(3){ animation-delay: .24s; }
-    @keyframes bounce{
-      0%,100%{ transform: translateY(0); opacity:.95; }
-      50%{ transform: translateY(-12px); opacity:1; }
-    }
-    .loaderText{
-      margin-top:12px;
-      font-weight:1100;
-      letter-spacing:.6px;
-      color: rgba(15,23,42,.92);
-      text-shadow: 0 10px 22px rgba(0,0,0,.10);
-      font-size:22px;
-      white-space:nowrap;
-    }
-    @media (max-width:420px){
-      .loaderEmojis{font-size:44px}
-      .loaderText{font-size:18px}
-    }
-
-    /* ลูกศรโปร่งแสง (คงเดิม) */
-    .navArrow{
-      position:absolute;
-      top:50%;
-      transform: translateY(-50%);
-      width:54px;
-      height:54px;
-      border-radius: 999px;
-      border:1px solid rgba(255,255,255,.55);
-      background: rgba(255,255,255,.22);
-      backdrop-filter: blur(8px);
-      box-shadow: 0 10px 22px rgba(0,0,0,.14);
-      display:grid;
-      place-items:center;
-      cursor:pointer;
-      user-select:none;
-      z-index:5;
-    }
-    .navArrow:active{ transform: translateY(-50%) scale(.98); }
-    .navArrow svg{
-      width:24px;height:24px;
-      stroke: rgba(255,255,255,.95);
-      opacity:.95;
-    }
-    .navLeft{ left:14px; }
-    .navRight{ right:14px; }
-    @media (max-width:420px){
-      .navArrow{ width:48px;height:48px; }
-      .navArrow svg{ width:22px;height:22px; }
-    }
+    body { font-family: 'Kanit', sans-serif; background: #f8fafc; }
   </style>
 </head>
-<body>
 
-  <div class="pageLoader" id="pageLoader" aria-label="loading">
-    <div class="loaderPanel">
-      <div class="loaderEmojis" aria-hidden="true">
-        <span>🏠</span><span>✨</span><span>🌴</span>
+<body class="p-4 md:p-10 italic">
+  <div class="max-w-6xl mx-auto">
+
+    <!-- TOP BAR: ONLY PROJECT NAME + HOME ICON -->
+    <div class="bg-slate-900 rounded-[2.2rem] px-6 py-6 md:px-10 md:py-7 text-white mb-6 shadow-2xl flex items-center justify-between">
+      <div id="projectTitle" class="text-xl md:text-2xl font-bold tracking-tight italic truncate">
+        Loading...
       </div>
-      <div class="loaderText">Smart Properties System</div>
+
+      <!-- Home Icon (กลับหน้าแรก) -->
+      <a id="homeBtn" href="index.html"
+         class="w-14 h-14 md:w-14 md:h-14 rounded-2xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all active:scale-95"
+         aria-label="Home">
+        <i class="fa-solid fa-house text-xl"></i>
+      </a>
     </div>
+
+    <!-- LOADING -->
+    <div id="loadingBlock" class="bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-8 text-center text-slate-300 font-bold animate-pulse uppercase">
+      🔄 Syncing database...
+    </div>
+
+    <!-- MOBILE (Cards) -->
+    <div id="mobileList" class="hidden space-y-4"></div>
+
+    <!-- DESKTOP (Table) -->
+    <div id="desktopTableWrap" class="hidden bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100">
+      <table class="w-full text-center">
+        <thead class="bg-slate-900 text-white text-[10px] uppercase">
+          <tr>
+            <th class="py-6 pl-8 text-left">Cover</th>
+            <th class="text-left">Unit ID</th>
+            <th class="text-left">Plot</th>
+            <th>Status</th>
+            <th>Visibility</th>
+            <th>Manage</th>
+          </tr>
+        </thead>
+        <tbody id="unitTableBody" class="text-xs"></tbody>
+      </table>
+    </div>
+
   </div>
 
-  <div class="wrap">
-    <div class="topbar">
-      <div class="brand">
-        <div class="logo">SP</div>
-        <div class="titles">
-          <h1 id="pageTitle">Detail Plot: -</h1>
-          <div class="sub" id="subTitle">Details · ...</div>
-        </div>
-      </div>
-      <button class="backBtn" id="btnBack">←</button>
-    </div>
+  <script>
+    // ================================
+    // CONFIG
+    // ================================
+    const API_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
+    const urlParams = new URLSearchParams(window.location.search);
+    const PROJECT_ID = urlParams.get("project") || "Project_0";
 
-    <div class="errorBox" id="errBox"></div>
+    const HOME_URL = "index.html";
+    document.getElementById("homeBtn").href = HOME_URL;
 
-    <div class="card" id="mainCard">
-      <div class="gallery" id="gallery">
-        <img class="mainSlide skeleton" id="mainImg" alt="main" />
-        <div class="tagTopLeft" id="tagPlot">-</div>
-        <div class="tagBottomRight" id="tagCount">0 / 0</div>
+    // ================================
+    // HELPERS: Badge Colors
+    // ================================
+    function statusBadge(status) {
+      const raw = (status ?? "").toString().trim();
+      const s = raw.toLowerCase();
 
-        <div class="navArrow navLeft" id="btnPrev" aria-label="previous">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M15 18l-6-6 6-6"></path>
-          </svg>
-        </div>
-        <div class="navArrow navRight" id="btnNext" aria-label="next">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 6l6 6-6 6"></path>
-          </svg>
-        </div>
-      </div>
+      if (!raw || raw === "-") {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-100 text-slate-500">
+                  <span class="w-2 h-2 rounded-full bg-slate-300"></span> -
+                </span>`;
+      }
 
-      <div class="thumbStrip" id="thumbStrip"></div>
+      if (s.includes("available")) {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-emerald-50 text-emerald-700">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Available
+                </span>`;
+      }
 
-      <div class="content">
-        <!-- ✅ (ข้อ 1) ย้าย Available มาอยู่ด้านล่างในแถวราคา -->
-        <div class="headRow">
-          <div class="hp" id="hpText">...</div>
-          <div class="price" id="priceText">฿0</div>
-          <div class="statusBelow" id="statusBelow">-</div>
-        </div>
+      if (s.includes("under") || s.includes("construct")) {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-sky-50 text-sky-700">
+                  <span class="w-2 h-2 rounded-full bg-sky-500"></span> Under Construction
+                </span>`;
+      }
 
-        <div class="gridInfo" id="infoGrid">
-          <!-- info -->
-        </div>
-      </div>
-    </div>
-  </div>
+      if (s.includes("reserved")) {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-amber-50 text-amber-700">
+                  <span class="w-2 h-2 rounded-full bg-amber-500"></span> Reserved
+                </span>`;
+      }
 
-<script>
-/** =========================
- * CONFIG
- * ========================= */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
-const qs = new URLSearchParams(location.search);
-const hpId = qs.get("id") || qs.get("hpId") || "";
-const project = qs.get("project") || "Project_0";
+      if (s.includes("sold")) {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-rose-50 text-rose-700">
+                  <span class="w-2 h-2 rounded-full bg-rose-500"></span> Sold
+                </span>`;
+      }
 
-/** Loader helpers */
-function showLoader(){
-  const el = document.getElementById("pageLoader");
-  if(el) el.style.display = "flex";
-}
-function hideLoader(){
-  const el = document.getElementById("pageLoader");
-  if(el) el.style.display = "none";
-}
-
-/** JSONP */
-function jsonp(url, timeoutMs = 20000){
-  return new Promise((resolve, reject) => {
-    const cb = "cb_" + Math.random().toString(36).slice(2);
-    const script = document.createElement("script");
-    const timer = setTimeout(() => { cleanup(); reject(new Error("timeout")); }, timeoutMs);
-
-    function cleanup(){
-      clearTimeout(timer);
-      if (script.parentNode) script.parentNode.removeChild(script);
-      try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
+      return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-50 text-slate-700">
+                <span class="w-2 h-2 rounded-full bg-slate-400"></span> ${escapeHtml(raw)}
+              </span>`;
     }
-    window[cb] = (data) => { cleanup(); resolve(data); };
 
-    const sep = url.includes("?") ? "&" : "?";
-    script.src = url + sep + "callback=" + encodeURIComponent(cb);
-    script.onerror = () => { cleanup(); reject(new Error("jsonp_error")); };
-    document.body.appendChild(script);
-  });
-}
+    function visibilityBadge(v) {
+      const raw = (v ?? "").toString().trim();
+      const s = raw.toLowerCase();
 
-function showError(msg){
-  const box = document.getElementById("errBox");
-  box.style.display = "block";
-  box.textContent = msg;
-}
-function hideError(){
-  const box = document.getElementById("errBox");
-  box.style.display = "none";
-  box.textContent = "";
-}
+      if (!raw || raw === "-") {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-100 text-slate-500">
+                  <span class="w-2 h-2 rounded-full bg-slate-300"></span> -
+                </span>`;
+      }
 
-function toNumber(x){
-  const s = String(x ?? "").replace(/,/g,"").trim();
-  const n = Number(s);
-  return Number.isFinite(n) ? n : 0;
-}
-function moneyTHB(x){
-  const n = toNumber(x);
-  return "฿" + n.toLocaleString("en-US");
-}
-function cleanDriveImage(url){
-  const u = String(url || "").trim();
-  if(!u) return "";
-  if (u.includes("lh3.googleusercontent.com/d/")) return u;
+      if (s.includes("live") || s.includes("online")) {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-blue-50 text-blue-700">
+                  <span class="w-2 h-2 rounded-full bg-blue-500"></span> Live
+                </span>`;
+      }
 
-  let id = "";
-  const m1 = u.match(/\/d\/([a-zA-Z0-9_-]+)/);
-  if (m1) id = m1[1];
-  const m2 = u.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-  if (!id && m2) id = m2[1];
-  const m3 = u.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-  if (!id && m3) id = m3[1];
+      if (s.includes("pending") || s.includes("review")) {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-amber-50 text-amber-700">
+                  <span class="w-2 h-2 rounded-full bg-amber-500"></span> Pending
+                </span>`;
+      }
 
-  if (id) return "https://lh3.googleusercontent.com/d/" + id;
-  return u;
-}
+      if (s.includes("off") || s.includes("offline") || s.includes("hide")) {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-100 text-slate-600">
+                  <span class="w-2 h-2 rounded-full bg-slate-400"></span> Offline
+                </span>`;
+      }
 
-/* ใช้กำหนดสีสถานะ (ยังคง logic เดิมแบบง่าย) */
-function statusStyle(statusRaw){
-  const s = String(statusRaw||"").trim().toLowerCase();
-  if (s.includes("available")) return {border:"rgba(16,185,129,.65)", text:"rgba(5,150,105,1)"};
-  if (s.includes("under"))     return {border:"rgba(14,165,233,.55)", text:"rgba(2,132,199,1)"};
-  if (s.includes("reserved"))  return {border:"rgba(245,158,11,.55)", text:"rgba(180,83,9,1)"};
-  if (s.includes("sold"))      return {border:"rgba(244,63,94,.55)",  text:"rgba(190,18,60,1)"};
-  return {border:"rgba(15,23,42,.25)", text:"rgba(15,23,42,.92)"};
-}
+      return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-50 text-slate-700">
+                <span class="w-2 h-2 rounded-full bg-slate-400"></span> ${escapeHtml(raw)}
+              </span>`;
+    }
 
-document.getElementById("btnBack").addEventListener("click", () => {
-  history.length > 1 ? history.back() : (location.href = "index.html");
-});
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
 
-let images = [];
-let idx = 0;
+    function isMobile() {
+      return window.matchMedia("(max-width: 768px)").matches;
+    }
 
-function setMain(i){
-  idx = Math.max(0, Math.min(i, images.length-1));
-  const mainImg = document.getElementById("mainImg");
-  mainImg.classList.remove("skeleton");
-  mainImg.src = images[idx] || mainImg.src;
+    // ================================
+    // THUMBNAIL HELPERS
+    // ================================
+    function pickThumb(u) {
+      return (u.Thumbnail_Image || u.thumbnail || u.thumb || u.thumbUrl || "").toString().trim();
+    }
 
-  document.getElementById("tagCount").textContent = `${idx+1} / ${images.length || 0}`;
-  document.querySelectorAll(".thumb").forEach((t, k)=>{
-    t.classList.toggle("active", k===idx);
-  });
-}
+    function thumbTag(url, size = "mobile") {
+      const base = (size === "desktop")
+        ? "w-10 h-14 rounded-xl"
+        : "w-16 h-20 rounded-2xl";
 
-function renderThumbs(){
-  const strip = document.getElementById("thumbStrip");
-  strip.innerHTML = "";
-  images.forEach((src, i)=>{
-    const im = document.createElement("img");
-    im.className = "thumb" + (i===idx ? " active": "");
-    im.src = src;
-    im.loading = "lazy";
-    im.decoding = "async";
-    im.addEventListener("click", ()=>setMain(i));
-    strip.appendChild(im);
-  });
-}
+      if (!url) {
+        return `<div class="${base} bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-300 font-bold">🏠</div>`;
+      }
 
-function enableSwipe(){
-  const gallery = document.getElementById("gallery");
-  let startX = 0, dx = 0;
+      return `<img src="${url}" class="${base} object-cover border border-slate-200 shadow-sm" loading="lazy" decoding="async">`;
+    }
 
-  gallery.addEventListener("touchstart", (e)=>{
-    startX = e.touches[0].clientX;
-    dx = 0;
-  }, {passive:true});
+    // ================================
+    // RENDERERS
+    // ================================
+    function renderDesktop(units) {
+      const tbody = document.getElementById("unitTableBody");
 
-  gallery.addEventListener("touchmove", (e)=>{
-    dx = e.touches[0].clientX - startX;
-  }, {passive:true});
+      if (!units || units.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="py-16 text-slate-400 font-bold">No data</td></tr>`;
+        return;
+      }
 
-  gallery.addEventListener("touchend", ()=>{
-    if(Math.abs(dx) < 35) return;
-    if(dx < 0) setMain(idx+1);
-    else setMain(idx-1);
-  });
-}
+      tbody.innerHTML = units.map(u => {
+        const id = u.id || "-";
+        const plot = u.plot || "-";
+        const unitStatus = u.status || u.unitStatus || "-";
+        const sysStatus = u.sysStatus || "-";
+        const thumb = pickThumb(u);
 
-function renderInfo(detail){
-  const grid = document.getElementById("infoGrid");
-  const safe = (v)=> (v===undefined || v===null || String(v).trim()==="" ? "-" : String(v));
+        return `
+          <tr class="hover:bg-slate-50 border-b">
+            <td class="py-4 pl-8 text-left">
+              ${thumbTag(thumb, "desktop")}
+            </td>
 
-  const items = [
-    ["Project", safe(detail.Project || detail.Project_Name || project)],
-    ["HP_ID", safe(detail.HP_ID || hpId)],
-    ["Plot", safe(detail.Plot)],
-    ["Type", safe(detail.Type)],
-    ["Bedrooms", safe(detail.Bedrooms)],
-    ["Bathrooms", safe(detail.Bathrooms)],
-    ["Living_Area_sq_m", safe(detail.Living_Area_sq_m)],
-    ["Land_Area_sq_w", safe(detail.Land_Area_sq_w)],
-    ["Status", safe(detail.Status)],
-    ["Badge", safe(detail.Badge)],
-    ["Address", safe(detail.Address)],
-  ];
+            <!-- ✅ FIX: ให้ HP-xxx เล็กลงเท่ากับ label (11px) -->
+            <td class="text-left font-bold text-slate-900 text-[11px]">${escapeHtml(id)}</td>
 
-  grid.innerHTML = "";
-  for(const [k,v] of items){
-    const box = document.createElement("div");
-    box.className = "infoBox";
-    box.innerHTML = `<div class="k">${k}</div><div class="v">${v}</div>`;
-    grid.appendChild(box);
-  }
-}
+            <td class="text-left font-extrabold text-slate-800 text-[15px]">${escapeHtml(plot)}</td>
 
-/** LOAD */
-(async function init(){
-  hideError();
-  showLoader();
+            <td>${statusBadge(unitStatus)}</td>
+            <td>${visibilityBadge(sysStatus)}</td>
+            <td>
+              <button
+                onclick="window.location.href='edit.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(PROJECT_ID)}'"
+                class="p-2 text-orange-500 hover:scale-110 transition-all"
+                aria-label="Edit"
+              >
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
 
-  if(!hpId){
-    showError("ลิงก์ไม่ถูกต้อง: ไม่มี id เช่น details.html?id=HP-Z001");
-    hideLoader();
-    return;
-  }
+    function renderMobile(units) {
+      const list = document.getElementById("mobileList");
 
-  const url = `${SCRIPT_URL}?mode=getUnitDetail&project=${encodeURIComponent(project)}&hpId=${encodeURIComponent(hpId)}`;
+      if (!units || units.length === 0) {
+        list.innerHTML = `<div class="bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-8 text-center text-slate-400 font-bold">No data</div>`;
+        return;
+      }
 
-  let detail;
-  try{
-    detail = await jsonp(url);
-  }catch(err){
-    showError("โหลดข้อมูลไม่สำเร็จ (ตรวจ Deploy Apps Script ให้เป็น Anyone และใช้ /exec)");
-    hideLoader();
-    return;
-  }
+      list.innerHTML = units.map(u => {
+        const id = u.id || "-";
+        const plot = u.plot || "-";
+        const unitStatus = u.status || u.unitStatus || "-";
+        const sysStatus = u.sysStatus || "-";
+        const thumb = pickThumb(u);
 
-  if(detail && detail.error){
-    showError("โหลดข้อมูลไม่สำเร็จ: " + detail.error);
-    hideLoader();
-    return;
-  }
+        return `
+          <div class="bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-4">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex gap-4 min-w-0">
+                <div class="shrink-0">
+                  ${thumbTag(thumb, "mobile")}
+                </div>
 
-  const plotText = String(detail.Plot || "-").trim() || "-";
-  document.getElementById("pageTitle").textContent = `Detail Plot: ${plotText}`;
-  document.getElementById("tagPlot").textContent = plotText;
+                <div class="min-w-0">
+                  <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Unit ID</div>
 
-  // ✅ ราคา
-  document.getElementById("priceText").textContent = moneyTHB(detail.Price || 0);
+                  <!-- ✅ FIX: ให้ HP-xxx เท่ากับ UNIT ID / PLOT (11px) -->
+                  <div class="text-[11px] font-bold text-slate-900 italic truncate">${escapeHtml(id)}</div>
 
-  // ✅ (ข้อ 1) สถานะย้ายลงล่าง
-  const stText = String(detail.Status || "Available").trim() || "Available";
-  const stEl = document.getElementById("statusBelow");
-  stEl.textContent = stText;
+                  <div class="mt-2">
+                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Plot</div>
+                    <div class="text-[22px] font-extrabold text-slate-900 italic leading-tight">${escapeHtml(plot)}</div>
+                  </div>
+                </div>
+              </div>
 
-  const st = statusStyle(stText);
-  stEl.style.borderColor = st.border;
-  stEl.style.color = st.text;
+              <button
+                onclick="window.location.href='edit.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(PROJECT_ID)}'"
+                class="w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center hover:bg-orange-100 transition-all active:scale-95 shrink-0"
+                aria-label="Edit"
+              >
+                <i class="fa-solid fa-pen"></i>
+              </button>
+            </div>
 
-  // รูปหลัก + รูปใน Image_List
-  const thumb = cleanDriveImage(detail.Thumbnail_Image || "");
-  const list = String(detail.Image_List || "")
-    .split(",").map(s=>cleanDriveImage(s.trim()))
-    .filter(Boolean);
+            <div class="grid grid-cols-2 gap-3 mt-4">
+              <div class="bg-slate-50 rounded-2xl p-3">
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Visibility</div>
+                <div class="mt-2">${visibilityBadge(sysStatus)}</div>
+              </div>
 
-  images = (thumb ? [thumb, ...list.filter(x=>x!==thumb)] : list);
+              <div class="bg-slate-50 rounded-2xl p-3">
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status</div>
+                <div class="mt-2">${statusBadge(unitStatus)}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
 
-  if(!images.length){
-    images = ["data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='800'><rect width='100%' height='100%' fill='#e6edf6'/><text x='50%' y='50%' text-anchor='middle' fill='#8aa0bb' font-size='40' font-family='Arial'>no image</text></svg>`)];
-  }
+    function showLoading(on) {
+      const lb = document.getElementById("loadingBlock");
+      if (on) {
+        lb.classList.remove("hidden");
+        lb.classList.add("animate-pulse");
+        lb.innerText = "🔄 Syncing database...";
+      } else {
+        lb.classList.add("hidden");
+      }
+    }
 
-  const mainImg = document.getElementById("mainImg");
-  mainImg.onload = () => { hideLoader(); };
-  mainImg.onerror = () => { hideLoader(); };
+    // ================================
+    // LOAD + CACHE + SMART RESIZE (NO RELOAD)
+    // ================================
+    let CACHE_UNITS = [];
+    let CURRENT_MOBILE = isMobile();
 
-  mainImg.src = images[0];
-  mainImg.classList.remove("skeleton");
+    function renderByViewport() {
+      const nowMobile = isMobile();
 
-  renderThumbs();
-  setMain(0);
-  enableSwipe();
+      document.getElementById("mobileList").classList.toggle("hidden", !nowMobile);
+      document.getElementById("desktopTableWrap").classList.toggle("hidden", nowMobile);
 
-  document.getElementById("btnPrev").addEventListener("click", ()=> setMain(idx-1));
-  document.getElementById("btnNext").addEventListener("click", ()=> setMain(idx+1));
+      if (nowMobile) renderMobile(CACHE_UNITS);
+      else renderDesktop(CACHE_UNITS);
 
-  if(images[1]){
-    const pre = new Image();
-    pre.src = images[1];
-  }
+      CURRENT_MOBILE = nowMobile;
+    }
 
-  renderInfo(detail);
-})();
-</script>
+    async function init() {
+      try {
+        showLoading(true);
+
+        const res = await fetch(`${API_URL}?mode=getUnitList&project=${encodeURIComponent(PROJECT_ID)}&t=${Date.now()}`);
+        const data = await res.json();
+
+        let projectName = "";
+        if (Array.isArray(data) && data.length > 0) {
+          projectName = (data.find(x => x && x.projectName && String(x.projectName).trim() !== "")?.projectName) || "";
+        }
+        document.getElementById("projectTitle").innerText = projectName ? projectName : PROJECT_ID;
+
+        CACHE_UNITS = Array.isArray(data) ? data : [];
+        showLoading(false);
+
+        renderByViewport();
+
+      } catch (e) {
+        document.getElementById("projectTitle").innerText = PROJECT_ID;
+        const lb = document.getElementById("loadingBlock");
+        lb.classList.remove("animate-pulse");
+        lb.innerText = "⚠️ Connection Error";
+      }
+    }
+
+    window.addEventListener("resize", () => {
+      const nowMobile = isMobile();
+      if (nowMobile !== CURRENT_MOBILE) {
+        renderByViewport();
+      }
+    });
+
+    window.onload = init;
+  </script>
 </body>
 </html>
