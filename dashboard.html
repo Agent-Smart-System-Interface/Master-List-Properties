@@ -58,17 +58,14 @@
 
   </div>
 
-  <script>
-    // ================================
-    // CONFIG
-    // ================================
-    const API_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
-    const urlParams = new URLSearchParams(window.location.search);
-    const PROJECT_ID = urlParams.get("project") || "Project_0";
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
+  const urlParams = new URLSearchParams(window.location.search);
+    const PROJECT_ID = urlParams.get("project") || "Project_000";
 
-    const HOME_URL = "index.html";
-    document.getElementById("homeBtn").href = HOME_URL;
-
+  const HOME_URL = "index.html?project=" + encodeURIComponent(PROJECT_ID);
+  document.getElementById("homeBtn").href = HOME_URL;
+</script>
     // ================================
     // HELPERS: Badge Colors
     // ================================
