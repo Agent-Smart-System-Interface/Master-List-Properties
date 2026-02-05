@@ -813,9 +813,9 @@ function renderInfo(detail){
     return "";
   };
 
-  // ✅ จุดที่ 1 (แก้ตามที่ขอ): ดึง Land (sq.m) และ Living (sq.m)
-  const landM = safe(pick(detail, ["Land_Area_sq_m","Land_Area_SQM","LandAreaSQM","Land_sq_m","Land Area (sq.m)"]));
-  const livingM = safe(pick(detail, ["Living_Area_sq_m","Living_Area_SQM","LivingAreaSQM","Living_sq_m","Living Area (sq.m)"]));
+  // ✅ จุดที่ 3: ดึง 2 ค่าเพื่อโชว์ “แถวเดียวกัน”
+  const landW = safe(pick(detail, ["Land_Area_sq_w","Land_Area_SQW","LandAreaSQW","Land_sq_w"]));
+  const livingM = safe(pick(detail, ["Living_Area_sq_m","Living_Area_SQM","LivingAreaSQM","Living_sq_m"]));
 
   const items = [
     ["Project_Name", safe(pick(detail, ["Project_Name","ProjectName","Project_Name_En","Project_Name_TH","Project"]))],
@@ -828,12 +828,13 @@ function renderInfo(detail){
     ["Bedrooms", safe(pick(detail, ["Bedrooms","Bedroom","beds"]))],
     ["Bathrooms", safe(pick(detail, ["Bathrooms","Bathroom","baths"]))],
 
-    // ✅ จุดที่ 1 (แก้ตามที่ขอ): แสดงเป็น Land (sq.m)xxxxx   Living (sq.m)xxxxx
+    // ✅ จุดที่ 3: 2 อย่างในแถวเดียวกัน
     ["__DOUBLE__", {
-      k1: "Land (sq.m)", v1: landM,
-      k2: "Living (sq.m)", v2: livingM
+      k1: "Land Area (sq.w)", v1: landW,
+      k2: "Living Area (sq.m)", v2: livingM
     }],
 
+    ["Land Area (sq.m)", safe(pick(detail, ["Land_Area_sq_m","Land_Area_SQM","LandAreaSQM","Land_sq_m"]))],
     ["Pool Size", safe(pick(detail, ["Pool_Size","PoolSize"]))],
     ["Pool Depth", safe(pick(detail, ["Pool_Depth","PoolDepth"]))],
     ["Furnishing", safe(pick(detail, ["Furnishing","furnishing"]))],
@@ -846,6 +847,7 @@ function renderInfo(detail){
 
   grid.innerHTML = "";
   for(const [k,v] of items){
+    // ✅ จุดที่ 3: วาดกล่อง 2 คอลัมน์ในกล่องเดียว
     if(k === "__DOUBLE__"){
       const box = document.createElement("div");
       box.className = "infoBox double";
@@ -883,6 +885,32 @@ function getPrice(u){
   return u?.Price ?? u?.price ?? 0;
 }
 
+/* ✅ จุดที่ 1: ดึง Land Area (sq.m) และ Living Area (sq.m) จาก Unit List */
+function getLandSqm(u){
+  return String(
+    u?.Land_Area_sq_m ??
+    u?.Land_Area_SQM ??
+    u?.LandAreaSQM ??
+    u?.Land_sq_m ??
+    u?.["Land Area (sq.m)"] ??
+    ""
+  ).trim();
+}
+function getLivingSqm(u){
+  return String(
+    u?.Living_Area_sq_m ??
+    u?.Living_Area_SQM ??
+    u?.LivingAreaSQM ??
+    u?.Living_sq_m ??
+    u?.["Living Area (sq.m)"] ??
+    ""
+  ).trim();
+}
+function safeText(v){
+  const s = String(v ?? "").trim();
+  return s === "" ? "-" : s;
+}
+
 function renderOtherUnits(units){
   const grid = document.getElementById("otherGrid");
   const section = document.getElementById("otherSection");
@@ -896,13 +924,18 @@ function renderOtherUnits(units){
   grid.innerHTML = "";
 
   for(const u of units){
-    const id = getUnitId(u);
+    const id = getUnitId(u);                 // (คงไว้สำหรับลิงก์/กรอง)
     const plot = getPlot(u) || id || "-";
     const thumb = getThumb(u);
     const st = getStatus(u);
     const price = moneyTHB(getPrice(u));
 
     const pill = statusStyle(st);
+
+    // ✅ จุดที่ 1: แทนที่ “HP-Z002” ด้วย Land/Living (sq.m)
+    const landM = safeText(getLandSqm(u));
+    const livingM = safeText(getLivingSqm(u));
+    const landLivingText = `Land (sq.m) ${landM}   Living (sq.m) ${livingM}`;
 
     const card = document.createElement("div");
     card.className = "otherCard";
@@ -914,7 +947,7 @@ function renderOtherUnits(units){
           <div class="otherStatus" style="border-color:${pill.border}; color:${pill.text};">${st}</div>
         </div>
         <div class="otherPrice">${price}</div>
-        <div class="otherId">${id}</div>
+        <div class="otherId">${landLivingText}</div>
       </div>
     `;
     card.addEventListener("click", ()=>{
@@ -1294,4 +1327,3 @@ function wireShareButtons(){
 </script>
 </body>
 </html>
- 
