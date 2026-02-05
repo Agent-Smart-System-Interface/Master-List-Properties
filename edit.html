@@ -153,7 +153,7 @@
           </select>
         </div>
 
-        <!-- ✅✅✅ NEW: Zone (เพิ่มช่องใหม่) -->
+        <!-- ✅ NEW: Zone -->
         <div>
           <span class="field-label">Zone</span>
           <select id="Zone" class="field-input">
@@ -167,7 +167,6 @@
             <option value="Quiet">Quiet</option>
           </select>
         </div>
-        <!-- ✅✅✅ END NEW -->
 
         <div><span class="field-label">Commission</span><input id="Commission" class="field-input"></div>
 
@@ -211,9 +210,13 @@
     const HP_ID = urlParams.get("id");
     const PROJECT = urlParams.get("project");
 
+    // ✅ NEW: state สำหรับ Gallery
+    // existingGallery: รูปเดิมจากชีต
+    // removedGallery: รูปเดิมที่ผู้ใช้กด ❌
+    // newGalleryQueue: รูปใหม่ที่เลือกเพิ่ม (มีสิทธิ์กด ❌ เอาออกจากคิวได้)
     let existingGallery = [];
     let removedGallery = [];
-    let newGalleryQueue = [];
+    let newGalleryQueue = []; // { file: File, previewUrl: string }
 
     const SUBDISTRICTS_BY_DISTRICT = {
       "Hua Hin": ["Hua Hin","Nong Kae","Hin Lek Fai","Thap Tai","Huai Sat Yai","Bueng Nakhon","Nong Phlap"],
@@ -276,11 +279,14 @@
       reader.readAsDataURL(file);
     }
 
+    // ✅ NEW: render gallery (รวมรูปเดิมที่ยังอยู่ + รูปใหม่ในคิว)
     function renderGallery() {
       const box = document.getElementById("galleryPreview");
       const keptExisting = existingGallery.filter(u => !removedGallery.includes(u));
+
       const tiles = [];
 
+      // รูปเดิม (กด ❌ แล้วไปอยู่ removedGallery)
       keptExisting.forEach((url) => {
         tiles.push(`
           <div class="img-tile">
@@ -290,6 +296,7 @@
         `);
       });
 
+      // รูปใหม่ในคิว (กด ❌ แล้วเอาออกจากคิว)
       newGalleryQueue.forEach((it, idx) => {
         tiles.push(`
           <div class="img-tile">
@@ -304,12 +311,14 @@
         : `<span class="text-4xl text-slate-200 col-span-4 self-center justify-self-center">🗂️</span>`;
     }
 
+    // ✅ NEW: กด ❌ ลบ “รูปเดิม”
     window.removeExistingImage = function(encodedUrl) {
       const url = decodeURIComponent(encodedUrl);
       if (!removedGallery.includes(url)) removedGallery.push(url);
       renderGallery();
     }
 
+    // ✅ NEW: กด ❌ ลบ “รูปใหม่ในคิว”
     window.removeNewQueuedImage = function(index) {
       if (index < 0 || index >= newGalleryQueue.length) return;
       try { URL.revokeObjectURL(newGalleryQueue[index].previewUrl); } catch(e){}
@@ -317,6 +326,7 @@
       renderGallery();
     }
 
+    // ✅ NEW: เลือกรูปใหม่ (สะสมเข้าคิว และลบรายรูปได้)
     window.onPickGalleryFiles = function(input) {
       const files = Array.from(input.files || []);
       if (!files.length) return;
@@ -326,26 +336,9 @@
         newGalleryQueue.push({ file: f, previewUrl: url });
       });
 
+      // เคลียร์ค่า input เพื่อให้เลือกไฟล์เดิมซ้ำได้ในอนาคต
       input.value = "";
       renderGallery();
-    }
-
-    // ✅ NEW: helper ตั้งค่า Zone รองรับ custom
-    function setZoneValue_(zoneVal) {
-      const zSel = document.getElementById("Zone");
-      const v = String(zoneVal || "").trim();
-      if (!zSel) return;
-
-      if (!v) { zSel.value = ""; return; }
-
-      zSel.value = v;
-      if (zSel.value !== v) {
-        const opt = document.createElement("option");
-        opt.value = v;
-        opt.textContent = v + " (custom)";
-        zSel.appendChild(opt);
-        zSel.value = v;
-      }
     }
 
     async function loadData() {
@@ -371,9 +364,6 @@
           setSubDistrictOptions("", "");
         }
 
-        // ✅✅✅ NEW: apply Zone from sheet
-        setZoneValue_(data.Zone);
-
         const rawSys = (data.System_Status ?? "").toString().trim();
         const mapSys = { "Live":"Online", "Online (Live)":"Online", "Online":"Online", "Pending":"Pending", "Offline":"Offline" };
         const normalized = mapSys[rawSys] || (rawSys ? rawSys : "Pending");
@@ -383,6 +373,7 @@
           document.getElementById("thumbPreview").innerHTML = `<img src="${data.Thumbnail_Image}" class="w-full h-full object-cover">`;
         }
 
+        // ✅ NEW: set existingGallery state
         existingGallery = [];
         removedGallery = [];
         newGalleryQueue = [];
@@ -418,6 +409,7 @@
       const oldText = btn.innerText;
       btn.innerText = "UPDATING DATABASE...";
 
+      // ✅ NEW: keep/remove gallery arrays
       const keepGallery = existingGallery.filter(u => !removedGallery.includes(u));
       const removeGallery = removedGallery.slice();
 
@@ -446,8 +438,7 @@
         District: document.getElementById("District").value,
         SubDistrict: document.getElementById("SubDistrict").value,
 
-        // ✅✅✅ NEW: ส่ง Zone ไป GS เพื่อบันทึกลงคอลัมน์ Zone
-        Zone: document.getElementById("Zone").value,
+        Zone: document.getElementById("Zone").value,  // ✅ FIX: ส่งค่า Zone ไปด้วย
 
         Price: document.getElementById("Price").value,
         Price_SQM: document.getElementById("Price_SQM").value,
@@ -459,6 +450,7 @@
         Virtual_Tour: document.getElementById("Virtual_Tour").value,
         Commission: document.getElementById("Commission").value,
 
+        // ✅ NEW: ส่งคำสั่งชัดเจนว่ารูปไหน “คงไว้/ลบ”
         keepGallery,
         removeGallery,
 
@@ -466,9 +458,11 @@
         files_gallery: []
       };
 
+      // thumb
       const thumb = document.getElementById("file_thumb").files[0];
       if (thumb) payload.file_thumb = await toBase64(thumb);
 
+      // ✅ NEW: แปลงเฉพาะรูปใหม่ในคิว
       for (const it of (newGalleryQueue || [])) {
         payload.files_gallery.push(await toBase64(it.file));
       }
