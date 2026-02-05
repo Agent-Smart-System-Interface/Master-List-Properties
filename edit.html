@@ -1,471 +1,791 @@
-<!DOCTYPE html>
+<!-- edit.html (โค้ดเต็มแบบพร้อมใช้งาน) -->
+<!doctype html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>FULL PROPERTY EDITOR | MASTER SYSTEM</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>smart properties system · edit</title>
+
+  <link rel="preconnect" href="https://script.google.com">
+  <link rel="preconnect" href="https://lh3.googleusercontent.com">
 
   <style>
-    body { font-family: 'Kanit', sans-serif; background:#f0f2f5; }
-    .tab-active { border-bottom:4px solid #1e293b; color:#1e293b; }
-    .input-card { background:white; padding:1.5rem; border-radius:1.5rem; box-shadow:0 4px 6px -1px rgba(0,0,0,.1); }
-    .field-label { font-size:.75rem; font-weight:700; color:#64748b; text-transform:uppercase; margin-bottom:.5rem; display:block; }
-    .field-input { width:100%; border:1px solid #e2e8f0; border-radius:.75rem; padding:.75rem; outline:none; transition:all .2s; }
-    .field-input:focus { border-color:#3b82f6; }
-    .field-input[disabled]{ background:#f8fafc; cursor:not-allowed; opacity:.9; }
-
-    /* ✅ NEW: ปุ่มกากบาทลบรูป */
-    .img-tile { position: relative; }
-    .img-x {
-      position: absolute;
-      top: 4px; right: 4px;
-      width: 18px; height: 18px;
-      border-radius: 999px;
-      background: rgba(15,23,42,.85);
-      color: #fff;
-      font-size: 12px;
-      line-height: 18px;
-      text-align: center;
-      cursor: pointer;
-      user-select: none;
+    :root{
+      --bg:#a8bdd6;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#6b7c93;
+      --radius:22px;
+      --shadow: 0 12px 30px rgba(0,0,0,.12);
+      --soft:#f3f6fb;
+      --line:rgba(255,255,255,.45);
     }
-    .img-x:hover { background: rgba(239,68,68,.95); }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans Thai", sans-serif;
+      background: radial-gradient(ellipse at top, rgba(255,255,255,.25), rgba(255,255,255,0) 55%) , var(--bg);
+      color:var(--text);
+    }
+    .wrap{max-width:1100px; margin:0 auto; padding:16px 14px 30px;}
+
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.18);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
+    }
+    .brand{display:flex; gap:12px; align-items:center;}
+    .logo{
+      width:44px; height:44px; border-radius:999px; background:rgba(255,255,255,.55);
+      display:grid; place-items:center; font-weight:800;
+      flex:0 0 auto;
+    }
+    .titles{min-width:0}
+    .titles h1{
+      margin:0;
+      font-size:18px;
+      line-height:1.15;
+      font-weight:1100;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      letter-spacing:.2px;
+    }
+    .titles .sub{
+      margin-top:3px;
+      font-size:12px;
+      color: rgba(15,23,42,.6);
+      font-weight:900;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .backBtn{
+      width:44px; height:44px; border-radius:999px;
+      border:0; background: rgba(255,255,255,.55);
+      cursor:pointer; font-size:18px; font-weight:900;
+      flex:0 0 auto;
+    }
+
+    .card{
+      margin-top:14px;
+      background: rgba(255,255,255,.88);
+      border:1px solid rgba(255,255,255,.65);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .content{padding:14px;}
+
+    .errorBox{
+      margin-top:14px;
+      padding:14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.7);
+      border:1px solid rgba(255,255,255,.65);
+      font-weight:1100;
+      color:#8b1d1d;
+      display:none;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+      margin-top:14px;
+    }
+    @media(min-width:900px){
+      .grid{grid-template-columns: 1fr 1fr;}
+    }
+
+    .box{
+      background: rgba(15,23,42,.05);
+      border:1px solid rgba(15,23,42,.06);
+      border-radius: 18px;
+      padding:12px 12px;
+    }
+    .box h3{
+      margin:0 0 10px 0;
+      font-size:14px;
+      font-weight:1100;
+      color: rgba(15,23,42,.9);
+    }
+
+    label{
+      display:block;
+      font-weight:900;
+      font-size:12px;
+      color: rgba(15,23,42,.65);
+      margin:10px 0 6px;
+    }
+    input, textarea, select{
+      width:100%;
+      padding:10px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(15,23,42,.12);
+      background: rgba(255,255,255,.9);
+      font-weight:900;
+      font-size:14px;
+      outline:none;
+    }
+    textarea{min-height:110px; resize:vertical;}
+    .row2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    .actions{
+      margin-top:14px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      border:0;
+      cursor:pointer;
+      padding:10px 14px;
+      border-radius: 14px;
+      font-weight:1100;
+      background: rgba(255,255,255,.85);
+      border:1px solid rgba(255,255,255,.65);
+      box-shadow: 0 10px 22px rgba(0,0,0,.10);
+    }
+    .btnPrimary{
+      background: rgba(14,165,233,.12);
+      border:1px solid rgba(14,165,233,.35);
+    }
+
+    .thumbPreview{
+      width:100%;
+      aspect-ratio: 16/10;
+      object-fit:cover;
+      border-radius: 16px;
+      border:1px solid rgba(15,23,42,.10);
+      background:#e8f0fb;
+      display:block;
+    }
+    .galleryGrid{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0,1fr));
+      gap:10px;
+    }
+    @media(max-width:420px){
+      .galleryGrid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+    .gItem{
+      position:relative;
+      border-radius: 16px;
+      overflow:hidden;
+      border:1px solid rgba(15,23,42,.10);
+      background:#e8f0fb;
+    }
+    .gItem img{
+      width:100%;
+      aspect-ratio: 1/1;
+      object-fit:cover;
+      display:block;
+    }
+    .gDel{
+      position:absolute;
+      top:8px; right:8px;
+      width:34px; height:34px;
+      border-radius:999px;
+      border:0;
+      background: rgba(255,255,255,.9);
+      font-weight:1100;
+      cursor:pointer;
+      box-shadow: 0 10px 20px rgba(0,0,0,.16);
+    }
+    .hint{
+      margin-top:8px;
+      font-size:12px;
+      font-weight:900;
+      color: rgba(15,23,42,.55);
+      line-height:1.4;
+    }
+
+    /* Loading overlay */
+    .pageLoader{
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: radial-gradient(ellipse at top, rgba(255,255,255,.25), rgba(255,255,255,0) 55%) , var(--bg);
+      z-index:99999;
+    }
+    .loaderPanel{
+      text-align:center;
+      padding:18px 22px;
+      border-radius: 26px;
+      background: rgba(255,255,255,.18);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 18px 40px rgba(0,0,0,.16);
+      max-width: 92vw;
+    }
+    .loaderEmojis{
+      display:flex;
+      gap:18px;
+      justify-content:center;
+      align-items:center;
+      font-size:52px;
+      line-height:1;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,.18));
+    }
+    .loaderEmojis span{
+      display:inline-block;
+      animation: bounce 0.9s ease-in-out infinite;
+    }
+    .loaderEmojis span:nth-child(2){ animation-delay: .12s; }
+    .loaderEmojis span:nth-child(3){ animation-delay: .24s; }
+    @keyframes bounce{
+      0%,100%{ transform: translateY(0); opacity:.95; }
+      50%{ transform: translateY(-12px); opacity:1; }
+    }
+    .loaderText{
+      margin-top:12px;
+      font-weight:1100;
+      letter-spacing:.6px;
+      color: rgba(15,23,42,.92);
+      text-shadow: 0 10px 22px rgba(0,0,0,.10);
+      font-size:22px;
+      white-space:nowrap;
+    }
+    @media (max-width:420px){
+      .loaderEmojis{font-size:44px}
+      .loaderText{font-size:18px}
+    }
   </style>
 </head>
+<body>
 
-<body class="p-4 md:p-10 italic">
-  <div class="max-w-5xl mx-auto">
-
-    <div class="bg-slate-900 rounded-[2.5rem] p-6 sm:p-8 md:p-12 text-white flex justify-between items-center mb-8 shadow-2xl">
-      <div>
-        <p class="text-blue-400 font-bold uppercase tracking-widest text-xs mb-2">Master Database Editor</p>
-        <h1 id="displayId" class="text-3xl sm:text-4xl font-bold tracking-tighter italic">HP-XXXX</h1>
+  <div class="pageLoader" id="pageLoader" aria-label="loading">
+    <div class="loaderPanel">
+      <div class="loaderEmojis" aria-hidden="true">
+        <span>🏠</span><span>🛠️</span><span>✨</span>
       </div>
-      <button onclick="history.back()" class="bg-white/10 hover:bg-white/20 p-4 rounded-2xl transition-all" title="Close">✕</button>
-    </div>
-
-    <div class="flex gap-8 mb-6 border-b border-slate-200">
-      <button onclick="switchTab('photo')" id="btn-photo" class="pb-4 font-bold text-slate-400 tab-active">COVER &amp; GALLERY</button>
-      <button onclick="switchTab('info')" id="btn-info" class="pb-4 font-bold text-slate-400">PROPERTY DATA</button>
-    </div>
-
-    <!-- TAB: PHOTO -->
-    <div id="tab-photo" class="space-y-6">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="input-card">
-          <span class="field-label">Main Cover Thumbnail</span>
-          <div id="thumbPreview" class="h-48 bg-slate-50 rounded-2xl border-2 border-dashed flex items-center justify-center overflow-hidden mb-4">
-            <span class="text-4xl text-slate-200">🖼️</span>
-          </div>
-          <input type="file" id="file_thumb" class="hidden" accept="image/*" onchange="previewFile(this,'thumbPreview')">
-          <button onclick="document.getElementById('file_thumb').click()" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold uppercase text-xs">
-            Upload Cover
-          </button>
-        </div>
-
-        <div class="input-card">
-          <span class="field-label">Project Gallery Album</span>
-
-          <!-- ✅ NEW: แสดงรูปเดิม + รูปใหม่ (มีปุ่ม ❌) -->
-          <div id="galleryPreview" class="h-48 bg-slate-50 rounded-2xl border-2 border-dashed p-2 grid grid-cols-4 gap-2 overflow-y-auto mb-3"></div>
-
-          <div class="text-[11px] text-slate-500 font-bold mb-3">
-            แตะ ❌ ที่รูปเพื่อเลือก “ลบ” หรือ “เอาออกจากคิวอัปโหลด”
-          </div>
-
-          <input type="file" id="file_gallery" class="hidden" multiple accept="image/*" onchange="onPickGalleryFiles(this)">
-          <button onclick="document.getElementById('file_gallery').click()" class="w-full py-3 bg-purple-600 text-white rounded-xl font-bold uppercase text-xs">
-            Add Gallery Photos
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB: INFO -->
-    <div id="tab-info" class="hidden space-y-6">
-      <div class="input-card grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div><span class="field-label">Plot</span><input id="Plot" class="field-input"></div>
-        <div><span class="field-label">Type</span><input id="Type" class="field-input"></div>
-        <div><span class="field-label">Project Name</span><input id="Project_Name" class="field-input"></div>
-
-        <div><span class="field-label">Bedrooms</span><input type="number" id="Bedrooms" class="field-input"></div>
-        <div><span class="field-label">Bathrooms</span><input type="number" id="Bathrooms" class="field-input"></div>
-        <div><span class="field-label">Parking</span><input id="Parking" class="field-input"></div>
-
-        <div><span class="field-label">Land (sq.w)</span><input id="Land_Area_sq_w" class="field-input"></div>
-        <div><span class="field-label">Land (sq.m)</span><input id="Land_Area_sq_m" class="field-input"></div>
-        <div><span class="field-label">Living (sq.m)</span><input id="Living_Area_sq_m" class="field-input"></div>
-
-        <div><span class="field-label">Pool Size</span><input id="Pool_Size" class="field-input"></div>
-        <div><span class="field-label">Pool Depth</span><input id="Pool_Depth" class="field-input"></div>
-
-        <div>
-          <span class="field-label">Furnishing</span>
-          <select id="Furnishing" class="field-input">
-            <option value="">-- Select Furnishing --</option>
-            <option value="Ready to Move">Ready to Move</option>
-            <option value="Fully Furnished">Fully Furnished</option>
-            <option value="Partially Furnished">Partially Furnished</option>
-            <option value="Unfurnished">Unfurnished</option>
-          </select>
-        </div>
-
-        <div class="col-span-full"><span class="field-label">Address</span><input id="Address" class="field-input"></div>
-
-        <div class="bg-blue-50 p-4 rounded-xl">
-          <span class="field-label text-blue-600">Price (THB)</span>
-          <input id="Price" class="field-input border-blue-200 font-bold">
-        </div>
-
-        <div><span class="field-label">Price/SQM</span><input id="Price_SQM" class="field-input"></div>
-
-        <div>
-          <span class="field-label">Status</span>
-          <select id="Status" class="field-input">
-            <option value="">-- Select Status --</option>
-            <option value="Available">Available</option>
-            <option value="Under Con">Under Con</option>
-            <option value="Reserved">Reserved</option>
-            <option value="Sold">Sold</option>
-          </select>
-        </div>
-
-        <div><span class="field-label">Badge</span><input id="Badge" class="field-input" placeholder="NEW / HOT / ..."></div>
-
-        <div class="col-span-full"><span class="field-label">Description</span><textarea id="Description" rows="4" class="field-input"></textarea></div>
-
-        <div>
-          <span class="field-label">District</span>
-          <select id="District" class="field-input">
-            <option value="">-- Select District --</option>
-            <option value="Hua Hin">Hua Hin</option>
-            <option value="Cha-am">Cha-am</option>
-            <option value="Pranburi">Pranburi</option>
-          </select>
-        </div>
-
-        <div>
-          <span class="field-label">Sub-District</span>
-          <select id="SubDistrict" class="field-input" disabled>
-            <option value="">-- Select Sub-District --</option>
-          </select>
-        </div>
-
-        <div><span class="field-label">Commission</span><input id="Commission" class="field-input"></div>
-
-        <div class="col-span-full border-t pt-6"><span class="field-label">External Links</span></div>
-        <div><span class="field-label">FB Link</span><input id="FBLink" class="field-input"></div>
-        <div><span class="field-label">Map Link</span><input id="Map_Link" class="field-input"></div>
-        <div><span class="field-label">Virtual Tour</span><input id="Virtual_Tour" class="field-input"></div>
-
-        <div class="col-span-full">
-          <span class="field-label">System Status (Read Only)</span>
-          <input id="System_Status" class="field-input font-bold bg-slate-50" disabled value="Pending">
-          <p class="text-xs text-slate-400 mt-2 italic">
-            Offline = ไม่แสดงออนไลน์ | Pending = ยังไม่แสดงออนไลน์แต่แก้ไขข้อมูลได้ | Online = ข้อมูลพร้อมแล้ว (กำหนดโดย Master ใหญ่)
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <button onclick="updateData()" id="saveBtn"
-      class="w-full mt-10 py-6 sm:py-8 bg-slate-900 text-white rounded-[2.5rem] font-bold uppercase tracking-[0.4em] sm:tracking-[0.5em] shadow-2xl hover:bg-blue-600 transition-all active:scale-95">
-      Update Master Database
-    </button>
-  </div>
-
-  <div id="successPopup" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-    <div class="bg-white rounded-[3rem] p-10 sm:p-12 text-center max-w-sm w-full shadow-2xl border-t-8 border-green-500">
-      <div class="w-24 h-24 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-inner">✓</div>
-      <h2 class="text-2xl font-bold mb-2">บันทึกสำเร็จ!</h2>
-      <p class="text-slate-400 text-sm mb-8 font-bold uppercase tracking-wider">
-        ข้อมูลและรูปภาพถูกซิงค์ไปยัง <br>Google Drive &amp; Sheets แล้ว
-      </p>
-      <button onclick="history.back()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-slate-800 transition-all">
-        กลับสู่หน้าหลัก
-      </button>
+      <div class="loaderText">Smart Properties System</div>
     </div>
   </div>
 
-  <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
-    const urlParams = new URLSearchParams(location.search);
-    const HP_ID = urlParams.get("id");
-    const PROJECT = urlParams.get("project");
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">SP</div>
+        <div class="titles">
+          <h1 id="pageTitle">Edit Unit</h1>
+          <div class="sub" id="subTitle">Project: - · HP_ID: -</div>
+        </div>
+      </div>
+      <button class="backBtn" id="btnBack">←</button>
+    </div>
 
-    // ✅ NEW: state สำหรับ Gallery
-    // existingGallery: รูปเดิมจากชีต
-    // removedGallery: รูปเดิมที่ผู้ใช้กด ❌
-    // newGalleryQueue: รูปใหม่ที่เลือกเพิ่ม (มีสิทธิ์กด ❌ เอาออกจากคิวได้)
-    let existingGallery = [];
-    let removedGallery = [];
-    let newGalleryQueue = []; // { file: File, previewUrl: string }
+    <div class="errorBox" id="errBox"></div>
 
-    const SUBDISTRICTS_BY_DISTRICT = {
-      "Hua Hin": ["Hua Hin","Nong Kae","Hin Lek Fai","Thap Tai","Huai Sat Yai","Bueng Nakhon","Nong Phlap"],
-      "Cha-am": ["Cha-am","Bang Kao","Na Yang","Khao Yai","Nong Sala","Huai Sai Nuea","Rai Mai Phatthana"],
-      "Pranburi": ["Pran Buri","Pak Nam Pran","Wang Phong","Nong Ta Taem","Nong Din Daeng","Khao Noi","Khao Chao"]
+    <div class="card">
+      <div class="content">
+        <div class="grid">
+          <div class="box">
+            <h3>Basic Info</h3>
+
+            <label>Plot</label>
+            <input id="Plot" placeholder="Z-1" />
+
+            <label>Type</label>
+            <input id="Type" placeholder="A" />
+
+            <label>Address</label>
+            <input id="Address" placeholder="100/23" />
+
+            <label>Project Name</label>
+            <input id="Project_Name" placeholder="Master Vill" />
+
+            <div class="row2">
+              <div>
+                <label>Bedrooms</label>
+                <input id="Bedrooms" type="number" min="0" placeholder="3" />
+              </div>
+              <div>
+                <label>Bathrooms</label>
+                <input id="Bathrooms" type="number" min="0" placeholder="4" />
+              </div>
+            </div>
+
+            <label>Parking</label>
+            <input id="Parking" placeholder="2" />
+
+            <div class="row2">
+              <div>
+                <label>Land Area (sq.w)</label>
+                <input id="Land_Area_sq_w" placeholder="120" />
+              </div>
+              <div>
+                <label>Land Area (sq.m)</label>
+                <input id="Land_Area_sq_m" placeholder="480" />
+              </div>
+            </div>
+
+            <label>Living Area (sq.m)</label>
+            <input id="Living_Area_sq_m" placeholder="300" />
+          </div>
+
+          <div class="box">
+            <h3>Pool / Price / Status</h3>
+
+            <div class="row2">
+              <div>
+                <label>Pool Size</label>
+                <input id="Pool_Size" placeholder="5x10m" />
+              </div>
+              <div>
+                <label>Pool Depth</label>
+                <input id="Pool_Depth" placeholder="1.5m" />
+              </div>
+            </div>
+
+            <label>Furnishing</label>
+            <input id="Furnishing" placeholder="Fully Furnished" />
+
+            <div class="row2">
+              <div>
+                <label>Price</label>
+                <input id="Price" placeholder="5000000" />
+              </div>
+              <div>
+                <label>Price / SQM</label>
+                <input id="Price_SQM" placeholder="16666" />
+              </div>
+            </div>
+
+            <div class="row2">
+              <div>
+                <label>Status</label>
+                <select id="Status">
+                  <option>Available</option>
+                  <option>Under Con</option>
+                  <option>Reserved</option>
+                  <option>Sold</option>
+                </select>
+              </div>
+              <div>
+                <label>Badge</label>
+                <input id="Badge" placeholder="-" />
+              </div>
+            </div>
+
+            <label>Description</label>
+            <textarea id="Description" placeholder="Description..."></textarea>
+
+            <div class="row2">
+              <div>
+                <label>District</label>
+                <input id="District" placeholder="Hua Hin" />
+              </div>
+              <div>
+                <label>SubDistrict</label>
+                <input id="SubDistrict" placeholder="-" />
+              </div>
+            </div>
+
+            <label>FBLink</label>
+            <input id="FBLink" placeholder="https://facebook.com/..." />
+
+            <label>Map Link</label>
+            <input id="Map_Link" placeholder="https://maps.google.com/..." />
+
+            <label>Virtual Tour</label>
+            <input id="Virtual_Tour" placeholder="https://..." />
+
+            <label>Commission</label>
+            <input id="Commission" placeholder="-" />
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="box">
+            <h3>Thumbnail</h3>
+            <img class="thumbPreview" id="thumbPreview" alt="thumb preview" />
+            <label>Upload Thumbnail (Replace)</label>
+            <input type="file" id="file_thumb" accept="image/*" />
+            <div class="hint">อัปโหลดใหม่จะ “แทนที่” รูปเดิม (ระบบ GS จะลบไฟล์เก่าในโฟลเดอร์ Thumb ของ HP_ID ก่อน)</div>
+          </div>
+
+          <div class="box">
+            <h3>Gallery</h3>
+            <div class="galleryGrid" id="galleryGrid"></div>
+
+            <label>Add New Gallery Images</label>
+            <input type="file" id="files_gallery" accept="image/*" multiple />
+            <div class="hint">กด ❌ เพื่อลบรูปออกจากรายการ และจะสั่งลบไฟล์จริง (เฉพาะในโฟลเดอร์ Gallery ของ HP_ID) ตอนกด Save</div>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="btn" id="btnOpenDetails">Open Details</button>
+          <button class="btn" id="btnOpenList">Open List</button>
+          <button class="btn btnPrimary" id="btnSave">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/** =========================
+ * CONFIG
+ * ========================= */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
+
+const qs = new URLSearchParams(location.search);
+
+/** =====================================================
+ * ✅ Project Tab Mapping (รองรับชื่อแท็บใหม่ + ของเดิม)
+ * ใหม่:
+ *  - project_000 ... project_004
+ * เดิม (ยังรองรับเพื่อกันลิงก์เก่า):
+ *  - Project_0, Project_A, Project_B, Project_C, Project_D
+ * ===================================================== */
+function normalizeProject(p){
+  const raw = String(p || "").trim();
+  if(!raw) return "project_000";
+
+  const map = {
+    "project_0": "project_000",
+    "project_a": "project_001",
+    "project_b": "project_002",
+    "project_c": "project_003",
+    "project_d": "project_004",
+    "project_000": "project_000",
+    "project_001": "project_001",
+    "project_002": "project_002",
+    "project_003": "project_003",
+    "project_004": "project_004",
+  };
+
+  const key = raw.replace(/-/g,"_").toLowerCase();
+  return map[key] || raw;
+}
+
+const HP_ID = (qs.get("id") || qs.get("hpId") || "").trim();
+const PROJECT = normalizeProject(qs.get("project") || "project_000");
+
+/** Loader helpers */
+function showLoader(){
+  const el = document.getElementById("pageLoader");
+  if(el) el.style.display = "flex";
+}
+function hideLoader(){
+  const el = document.getElementById("pageLoader");
+  if(el) el.style.display = "none";
+}
+
+/** JSONP */
+function jsonp(url, timeoutMs = 20000){
+  return new Promise((resolve, reject) => {
+    const cb = "cb_" + Math.random().toString(36).slice(2);
+    const script = document.createElement("script");
+    const timer = setTimeout(() => { cleanup(); reject(new Error("timeout")); }, timeoutMs);
+
+    function cleanup(){
+      clearTimeout(timer);
+      if (script.parentNode) script.parentNode.removeChild(script);
+      try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
+    }
+    window[cb] = (data) => { cleanup(); resolve(data); };
+
+    const sep = url.includes("?") ? "&" : "?";
+    script.src = url + sep + "callback=" + encodeURIComponent(cb);
+    script.onerror = () => { cleanup(); reject(new Error("jsonp_error")); };
+    document.body.appendChild(script);
+  });
+}
+
+function showError(msg){
+  const box = document.getElementById("errBox");
+  box.style.display = "block";
+  box.textContent = msg;
+}
+function hideError(){
+  const box = document.getElementById("errBox");
+  box.style.display = "none";
+  box.textContent = "";
+}
+
+function cleanDriveImage(url){
+  const u = String(url || "").trim();
+  if(!u) return "";
+  if (u.includes("lh3.googleusercontent.com/d/")) return u;
+
+  let id = "";
+  const m1 = u.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (m1) id = m1[1];
+  const m2 = u.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (!id && m2) id = m2[1];
+  const m3 = u.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (!id && m3) id = m3[1];
+
+  if (id) return "https://lh3.googleusercontent.com/d/" + id;
+  return u;
+}
+
+function setVal(id, v){
+  const el = document.getElementById(id);
+  if(!el) return;
+  if(el.tagName === "SELECT"){
+    el.value = String(v ?? el.value ?? "").trim() || el.value;
+  }else{
+    el.value = (v === undefined || v === null) ? "" : String(v);
+  }
+}
+function getVal(id){
+  const el = document.getElementById(id);
+  if(!el) return "";
+  return String(el.value ?? "").trim();
+}
+
+/** Base64 helper */
+function fileToBase64(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=> {
+      const result = String(reader.result || "");
+      const m = result.match(/^data:(.+?);base64,(.*)$/);
+      if(!m) return reject(new Error("Invalid base64"));
+      resolve({ type: m[1], data: m[2] });
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+/** Back buttons */
+document.getElementById("btnBack").addEventListener("click", ()=>{
+  history.length > 1 ? history.back() : (location.href = `index.html?project=${encodeURIComponent(PROJECT)}`);
+});
+document.getElementById("btnOpenDetails").addEventListener("click", ()=>{
+  location.href = `details.html?id=${encodeURIComponent(HP_ID)}&project=${encodeURIComponent(PROJECT)}`;
+});
+document.getElementById("btnOpenList").addEventListener("click", ()=>{
+  location.href = `index.html?project=${encodeURIComponent(PROJECT)}`;
+});
+
+/** Gallery state */
+let CURRENT_DETAIL = null;
+let KEEP_GALLERY = [];     // URLs ที่คงไว้
+let REMOVE_GALLERY = [];   // URLs ที่กดลบ (ส่งให้ GS ไป trash)
+
+/** Render gallery grid */
+function renderGallery(){
+  const grid = document.getElementById("galleryGrid");
+  grid.innerHTML = "";
+
+  if(!KEEP_GALLERY.length){
+    grid.innerHTML = `<div class="hint">No gallery images</div>`;
+    return;
+  }
+
+  KEEP_GALLERY.forEach((url, i)=>{
+    const card = document.createElement("div");
+    card.className = "gItem";
+    card.innerHTML = `
+      <img src="${cleanDriveImage(url)}" alt="g${i}">
+      <button class="gDel" title="Remove">✕</button>
+    `;
+    card.querySelector(".gDel").addEventListener("click", ()=>{
+      const removed = KEEP_GALLERY.splice(i,1)[0];
+      if(removed) REMOVE_GALLERY.push(removed);
+      renderGallery();
+    });
+    grid.appendChild(card);
+  });
+}
+
+/** Load detail */
+async function loadDetail(){
+  hideError();
+  showLoader();
+
+  if (!HP_ID) {
+    alert("Missing HP_ID in URL");
+    location.href = "index.html";
+  }
+
+
+  document.getElementById("subTitle").textContent = `Project: ${PROJECT} · HP_ID: ${HP_ID}`;
+  document.getElementById("pageTitle").textContent = `Edit Unit: ${HP_ID}`;
+
+  const url = `${SCRIPT_URL}?mode=getUnitDetail&project=${encodeURIComponent(PROJECT)}&hpId=${encodeURIComponent(HP_ID)}`;
+  let detail;
+  try{
+    detail = await jsonp(url);
+  }catch(err){
+    showError("โหลดข้อมูลไม่สำเร็จ (ตรวจ Deploy Apps Script ให้เป็น Anyone และใช้ /exec)");
+    hideLoader();
+    return;
+  }
+
+  if(detail && detail.error){
+    showError("โหลดข้อมูลไม่สำเร็จ: " + detail.error);
+    hideLoader();
+    return;
+  }
+
+  CURRENT_DETAIL = detail;
+
+  // Fill fields
+  setVal("Plot", detail.Plot);
+  setVal("Type", detail.Type);
+  setVal("Address", detail.Address);
+  setVal("Project_Name", detail.Project_Name);
+  setVal("Bedrooms", detail.Bedrooms);
+  setVal("Bathrooms", detail.Bathrooms);
+  setVal("Parking", detail.Parking);
+
+  setVal("Land_Area_sq_w", detail.Land_Area_sq_w);
+  setVal("Land_Area_sq_m", detail.Land_Area_sq_m);
+  setVal("Living_Area_sq_m", detail.Living_Area_sq_m);
+
+  setVal("Pool_Size", detail.Pool_Size);
+  setVal("Pool_Depth", detail.Pool_Depth);
+  setVal("Furnishing", detail.Furnishing);
+  setVal("Price", detail.Price);
+  setVal("Price_SQM", detail.Price_SQM);
+
+  setVal("Status", detail.Status || "Available");
+  setVal("Badge", detail.Badge);
+
+  setVal("Description", detail.Description);
+  setVal("District", detail.District);
+  setVal("SubDistrict", detail.SubDistrict);
+  setVal("FBLink", detail.FBLink);
+  setVal("Map_Link", detail.Map_Link);
+  setVal("Virtual_Tour", detail.Virtual_Tour);
+  setVal("Commission", detail.Commission);
+
+  // Thumb preview
+  const thumb = cleanDriveImage(detail.Thumbnail_Image || "");
+  document.getElementById("thumbPreview").src =
+    thumb || "data:image/svg+xml;charset=utf-8," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='800'><rect width='100%' height='100%' fill='#e6edf6'/><text x='50%' y='50%' text-anchor='middle' fill='#8aa0bb' font-size='40' font-family='Arial'>no thumb</text></svg>");
+
+  // Gallery keep list
+  KEEP_GALLERY = String(detail.Image_List || "")
+    .split(",").map(s=>s.trim())
+    .filter(Boolean);
+
+  REMOVE_GALLERY = [];
+  renderGallery();
+
+  hideLoader();
+}
+
+/** Thumb change preview */
+document.getElementById("file_thumb").addEventListener("change", (e)=>{
+  const f = e.target.files && e.target.files[0];
+  if(!f) return;
+  const url = URL.createObjectURL(f);
+  document.getElementById("thumbPreview").src = url;
+});
+
+/** Add new gallery preview (ไม่รวมเข้ารายการ keep จนกด save) */
+let NEW_GALLERY_FILES = [];
+document.getElementById("files_gallery").addEventListener("change", (e)=>{
+  const files = Array.from(e.target.files || []);
+  NEW_GALLERY_FILES = files;
+});
+
+/** Save */
+async function save(){
+  hideError();
+  showLoader();
+
+  try{
+    const payload = {
+      mode: "updateUnit",
+      project: PROJECT,
+      hpId: HP_ID,
+
+      Plot: getVal("Plot"),
+      Type: getVal("Type"),
+      Address: getVal("Address"),
+      Project_Name: getVal("Project_Name"),
+      Bedrooms: getVal("Bedrooms"),
+      Bathrooms: getVal("Bathrooms"),
+      Parking: getVal("Parking"),
+
+      Land_Area_sq_w: getVal("Land_Area_sq_w"),
+      Land_Area_sq_m: getVal("Land_Area_sq_m"),
+      Living_Area_sq_m: getVal("Living_Area_sq_m"),
+
+      Pool_Size: getVal("Pool_Size"),
+      Pool_Depth: getVal("Pool_Depth"),
+      Furnishing: getVal("Furnishing"),
+      Price: getVal("Price"),
+      Price_SQM: getVal("Price_SQM"),
+
+      Status: getVal("Status"),
+      Badge: getVal("Badge"),
+
+      Description: getVal("Description"),
+      District: getVal("District"),
+      SubDistrict: getVal("SubDistrict"),
+      FBLink: getVal("FBLink"),
+      Map_Link: getVal("Map_Link"),
+      Virtual_Tour: getVal("Virtual_Tour"),
+      Commission: getVal("Commission"),
+
+      // ✅ gallery control
+      keepGallery: KEEP_GALLERY.slice(),
+      removeGallery: REMOVE_GALLERY.slice(),
     };
 
-    function switchTab(tab) {
-      document.getElementById("tab-photo").classList.toggle("hidden", tab !== "photo");
-      document.getElementById("tab-info").classList.toggle("hidden", tab !== "info");
-      document.getElementById("btn-photo").classList.toggle("tab-active", tab === "photo");
-      document.getElementById("btn-info").classList.toggle("tab-active", tab === "info");
+    // thumb file
+    const thumbFile = document.getElementById("file_thumb").files?.[0];
+    if(thumbFile){
+      payload.file_thumb = await fileToBase64(thumbFile);
     }
 
-    function setSubDistrictOptions(selectedDistrict, selectedSubDistrict = "") {
-      const subSel = document.getElementById("SubDistrict");
-      const list = SUBDISTRICTS_BY_DISTRICT[selectedDistrict] || [];
-      subSel.innerHTML = `<option value="">-- Select Sub-District --</option>`;
-
-      if (!selectedDistrict || list.length === 0) {
-        subSel.disabled = true;
-        subSel.value = "";
-        return;
-      }
-
-      list.forEach(name => {
-        const opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name;
-        subSel.appendChild(opt);
-      });
-
-      subSel.disabled = false;
-
-      if (selectedSubDistrict) {
-        subSel.value = selectedSubDistrict;
-        if (subSel.value !== selectedSubDistrict) {
-          const custom = document.createElement("option");
-          custom.value = selectedSubDistrict;
-          custom.textContent = selectedSubDistrict + " (custom)";
-          subSel.appendChild(custom);
-          subSel.value = selectedSubDistrict;
-        }
+    // new gallery files
+    if(NEW_GALLERY_FILES.length){
+      payload.files_gallery = [];
+      for(const f of NEW_GALLERY_FILES){
+        payload.files_gallery.push(await fileToBase64(f));
       }
     }
 
-    function bindDistrictChange() {
-      const districtSel = document.getElementById("District");
-      districtSel.addEventListener("change", () => {
-        setSubDistrictOptions(districtSel.value, "");
-      });
-    }
-
-    function previewFile(input, targetId) {
-      const file = input.files && input.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = e => document.getElementById(targetId).innerHTML =
-        `<img src="${e.target.result}" class="w-full h-full object-cover">`;
-      reader.readAsDataURL(file);
-    }
-
-    // ✅ NEW: render gallery (รวมรูปเดิมที่ยังอยู่ + รูปใหม่ในคิว)
-    function renderGallery() {
-      const box = document.getElementById("galleryPreview");
-      const keptExisting = existingGallery.filter(u => !removedGallery.includes(u));
-
-      const tiles = [];
-
-      // รูปเดิม (กด ❌ แล้วไปอยู่ removedGallery)
-      keptExisting.forEach((url) => {
-        tiles.push(`
-          <div class="img-tile">
-            <div class="img-x" onclick="removeExistingImage('${encodeURIComponent(url)}')" title="Remove">✕</div>
-            <img src="${url}" class="w-full h-12 object-cover rounded-lg">
-          </div>
-        `);
-      });
-
-      // รูปใหม่ในคิว (กด ❌ แล้วเอาออกจากคิว)
-      newGalleryQueue.forEach((it, idx) => {
-        tiles.push(`
-          <div class="img-tile">
-            <div class="img-x" onclick="removeNewQueuedImage(${idx})" title="Remove">✕</div>
-            <img src="${it.previewUrl}" class="w-full h-12 object-cover rounded-lg">
-          </div>
-        `);
-      });
-
-      box.innerHTML = tiles.length
-        ? tiles.join("")
-        : `<span class="text-4xl text-slate-200 col-span-4 self-center justify-self-center">🗂️</span>`;
-    }
-
-    // ✅ NEW: กด ❌ ลบ “รูปเดิม”
-    window.removeExistingImage = function(encodedUrl) {
-      const url = decodeURIComponent(encodedUrl);
-      if (!removedGallery.includes(url)) removedGallery.push(url);
-      renderGallery();
-    }
-
-    // ✅ NEW: กด ❌ ลบ “รูปใหม่ในคิว”
-    window.removeNewQueuedImage = function(index) {
-      if (index < 0 || index >= newGalleryQueue.length) return;
-      try { URL.revokeObjectURL(newGalleryQueue[index].previewUrl); } catch(e){}
-      newGalleryQueue.splice(index, 1);
-      renderGallery();
-    }
-
-    // ✅ NEW: เลือกรูปใหม่ (สะสมเข้าคิว และลบรายรูปได้)
-    window.onPickGalleryFiles = function(input) {
-      const files = Array.from(input.files || []);
-      if (!files.length) return;
-
-      files.forEach(f => {
-        const url = URL.createObjectURL(f);
-        newGalleryQueue.push({ file: f, previewUrl: url });
-      });
-
-      // เคลียร์ค่า input เพื่อให้เลือกไฟล์เดิมซ้ำได้ในอนาคต
-      input.value = "";
-      renderGallery();
-    }
-
-    async function loadData() {
-      document.getElementById("displayId").innerText = HP_ID || "HP-XXXX";
-      if (!HP_ID || !PROJECT) return alert("Missing id/project in URL");
-
-      try {
-        const res = await fetch(`${API_URL}?mode=getUnitDetail&hpId=${encodeURIComponent(HP_ID)}&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`);
-        const data = await res.json();
-        if (data && data.error) throw new Error(data.error);
-
-        Object.keys(data || {}).forEach(k => {
-          const el = document.getElementById(k);
-          if (el) el.value = (data[k] ?? "");
-        });
-
-        const districtVal = (data.District ?? "").toString().trim();
-        const subDistrictVal = (data.SubDistrict ?? "").toString().trim();
-        if (districtVal) {
-          document.getElementById("District").value = districtVal;
-          setSubDistrictOptions(districtVal, subDistrictVal);
-        } else {
-          setSubDistrictOptions("", "");
-        }
-
-        const rawSys = (data.System_Status ?? "").toString().trim();
-        const mapSys = { "Live":"Online", "Online (Live)":"Online", "Online":"Online", "Pending":"Pending", "Offline":"Offline" };
-        const normalized = mapSys[rawSys] || (rawSys ? rawSys : "Pending");
-        document.getElementById("System_Status").value = normalized;
-
-        if (data.Thumbnail_Image) {
-          document.getElementById("thumbPreview").innerHTML = `<img src="${data.Thumbnail_Image}" class="w-full h-full object-cover">`;
-        }
-
-        // ✅ NEW: set existingGallery state
-        existingGallery = [];
-        removedGallery = [];
-        newGalleryQueue = [];
-
-        if (data.Image_List) {
-          existingGallery = String(data.Image_List)
-            .split(",")
-            .map(s => s.trim())
-            .filter(Boolean);
-        }
-
-        renderGallery();
-
-      } catch (e) {
-        alert("Error loading data: " + e.message);
-      }
-    }
-
-    const toBase64 = file => new Promise((resolve, reject) => {
-      try {
-        const reader = new FileReader();
-        reader.onload = () => resolve({ data: reader.result.split(",")[1], type: file.type });
-        reader.onerror = () => reject(new Error("File read error"));
-        reader.readAsDataURL(file);
-      } catch (e) {
-        reject(e);
-      }
+    // POST to Apps Script
+    const res = await fetch(SCRIPT_URL, {
+      method:"POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(payload),
     });
 
-    async function updateData() {
-      const btn = document.getElementById("saveBtn");
-      btn.disabled = true;
-      const oldText = btn.innerText;
-      btn.innerText = "UPDATING DATABASE...";
-
-      // ✅ NEW: keep/remove gallery arrays
-      const keepGallery = existingGallery.filter(u => !removedGallery.includes(u));
-      const removeGallery = removedGallery.slice();
-
-      const payload = {
-        mode: "updateUnit",
-        project: PROJECT,
-        hpId: HP_ID,
-
-        Plot: document.getElementById("Plot").value,
-        Type: document.getElementById("Type").value,
-        Address: document.getElementById("Address").value,
-        Project_Name: document.getElementById("Project_Name").value,
-        Bedrooms: document.getElementById("Bedrooms").value,
-        Bathrooms: document.getElementById("Bathrooms").value,
-        Parking: document.getElementById("Parking").value,
-
-        Land_Area_sq_w: document.getElementById("Land_Area_sq_w").value,
-        Land_Area_sq_m: document.getElementById("Land_Area_sq_m").value,
-        Living_Area_sq_m: document.getElementById("Living_Area_sq_m").value,
-
-        Pool_Size: document.getElementById("Pool_Size").value,
-        Pool_Depth: document.getElementById("Pool_Depth").value,
-
-        Furnishing: document.getElementById("Furnishing").value,
-        Status: document.getElementById("Status").value,
-        District: document.getElementById("District").value,
-        SubDistrict: document.getElementById("SubDistrict").value,
-
-        Price: document.getElementById("Price").value,
-        Price_SQM: document.getElementById("Price_SQM").value,
-        Badge: document.getElementById("Badge").value,
-
-        Description: document.getElementById("Description").value,
-        FBLink: document.getElementById("FBLink").value,
-        Map_Link: document.getElementById("Map_Link").value,
-        Virtual_Tour: document.getElementById("Virtual_Tour").value,
-        Commission: document.getElementById("Commission").value,
-
-        // ✅ NEW: ส่งคำสั่งชัดเจนว่ารูปไหน “คงไว้/ลบ”
-        keepGallery,
-        removeGallery,
-
-        file_thumb: null,
-        files_gallery: []
-      };
-
-      // thumb
-      const thumb = document.getElementById("file_thumb").files[0];
-      if (thumb) payload.file_thumb = await toBase64(thumb);
-
-      // ✅ NEW: แปลงเฉพาะรูปใหม่ในคิว
-      for (const it of (newGalleryQueue || [])) {
-        payload.files_gallery.push(await toBase64(it.file));
-      }
-
-      try {
-        const res = await fetch(API_URL, { method:"POST", body: JSON.stringify(payload) });
-        const out = await res.json().catch(() => ({}));
-        if (!res.ok || out.error) throw new Error(out.error || "Save failed");
-        document.getElementById("successPopup").classList.remove("hidden");
-      } catch (e) {
-        alert("Save Failed: " + e.message);
-        btn.disabled = false;
-        btn.innerText = oldText;
-      }
+    const data = await res.json();
+    if(data && data.error){
+      showError("บันทึกไม่สำเร็จ: " + data.error);
+      hideLoader();
+      return;
     }
 
-    window.onload = () => {
-      bindDistrictChange();
-      loadData();
-    };
-  </script>
+    alert("บันทึกสำเร็จ");
+    // reload detail to refresh gallery list
+    await loadDetail();
+
+  }catch(err){
+    showError("บันทึกไม่สำเร็จ: " + err.message);
+  }finally{
+    hideLoader();
+  }
+}
+
+document.getElementById("btnSave").addEventListener("click", save);
+
+/** Init */
+loadDetail();
+</script>
 </body>
 </html>
