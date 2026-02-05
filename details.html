@@ -5,276 +5,656 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>smart properties system · details</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://script.google.com">
+  <link rel="preconnect" href="https://lh3.googleusercontent.com">
+
   <style>
     :root{
-      --bg:#e8eef6;
+      --bg:#a8bdd6;
       --card:#ffffff;
-      --text:#0b1320;
-      --muted:#6b7a90;
+      --text:#0f172a;
+      --muted:#6b7c93;
       --radius:22px;
-      --shadow:0 12px 30px rgba(0,0,0,.12);
-      --line:rgba(15,23,42,.10);
+      --shadow: 0 12px 30px rgba(0,0,0,.12);
+      --soft:#f3f6fb;
+      --line:rgba(255,255,255,.45);
     }
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family:Kanit,system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans Thai",sans-serif;
-      background: linear-gradient(180deg, #dde7f3, #eef4fb);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans Thai", sans-serif;
+      background: radial-gradient(ellipse at top, rgba(255,255,255,.25), rgba(255,255,255,0) 55%) , var(--bg);
       color:var(--text);
-      min-height:100vh;
     }
-    .wrap{max-width:1100px;margin:0 auto;padding:14px 14px 44px}
-    .topbar{
-      display:flex;align-items:center;gap:12px;
-      padding:12px 12px;
-      background: rgba(255,255,255,.75);
-      border:1px solid var(--line);
-      border-radius: 26px;
-      backdrop-filter: blur(8px);
-      position:sticky; top:10px; z-index:10;
-    }
-    .backBtn{
-      width:44px;height:44px;border-radius:999px;
-      border:1px solid rgba(15,23,42,.12);
-      background:#fff;
-      font-weight:900;
-      cursor:pointer;
-    }
-    .titlebox{flex:1;min-width:0}
-    .title{margin:0;font-weight:900;font-size:18px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .subtitle{margin-top:4px;font-size:12px;color:rgba(11,19,32,.65);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .wrap{max-width:1100px; margin:0 auto; padding:16px 14px 30px;}
 
-    .grid{
-      margin-top:12px;
-      display:grid;
-      gap:14px;
-      grid-template-columns: 1fr;
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 12px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.18);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--line);
     }
-    @media(min-width: 980px){
-      .grid{grid-template-columns: 1.2fr .8fr;}
+    .brand{display:flex; gap:12px; align-items:center;}
+    .logo{
+      width:44px; height:44px; border-radius:999px; background:rgba(255,255,255,.55);
+      display:grid; place-items:center; font-weight:800;
+      flex:0 0 auto;
+    }
+    .titles{min-width:0}
+    .titles h1{
+      margin:0;
+      font-size:20px;
+      line-height:1.15;
+      font-weight:1100;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      letter-spacing:.2px;
+    }
+    .titles .sub{display:none;}
+    .backBtn{
+      width:44px; height:44px; border-radius:999px;
+      border:0; background: rgba(255,255,255,.55);
+      cursor:pointer; font-size:18px; font-weight:900;
+      flex:0 0 auto;
     }
 
     .card{
-      background: rgba(255,255,255,.92);
-      border: 1px solid rgba(255,255,255,.75);
+      margin-top:14px;
+      background: rgba(255,255,255,.88);
+      border:1px solid rgba(255,255,255,.65);
       border-radius: var(--radius);
-      overflow:hidden;
       box-shadow: var(--shadow);
+      overflow:hidden;
     }
 
     /* Gallery */
-    .hero{
+    .gallery{
       position:relative;
+      background:#dfe9f6;
+    }
+    .mainSlide{
+      width:100%;
       aspect-ratio: 16/10;
-      background:#e9eef5;
+      object-fit:cover;
+      display:block;
+    }
+
+    /* ✅ จุดที่ 1: ทำ Plot บนรูปให้เล็กลงนิด เพื่อไม่บังเลข */
+    .tagTopLeft{
+      position:absolute;
+      padding:8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.78);
+      font-weight:1100;
+      font-size:14px;               /* ✅ ลดขนาดตัวอักษร Plot */
+      box-shadow: 0 10px 20px rgba(0,0,0,.12);
+      backdrop-filter: blur(8px);
+      border:1px solid rgba(255,255,255,.65);
+      white-space:nowrap;
       overflow:hidden;
-    }
-    .hero img{
-      width:100%;height:100%;object-fit:cover;display:block;
-    }
-    .skeleton{
-      background: linear-gradient(90deg, #e9eef5 0%, #f4f7fb 40%, #e9eef5 80%);
-      background-size: 200% 100%;
-      animation: shimmer 1.2s linear infinite;
-    }
-    @keyframes shimmer{0%{background-position:0 0}100%{background-position:200% 0}}
-
-    .tagCount{
-      position:absolute;left:12px;bottom:12px;
-      padding:8px 12px;border-radius:999px;
-      background: rgba(255,255,255,.82);
-      border:1px solid rgba(255,255,255,.7);
-      font-weight:900;
-      font-size:12px;
-      color:rgba(11,19,32,.75);
+      text-overflow:ellipsis;
+      max-width: 78%;
+      left:14px; top:14px;
     }
 
-    .navBtn{
-      position:absolute;top:50%;
-      transform:translateY(-50%);
-      width:44px;height:44px;border-radius:999px;
-      border:1px solid rgba(255,255,255,.75);
-      background: rgba(255,255,255,.82);
-      cursor:pointer;font-weight:900;
-      box-shadow: 0 10px 20px rgba(0,0,0,.10);
+    /* ✅ ทำตัวเลขนับรูปเล็กลง + ไม่มี background */
+    .tagBottomRight{
+      position:absolute;
+      right:14px;
+      bottom:14px;
+      padding:0;
+      border-radius:0;
+      background: transparent;
+      box-shadow:none;
+      backdrop-filter:none;
+      border:0;
+      font-weight:1100;
+      font-size:14px;
+      color: rgba(255,255,255,.98);
+      text-shadow: 0 10px 18px rgba(0,0,0,.45);
       user-select:none;
+      pointer-events:none;
     }
-    .navBtn:active{transform:translateY(-50%) scale(.98)}
-    .navPrev{left:12px}
-    .navNext{right:12px}
 
-    .thumbs{
-      display:flex;gap:10px;overflow:auto;
-      padding:12px;
-      border-top:1px solid rgba(15,23,42,.08);
-      background: rgba(255,255,255,.75);
+    .thumbStrip{
+      background: rgba(255,255,255,.78);
+      padding:10px;
+      display:flex;
+      gap:10px;
+      overflow:auto;
+      scroll-snap-type: x mandatory;
     }
     .thumb{
-      width:72px;height:54px;border-radius:14px;flex:0 0 auto;
-      overflow:hidden;border:2px solid transparent;
-      background:#e9eef5;cursor:pointer;
+      width:92px; height:64px;
+      flex:0 0 auto;
+      border-radius: 16px;
+      object-fit:cover;
+      border:3px solid transparent;
+      cursor:pointer;
+      scroll-snap-align: start;
+      background:#e8f0fb;
     }
-    .thumb img{width:100%;height:100%;object-fit:cover;display:block}
-    .thumb.active{border-color: rgba(59,130,246,.7)}
+    .thumb.active{border-color:#0f172a;}
 
-    /* Right panel */
-    .pad{padding:14px 14px 16px}
-    .line{height:1px;background:rgba(15,23,42,.08);margin:12px 0}
-    .hRow{display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .h1{margin:0;font-weight:1000;font-size:18px}
-    .badge{
-      padding:8px 12px;border-radius:999px;
-      font-weight:1000;font-size:12px;
-      border:1px solid rgba(15,23,42,.15);
-      color:rgba(15,23,42,.92);
-      background: rgba(255,255,255,.8);
-      max-width: 60%;
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    .content{padding:14px;}
+
+    /* =========================
+       ✅ จุดที่ 1-2: ราคาเล็กลง + Available อยู่แถวเดียวกัน (ไม่ตกบรรทัด)
+       ========================= */
+    .headRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:nowrap;
     }
-    .kv{
+    .hp{display:none;}
+
+    .price{
+      font-size:28px;
+      font-weight:1100;
+      letter-spacing:.2px;
+      white-space:nowrap;
+      flex:1 1 auto;
+      min-width:0;
+    }
+
+    .statusBelow{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:8px 12px;
+      border-radius: 12px;
+      font-weight:1100;
+      font-size:16px;
+      line-height:1;
+      background: rgba(255,255,255,.92);
+      border: 2px solid rgba(16,185,129,.55);
+      color: rgba(5,150,105,1);
+      box-shadow: 0 10px 20px rgba(0,0,0,.10);
+      white-space:nowrap;
+      flex:0 0 auto;
+    }
+
+    @media (max-width:420px){
+      .price{font-size:24px}
+      .statusBelow{font-size:14px; padding:7px 10px;}
+      .tagTopLeft{font-size:13px; padding:7px 10px;}
+    }
+
+    .gridInfo{
+      margin-top:14px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+    }
+    @media(min-width:900px){
+      .gridInfo{grid-template-columns: repeat(3, 1fr);}
+    }
+    .infoBox{
+      background: rgba(15,23,42,.05);
+      border:1px solid rgba(15,23,42,.06);
+      border-radius: 18px;
+      padding:12px 12px;
+      display:flex; justify-content:space-between; gap:10px;
+      font-weight:1100;
+    }
+    .k{color:rgba(15,23,42,.55); font-weight:900;}
+    .v{color:rgba(15,23,42,.95); font-weight:1100; text-align:right; white-space:pre-wrap;}
+
+    /* ✅ จุดที่ 3: แถวเดียวกัน 2 ค่า (Land sq.w + Living sqm) */
+    .infoBox.double{
       display:grid;
       grid-template-columns: 1fr 1fr;
       gap:10px;
-      margin-top:12px;
+      align-items:start;
     }
-    .k{
-      padding:12px;
-      border-radius:18px;
-      border:1px solid rgba(15,23,42,.10);
-      background: rgba(11,19,32,.03);
+    .infoPair{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      min-width:0;
     }
-    .k .t{font-weight:1000;color:rgba(11,19,32,.7);font-size:12px}
-    .k .v{margin-top:6px;font-weight:1000;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .infoPair .k{white-space:nowrap;}
+    .infoPair .v{
+      text-align:right;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      min-width:0;
+    }
 
-    .btn{
-      width:100%;
-      border:none;
+    .errorBox{
+      margin-top:14px;
+      padding:14px;
       border-radius: 18px;
-      padding:14px 14px;
-      font-size:16px;
-      font-weight:1000;
-      cursor:pointer;
+      background: rgba(255,255,255,.7);
+      border:1px solid rgba(255,255,255,.65);
+      font-weight:1100;
+      color:#8b1d1d;
+      display:none;
     }
-    .btnPrimary{background:#c6f0d8;color:rgba(11,19,32,.86)}
-    .btnGhost{background:rgba(255,255,255,.8);border:1px solid rgba(15,23,42,.10)}
-    .btn:active{transform:scale(.99)}
-
-    .desc{
-      margin-top:12px;
-      font-size:14px;
-      line-height:1.6;
-      color:rgba(11,19,32,.78);
-      font-weight:600;
-      white-space:pre-wrap;
+    .skeleton{
+      background: linear-gradient(90deg, rgba(255,255,255,.55), rgba(255,255,255,.25), rgba(255,255,255,.55));
+      background-size: 200% 100%;
+      animation: shimmer 1.2s infinite linear;
+    }
+    @keyframes shimmer{
+      0%{background-position: 200% 0;}
+      100%{background-position: -200% 0;}
     }
 
-    /* Loader overlay */
+    /* Loading overlay (คงเดิม) */
     .pageLoader{
-      position:fixed;inset:0;z-index:9999;
-      display:none;align-items:center;justify-content:center;
-      background: radial-gradient(1200px 700px at 10% 10%, rgba(255,255,255,.26), transparent 60%),
-                  radial-gradient(1100px 700px at 90% 30%, rgba(255,255,255,.18), transparent 60%),
-                  linear-gradient(180deg, #8faac8, #a7bdd5 55%, #95b2cf);
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background: radial-gradient(ellipse at top, rgba(255,255,255,.25), rgba(255,255,255,0) 55%) , var(--bg);
+      z-index:99999;
     }
-    .loaderCard{
-      width:min(92vw, 520px);
-      padding:28px 18px;
-      border-radius:28px;
-      border:1px solid rgba(255,255,255,.5);
-      background: rgba(255,255,255,.16);
-      backdrop-filter: blur(10px);
+    .loaderPanel{
       text-align:center;
+      padding:18px 22px;
+      border-radius: 26px;
+      background: rgba(255,255,255,.18);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 18px 40px rgba(0,0,0,.16);
+      max-width: 92vw;
     }
-    .loaderIcons{
-      display:flex;gap:16px;justify-content:center;align-items:center;
-      margin-bottom:14px;font-size:42px;
+    .loaderEmojis{
+      display:flex;
+      gap:18px;
+      justify-content:center;
+      align-items:center;
+      font-size:52px;
+      line-height:1;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,.18));
     }
-    .wiggle{
+    .loaderEmojis span{
       display:inline-block;
-      animation: wiggle 1.05s ease-in-out infinite;
-      transform-origin: 50% 80%;
-      filter: drop-shadow(0 10px 16px rgba(0,0,0,.14));
+      animation: bounce 0.9s ease-in-out infinite;
     }
-    .wiggle:nth-child(2){ animation-delay:.12s; }
-    .wiggle:nth-child(3){ animation-delay:.24s; }
-    @keyframes wiggle{
-      0%   { transform: translateY(0) rotate(0deg) scale(1); }
-      35%  { transform: translateY(-8px) rotate(-5deg) scale(1.02); }
-      70%  { transform: translateY(0) rotate(5deg) scale(1); }
-      100% { transform: translateY(0) rotate(0deg) scale(1); }
+    .loaderEmojis span:nth-child(2){ animation-delay: .12s; }
+    .loaderEmojis span:nth-child(3){ animation-delay: .24s; }
+    @keyframes bounce{
+      0%,100%{ transform: translateY(0); opacity:.95; }
+      50%{ transform: translateY(-12px); opacity:1; }
     }
     .loaderText{
-      font-weight:1000;letter-spacing:1px;font-size:22px;
-      color: rgba(255,255,255,.92);
-      text-shadow: 0 10px 18px rgba(0,0,0,.20);
+      margin-top:12px;
+      font-weight:1100;
+      letter-spacing:.6px;
+      color: rgba(15,23,42,.92);
+      text-shadow: 0 10px 22px rgba(0,0,0,.10);
+      font-size:22px;
+      white-space:nowrap;
     }
-    .loaderSub{
-      margin-top:8px;font-weight:800;font-size:14px;
-      color: rgba(255,255,255,.85);opacity:.95;
+    @media (max-width:420px){
+      .loaderEmojis{font-size:44px}
+      .loaderText{font-size:18px}
     }
+
+    /* ลูกศรโปร่งแสง (คงเดิม) */
+    .navArrow{
+      position:absolute;
+      top:50%;
+      transform: translateY(-50%);
+      width:54px;
+      height:54px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.55);
+      background: rgba(255,255,255,.22);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 10px 22px rgba(0,0,0,.14);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      user-select:none;
+      z-index:5;
+    }
+    .navArrow:active{ transform: translateY(-50%) scale(.98); }
+    .navArrow svg{
+      width:24px;height:24px;
+      stroke: rgba(255,255,255,.95);
+      opacity:.95;
+    }
+    .navLeft{ left:14px; }
+    .navRight{ right:14px; }
+    @media (max-width:420px){
+      .navArrow{ width:48px;height:48px; }
+      .navArrow svg{ width:22px;height:22px; }
+    }
+
+    /* =========================
+       ✅ Other Plots
+       ========================= */
+    .otherSection{
+      margin-top:14px;
+      padding:14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.65);
+      border: 1px solid rgba(255,255,255,.65);
+    }
+    .otherTitle{
+      font-weight:1100;
+      letter-spacing:.3px;
+      color: rgba(15,23,42,.88);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .otherHint{
+      font-weight:900;
+      color: rgba(15,23,42,.55);
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .otherGrid{
+      margin-top:12px;
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap:12px;
+    }
+    .otherCard{
+      border-radius: 18px;
+      background: rgba(255,255,255,.92);
+      border: 1px solid rgba(15,23,42,.06);
+      box-shadow: 0 10px 22px rgba(0,0,0,.08);
+      overflow:hidden;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .12s ease;
+    }
+    .otherCard:active{ transform: scale(.985); }
+    .otherImg{
+      width:100%;
+      aspect-ratio: 16/10;
+      object-fit:cover;
+      display:block;
+      background:#e8f0fb;
+    }
+    .otherBody{
+      padding:10px 10px 12px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .otherTopRow{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .otherPlot{
+      font-weight:1100;
+      font-size:13px;
+      color: rgba(15,23,42,.95);
+      white-space:normal;
+      overflow:visible;
+      text-overflow:clip;
+      flex:1 1 auto;
+      min-width:0;
+    }
+    .otherStatus{
+      padding:5px 8px;
+      border-radius: 999px;
+      font-weight:1100;
+      font-size:11px;
+      background: rgba(255,255,255,.92);
+      border: 2px solid rgba(15,23,42,.15);
+      color: rgba(15,23,42,.88);
+      white-space:nowrap;
+      flex:0 0 auto;
+    }
+    .otherPrice{
+      font-weight:1100;
+      font-size:16px;
+      color: rgba(15,23,42,.92);
+      white-space:nowrap;
+    }
+
+    /* ✅ จุดที่ 1: ทำ Land/Living ให้เล็กลง + บางลง และพยายามให้โชว์ครบใน 1 แถว */
+    .otherId{
+      font-weight:600;                 /* ✅ บางลง */
+      font-size:11px;                  /* ✅ เล็กลง */
+      letter-spacing:-0.2px;
+      color: rgba(15,23,42,.55);
+      white-space:nowrap;              /* ✅ 1 แถว */
+      overflow:hidden;
+      text-overflow:clip;              /* ✅ ไม่ใส่ ... */
+    }
+
+@media (max-width: 420px) {
+  .otherId {
+    font-size: 9.5px;
+  }
+}
+
+    /* =========================
+       ✅ Share icons row (8 icons) + scroll
+       ========================= */
+    .shareSection{
+      margin-top:14px;
+      padding:14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.65);
+      border: 1px solid rgba(255,255,255,.65);
+    }
+    .shareTopIcon{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:8px 0 10px;
+      opacity:.85;
+    }
+    .shareRow{
+      display:flex;
+      gap:14px;
+      justify-content:center;
+      overflow:auto;
+      padding:10px 8px 6px;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+    }
+    .shareBtn{
+      flex:0 0 auto;
+      width:58px;
+      scroll-snap-align:center;
+      border:0;
+      background:transparent;
+      cursor:pointer;
+      text-align:center;
+      user-select:none;
+    }
+    .shareCircle{
+      width:52px; height:52px;
+      border-radius:999px;
+      background: rgba(255,255,255,.9);
+      border: 1px solid rgba(15,23,42,.08);
+      box-shadow: 0 10px 22px rgba(0,0,0,.10);
+      display:grid;
+      place-items:center;
+      margin:0 auto;
+    }
+    .shareLbl{
+      margin-top:6px;
+      font-size:11px;
+      font-weight:900;
+      color: rgba(15,23,42,.65);
+      white-space:nowrap;
+    }
+    .shareBtn:active .shareCircle{ transform: scale(.97); }
+
+    /* ซ่อน canvas */
+    #shareCanvas{ display:none; }
   </style>
 </head>
-
 <body>
-  <!-- Loader -->
-  <div class="pageLoader" id="pageLoader" aria-live="polite">
-    <div class="loaderCard">
-      <div class="loaderIcons" aria-hidden="true">
-        <span class="wiggle">🐚</span>
-        <span class="wiggle">🌊</span>
-        <span class="wiggle">🌴</span>
+
+  <div class="pageLoader" id="pageLoader" aria-label="loading">
+    <div class="loaderPanel">
+      <div class="loaderEmojis" aria-hidden="true">
+        <span>🏠</span><span>✨</span><span>🌴</span>
       </div>
       <div class="loaderText">Smart Properties System</div>
-      <div class="loaderSub">กำลังโหลดข้อมูล…</div>
     </div>
   </div>
 
   <div class="wrap">
     <div class="topbar">
-      <button class="backBtn" id="btnBack">←</button>
-      <div class="titlebox">
-        <p class="title" id="title">รายละเอียดบ้าน</p>
-        <div class="subtitle" id="subTitle">กำลังโหลด…</div>
+      <div class="brand">
+        <div class="logo">SP</div>
+        <div class="titles">
+          <h1 id="pageTitle">Detail Plot: -</h1>
+          <div class="sub" id="subTitle">Details · ...</div>
+        </div>
       </div>
-      <div class="badge" id="statusBadge">—</div>
+      <button class="backBtn" id="btnBack">←</button>
     </div>
 
-    <div class="grid">
-      <!-- Left: Gallery -->
-      <div class="card">
-        <div class="hero">
-          <img id="mainImg" class="skeleton" alt="main" />
-          <div class="tagCount" id="tagCount">0 / 0</div>
-          <button class="navBtn navPrev" id="prevBtn">‹</button>
-          <button class="navBtn navNext" id="nextBtn">›</button>
+    <div class="errorBox" id="errBox"></div>
+
+    <div class="card" id="mainCard">
+      <div class="gallery" id="gallery">
+        <img class="mainSlide skeleton" id="mainImg" alt="main" />
+        <div class="tagTopLeft" id="tagPlot">-</div>
+        <div class="tagBottomRight" id="tagCount">0 / 0</div>
+
+        <div class="navArrow navLeft" id="btnPrev" aria-label="previous">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 18l-6-6 6-6"></path>
+          </svg>
         </div>
-        <div class="thumbs" id="thumbs"></div>
+        <div class="navArrow navRight" id="btnNext" aria-label="next">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 6l6 6-6 6"></path>
+          </svg>
+        </div>
       </div>
 
-      <!-- Right: Info -->
-      <div class="card">
-        <div class="pad">
-          <div class="hRow">
-            <h2 class="h1" id="hpIdText">HP_ID : -</h2>
+      <div class="thumbStrip" id="thumbStrip"></div>
+
+      <div class="content">
+        <div class="headRow">
+          <div class="hp" id="hpText">...</div>
+          <div class="price" id="priceText">฿0</div>
+          <div class="statusBelow" id="statusBelow">-</div>
+        </div>
+
+        <div class="gridInfo" id="infoGrid"></div>
+
+        <!-- ✅ จุดที่ 2: ย้ายชุด Share ขึ้นมาไว้ “ใต้ข้อมูล/ก่อน Grid Other Plots” -->
+        <div class="shareSection" id="shareSection">
+          <div class="shareTopIcon" aria-hidden="true" title="Share">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="18" cy="5" r="2"></circle>
+              <circle cx="6" cy="12" r="2"></circle>
+              <circle cx="18" cy="19" r="2"></circle>
+              <path d="M8 12l8-7"></path>
+              <path d="M8 12l8 7"></path>
+            </svg>
           </div>
 
-          <div class="kv">
-            <div class="k"><div class="t">Plot</div><div class="v" id="plot">-</div></div>
-            <div class="k"><div class="t">Price</div><div class="v" id="price">-</div></div>
-            <div class="k"><div class="t">Bedrooms</div><div class="v" id="bed">-</div></div>
-            <div class="k"><div class="t">Bathrooms</div><div class="v" id="bath">-</div></div>
-            <div class="k"><div class="t">Land Area</div><div class="v" id="land">-</div></div>
-            <div class="k"><div class="t">Living Area</div><div class="v" id="living">-</div></div>
+          <div class="shareRow" id="shareRow">
+            <button class="shareBtn" data-type="facebook" aria-label="Facebook">
+              <div class="shareCircle">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="#1877F2" aria-hidden="true">
+                  <path d="M22 12.06C22 6.504 17.523 2 12 2S2 6.504 2 12.06C2 17.082 5.657 21.245 10.438 22v-7.03H7.898v-2.91h2.54V9.845c0-2.522 1.492-3.916 3.777-3.916 1.094 0 2.238.196 2.238.196v2.475h-1.26c-1.243 0-1.63.776-1.63 1.57v1.89h2.773l-.443 2.91h-2.33V22C18.343 21.245 22 17.082 22 12.06z"/>
+                </svg>
+              </div>
+              <div class="shareLbl">Facebook</div>
+            </button>
+
+            <button class="shareBtn" data-type="messenger" aria-label="Messenger">
+              <div class="shareCircle">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12 2C6.477 2 2 6.03 2 11c0 2.66 1.27 5.05 3.3 6.67V22l3.85-2.12c.91.25 1.88.38 2.85.38 5.523 0 10-4.03 10-9.26S17.523 2 12 2z" fill="#A855F7"/>
+                  <path d="M7 14l4-4 2 2 4-4-4 6-2-2-4 2z" fill="#fff"/>
+                </svg>
+              </div>
+              <div class="shareLbl">Messenger</div>
+            </button>
+
+            <button class="shareBtn" data-type="whatsapp" aria-label="WhatsApp">
+              <div class="shareCircle">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M20.52 3.48A11.89 11.89 0 0 0 12.06 0C5.44 0 .06 5.38.06 12c0 2.11.55 4.17 1.6 5.99L0 24l6.18-1.62a11.93 11.93 0 0 0 5.88 1.5h.01c6.62 0 12-5.38 12-12a11.9 11.9 0 0 0-3.55-8.4z" fill="#22C55E"/>
+                  <path d="M19.3 17.52c-.3.84-1.74 1.6-2.38 1.69-.6.09-1.36.13-2.2-.14-.5-.16-1.13-.37-1.95-.72-3.42-1.48-5.65-5.12-5.82-5.36-.17-.24-1.39-1.85-1.39-3.53 0-1.68.88-2.5 1.19-2.84.3-.34.66-.42.88-.42.22 0 .44 0 .63.01.2.01.46-.08.72.55.3.72 1.02 2.5 1.11 2.69.09.19.15.42.03.66-.12.24-.18.39-.36.6-.18.21-.38.46-.54.62-.18.18-.36.37-.15.72.21.35.93 1.52 2 2.46 1.38 1.22 2.54 1.6 2.9 1.78.36.18.57.15.78-.09.21-.24.9-1.05 1.14-1.41.24-.36.48-.3.81-.18.33.12 2.1.99 2.46 1.17.36.18.6.27.69.42.09.15.09.87-.21 1.71z" fill="#fff"/>
+                </svg>
+              </div>
+              <div class="shareLbl">WhatsApp</div>
+            </button>
+
+            <button class="shareBtn" data-type="telegram" aria-label="Telegram">
+              <div class="shareCircle">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <circle cx="12" cy="12" r="11" fill="#0EA5E9"/>
+                  <path d="M6.6 12.2l10.9-4.4c.5-.2.9.1.7.8l-1.9 9c-.1.6-.5.7-1 .4l-2.8-2.1-1.3 1.3c-.1.1-.2.2-.4.2l.2-3.1 5.7-5.1c.2-.2 0-.3-.2-.2l-7.1 4.5-3-.9c-.6-.2-.6-.6.2-.8z" fill="#fff"/>
+                </svg>
+              </div>
+              <div class="shareLbl">Telegram</div>
+            </button>
+
+            <button class="shareBtn" data-type="line" aria-label="LINE">
+              <div class="shareCircle">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12 2C6.48 2 2 5.7 2 10.26c0 2.62 1.47 4.94 3.76 6.45v3.07c0 .3.35.48.6.31l2.85-1.88c.88.2 1.8.31 2.79.31 5.52 0 10-3.7 10-8.27C22 5.7 17.52 2 12 2z" fill="#22C55E"/>
+                  <path d="M7.5 10.6h1.2v3H7.5v-3zm2.1 0h1.2v3H9.6v-3zm2.1 0h1.2v3h-1.2v-3zm2.1 0h1.2v3h-1.2v-3z" fill="#fff"/>
+                </svg>
+              </div>
+              <div class="shareLbl">LINE</div>
+            </button>
+
+            <button class="shareBtn" data-type="email" aria-label="Email">
+              <div class="shareCircle">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" fill="#EF4444"/>
+                  <path d="M4 8l8 6 8-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="shareLbl">Gmail</div>
+            </button>
+
+            <button class="shareBtn" data-type="copy" aria-label="Copy link">
+              <div class="shareCircle">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M10 13a5 5 0 0 1 0-7l1-1a5 5 0 0 1 7 7l-1 1" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M14 11a5 5 0 0 1 0 7l-1 1a5 5 0 0 1-7-7l1-1" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="shareLbl">Copy</div>
+            </button>
+
+            <button class="shareBtn" data-type="native" aria-label="Share">
+              <div class="shareCircle">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12 3v10" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M8 7l4-4 4 4" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <div class="shareLbl">Share</div>
+            </button>
           </div>
 
-          <div class="line"></div>
+          <canvas id="shareCanvas" width="1200" height="630"></canvas>
+        </div>
 
-          <button class="btn btnPrimary" id="btnEdit">✏️ แก้ไขข้อมูล</button>
-          <div style="height:10px"></div>
-          <button class="btn btnGhost" id="btnMap">📍 เปิดแผนที่</button>
-
-          <div class="desc" id="desc"></div>
+        <!-- Other Plots -->
+        <div class="otherSection" id="otherSection">
+          <div class="otherTitle">
+            <div>Other Plots</div>
+            <div class="otherHint">Tap to view details</div>
+          </div>
+          <div class="otherGrid" id="otherGrid"></div>
         </div>
       </div>
     </div>
@@ -287,9 +667,7 @@
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
 const qs = new URLSearchParams(location.search);
 const hpId = qs.get("id") || qs.get("hpId") || "";
-
-// ✅ FIX: default เป็น project_000 (แท็บใหม่)
-const project = qs.get("project") || "project_000";
+const project = qs.get("project") || "Project_0";
 
 /** Loader helpers */
 function showLoader(){
@@ -301,20 +679,65 @@ function hideLoader(){
   if(el) el.style.display = "none";
 }
 
-function esc(s){
-  return String(s||"").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+/** JSONP */
+function jsonp(url, timeoutMs = 20000){
+  return new Promise((resolve, reject) => {
+    const cb = "cb_" + Math.random().toString(36).slice(2);
+    const script = document.createElement("script");
+    const timer = setTimeout(() => { cleanup(); reject(new Error("timeout")); }, timeoutMs);
+
+    function cleanup(){
+      clearTimeout(timer);
+      if (script.parentNode) script.parentNode.removeChild(script);
+      try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
+    }
+    window[cb] = (data) => { cleanup(); resolve(data); };
+
+    const sep = url.includes("?") ? "&" : "?";
+    script.src = url + sep + "callback=" + encodeURIComponent(cb);
+    script.onerror = () => { cleanup(); reject(new Error("jsonp_error")); };
+    document.body.appendChild(script);
+  });
 }
 
-function fmtPrice(v){
-  const n = Number(String(v||"").replace(/,/g,""));
-  if (!isFinite(n) || n<=0) return "฿0";
+function showError(msg){
+  const box = document.getElementById("errBox");
+  box.style.display = "block";
+  box.textContent = msg;
+}
+function hideError(){
+  const box = document.getElementById("errBox");
+  box.style.display = "none";
+  box.textContent = "";
+}
+
+function toNumber(x){
+  const s = String(x ?? "").replace(/,/g,"").trim();
+  const n = Number(s);
+  return Number.isFinite(n) ? n : 0;
+}
+function moneyTHB(x){
+  const n = toNumber(x);
   return "฿" + n.toLocaleString("en-US");
 }
+function cleanDriveImage(url){
+  const u = String(url || "").trim();
+  if(!u) return "";
+  if (u.includes("lh3.googleusercontent.com/d/")) return u;
 
-function splitImages(str){
-  return String(str||"").split(",").map(s=>s.trim()).filter(Boolean);
+  let id = "";
+  const m1 = u.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (m1) id = m1[1];
+  const m2 = u.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (!id && m2) id = m2[1];
+  const m3 = u.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (!id && m3) id = m3[1];
+
+  if (id) return "https://lh3.googleusercontent.com/d/" + id;
+  return u;
 }
 
+/* ใช้กำหนดสีสถานะ */
 function statusStyle(statusRaw){
   const s = String(statusRaw||"").trim().toLowerCase();
   if (s.includes("available")) return {border:"rgba(16,185,129,.65)", text:"rgba(5,150,105,1)"};
@@ -324,10 +747,8 @@ function statusStyle(statusRaw){
   return {border:"rgba(15,23,42,.25)", text:"rgba(15,23,42,.92)"};
 }
 
-// ✅ FIX: ปุ่ม Back ต้อง fallback ไป index พร้อม project
 document.getElementById("btnBack").addEventListener("click", () => {
-  const fallback = "index.html?project=" + encodeURIComponent(project);
-  history.length > 1 ? history.back() : (location.href = fallback);
+  history.length > 1 ? history.back() : (location.href = "index.html");
 });
 
 let images = [];
@@ -347,126 +768,566 @@ function setMain(i){
 }
 
 function renderThumbs(){
-  const wrap = document.getElementById("thumbs");
-  wrap.innerHTML = "";
+  const strip = document.getElementById("thumbStrip");
+  strip.innerHTML = "";
   images.forEach((src, i)=>{
-    const t = document.createElement("div");
-    t.className = "thumb" + (i===idx ? " active" : "");
-    t.innerHTML = `<img src="${esc(src)}" referrerpolicy="no-referrer" loading="lazy" alt="thumb">`;
-    t.addEventListener("click", ()=>setMain(i));
-    wrap.appendChild(t);
+    const im = document.createElement("img");
+    im.className = "thumb" + (i===idx ? " active": "");
+    im.src = src;
+    im.loading = "lazy";
+    im.decoding = "async";
+    im.addEventListener("click", ()=>setMain(i));
+    strip.appendChild(im);
   });
 }
 
-document.getElementById("prevBtn").addEventListener("click", ()=>{
-  if(!images.length) return;
-  setMain((idx - 1 + images.length) % images.length);
-});
-document.getElementById("nextBtn").addEventListener("click", ()=>{
-  if(!images.length) return;
-  setMain((idx + 1) % images.length);
-});
+function enableSwipe(){
+  const gallery = document.getElementById("gallery");
+  let startX = 0, dx = 0;
 
-document.getElementById("btnEdit").addEventListener("click", ()=>{
-  if(!hpId) return;
-  location.href = `edit.html?id=${encodeURIComponent(hpId)}&project=${encodeURIComponent(project)}`;
-});
+  gallery.addEventListener("touchstart", (e)=>{
+    startX = e.touches[0].clientX;
+    dx = 0;
+  }, {passive:true});
 
-document.getElementById("btnMap").addEventListener("click", ()=>{
-  const m = CURRENT_DETAIL?.Map_Link || CURRENT_DETAIL?.Map_link || CURRENT_DETAIL?.map_link || "";
-  if(m) window.open(String(m), "_blank");
-});
+  gallery.addEventListener("touchmove", (e)=>{
+    dx = e.touches[0].clientX - startX;
+  }, {passive:true});
 
-async function loadDetail(){
-  if(!hpId){
-    document.getElementById("subTitle").textContent = "ไม่พบ id";
-    return;
-  }
+  gallery.addEventListener("touchend", ()=>{
+    if(Math.abs(dx) < 35) return;
+    if(dx < 0) setMain(idx+1);
+    else setMain(idx-1);
+  });
+}
 
-  showLoader();
-  try{
-    const url = new URL(SCRIPT_URL);
-    url.searchParams.set("mode", "getUnitDetail");
-    url.searchParams.set("project", project);
-    url.searchParams.set("hpId", hpId);
-    url.searchParams.set("t", Date.now());
+/** จัดเรียงข้อมูล (ปรับเฉพาะข้อที่ขอ) */
+function renderInfo(detail){
+  const grid = document.getElementById("infoGrid");
 
-    const res = await fetch(url.toString(), { cache:"no-store" });
-    const data = await res.json();
+  const safe = (v)=> {
+    if (v === undefined || v === null) return "-";
+    const s = String(v).trim();
+    return s === "" ? "-" : s;
+  };
 
-    if(data?.error) throw new Error(data.error);
+  const pick = (obj, keys)=> {
+    for (const k of keys){
+      if (obj && obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== "") return obj[k];
+    }
+    return "";
+  };
 
-    CURRENT_DETAIL = data;
+  // ✅ จุดที่ 3: ดึง 2 ค่าเพื่อโชว์ “แถวเดียวกัน”
+  const landW = safe(pick(detail, ["Land_Area_sq_w","Land_Area_SQW","LandAreaSQW","Land_sq_w"]));
+  const livingM = safe(pick(detail, ["Living_Area_sq_m","Living_Area_SQM","LivingAreaSQM","Living_sq_m"]));
 
-    // Head
-    document.getElementById("hpIdText").textContent = `HP_ID : ${hpId}`;
-    document.getElementById("title").textContent = String(data.Project_Name || data.project_name || "รายละเอียดบ้าน").trim();
-    document.getElementById("subTitle").textContent = `Project: ${project}`;
+  const items = [
+    ["Project_Name", safe(pick(detail, ["Project_Name","ProjectName","Project_Name_En","Project_Name_TH","Project"]))],
+    ["District", safe(pick(detail, ["District","district"]))],
+    ["SubDistrict", safe(pick(detail, ["SubDistrict","Sub_District","subdistrict"]))],
+    ["Badge", safe(pick(detail, ["Badge","badge"]))],
+    ["Description", safe(pick(detail, ["Description","description","Desc"]))],
+    ["District", safe(pick(detail, ["District","district"]))],
+    ["SubDistrict", safe(pick(detail, ["SubDistrict","Sub_District","subdistrict"]))],
+    ["Bedrooms", safe(pick(detail, ["Bedrooms","Bedroom","beds"]))],
+    ["Bathrooms", safe(pick(detail, ["Bathrooms","Bathroom","baths"]))],
 
-    const st = String(data.Status || data.status || "").trim();
-    const b = document.getElementById("statusBadge");
-    b.textContent = st || "—";
-    const stStyle = statusStyle(st);
-    b.style.borderColor = stStyle.border;
-    b.style.color = stStyle.text;
+    // ✅ จุดที่ 3: 2 อย่างในแถวเดียวกัน
+    ["__DOUBLE__", {
+      k1: "Land Area (sq.w)", v1: landW,
+      k2: "Living Area (sq.m)", v2: livingM
+    }],
 
-    // Fields
-    document.getElementById("plot").textContent = String(data.Plot || data.plot || "-");
-    document.getElementById("price").textContent = fmtPrice(data.Price || data.price || 0);
-    document.getElementById("bed").textContent = String(data.Bedrooms || data.bedrooms || "-");
-    document.getElementById("bath").textContent = String(data.Bathrooms || data.bathrooms || "-");
+    ["Land Area (sq.m)", safe(pick(detail, ["Land_Area_sq_m","Land_Area_SQM","LandAreaSQM","Land_sq_m"]))],
+    ["Pool Size", safe(pick(detail, ["Pool_Size","PoolSize"]))],
+    ["Pool Depth", safe(pick(detail, ["Pool_Depth","PoolDepth"]))],
+    ["Furnishing", safe(pick(detail, ["Furnishing","furnishing"]))],
+    ["Price_SQM", safe(pick(detail, ["Price_SQM","PriceSQM"]))],
+    ["Status", safe(pick(detail, ["Status","status"]))],
+    ["Parking", safe(pick(detail, ["Parking","parking"]))],
+    ["Extras", safe(pick(detail, ["Extras","extras"]))],
+    ["Electricity", safe(pick(detail, ["Electricity","electricity"]))],
+  ];
 
-    const landW = data.Land_Area_sq_w || data.land_area_sq_w || "";
-    const landM = data.Land_Area_sq_m || data.land_area_sq_m || "";
-    document.getElementById("land").textContent = [landW ? `${landW} sq.w` : "", landM ? `${landM} m²` : ""].filter(Boolean).join(" · ") || "-";
-
-    const livingM = data.Living_Area_sq_m || data.living_area_sq_m || "";
-    document.getElementById("living").textContent = livingM ? `${livingM} m²` : "-";
-
-    const desc = data.Description || data.description || "";
-    document.getElementById("desc").textContent = String(desc || "").trim();
-
-    // Images
-    const thumb = String(data.Thumbnail_Image || data.thumbnail_image || "").trim();
-    const listStr = String(data.Image_List || data.image_list || "").trim();
-
-    images = [];
-    if(thumb) images.push(thumb);
-    images = images.concat(splitImages(listStr));
-
-    // unique
-    const uniq = [];
-    const seen = new Set();
-    images.forEach(u=>{
-      const s = String(u||"").trim();
-      if(!s) return;
-      if(seen.has(s)) return;
-      seen.add(s);
-      uniq.push(s);
-    });
-    images = uniq;
-
-    if(!images.length){
-      document.getElementById("mainImg").classList.remove("skeleton");
-      document.getElementById("mainImg").src = "";
-      document.getElementById("tagCount").textContent = `0 / 0`;
-      document.getElementById("thumbs").innerHTML = "";
-    }else{
-      idx = 0;
-      renderThumbs();
-      setMain(0);
+  grid.innerHTML = "";
+  for(const [k,v] of items){
+    if(k === "__DOUBLE__"){
+      const box = document.createElement("div");
+      box.className = "infoBox double";
+      box.innerHTML = `
+        <div class="infoPair"><div class="k">${v.k1}</div><div class="v">${v.v1}</div></div>
+        <div class="infoPair"><div class="k">${v.k2}</div><div class="v">${v.v2}</div></div>
+      `;
+      grid.appendChild(box);
+      continue;
     }
 
-  }catch(err){
-    console.error(err);
-    document.getElementById("subTitle").textContent = "โหลดไม่สำเร็จ";
-    document.getElementById("desc").textContent = String(err.message || err);
-  }finally{
-    hideLoader();
+    const box = document.createElement("div");
+    box.className = "infoBox";
+    box.innerHTML = `<div class="k">${k}</div><div class="v">${v}</div>`;
+    grid.appendChild(box);
   }
 }
 
-loadDetail();
+/** =========================
+ * Other Plots
+ * ========================= */
+function getUnitId(u){
+  return String(u?.HP_ID || u?.id || u?.hpId || u?.Unit_ID || "").trim();
+}
+function getPlot(u){
+  return String(u?.Plot || u?.plot || u?.Unit_Plot || u?.Plot_No || "").trim();
+}
+function getThumb(u){
+  return cleanDriveImage(u?.Thumbnail_Image || u?.thumbnail || u?.thumb || u?.thumbUrl || "");
+}
+function getStatus(u){
+  return String(u?.Status || u?.status || u?.unitStatus || "-").trim() || "-";
+}
+function getPrice(u){
+  return u?.Price ?? u?.price ?? 0;
+}
+
+/* ✅ จุดที่ 1: ดึง Land Area (sq.m) และ Living Area (sq.m) จาก Unit List */
+function getLandSqm(u){
+  return String(
+    u?.Land_Area_sq_m ??
+    u?.Land_Area_SQM ??
+    u?.LandAreaSQM ??
+    u?.Land_sq_m ??
+    u?.["Land Area (sq.m)"] ??
+    ""
+  ).trim();
+}
+function getLivingSqm(u){
+  return String(
+    u?.Living_Area_sq_m ??
+    u?.Living_Area_SQM ??
+    u?.LivingAreaSQM ??
+    u?.Living_sq_m ??
+    u?.["Living Area (sq.m)"] ??
+    ""
+  ).trim();
+}
+function safeText(v){
+  const s = String(v ?? "").trim();
+  return s === "" ? "-" : s;
+}
+
+function renderOtherUnits(units){
+  const grid = document.getElementById("otherGrid");
+  const section = document.getElementById("otherSection");
+
+  if(!Array.isArray(units) || units.length === 0){
+    section.style.display = "none";
+    return;
+  }
+
+  section.style.display = "block";
+  grid.innerHTML = "";
+
+  for(const u of units){
+    const id = getUnitId(u);
+    const plot = getPlot(u) || id || "-";
+    const thumb = getThumb(u);
+    const st = getStatus(u);
+    const price = moneyTHB(getPrice(u));
+
+    const pill = statusStyle(st);
+
+    // ✅ จุดที่ 1: เปลี่ยนเป็น Land / Living ให้สั้นลงเพื่อโชว์ครบ 1 แถว
+    const landM = safeText(getLandSqm(u));
+    const livingM = safeText(getLivingSqm(u));
+    const landLivingText = `Land ${landM} · Living ${livingM}`;
+
+    const card = document.createElement("div");
+    card.className = "otherCard";
+    card.innerHTML = `
+      <img class="otherImg" src="${thumb || "data:image/svg+xml;charset=utf-8," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='800'><rect width='100%' height='100%' fill='#e6edf6'/><text x='50%' y='50%' text-anchor='middle' fill='#8aa0bb' font-size='40' font-family='Arial'>no image</text></svg>")}" alt="thumb" loading="lazy" decoding="async">
+      <div class="otherBody">
+        <div class="otherTopRow">
+          <div class="otherPlot">${plot}</div>
+          <div class="otherStatus" style="border-color:${pill.border}; color:${pill.text};">${st}</div>
+        </div>
+        <div class="otherPrice">${price}</div>
+        <div class="otherId">${landLivingText}</div>
+      </div>
+    `;
+    card.addEventListener("click", ()=>{
+      const url = `details.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(project)}`;
+      location.href = url;
+    });
+    grid.appendChild(card);
+  }
+}
+
+async function loadOtherUnits(){
+  try{
+    const url = `${SCRIPT_URL}?mode=getUnitList&project=${encodeURIComponent(project)}`;
+    const data = await jsonp(url);
+
+    if(!Array.isArray(data)){
+      document.getElementById("otherSection").style.display = "none";
+      return;
+    }
+
+    const filtered = data
+      .filter(u => getUnitId(u) && getUnitId(u) !== String(hpId).trim())
+      .slice(0, 10);
+
+    renderOtherUnits(filtered);
+  }catch(e){
+    document.getElementById("otherSection").style.display = "none";
+  }
+}
+
+/** =========================
+ * Share image (เดิมของคุณ)
+ * ========================= */
+async function buildShareImageBlob(detail){
+  const canvas = document.getElementById("shareCanvas");
+  const ctx = canvas.getContext("2d");
+
+  const safe = (v)=> {
+    if (v === undefined || v === null) return "-";
+    const s = String(v).trim();
+    return s === "" ? "-" : s;
+  };
+  const pick = (obj, keys)=> {
+    for (const k of keys){
+      if (obj && obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== "") return obj[k];
+    }
+    return "";
+  };
+
+  const projectName = safe(pick(detail, ["Project_Name","ProjectName","Project"]));
+  const district = safe(pick(detail, ["District","district"]));
+  const subDistrict = safe(pick(detail, ["SubDistrict","Sub_District","subdistrict"]));
+  const beds = safe(pick(detail, ["Bedrooms","Bedroom","beds"]));
+  const baths = safe(pick(detail, ["Bathrooms","Bathroom","baths"]));
+  const landW = safe(pick(detail, ["Land_Area_sq_w","Land_Area_SQW","LandAreaSQW"]));
+  const livingM = safe(pick(detail, ["Living_Area_sq_m","Living_Area_SQM","LivingAreaSQM"]));
+  const price = moneyTHB(pick(detail, ["Price","price"]) || 0);
+  const status = safe(pick(detail, ["Status","status"]));
+  const badge = safe(pick(detail, ["Badge","badge"]));
+  const plot = safe(pick(detail, ["Plot","plot"]));
+
+  const rows = [
+    ["Project_Name", projectName, "Badge", badge],
+    ["District", district, "SubDistrict", subDistrict],
+    ["Bedrooms", beds, "Bathrooms", baths],
+    ["Land Area (sq.w)", landW, "Living Area (sq.m)", livingM],
+    ["Price", price, "Status", status],
+  ];
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = "#0f172a";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  const imgH = 340;
+  ctx.fillStyle = "#111827";
+  ctx.fillRect(0,0,canvas.width,imgH);
+
+  try{
+    const src = images && images.length ? images[0] : "";
+    if(src){
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.src = src;
+      await new Promise((res, rej)=>{ img.onload=res; img.onerror=rej; });
+
+      const cw = canvas.width, ch = imgH;
+      const ir = img.width / img.height;
+      const cr = cw / ch;
+      let dw, dh, dx, dy;
+      if(ir > cr){
+        dh = ch; dw = dh * ir; dx = (cw - dw)/2; dy = 0;
+      }else{
+        dw = cw; dh = dw / ir; dx = 0; dy = (ch - dh)/2;
+      }
+      ctx.drawImage(img, dx, dy, dw, dh);
+
+      const g = ctx.createLinearGradient(0, imgH-140, 0, imgH);
+      g.addColorStop(0, "rgba(15,23,42,0)");
+      g.addColorStop(1, "rgba(15,23,42,.65)");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, imgH-140, canvas.width, 140);
+    }
+  }catch(e){
+    ctx.fillStyle = "#1f2937";
+    ctx.fillRect(0,0,canvas.width,imgH);
+  }
+
+  ctx.fillStyle = "rgba(255,255,255,.98)";
+  ctx.font = "900 46px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+  ctx.fillText("Smart Properties System", 46, 72);
+
+  ctx.fillStyle = "rgba(255,255,255,.95)";
+  ctx.font = "800 38px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+  ctx.fillText(`Plot: ${plot}`, 46, 122);
+
+  const pillX = 46, pillY = 152, pillW = 360, pillH = 54, r = 18;
+  ctx.fillStyle = "rgba(255,255,255,.92)";
+  roundRect(ctx, pillX, pillY, pillW, pillH, r, true, false);
+  ctx.font = "900 28px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+  ctx.fillStyle = "#0f172a";
+  ctx.fillText(status, pillX + 20, pillY + 37);
+
+  const pad = 38;
+  const boxY = imgH + 22;
+  const boxX = 30;
+  const boxW = canvas.width - 60;
+  const boxH = canvas.height - boxY - 28;
+
+  ctx.fillStyle = "rgba(255,255,255,.92)";
+  roundRect(ctx, boxX, boxY, boxW, boxH, 26, true, false);
+
+  ctx.fillStyle = "#0f172a";
+  ctx.font = "900 34px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+  ctx.fillText(projectName, boxX + pad, boxY + 52);
+
+  ctx.strokeStyle = "rgba(15,23,42,.10)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(boxX + pad, boxY + 72);
+  ctx.lineTo(boxX + boxW - pad, boxY + 72);
+  ctx.stroke();
+
+  const startY = boxY + 112;
+  const rowH = 74;
+  const colGap = 28;
+  const colW = (boxW - pad*2 - colGap) / 2;
+
+  for(let i=0;i<rows.length && i<5;i++){
+    const y = startY + i*rowH;
+
+    drawKV(ctx, boxX + pad, y, colW, rows[i][0], rows[i][1]);
+    drawKV(ctx, boxX + pad + colW + colGap, y, colW, rows[i][2], rows[i][3]);
+
+    ctx.strokeStyle = "rgba(15,23,42,.08)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(boxX + pad, y + rowH - 14);
+    ctx.lineTo(boxX + boxW - pad, y + rowH - 14);
+    ctx.stroke();
+  }
+
+  const urlText = location.href;
+  ctx.fillStyle = "rgba(15,23,42,.65)";
+  ctx.font = "700 20px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+  ctx.fillText(urlText.length > 70 ? (urlText.slice(0,67)+"...") : urlText, boxX + pad, boxY + boxH - 18);
+
+  return await new Promise((resolve) => {
+    canvas.toBlob((blob)=> resolve(blob), "image/png", 0.92);
+  });
+}
+
+function roundRect(ctx, x, y, w, h, r, fill, stroke){
+  const rr = Math.min(r, w/2, h/2);
+  ctx.beginPath();
+  ctx.moveTo(x+rr, y);
+  ctx.arcTo(x+w, y, x+w, y+h, rr);
+  ctx.arcTo(x+w, y+h, x, y+h, rr);
+  ctx.arcTo(x, y+h, x, y, rr);
+  ctx.arcTo(x, y, x+w, y, rr);
+  ctx.closePath();
+  if(fill) ctx.fill();
+  if(stroke) ctx.stroke();
+}
+
+function drawKV(ctx, x, y, w, key, val){
+  ctx.fillStyle = "rgba(15,23,42,.55)";
+  ctx.font = "900 18px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+  ctx.fillText(key, x, y);
+
+  ctx.fillStyle = "rgba(15,23,42,.95)";
+  ctx.font = "900 26px system-ui, -apple-system, Segoe UI, Roboto, Arial";
+
+  const text = String(val || "-");
+  const maxW = w;
+  let out = text;
+  while(ctx.measureText(out).width > maxW && out.length > 3){
+    out = out.slice(0, -1);
+  }
+  if(out !== text) out = out.slice(0, Math.max(0, out.length-2)) + "..";
+  ctx.fillText(out, x, y + 34);
+}
+
+/** Share handlers (เดิมของคุณ) */
+function buildShareText(detail){
+  const safe = (v)=> (v===undefined || v===null || String(v).trim()==="" ? "-" : String(v).trim());
+  const projectName = safe(detail.Project_Name || detail.ProjectName || detail.Project || project);
+  const plot = safe(detail.Plot || "-");
+  const price = moneyTHB(detail.Price || 0);
+  const status = safe(detail.Status || "-");
+  return `${projectName}\nPlot: ${plot}\nPrice: ${price}\nStatus: ${status}\n\n${location.href}`;
+}
+
+async function shareNative(detail){
+  const title = "Smart Properties System";
+  const text = buildShareText(detail);
+
+  try{
+    const blob = await buildShareImageBlob(detail);
+    if(blob && navigator.canShare){
+      const file = new File([blob], `${(detail.Plot||"plot")}-${hpId||"detail"}.png`, {type:"image/png"});
+      const payload = { title, text, url: location.href, files: [file] };
+      if (navigator.canShare(payload)) {
+        await navigator.share(payload);
+        return;
+      }
+    }
+  }catch(e){}
+
+  if (navigator.share){
+    await navigator.share({ title, text, url: location.href });
+    return;
+  }
+  window.open(location.href, "_blank");
+}
+
+function openShareUrl(type, detail){
+  const url = encodeURIComponent(location.href);
+  const text = encodeURIComponent(buildShareText(detail));
+
+  if(type === "facebook"){
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank");
+    return;
+  }
+  if(type === "messenger"){
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank");
+    return;
+  }
+  if(type === "whatsapp"){
+    window.open(`https://api.whatsapp.com/send?text=${text}`, "_blank");
+    return;
+  }
+  if(type === "telegram"){
+    window.open(`https://t.me/share/url?url=${url}&text=${text}`, "_blank");
+    return;
+  }
+  if(type === "line"){
+    window.open(`https://social-plugins.line.me/lineit/share?url=${url}`, "_blank");
+    return;
+  }
+  if(type === "email"){
+    const subject = encodeURIComponent("Smart Properties System · Detail");
+    const body = encodeURIComponent(buildShareText(detail));
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+    return;
+  }
+}
+
+async function copyLink(){
+  try{
+    await navigator.clipboard.writeText(location.href);
+    alert("คัดลอกลิงก์แล้ว");
+  }catch(e){
+    const ta = document.createElement("textarea");
+    ta.value = location.href;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    alert("คัดลอกลิงก์แล้ว");
+  }
+}
+
+function wireShareButtons(){
+  const row = document.getElementById("shareRow");
+  row.addEventListener("click", async (e)=>{
+    const btn = e.target.closest(".shareBtn");
+    if(!btn) return;
+
+    const type = btn.getAttribute("data-type");
+    if(!CURRENT_DETAIL) return;
+
+    if(type === "copy") return copyLink();
+    if(type === "native") return shareNative(CURRENT_DETAIL);
+
+    openShareUrl(type, CURRENT_DETAIL);
+  });
+}
+
+/** LOAD */
+(async function init(){
+  hideError();
+  showLoader();
+  wireShareButtons();
+
+  if(!hpId){
+    showError("ลิงก์ไม่ถูกต้อง: ไม่มี id เช่น details.html?id=HP-Z001");
+    hideLoader();
+    return;
+  }
+
+  const url = `${SCRIPT_URL}?mode=getUnitDetail&project=${encodeURIComponent(project)}&hpId=${encodeURIComponent(hpId)}`;
+
+  let detail;
+  try{
+    detail = await jsonp(url);
+  }catch(err){
+    showError("โหลดข้อมูลไม่สำเร็จ (ตรวจ Deploy Apps Script ให้เป็น Anyone และใช้ /exec)");
+    hideLoader();
+    return;
+  }
+
+  if(detail && detail.error){
+    showError("โหลดข้อมูลไม่สำเร็จ: " + detail.error);
+    hideLoader();
+    return;
+  }
+
+  CURRENT_DETAIL = detail;
+
+  const plotText = String(detail.Plot || "-").trim() || "-";
+  document.getElementById("pageTitle").textContent = `Detail Plot: ${plotText}`;
+  document.getElementById("tagPlot").textContent = plotText;
+
+  document.getElementById("priceText").textContent = moneyTHB(detail.Price || 0);
+
+  const stText = String(detail.Status || "Available").trim() || "Available";
+  const stEl = document.getElementById("statusBelow");
+  stEl.textContent = stText;
+
+  const st = statusStyle(stText);
+  stEl.style.borderColor = st.border;
+  stEl.style.color = st.text;
+
+  const thumb = cleanDriveImage(detail.Thumbnail_Image || "");
+  const list = String(detail.Image_List || "")
+    .split(",").map(s=>cleanDriveImage(s.trim()))
+    .filter(Boolean);
+
+  images = (thumb ? [thumb, ...list.filter(x=>x!==thumb)] : list);
+
+  if(!images.length){
+    images = ["data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='800'><rect width='100%' height='100%' fill='#e6edf6'/><text x='50%' y='50%' text-anchor='middle' fill='#8aa0bb' font-size='40' font-family='Arial'>no image</text></svg>`) ];
+  }
+
+  const mainImg = document.getElementById("mainImg");
+  mainImg.onload = () => { hideLoader(); };
+  mainImg.onerror = () => { hideLoader(); };
+
+  mainImg.src = images[0];
+  mainImg.classList.remove("skeleton");
+
+  renderThumbs();
+  setMain(0);
+  enableSwipe();
+
+  document.getElementById("btnPrev").addEventListener("click", ()=> setMain(idx-1));
+  document.getElementById("btnNext").addEventListener("click", ()=> setMain(idx+1));
+
+  if(images[1]){
+    const pre = new Image();
+    pre.src = images[1];
+  }
+
+  renderInfo(detail);
+  loadOtherUnits();
+})();
 </script>
 </body>
 </html>
