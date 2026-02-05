@@ -43,7 +43,6 @@
       flex:0 0 auto;
     }
     .titles{min-width:0}
-    /* ✅ จุดที่ 2 (ตำแหน่งที่ 1): ลดพื้นที่หัวข้อ + เอา Smart Properties System ออก */
     .titles h1{
       margin:0;
       font-size:20px;
@@ -54,7 +53,7 @@
       text-overflow:ellipsis;
       letter-spacing:.2px;
     }
-    .titles .sub{display:none;} /* ไม่ใช้แล้ว เพื่อให้หัวเล็กลง */
+    .titles .sub{display:none;}
     .backBtn{
       width:44px; height:44px; border-radius:999px;
       border:0; background: rgba(255,255,255,.55);
@@ -82,7 +81,8 @@
       object-fit:cover;
       display:block;
     }
-    .tagTopLeft, .tagTopRight, .tagBottomRight{
+
+    .tagTopLeft{
       position:absolute;
       padding:10px 14px;
       border-radius: 999px;
@@ -95,15 +95,27 @@
       overflow:hidden;
       text-overflow:ellipsis;
       max-width: 78%;
+      left:14px; top:14px;
     }
-    .tagTopLeft{left:14px; top:14px;}
-    /* ✅ จุดที่ 2 (ตำแหน่งที่ 2): ย้าย Available ลงล่าง + สีสัมพันธ์ความหมาย (ทำผ่าน JS) */
-    .tagTopRight{
+
+    /* ✅ (ข้อ 2) ทำตัวเลขนับรูปเล็กลง + ไม่มี background */
+    .tagBottomRight{
+      position:absolute;
       right:14px;
-      top:auto;
-      bottom:74px; /* อยู่เหนือ 1/xx */
+      bottom:14px;
+      padding:0;
+      border-radius:0;
+      background: transparent;
+      box-shadow:none;
+      backdrop-filter:none;
+      border:0;
+      font-weight:1100;
+      font-size:14px;
+      color: rgba(255,255,255,.98);
+      text-shadow: 0 10px 18px rgba(0,0,0,.45);
+      user-select:none;
+      pointer-events:none;
     }
-    .tagBottomRight{right:14px; bottom:14px; font-size:20px;}
 
     .thumbStrip{
       background: rgba(255,255,255,.78);
@@ -126,16 +138,43 @@
     .thumb.active{border-color:#0f172a;}
 
     .content{padding:14px;}
+
+    /* แถวราคา + สถานะ (ย้าย Available ลงล่างตามที่ทำเครื่องหมายไว้) */
     .headRow{
       display:flex;
-      align-items:flex-end;
-      justify-content:flex-start;
-      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
       flex-wrap:wrap;
     }
-    /* ✅ จุดที่ 2 (ตำแหน่งที่ 3): เอา HPZ001 ออก + เอาราคาขึ้นมาแทน */
     .hp{display:none;}
-    .price{font-size:34px; font-weight:1100; letter-spacing:.2px;}
+    .price{
+      font-size:34px;
+      font-weight:1100;
+      letter-spacing:.2px;
+    }
+
+    /* ✅ (ข้อ 1) ป้าย Available แบบด้านล่าง */
+    .statusBelow{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width: 160px;
+      padding:12px 18px;
+      border-radius: 14px;
+      font-weight:1100;
+      font-size:22px;
+      line-height:1;
+      background: rgba(255,255,255,.92);
+      border: 2px solid rgba(16,185,129,.55);
+      color: rgba(5,150,105,1);
+      box-shadow: 0 12px 24px rgba(0,0,0,.10);
+      white-space:nowrap;
+    }
+    @media (max-width:420px){
+      .price{font-size:30px}
+      .statusBelow{font-size:18px; min-width:140px; padding:10px 14px;}
+    }
 
     .gridInfo{
       margin-top:14px;
@@ -177,11 +216,7 @@
       100%{background-position: -200% 0;}
     }
 
-    /* =========================================================
-       ✅ จุดที่ 1: LOADING OVERLAY (ดุ๊กดิ๊ก) — ปรับ “รูปแบบ” ให้เหมือนหน้า index
-       - การ์ตูนเดิม (🏠✨🌴) คงเดิม
-       - ทำแถบโปร่งแสง/เบลอสวยงามเหมือน index
-       ========================================================= */
+    /* Loading overlay (คงเดิม) */
     .pageLoader{
       position:fixed;
       inset:0;
@@ -234,9 +269,7 @@
       .loaderText{font-size:18px}
     }
 
-    /* =========================================================
-       ✅ ปุ่มลูกศรโปร่งแสง ซ้าย/ขวา ในอัลบั้มรูป
-       ========================================================= */
+    /* ลูกศรโปร่งแสง (คงเดิม) */
     .navArrow{
       position:absolute;
       top:50%;
@@ -270,7 +303,6 @@
 </head>
 <body>
 
-  <!-- ✅ จุดที่ 1: Loading overlay (รูปแบบเหมือนหน้า index / การ์ตูนเดิม) -->
   <div class="pageLoader" id="pageLoader" aria-label="loading">
     <div class="loaderPanel">
       <div class="loaderEmojis" aria-hidden="true">
@@ -285,7 +317,6 @@
       <div class="brand">
         <div class="logo">SP</div>
         <div class="titles">
-          <!-- ✅ จุดที่ 2 (ตำแหน่งที่ 1): เหลือแค่ Detail Plot: Z-1 -->
           <h1 id="pageTitle">Detail Plot: -</h1>
           <div class="sub" id="subTitle">Details · ...</div>
         </div>
@@ -299,13 +330,8 @@
       <div class="gallery" id="gallery">
         <img class="mainSlide skeleton" id="mainImg" alt="main" />
         <div class="tagTopLeft" id="tagPlot">-</div>
-
-        <!-- ✅ ย้าย Available ลงล่างด้วย CSS (class เดิม tagTopRight) -->
-        <div class="tagTopRight" id="tagStatus">-</div>
-
         <div class="tagBottomRight" id="tagCount">0 / 0</div>
 
-        <!-- ✅ ปุ่มลูกศรโปร่งแสง -->
         <div class="navArrow navLeft" id="btnPrev" aria-label="previous">
           <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
             <path d="M15 18l-6-6 6-6"></path>
@@ -321,9 +347,11 @@
       <div class="thumbStrip" id="thumbStrip"></div>
 
       <div class="content">
+        <!-- ✅ (ข้อ 1) ย้าย Available มาอยู่ด้านล่างในแถวราคา -->
         <div class="headRow">
           <div class="hp" id="hpText">...</div>
           <div class="price" id="priceText">฿0</div>
+          <div class="statusBelow" id="statusBelow">-</div>
         </div>
 
         <div class="gridInfo" id="infoGrid">
@@ -342,7 +370,7 @@ const qs = new URLSearchParams(location.search);
 const hpId = qs.get("id") || qs.get("hpId") || "";
 const project = qs.get("project") || "Project_0";
 
-/** ✅ Loader helpers */
+/** Loader helpers */
 function showLoader(){
   const el = document.getElementById("pageLoader");
   if(el) el.style.display = "flex";
@@ -410,14 +438,14 @@ function cleanDriveImage(url){
   return u;
 }
 
-/* ✅ สีสถานะ (เหมือนแนวหน้า index) */
+/* ใช้กำหนดสีสถานะ (ยังคง logic เดิมแบบง่าย) */
 function statusStyle(statusRaw){
   const s = String(statusRaw||"").trim().toLowerCase();
-  if (s.includes("available")) return {bg:"rgba(192,255,222,.92)", fg:"rgba(0,90,55,1)"};
-  if (s.includes("under"))     return {bg:"rgba(255,240,195,.92)", fg:"rgba(120,70,0,1)"}; // Under Con
-  if (s.includes("reserved"))  return {bg:"rgba(213,232,255,.92)", fg:"rgba(0,60,120,1)"};
-  if (s.includes("sold"))      return {bg:"rgba(255,208,208,.92)", fg:"rgba(130,0,0,1)"};
-  return {bg:"rgba(255,255,255,.78)", fg:"rgba(15,23,42,.92)"};
+  if (s.includes("available")) return {border:"rgba(16,185,129,.65)", text:"rgba(5,150,105,1)"};
+  if (s.includes("under"))     return {border:"rgba(14,165,233,.55)", text:"rgba(2,132,199,1)"};
+  if (s.includes("reserved"))  return {border:"rgba(245,158,11,.55)", text:"rgba(180,83,9,1)"};
+  if (s.includes("sold"))      return {border:"rgba(244,63,94,.55)",  text:"rgba(190,18,60,1)"};
+  return {border:"rgba(15,23,42,.25)", text:"rgba(15,23,42,.92)"};
 }
 
 document.getElementById("btnBack").addEventListener("click", () => {
@@ -528,7 +556,23 @@ function renderInfo(detail){
     return;
   }
 
-  // ✅ รูปหลัก + รูปใน Image_List
+  const plotText = String(detail.Plot || "-").trim() || "-";
+  document.getElementById("pageTitle").textContent = `Detail Plot: ${plotText}`;
+  document.getElementById("tagPlot").textContent = plotText;
+
+  // ✅ ราคา
+  document.getElementById("priceText").textContent = moneyTHB(detail.Price || 0);
+
+  // ✅ (ข้อ 1) สถานะย้ายลงล่าง
+  const stText = String(detail.Status || "Available").trim() || "Available";
+  const stEl = document.getElementById("statusBelow");
+  stEl.textContent = stText;
+
+  const st = statusStyle(stText);
+  stEl.style.borderColor = st.border;
+  stEl.style.color = st.text;
+
+  // รูปหลัก + รูปใน Image_List
   const thumb = cleanDriveImage(detail.Thumbnail_Image || "");
   const list = String(detail.Image_List || "")
     .split(",").map(s=>cleanDriveImage(s.trim()))
@@ -540,25 +584,6 @@ function renderInfo(detail){
     images = ["data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='800'><rect width='100%' height='100%' fill='#e6edf6'/><text x='50%' y='50%' text-anchor='middle' fill='#8aa0bb' font-size='40' font-family='Arial'>no image</text></svg>`)];
   }
 
-  // ✅ จุดที่ 2 (ตำแหน่งที่ 1): Title เป็น Detail Plot: Z-1
-  const plotText = String(detail.Plot || "-").trim() || "-";
-  document.getElementById("pageTitle").textContent = `Detail Plot: ${plotText}`;
-
-  // ✅ จุดที่ 2 (ตำแหน่งที่ 3): โชว์ราคาอย่างเดียวด้านบน
-  document.getElementById("hpText").textContent = ""; // ไม่ใช้แล้ว (ซ่อนด้วย CSS)
-  document.getElementById("priceText").textContent = moneyTHB(detail.Price || 0);
-
-  document.getElementById("tagPlot").textContent = plotText;
-
-  // ✅ จุดที่ 2 (ตำแหน่งที่ 2): Available ลงล่าง + สีตามสถานะ
-  const stEl = document.getElementById("tagStatus");
-  const stText = String(detail.Status || "Available").trim() || "Available";
-  const stStyle = statusStyle(stText);
-  stEl.textContent = stText;
-  stEl.style.background = stStyle.bg;
-  stEl.style.color = stStyle.fg;
-
-  // render gallery
   const mainImg = document.getElementById("mainImg");
   mainImg.onload = () => { hideLoader(); };
   mainImg.onerror = () => { hideLoader(); };
@@ -570,11 +595,9 @@ function renderInfo(detail){
   setMain(0);
   enableSwipe();
 
-  // ✅ ปุ่มลูกศรคลิกเลื่อนซ้าย/ขวา
   document.getElementById("btnPrev").addEventListener("click", ()=> setMain(idx-1));
   document.getElementById("btnNext").addEventListener("click", ()=> setMain(idx+1));
 
-  // preload next image for speed
   if(images[1]){
     const pre = new Image();
     pre.src = images[1];
