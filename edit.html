@@ -15,6 +15,23 @@
     .field-input { width:100%; border:1px solid #e2e8f0; border-radius:.75rem; padding:.75rem; outline:none; transition:all .2s; }
     .field-input:focus { border-color:#3b82f6; }
     .field-input[disabled]{ background:#f8fafc; cursor:not-allowed; opacity:.9; }
+
+    /* ✅ NEW: ปุ่มกากบาทลบรูป */
+    .img-tile { position: relative; }
+    .img-x {
+      position: absolute;
+      top: 4px; right: 4px;
+      width: 18px; height: 18px;
+      border-radius: 999px;
+      background: rgba(15,23,42,.85);
+      color: #fff;
+      font-size: 12px;
+      line-height: 18px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .img-x:hover { background: rgba(239,68,68,.95); }
   </style>
 </head>
 
@@ -50,10 +67,15 @@
 
         <div class="input-card">
           <span class="field-label">Project Gallery Album</span>
-          <div id="galleryPreview" class="h-48 bg-slate-50 rounded-2xl border-2 border-dashed p-2 grid grid-cols-4 gap-2 overflow-y-auto mb-4">
-            <span class="text-4xl text-slate-200 col-span-4 self-center justify-self-center">🗂️</span>
+
+          <!-- ✅ NEW: แสดงรูปเดิม + รูปใหม่ (มีปุ่ม ❌) -->
+          <div id="galleryPreview" class="h-48 bg-slate-50 rounded-2xl border-2 border-dashed p-2 grid grid-cols-4 gap-2 overflow-y-auto mb-3"></div>
+
+          <div class="text-[11px] text-slate-500 font-bold mb-3">
+            แตะ ❌ ที่รูปเพื่อเลือก “ลบ” หรือ “เอาออกจากคิวอัปโหลด”
           </div>
-          <input type="file" id="file_gallery" class="hidden" multiple accept="image/*" onchange="previewGallery(this)">
+
+          <input type="file" id="file_gallery" class="hidden" multiple accept="image/*" onchange="onPickGalleryFiles(this)">
           <button onclick="document.getElementById('file_gallery').click()" class="w-full py-3 bg-purple-600 text-white rounded-xl font-bold uppercase text-xs">
             Add Gallery Photos
           </button>
@@ -79,7 +101,6 @@
         <div><span class="field-label">Pool Size</span><input id="Pool_Size" class="field-input"></div>
         <div><span class="field-label">Pool Depth</span><input id="Pool_Depth" class="field-input"></div>
 
-        <!-- ✅ Furnishing: Dropdown -->
         <div>
           <span class="field-label">Furnishing</span>
           <select id="Furnishing" class="field-input">
@@ -100,7 +121,6 @@
 
         <div><span class="field-label">Price/SQM</span><input id="Price_SQM" class="field-input"></div>
 
-        <!-- ✅ Status: Dropdown -->
         <div>
           <span class="field-label">Status</span>
           <select id="Status" class="field-input">
@@ -112,12 +132,10 @@
           </select>
         </div>
 
-        <!-- Badge: (ปล่อยเป็นช่องกรอกอิสระตามเดิม) -->
         <div><span class="field-label">Badge</span><input id="Badge" class="field-input" placeholder="NEW / HOT / ..."></div>
 
         <div class="col-span-full"><span class="field-label">Description</span><textarea id="Description" rows="4" class="field-input"></textarea></div>
 
-        <!-- ✅ District: Dropdown -->
         <div>
           <span class="field-label">District</span>
           <select id="District" class="field-input">
@@ -128,7 +146,6 @@
           </select>
         </div>
 
-        <!-- ✅ Sub-District: Dropdown (เปลี่ยนอัตโนมัติ) -->
         <div>
           <span class="field-label">Sub-District</span>
           <select id="SubDistrict" class="field-input" disabled>
@@ -178,35 +195,18 @@
     const HP_ID = urlParams.get("id");
     const PROJECT = urlParams.get("project");
 
-    // ✅ ตำบลตาม District (แก้/เพิ่มได้ง่าย)
+    // ✅ NEW: state สำหรับ Gallery
+    // existingGallery: รูปเดิมจากชีต
+    // removedGallery: รูปเดิมที่ผู้ใช้กด ❌
+    // newGalleryQueue: รูปใหม่ที่เลือกเพิ่ม (มีสิทธิ์กด ❌ เอาออกจากคิวได้)
+    let existingGallery = [];
+    let removedGallery = [];
+    let newGalleryQueue = []; // { file: File, previewUrl: string }
+
     const SUBDISTRICTS_BY_DISTRICT = {
-      "Hua Hin": [
-        "Hua Hin",
-        "Nong Kae",
-        "Hin Lek Fai",
-        "Thap Tai",
-        "Huai Sat Yai",
-        "Bueng Nakhon",
-        "Nong Phlap"
-      ],
-      "Cha-am": [
-        "Cha-am",
-        "Bang Kao",
-        "Na Yang",
-        "Khao Yai",
-        "Nong Sala",
-        "Huai Sai Nuea",
-        "Rai Mai Phatthana"
-      ],
-      "Pranburi": [
-        "Pran Buri",
-        "Pak Nam Pran",
-        "Wang Phong",
-        "Nong Ta Taem",
-        "Nong Din Daeng",
-        "Khao Noi",
-        "Khao Chao"
-      ]
+      "Hua Hin": ["Hua Hin","Nong Kae","Hin Lek Fai","Thap Tai","Huai Sat Yai","Bueng Nakhon","Nong Phlap"],
+      "Cha-am": ["Cha-am","Bang Kao","Na Yang","Khao Yai","Nong Sala","Huai Sai Nuea","Rai Mai Phatthana"],
+      "Pranburi": ["Pran Buri","Pak Nam Pran","Wang Phong","Nong Ta Taem","Nong Din Daeng","Khao Noi","Khao Chao"]
     };
 
     function switchTab(tab) {
@@ -216,11 +216,9 @@
       document.getElementById("btn-info").classList.toggle("tab-active", tab === "info");
     }
 
-    // ✅ เติมรายการตำบลให้ SubDistrict เมื่อเลือก District
     function setSubDistrictOptions(selectedDistrict, selectedSubDistrict = "") {
       const subSel = document.getElementById("SubDistrict");
       const list = SUBDISTRICTS_BY_DISTRICT[selectedDistrict] || [];
-
       subSel.innerHTML = `<option value="">-- Select Sub-District --</option>`;
 
       if (!selectedDistrict || list.length === 0) {
@@ -241,7 +239,6 @@
       if (selectedSubDistrict) {
         subSel.value = selectedSubDistrict;
         if (subSel.value !== selectedSubDistrict) {
-          // ถ้าค่าที่โหลดมาจากชีตไม่อยู่ใน list ให้เพิ่มแบบ custom เพื่อไม่ให้หาย
           const custom = document.createElement("option");
           custom.value = selectedSubDistrict;
           custom.textContent = selectedSubDistrict + " (custom)";
@@ -251,12 +248,82 @@
       }
     }
 
-    // ✅ event: เมื่อเปลี่ยน District -> เปลี่ยน SubDistrict อัตโนมัติ
     function bindDistrictChange() {
       const districtSel = document.getElementById("District");
       districtSel.addEventListener("change", () => {
         setSubDistrictOptions(districtSel.value, "");
       });
+    }
+
+    function previewFile(input, targetId) {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = e => document.getElementById(targetId).innerHTML =
+        `<img src="${e.target.result}" class="w-full h-full object-cover">`;
+      reader.readAsDataURL(file);
+    }
+
+    // ✅ NEW: render gallery (รวมรูปเดิมที่ยังอยู่ + รูปใหม่ในคิว)
+    function renderGallery() {
+      const box = document.getElementById("galleryPreview");
+      const keptExisting = existingGallery.filter(u => !removedGallery.includes(u));
+
+      const tiles = [];
+
+      // รูปเดิม (กด ❌ แล้วไปอยู่ removedGallery)
+      keptExisting.forEach((url) => {
+        tiles.push(`
+          <div class="img-tile">
+            <div class="img-x" onclick="removeExistingImage('${encodeURIComponent(url)}')" title="Remove">✕</div>
+            <img src="${url}" class="w-full h-12 object-cover rounded-lg">
+          </div>
+        `);
+      });
+
+      // รูปใหม่ในคิว (กด ❌ แล้วเอาออกจากคิว)
+      newGalleryQueue.forEach((it, idx) => {
+        tiles.push(`
+          <div class="img-tile">
+            <div class="img-x" onclick="removeNewQueuedImage(${idx})" title="Remove">✕</div>
+            <img src="${it.previewUrl}" class="w-full h-12 object-cover rounded-lg">
+          </div>
+        `);
+      });
+
+      box.innerHTML = tiles.length
+        ? tiles.join("")
+        : `<span class="text-4xl text-slate-200 col-span-4 self-center justify-self-center">🗂️</span>`;
+    }
+
+    // ✅ NEW: กด ❌ ลบ “รูปเดิม”
+    window.removeExistingImage = function(encodedUrl) {
+      const url = decodeURIComponent(encodedUrl);
+      if (!removedGallery.includes(url)) removedGallery.push(url);
+      renderGallery();
+    }
+
+    // ✅ NEW: กด ❌ ลบ “รูปใหม่ในคิว”
+    window.removeNewQueuedImage = function(index) {
+      if (index < 0 || index >= newGalleryQueue.length) return;
+      try { URL.revokeObjectURL(newGalleryQueue[index].previewUrl); } catch(e){}
+      newGalleryQueue.splice(index, 1);
+      renderGallery();
+    }
+
+    // ✅ NEW: เลือกรูปใหม่ (สะสมเข้าคิว และลบรายรูปได้)
+    window.onPickGalleryFiles = function(input) {
+      const files = Array.from(input.files || []);
+      if (!files.length) return;
+
+      files.forEach(f => {
+        const url = URL.createObjectURL(f);
+        newGalleryQueue.push({ file: f, previewUrl: url });
+      });
+
+      // เคลียร์ค่า input เพื่อให้เลือกไฟล์เดิมซ้ำได้ในอนาคต
+      input.value = "";
+      renderGallery();
     }
 
     async function loadData() {
@@ -268,13 +335,11 @@
         const data = await res.json();
         if (data && data.error) throw new Error(data.error);
 
-        // เติมค่าตาม id
         Object.keys(data || {}).forEach(k => {
           const el = document.getElementById(k);
           if (el) el.value = (data[k] ?? "");
         });
 
-        // ✅ หลังโหลดค่า District/SubDistrict แล้ว จัดการ dropdown ตำบลให้ถูกต้อง
         const districtVal = (data.District ?? "").toString().trim();
         const subDistrictVal = (data.SubDistrict ?? "").toString().trim();
         if (districtVal) {
@@ -284,7 +349,6 @@
           setSubDistrictOptions("", "");
         }
 
-        // normalize System_Status
         const rawSys = (data.System_Status ?? "").toString().trim();
         const mapSys = { "Live":"Online", "Online (Live)":"Online", "Online":"Online", "Pending":"Pending", "Offline":"Offline" };
         const normalized = mapSys[rawSys] || (rawSys ? rawSys : "Pending");
@@ -293,40 +357,35 @@
         if (data.Thumbnail_Image) {
           document.getElementById("thumbPreview").innerHTML = `<img src="${data.Thumbnail_Image}" class="w-full h-full object-cover">`;
         }
+
+        // ✅ NEW: set existingGallery state
+        existingGallery = [];
+        removedGallery = [];
+        newGalleryQueue = [];
+
         if (data.Image_List) {
-          const list = String(data.Image_List).split(",").map(s => s.trim()).filter(Boolean);
-          const box = document.getElementById("galleryPreview");
-          box.innerHTML = list.length
-            ? list.map(u => `<img src="${u}" class="w-full h-12 object-cover rounded-lg">`).join("")
-            : `<span class="text-4xl text-slate-200 col-span-4 self-center justify-self-center">🗂️</span>`;
+          existingGallery = String(data.Image_List)
+            .split(",")
+            .map(s => s.trim())
+            .filter(Boolean);
         }
+
+        renderGallery();
+
       } catch (e) {
         alert("Error loading data: " + e.message);
       }
     }
 
-    function previewFile(input, targetId) {
-      const file = input.files && input.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = e => document.getElementById(targetId).innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover">`;
-      reader.readAsDataURL(file);
-    }
-
-    function previewGallery(input) {
-      const box = document.getElementById("galleryPreview");
-      box.innerHTML = "";
-      Array.from(input.files || []).forEach(file => {
+    const toBase64 = file => new Promise((resolve, reject) => {
+      try {
         const reader = new FileReader();
-        reader.onload = e => box.innerHTML += `<img src="${e.target.result}" class="w-full h-12 object-cover rounded-lg">`;
+        reader.onload = () => resolve({ data: reader.result.split(",")[1], type: file.type });
+        reader.onerror = () => reject(new Error("File read error"));
         reader.readAsDataURL(file);
-      });
-    }
-
-    const toBase64 = file => new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve({ data: reader.result.split(",")[1], type: file.type });
-      reader.readAsDataURL(file);
+      } catch (e) {
+        reject(e);
+      }
     });
 
     async function updateData() {
@@ -334,6 +393,10 @@
       btn.disabled = true;
       const oldText = btn.innerText;
       btn.innerText = "UPDATING DATABASE...";
+
+      // ✅ NEW: keep/remove gallery arrays
+      const keepGallery = existingGallery.filter(u => !removedGallery.includes(u));
+      const removeGallery = removedGallery.slice();
 
       const payload = {
         mode: "updateUnit",
@@ -355,7 +418,6 @@
         Pool_Size: document.getElementById("Pool_Size").value,
         Pool_Depth: document.getElementById("Pool_Depth").value,
 
-        // ✅ dropdown values
         Furnishing: document.getElementById("Furnishing").value,
         Status: document.getElementById("Status").value,
         District: document.getElementById("District").value,
@@ -371,15 +433,22 @@
         Virtual_Tour: document.getElementById("Virtual_Tour").value,
         Commission: document.getElementById("Commission").value,
 
+        // ✅ NEW: ส่งคำสั่งชัดเจนว่ารูปไหน “คงไว้/ลบ”
+        keepGallery,
+        removeGallery,
+
         file_thumb: null,
         files_gallery: []
       };
 
+      // thumb
       const thumb = document.getElementById("file_thumb").files[0];
       if (thumb) payload.file_thumb = await toBase64(thumb);
 
-      const galleryFiles = document.getElementById("file_gallery").files;
-      for (const f of (galleryFiles || [])) payload.files_gallery.push(await toBase64(f));
+      // ✅ NEW: แปลงเฉพาะรูปใหม่ในคิว
+      for (const it of (newGalleryQueue || [])) {
+        payload.files_gallery.push(await toBase64(it.file));
+      }
 
       try {
         const res = await fetch(API_URL, { method:"POST", body: JSON.stringify(payload) });
@@ -394,7 +463,7 @@
     }
 
     window.onload = () => {
-      bindDistrictChange();   // ✅ สำคัญ: ผูก event dropdown
+      bindDistrictChange();
       loadData();
     };
   </script>
