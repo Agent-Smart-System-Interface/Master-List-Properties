@@ -17,13 +17,11 @@
 <body class="p-4 md:p-10 italic">
   <div class="max-w-6xl mx-auto">
 
-    <!-- TOP BAR: ONLY PROJECT NAME + HOME ICON -->
     <div class="bg-slate-900 rounded-[2.2rem] px-6 py-6 md:px-10 md:py-7 text-white mb-6 shadow-2xl flex items-center justify-between">
       <div id="projectTitle" class="text-xl md:text-2xl font-bold tracking-tight italic truncate">
         Loading...
       </div>
 
-      <!-- Home Icon (กลับหน้าแรก) -->
       <a id="homeBtn" href="index.html"
          class="w-14 h-14 md:w-14 md:h-14 rounded-2xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all active:scale-95"
          aria-label="Home">
@@ -31,15 +29,12 @@
       </a>
     </div>
 
-    <!-- LOADING -->
     <div id="loadingBlock" class="bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-8 text-center text-slate-300 font-bold animate-pulse uppercase">
       🔄 Syncing database...
     </div>
 
-    <!-- MOBILE (Cards) -->
     <div id="mobileList" class="hidden space-y-4"></div>
 
-    <!-- DESKTOP (Table) -->
     <div id="desktopTableWrap" class="hidden bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100">
       <table class="w-full text-center">
         <thead class="bg-slate-900 text-white text-[10px] uppercase">
@@ -64,7 +59,9 @@
     // ================================
     const API_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
     const urlParams = new URLSearchParams(window.location.search);
-    const PROJECT_ID = urlParams.get("project") || "Project_0";
+    
+    // ✅ แก้ไขจาก Project_0 เป็น HP01 ตามชื่อ Tab ใหม่
+    const PROJECT_ID = urlParams.get("project") || "HP01";
 
     const HOME_URL = "index.html";
     document.getElementById("homeBtn").href = HOME_URL;
@@ -199,12 +196,8 @@
             <td class="py-4 pl-8 text-left">
               ${thumbTag(thumb, "desktop")}
             </td>
-
-            <!-- ✅ FIX: ให้ HP-xxx เล็กลงเท่ากับ label (11px) -->
             <td class="text-left font-bold text-slate-900 text-[11px]">${escapeHtml(id)}</td>
-
             <td class="text-left font-extrabold text-slate-800 text-[15px]">${escapeHtml(plot)}</td>
-
             <td>${statusBadge(unitStatus)}</td>
             <td>${visibilityBadge(sysStatus)}</td>
             <td>
@@ -246,8 +239,6 @@
 
                 <div class="min-w-0">
                   <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Unit ID</div>
-
-                  <!-- ✅ FIX: ให้ HP-xxx เท่ากับ UNIT ID / PLOT (11px) -->
                   <div class="text-[11px] font-bold text-slate-900 italic truncate">${escapeHtml(id)}</div>
 
                   <div class="mt-2">
