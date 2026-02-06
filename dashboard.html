@@ -60,8 +60,8 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
     const urlParams = new URLSearchParams(window.location.search);
     
-    // ✅ แก้ไขจาก Project_0 เป็น HP01 ตามชื่อ Tab ใหม่
-    const PROJECT_ID = urlParams.get("project") || "HP01";
+    // ✅ แก้ไข: เปลี่ยนค่าเริ่มต้นจาก Project_0 เป็น HP00 ตามที่ระบุ
+    const PROJECT_ID = urlParams.get("project") || "HP00";
 
     const HOME_URL = "index.html";
     document.getElementById("homeBtn").href = HOME_URL;
