@@ -88,7 +88,6 @@
     .iconbtn:active{transform:scale(.98)}
     .iconbtn svg{width:20px;height:20px;opacity:.9}
 
-    /* controls */
     .controls{
       margin-top:12px;
       display:flex;
@@ -101,7 +100,7 @@
       gap:10px;
       align-items:center;
       justify-content:center;
-      flex-wrap:nowrap;            /* ✅ อยู่แถวเดียวกัน */
+      flex-wrap:nowrap;
     }
     .selectWrap{
       flex:1 1 0;
@@ -136,7 +135,6 @@
       pointer-events:none;
     }
 
-    /* grid */
     .grid{
       margin-top:12px;
       display:grid;
@@ -209,12 +207,11 @@
       white-space:nowrap;
     }
 
-    /* ✅ จุดที่ 2: ทำให้ meta เป็น 1 แถวเสมอ + อ่านง่ายขึ้น */
     .meta{
       margin-top:10px;
       display:flex;
       gap:10px;
-      flex-wrap:nowrap;            /* ✅ บังคับ 1 แถว */
+      flex-wrap:nowrap;
     }
     .pill{
       display:inline-flex;
@@ -226,8 +223,8 @@
       border: 1px solid rgba(11,19,32,.08);
       font-weight:900;
       color: rgba(11,19,32,.78);
-      min-width: 0;               /* ✅ ให้ยุบได้ */
-      flex: 1 1 0;                /* ✅ แบ่ง 3 ช่องเท่ากัน */
+      min-width: 0;
+      flex: 1 1 0;
       justify-content:center;
       white-space:nowrap;
       overflow:hidden;
@@ -270,7 +267,6 @@
       font-weight:900;
     }
 
-    /* toast */
     .toast{
       position:fixed;
       left:50%;
@@ -293,16 +289,12 @@
     }
     .toast.show{opacity:1; transform:translateX(-50%) translateY(-6px);}
 
-    /* มือถือจอเล็กมาก */
     @media (max-width: 360px){
       .select{font-size:14px;padding:12px 38px 12px 12px}
       .pill{font-size:14px;padding:9px 8px}
       .pill .ico{font-size:16px}
     }
 
-    /**********************************************************
-     * ✅ จุดที่ 1: Loading overlay (พื้นหลังเดิม + emoji ดุ๊กดิ๊ก)
-     **********************************************************/
     .loader{
       position:fixed;
       inset:0;
@@ -368,7 +360,6 @@
 </head>
 
 <body>
-  <!-- ✅ จุดที่ 1: Loader -->
   <div class="loader" id="loader" aria-live="polite">
     <div class="loaderCard">
       <div class="loaderIcons" aria-hidden="true">
@@ -382,19 +373,14 @@
   </div>
 
   <div class="wrap">
-
-    <!-- Top -->
     <div class="topbar">
       <div class="logo">SP</div>
-
       <div class="titlebox">
         <p class="title" id="masterVill">Master Vill</p>
         <div class="subtitle">
           <span class="chip" id="countChip">0 รายการ</span>
         </div>
       </div>
-
-      <!-- ไอคอนคนคลิกเข้า Gateway -->
       <a class="iconbtn" id="gatewayBtn" href="#" aria-label="Gateway">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
              stroke-linecap="round" stroke-linejoin="round">
@@ -404,7 +390,6 @@
       </a>
     </div>
 
-    <!-- 2 ช่องครึ่งซ้าย/ขวา -->
     <div class="controls">
       <div class="controlsInner">
         <div class="selectWrap">
@@ -412,7 +397,6 @@
             <option value="__all__">เลือก Plot</option>
           </select>
         </div>
-
         <div class="selectWrap">
           <select class="select" id="sortSelect">
             <option value="price_desc">ราคาสูง → ต่ำ</option>
@@ -422,7 +406,6 @@
       </div>
     </div>
 
-    <!-- List -->
     <div id="grid" class="grid"></div>
     <div id="empty" class="empty" style="display:none;">ไม่พบรายการที่ตรงกับเงื่อนไข</div>
   </div>
@@ -434,13 +417,13 @@
      * CONFIG
      **********************************************************/
     const API_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
-    const PROJECT = "Project_0";
+    
+    // ✅ แก้ไข: เปลี่ยนค่าเริ่มต้นจาก Project_0 เป็น HP01
+    const PROJECT = "HP01";
+    
     const GATEWAY_URL = "https://agent-smart-system-interface.github.io/Master-List-Properties/gateway.html";
     const DETAILS_URL = "details.html?id=";
 
-    /**********************************************************
-     * HELPERS
-     **********************************************************/
     const $ = (id)=>document.getElementById(id);
 
     function showLoader(on){
@@ -477,8 +460,9 @@
       return String(p||"").trim();
     }
 
-    // cache ใน sessionStorage
-    const CACHE_KEY = "SP_UNITLIST_Project_0_v1";
+    // ✅ แก้ไข: อัปเดต Cache Key ให้ตรงกับชื่อโปรเจกต์ใหม่
+    const CACHE_KEY = `SP_UNITLIST_${PROJECT}_v1`;
+
     function readCache(){
       try{
         const raw = sessionStorage.getItem(CACHE_KEY);
@@ -498,11 +482,9 @@
     async function fetchUnitList(){
       const cached = readCache();
       if (cached) return cached;
-
       const url = new URL(API_URL);
       url.searchParams.set("mode", "getUnitList");
       url.searchParams.set("project", PROJECT);
-
       const res = await fetch(url.toString(), { cache: "no-store" });
       const data = await res.json();
       if (!Array.isArray(data)) throw new Error(data?.error || "API invalid");
@@ -510,9 +492,6 @@
       return data;
     }
 
-    /**********************************************************
-     * RENDER
-     **********************************************************/
     let all = [];
     let filtered = [];
 
@@ -536,19 +515,16 @@
     function applyFilters(){
       const plotVal = $("plotSelect").value;
       const sortVal = $("sortSelect").value;
-
       filtered = all.filter(x=>{
         if(plotVal === "__all__") return true;
         return normalizePlot(x.plot) === plotVal;
       });
-
       filtered.sort((a,b)=>{
         const pa = Number(String(a.price||"").replace(/,/g,"")) || 0;
         const pb = Number(String(b.price||"").replace(/,/g,"")) || 0;
         if(sortVal === "price_asc") return pa - pb;
         return pb - pa;
       });
-
       renderGrid();
     }
 
@@ -561,26 +537,17 @@
       filtered.forEach(item=>{
         const card = document.createElement("div");
         card.className = "card";
-
-        // cover
         const cover = document.createElement("div");
         cover.className = "cover";
-
         const sk = document.createElement("div");
         sk.className = "skeleton";
         cover.appendChild(sk);
-
         const img = document.createElement("img");
         img.alt = "image";
         img.loading = "lazy";
         img.decoding = "async";
-        img.referrerPolicy = "no-referrer";
-
-        const src = String(item.thumbnail||"").trim();
-        img.dataset.src = src || "";
+        img.dataset.src = String(item.thumbnail||"").trim() || "";
         cover.appendChild(img);
-
-        // status badge
         const st = document.createElement("div");
         st.className = "badgeStatus";
         const style = statusStyle(item.status);
@@ -588,62 +555,47 @@
         st.style.color = style.fg;
         st.textContent = String(item.status||"").trim() || "—";
         cover.appendChild(st);
-
-        // body
         const body = document.createElement("div");
         body.className = "body";
-
         const row1 = document.createElement("div");
         row1.className = "row1";
-
         const plotLine = document.createElement("div");
         plotLine.className = "plotLine";
         plotLine.textContent = normalizePlot(item.plot) ? `PLOT : ${normalizePlot(item.plot)}` : "PLOT : -";
-
         const price = document.createElement("div");
         price.className = "price";
         price.textContent = fmtPrice(item.price);
-
         row1.appendChild(plotLine);
         row1.appendChild(price);
-
-        // ✅ จุดที่ 2: meta 1 แถว + ไอคอนชัดเจน
         const meta = document.createElement("div");
         meta.className = "meta";
         meta.appendChild(pillIcon("bed", item.bedrooms || "-", "Beds"));
         meta.appendChild(pillIcon("bath", item.bathrooms || "-", "Baths"));
         meta.appendChild(pillIcon("area", item.livingSqm || "-", "m²"));
-
         const btn = document.createElement("button");
         btn.className = "btn";
         btn.textContent = "ดูรายละเอียด";
         btn.addEventListener("click", ()=>{
           if(!item.id) return;
-          location.href = DETAILS_URL + encodeURIComponent(item.id);
+          location.href = DETAILS_URL + encodeURIComponent(item.id) + `&project=${PROJECT}`;
         });
-
         body.appendChild(row1);
         body.appendChild(meta);
         body.appendChild(btn);
-
         card.appendChild(cover);
         card.appendChild(body);
         grid.appendChild(card);
       });
-
       setupLazyImages();
     }
 
     function pillIcon(type, val, unitLabel){
       const el = document.createElement("div");
       el.className = "pill";
-
-      // ไอคอนชัด ๆ + อยู่แถวเดียวกัน
       let ico = "📐";
       let label = unitLabel || "";
       if(type==="bed"){ ico = "🛏️"; }
       if(type==="bath"){ ico = "🚿"; }
-
       el.innerHTML = `<span class="ico">${ico}</span><span class="lbl">${escapeHtml(val)}${label ? " " + escapeHtml(label) : ""}</span>`;
       return el;
     }
@@ -655,36 +607,25 @@
           if(!ent.isIntersecting) return;
           const img = ent.target;
           io.unobserve(img);
-
           const src = img.dataset.src;
           const sk = img.parentElement?.querySelector(".skeleton");
-
           if(!src){
             if(sk) sk.remove();
             img.style.display = "none";
             return;
           }
-
           img.onload = ()=>{ if(sk) sk.remove(); };
           img.onerror = ()=>{ if(sk) sk.remove(); };
           img.src = src;
         });
       }, { rootMargin: "220px 0px" });
-
       imgs.forEach(img=>io.observe(img));
     }
 
-    /**********************************************************
-     * INIT
-     **********************************************************/
     (function init(){
       $("gatewayBtn").href = GATEWAY_URL;
-
-      // ✅ จุดที่ 1: แสดง loader ระหว่างโหลด
       showLoader(true);
-
       loadAll();
-
       $("plotSelect").addEventListener("change", applyFilters);
       $("sortSelect").addEventListener("change", applyFilters);
     })();
@@ -703,13 +644,9 @@
           price: x.price || "",
           status: x.status || ""
         }));
-
         $("masterVill").textContent = pickMasterVillName(all) || "Master Vill";
-
         buildPlotOptions(all);
         applyFilters();
-
-        // ซ่อน loader เมื่อข้อมูลพร้อมและแสดงผลแล้ว
         showLoader(false);
       }catch(err){
         console.error(err);
