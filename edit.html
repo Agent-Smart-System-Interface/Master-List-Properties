@@ -16,7 +16,6 @@
     .field-input:focus { border-color:#3b82f6; }
     .field-input[disabled]{ background:#f8fafc; cursor:not-allowed; opacity:.9; }
 
-    /* ✅ NEW: ปุ่มกากบาทลบรูป */
     .img-tile { position: relative; }
     .img-x {
       position: absolute;
@@ -51,7 +50,6 @@
       <button onclick="switchTab('info')" id="btn-info" class="pb-4 font-bold text-slate-400">PROPERTY DATA</button>
     </div>
 
-    <!-- TAB: PHOTO -->
     <div id="tab-photo" class="space-y-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="input-card">
@@ -67,14 +65,10 @@
 
         <div class="input-card">
           <span class="field-label">Project Gallery Album</span>
-
-          <!-- ✅ NEW: แสดงรูปเดิม + รูปใหม่ (มีปุ่ม ❌) -->
           <div id="galleryPreview" class="h-48 bg-slate-50 rounded-2xl border-2 border-dashed p-2 grid grid-cols-4 gap-2 overflow-y-auto mb-3"></div>
-
           <div class="text-[11px] text-slate-500 font-bold mb-3">
             แตะ ❌ ที่รูปเพื่อเลือก “ลบ” หรือ “เอาออกจากคิวอัปโหลด”
           </div>
-
           <input type="file" id="file_gallery" class="hidden" multiple accept="image/*" onchange="onPickGalleryFiles(this)">
           <button onclick="document.getElementById('file_gallery').click()" class="w-full py-3 bg-purple-600 text-white rounded-xl font-bold uppercase text-xs">
             Add Gallery Photos
@@ -83,7 +77,6 @@
       </div>
     </div>
 
-    <!-- TAB: INFO -->
     <div id="tab-info" class="hidden space-y-6">
       <div class="input-card grid grid-cols-1 md:grid-cols-3 gap-6">
         <div><span class="field-label">Plot</span><input id="Plot" class="field-input"></div>
@@ -153,7 +146,6 @@
           </select>
         </div>
 
-        <!-- ✅ NEW: Zone -->
         <div>
           <span class="field-label">Zone</span>
           <select id="Zone" class="field-input">
@@ -208,15 +200,13 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
     const urlParams = new URLSearchParams(location.search);
     const HP_ID = urlParams.get("id");
-    const PROJECT = urlParams.get("project");
+    
+    // ✅ แก้ไข: เปลี่ยนค่าเริ่มต้นจาก project_0 เป็น HP00
+    const PROJECT = urlParams.get("project") || "HP00";
 
-    // ✅ NEW: state สำหรับ Gallery
-    // existingGallery: รูปเดิมจากชีต
-    // removedGallery: รูปเดิมที่ผู้ใช้กด ❌
-    // newGalleryQueue: รูปใหม่ที่เลือกเพิ่ม (มีสิทธิ์กด ❌ เอาออกจากคิวได้)
     let existingGallery = [];
     let removedGallery = [];
-    let newGalleryQueue = []; // { file: File, previewUrl: string }
+    let newGalleryQueue = [];
 
     const SUBDISTRICTS_BY_DISTRICT = {
       "Hua Hin": ["Hua Hin","Nong Kae","Hin Lek Fai","Thap Tai","Huai Sat Yai","Bueng Nakhon","Nong Phlap"],
@@ -279,14 +269,11 @@
       reader.readAsDataURL(file);
     }
 
-    // ✅ NEW: render gallery (รวมรูปเดิมที่ยังอยู่ + รูปใหม่ในคิว)
     function renderGallery() {
       const box = document.getElementById("galleryPreview");
       const keptExisting = existingGallery.filter(u => !removedGallery.includes(u));
-
       const tiles = [];
 
-      // รูปเดิม (กด ❌ แล้วไปอยู่ removedGallery)
       keptExisting.forEach((url) => {
         tiles.push(`
           <div class="img-tile">
@@ -296,7 +283,6 @@
         `);
       });
 
-      // รูปใหม่ในคิว (กด ❌ แล้วเอาออกจากคิว)
       newGalleryQueue.forEach((it, idx) => {
         tiles.push(`
           <div class="img-tile">
@@ -311,14 +297,12 @@
         : `<span class="text-4xl text-slate-200 col-span-4 self-center justify-self-center">🗂️</span>`;
     }
 
-    // ✅ NEW: กด ❌ ลบ “รูปเดิม”
     window.removeExistingImage = function(encodedUrl) {
       const url = decodeURIComponent(encodedUrl);
       if (!removedGallery.includes(url)) removedGallery.push(url);
       renderGallery();
     }
 
-    // ✅ NEW: กด ❌ ลบ “รูปใหม่ในคิว”
     window.removeNewQueuedImage = function(index) {
       if (index < 0 || index >= newGalleryQueue.length) return;
       try { URL.revokeObjectURL(newGalleryQueue[index].previewUrl); } catch(e){}
@@ -326,17 +310,13 @@
       renderGallery();
     }
 
-    // ✅ NEW: เลือกรูปใหม่ (สะสมเข้าคิว และลบรายรูปได้)
     window.onPickGalleryFiles = function(input) {
       const files = Array.from(input.files || []);
       if (!files.length) return;
-
       files.forEach(f => {
         const url = URL.createObjectURL(f);
         newGalleryQueue.push({ file: f, previewUrl: url });
       });
-
-      // เคลียร์ค่า input เพื่อให้เลือกไฟล์เดิมซ้ำได้ในอนาคต
       input.value = "";
       renderGallery();
     }
@@ -373,18 +353,13 @@
           document.getElementById("thumbPreview").innerHTML = `<img src="${data.Thumbnail_Image}" class="w-full h-full object-cover">`;
         }
 
-        // ✅ NEW: set existingGallery state
         existingGallery = [];
         removedGallery = [];
         newGalleryQueue = [];
 
         if (data.Image_List) {
-          existingGallery = String(data.Image_List)
-            .split(",")
-            .map(s => s.trim())
-            .filter(Boolean);
+          existingGallery = String(data.Image_List).split(",").map(s => s.trim()).filter(Boolean);
         }
-
         renderGallery();
 
       } catch (e) {
@@ -398,9 +373,7 @@
         reader.onload = () => resolve({ data: reader.result.split(",")[1], type: file.type });
         reader.onerror = () => reject(new Error("File read error"));
         reader.readAsDataURL(file);
-      } catch (e) {
-        reject(e);
-      }
+      } catch (e) { reject(e); }
     });
 
     async function updateData() {
@@ -409,7 +382,6 @@
       const oldText = btn.innerText;
       btn.innerText = "UPDATING DATABASE...";
 
-      // ✅ NEW: keep/remove gallery arrays
       const keepGallery = existingGallery.filter(u => !removedGallery.includes(u));
       const removeGallery = removedGallery.slice();
 
@@ -417,7 +389,6 @@
         mode: "updateUnit",
         project: PROJECT,
         hpId: HP_ID,
-
         Plot: document.getElementById("Plot").value,
         Type: document.getElementById("Type").value,
         Address: document.getElementById("Address").value,
@@ -425,44 +396,33 @@
         Bedrooms: document.getElementById("Bedrooms").value,
         Bathrooms: document.getElementById("Bathrooms").value,
         Parking: document.getElementById("Parking").value,
-
         Land_Area_sq_w: document.getElementById("Land_Area_sq_w").value,
         Land_Area_sq_m: document.getElementById("Land_Area_sq_m").value,
         Living_Area_sq_m: document.getElementById("Living_Area_sq_m").value,
-
         Pool_Size: document.getElementById("Pool_Size").value,
         Pool_Depth: document.getElementById("Pool_Depth").value,
-
         Furnishing: document.getElementById("Furnishing").value,
         Status: document.getElementById("Status").value,
         District: document.getElementById("District").value,
         SubDistrict: document.getElementById("SubDistrict").value,
-
-        Zone: document.getElementById("Zone").value,  // ✅ FIX: ส่งค่า Zone ไปด้วย
-
+        Zone: document.getElementById("Zone").value,
         Price: document.getElementById("Price").value,
         Price_SQM: document.getElementById("Price_SQM").value,
         Badge: document.getElementById("Badge").value,
-
         Description: document.getElementById("Description").value,
         FBLink: document.getElementById("FBLink").value,
         Map_Link: document.getElementById("Map_Link").value,
         Virtual_Tour: document.getElementById("Virtual_Tour").value,
         Commission: document.getElementById("Commission").value,
-
-        // ✅ NEW: ส่งคำสั่งชัดเจนว่ารูปไหน “คงไว้/ลบ”
         keepGallery,
         removeGallery,
-
         file_thumb: null,
         files_gallery: []
       };
 
-      // thumb
       const thumb = document.getElementById("file_thumb").files[0];
       if (thumb) payload.file_thumb = await toBase64(thumb);
 
-      // ✅ NEW: แปลงเฉพาะรูปใหม่ในคิว
       for (const it of (newGalleryQueue || [])) {
         payload.files_gallery.push(await toBase64(it.file));
       }
