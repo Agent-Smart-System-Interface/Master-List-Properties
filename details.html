@@ -82,14 +82,13 @@
       display:block;
     }
 
-    /* ✅ จุดที่ 1: ทำ Plot บนรูปให้เล็กลงนิด เพื่อไม่บังเลข */
     .tagTopLeft{
       position:absolute;
       padding:8px 12px;
       border-radius: 999px;
       background: rgba(255,255,255,.78);
       font-weight:1100;
-      font-size:14px;               /* ✅ ลดขนาดตัวอักษร Plot */
+      font-size:14px;
       box-shadow: 0 10px 20px rgba(0,0,0,.12);
       backdrop-filter: blur(8px);
       border:1px solid rgba(255,255,255,.65);
@@ -100,7 +99,6 @@
       left:14px; top:14px;
     }
 
-    /* ✅ ทำตัวเลขนับรูปเล็กลง + ไม่มี background */
     .tagBottomRight{
       position:absolute;
       right:14px;
@@ -141,9 +139,6 @@
 
     .content{padding:14px;}
 
-    /* =========================
-       ✅ จุดที่ 1-2: ราคาเล็กลง + Available อยู่แถวเดียวกัน (ไม่ตกบรรทัด)
-       ========================= */
     .headRow{
       display:flex;
       align-items:center;
@@ -205,7 +200,6 @@
     .k{color:rgba(15,23,42,.55); font-weight:900;}
     .v{color:rgba(15,23,42,.95); font-weight:1100; text-align:right; white-space:pre-wrap;}
 
-    /* ✅ จุดที่ 3: แถวเดียวกัน 2 ค่า (Land sq.w + Living sqm) */
     .infoBox.double{
       display:grid;
       grid-template-columns: 1fr 1fr;
@@ -247,7 +241,6 @@
       100%{background-position: -200% 0;}
     }
 
-    /* Loading overlay (คงเดิม) */
     .pageLoader{
       position:fixed;
       inset:0;
@@ -300,7 +293,6 @@
       .loaderText{font-size:18px}
     }
 
-    /* ลูกศรโปร่งแสง (คงเดิม) */
     .navArrow{
       position:absolute;
       top:50%;
@@ -331,9 +323,6 @@
       .navArrow svg{ width:22px;height:22px; }
     }
 
-    /* =========================
-       ✅ Other Plots
-       ========================= */
     .otherSection{
       margin-top:14px;
       padding:14px;
@@ -420,27 +409,22 @@
       color: rgba(15,23,42,.92);
       white-space:nowrap;
     }
-
-    /* ✅ จุดที่ 1: ทำ Land/Living ให้เล็กลง + บางลง และพยายามให้โชว์ครบใน 1 แถว */
     .otherId{
-      font-weight:600;                 /* ✅ บางลง */
-      font-size:11px;                  /* ✅ เล็กลง */
+      font-weight:600;
+      font-size:11px;
       letter-spacing:-0.2px;
       color: rgba(15,23,42,.55);
-      white-space:nowrap;              /* ✅ 1 แถว */
+      white-space:nowrap;
       overflow:hidden;
-      text-overflow:clip;              /* ✅ ไม่ใส่ ... */
+      text-overflow:clip;
     }
 
-@media (max-width: 420px) {
-  .otherId {
-    font-size: 9.5px;
-  }
-}
+    @media (max-width: 420px) {
+      .otherId {
+        font-size: 9.5px;
+      }
+    }
 
-    /* =========================
-       ✅ Share icons row (8 icons) + scroll
-       ========================= */
     .shareSection{
       margin-top:14px;
       padding:14px;
@@ -493,7 +477,6 @@
     }
     .shareBtn:active .shareCircle{ transform: scale(.97); }
 
-    /* ซ่อน canvas */
     #shareCanvas{ display:none; }
   </style>
 </head>
@@ -551,7 +534,6 @@
 
         <div class="gridInfo" id="infoGrid"></div>
 
-        <!-- ✅ จุดที่ 2: ย้ายชุด Share ขึ้นมาไว้ “ใต้ข้อมูล/ก่อน Grid Other Plots” -->
         <div class="shareSection" id="shareSection">
           <div class="shareTopIcon" aria-hidden="true" title="Share">
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -648,7 +630,6 @@
           <canvas id="shareCanvas" width="1200" height="630"></canvas>
         </div>
 
-        <!-- Other Plots -->
         <div class="otherSection" id="otherSection">
           <div class="otherTitle">
             <div>Other Plots</div>
@@ -667,7 +648,9 @@
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
 const qs = new URLSearchParams(location.search);
 const hpId = qs.get("id") || qs.get("hpId") || "";
-const project = qs.get("project") || "Project_0";
+
+// ✅ แก้ไขจาก Project_0 เป็น HP01 ตามชื่อ Tab ใหม่
+const project = qs.get("project") || "HP01";
 
 /** Loader helpers */
 function showLoader(){
@@ -737,7 +720,6 @@ function cleanDriveImage(url){
   return u;
 }
 
-/* ใช้กำหนดสีสถานะ */
 function statusStyle(statusRaw){
   const s = String(statusRaw||"").trim().toLowerCase();
   if (s.includes("available")) return {border:"rgba(16,185,129,.65)", text:"rgba(5,150,105,1)"};
@@ -801,7 +783,6 @@ function enableSwipe(){
   });
 }
 
-/** จัดเรียงข้อมูล (ปรับเฉพาะข้อที่ขอ) */
 function renderInfo(detail){
   const grid = document.getElementById("infoGrid");
 
@@ -818,7 +799,6 @@ function renderInfo(detail){
     return "";
   };
 
-  // ✅ จุดที่ 3: ดึง 2 ค่าเพื่อโชว์ “แถวเดียวกัน”
   const landW = safe(pick(detail, ["Land_Area_sq_w","Land_Area_SQW","LandAreaSQW","Land_sq_w"]));
   const livingM = safe(pick(detail, ["Living_Area_sq_m","Living_Area_SQM","LivingAreaSQM","Living_sq_m"]));
 
@@ -828,12 +808,9 @@ function renderInfo(detail){
     ["SubDistrict", safe(pick(detail, ["SubDistrict","Sub_District","subdistrict"]))],
     ["Badge", safe(pick(detail, ["Badge","badge"]))],
     ["Description", safe(pick(detail, ["Description","description","Desc"]))],
-    ["District", safe(pick(detail, ["District","district"]))],
-    ["SubDistrict", safe(pick(detail, ["SubDistrict","Sub_District","subdistrict"]))],
     ["Bedrooms", safe(pick(detail, ["Bedrooms","Bedroom","beds"]))],
     ["Bathrooms", safe(pick(detail, ["Bathrooms","Bathroom","baths"]))],
 
-    // ✅ จุดที่ 3: 2 อย่างในแถวเดียวกัน
     ["__DOUBLE__", {
       k1: "Land Area (sq.w)", v1: landW,
       k2: "Living Area (sq.m)", v2: livingM
@@ -870,9 +847,6 @@ function renderInfo(detail){
   }
 }
 
-/** =========================
- * Other Plots
- * ========================= */
 function getUnitId(u){
   return String(u?.HP_ID || u?.id || u?.hpId || u?.Unit_ID || "").trim();
 }
@@ -889,7 +863,6 @@ function getPrice(u){
   return u?.Price ?? u?.price ?? 0;
 }
 
-/* ✅ จุดที่ 1: ดึง Land Area (sq.m) และ Living Area (sq.m) จาก Unit List */
 function getLandSqm(u){
   return String(
     u?.Land_Area_sq_m ??
@@ -935,8 +908,6 @@ function renderOtherUnits(units){
     const price = moneyTHB(getPrice(u));
 
     const pill = statusStyle(st);
-
-    // ✅ จุดที่ 1: เปลี่ยนเป็น Land / Living ให้สั้นลงเพื่อโชว์ครบ 1 แถว
     const landM = safeText(getLandSqm(u));
     const livingM = safeText(getLivingSqm(u));
     const landLivingText = `Land ${landM} · Living ${livingM}`;
@@ -982,9 +953,6 @@ async function loadOtherUnits(){
   }
 }
 
-/** =========================
- * Share image (เดิมของคุณ)
- * ========================= */
 async function buildShareImageBlob(detail){
   const canvas = document.getElementById("shareCanvas");
   const ctx = canvas.getContext("2d");
@@ -1010,11 +978,10 @@ async function buildShareImageBlob(detail){
   const livingM = safe(pick(detail, ["Living_Area_sq_m","Living_Area_SQM","LivingAreaSQM"]));
   const price = moneyTHB(pick(detail, ["Price","price"]) || 0);
   const status = safe(pick(detail, ["Status","status"]));
-  const badge = safe(pick(detail, ["Badge","badge"]));
   const plot = safe(pick(detail, ["Plot","plot"]));
 
   const rows = [
-    ["Project_Name", projectName, "Badge", badge],
+    ["Project_Name", projectName, "Badge", safe(pick(detail, ["Badge","badge"]))],
     ["District", district, "SubDistrict", subDistrict],
     ["Bedrooms", beds, "Bathrooms", baths],
     ["Land Area (sq.w)", landW, "Living Area (sq.m)", livingM],
@@ -1101,7 +1068,6 @@ async function buildShareImageBlob(detail){
 
   for(let i=0;i<rows.length && i<5;i++){
     const y = startY + i*rowH;
-
     drawKV(ctx, boxX + pad, y, colW, rows[i][0], rows[i][1]);
     drawKV(ctx, boxX + pad + colW + colGap, y, colW, rows[i][2], rows[i][3]);
 
@@ -1154,7 +1120,6 @@ function drawKV(ctx, x, y, w, key, val){
   ctx.fillText(out, x, y + 34);
 }
 
-/** Share handlers (เดิมของคุณ) */
 function buildShareText(detail){
   const safe = (v)=> (v===undefined || v===null || String(v).trim()==="" ? "-" : String(v).trim());
   const projectName = safe(detail.Project_Name || detail.ProjectName || detail.Project || project);
@@ -1239,18 +1204,14 @@ function wireShareButtons(){
   row.addEventListener("click", async (e)=>{
     const btn = e.target.closest(".shareBtn");
     if(!btn) return;
-
     const type = btn.getAttribute("data-type");
     if(!CURRENT_DETAIL) return;
-
     if(type === "copy") return copyLink();
     if(type === "native") return shareNative(CURRENT_DETAIL);
-
     openShareUrl(type, CURRENT_DETAIL);
   });
 }
 
-/** LOAD */
 (async function init(){
   hideError();
   showLoader();
@@ -1284,7 +1245,6 @@ function wireShareButtons(){
   const plotText = String(detail.Plot || "-").trim() || "-";
   document.getElementById("pageTitle").textContent = `Detail Plot: ${plotText}`;
   document.getElementById("tagPlot").textContent = plotText;
-
   document.getElementById("priceText").textContent = moneyTHB(detail.Price || 0);
 
   const stText = String(detail.Status || "Available").trim() || "Available";
@@ -1319,11 +1279,6 @@ function wireShareButtons(){
 
   document.getElementById("btnPrev").addEventListener("click", ()=> setMain(idx-1));
   document.getElementById("btnNext").addEventListener("click", ()=> setMain(idx+1));
-
-  if(images[1]){
-    const pre = new Image();
-    pre.src = images[1];
-  }
 
   renderInfo(detail);
   loadOtherUnits();
