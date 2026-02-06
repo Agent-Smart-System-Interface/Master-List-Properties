@@ -649,8 +649,8 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh6
 const qs = new URLSearchParams(location.search);
 const hpId = qs.get("id") || qs.get("hpId") || "";
 
-// ✅ แก้ไขจาก Project_0 เป็น HP01 ตามชื่อ Tab ใหม่
-const project = qs.get("project") || "HP01";
+// ✅ แก้ไข: เปลี่ยนค่าเริ่มต้นจาก Project_0 เป็น HP00 ตามที่ระบุ
+const project = qs.get("project") || "HP00";
 
 /** Loader helpers */
 function showLoader(){
@@ -720,6 +720,7 @@ function cleanDriveImage(url){
   return u;
 }
 
+/* ใช้กำหนดสีสถานะ */
 function statusStyle(statusRaw){
   const s = String(statusRaw||"").trim().toLowerCase();
   if (s.includes("available")) return {border:"rgba(16,185,129,.65)", text:"rgba(5,150,105,1)"};
@@ -783,6 +784,7 @@ function enableSwipe(){
   });
 }
 
+/** จัดเรียงข้อมูล (ปรับเฉพาะข้อที่ขอ) */
 function renderInfo(detail){
   const grid = document.getElementById("infoGrid");
 
@@ -799,6 +801,7 @@ function renderInfo(detail){
     return "";
   };
 
+  // ✅ จุดที่ 3: ดึง 2 ค่าเพื่อโชว์ “แถวเดียวกัน”
   const landW = safe(pick(detail, ["Land_Area_sq_w","Land_Area_SQW","LandAreaSQW","Land_sq_w"]));
   const livingM = safe(pick(detail, ["Living_Area_sq_m","Living_Area_SQM","LivingAreaSQM","Living_sq_m"]));
 
@@ -811,6 +814,7 @@ function renderInfo(detail){
     ["Bedrooms", safe(pick(detail, ["Bedrooms","Bedroom","beds"]))],
     ["Bathrooms", safe(pick(detail, ["Bathrooms","Bathroom","baths"]))],
 
+    // ✅ จุดที่ 3: 2 อย่างในแถวเดียวกัน
     ["__DOUBLE__", {
       k1: "Land Area (sq.w)", v1: landW,
       k2: "Living Area (sq.m)", v2: livingM
@@ -847,6 +851,9 @@ function renderInfo(detail){
   }
 }
 
+/** =========================
+ * Other Plots
+ * ========================= */
 function getUnitId(u){
   return String(u?.HP_ID || u?.id || u?.hpId || u?.Unit_ID || "").trim();
 }
@@ -863,6 +870,7 @@ function getPrice(u){
   return u?.Price ?? u?.price ?? 0;
 }
 
+/* ✅ จุดที่ 1: ดึง Land Area (sq.m) และ Living Area (sq.m) จาก Unit List */
 function getLandSqm(u){
   return String(
     u?.Land_Area_sq_m ??
@@ -908,6 +916,8 @@ function renderOtherUnits(units){
     const price = moneyTHB(getPrice(u));
 
     const pill = statusStyle(st);
+
+    // ✅ จุดที่ 1: เปลี่ยนเป็น Land / Living ให้สั้นลงเพื่อโชว์ครบ 1 แถว
     const landM = safeText(getLandSqm(u));
     const livingM = safeText(getLivingSqm(u));
     const landLivingText = `Land ${landM} · Living ${livingM}`;
@@ -953,6 +963,9 @@ async function loadOtherUnits(){
   }
 }
 
+/** =========================
+ * Share image (เดิมของคุณ)
+ * ========================= */
 async function buildShareImageBlob(detail){
   const canvas = document.getElementById("shareCanvas");
   const ctx = canvas.getContext("2d");
@@ -978,10 +991,11 @@ async function buildShareImageBlob(detail){
   const livingM = safe(pick(detail, ["Living_Area_sq_m","Living_Area_SQM","LivingAreaSQM"]));
   const price = moneyTHB(pick(detail, ["Price","price"]) || 0);
   const status = safe(pick(detail, ["Status","status"]));
+  const badge = safe(pick(detail, ["Badge","badge"]));
   const plot = safe(pick(detail, ["Plot","plot"]));
 
   const rows = [
-    ["Project_Name", projectName, "Badge", safe(pick(detail, ["Badge","badge"]))],
+    ["Project_Name", projectName, "Badge", badge],
     ["District", district, "SubDistrict", subDistrict],
     ["Bedrooms", beds, "Bathrooms", baths],
     ["Land Area (sq.w)", landW, "Living Area (sq.m)", livingM],
@@ -1068,6 +1082,7 @@ async function buildShareImageBlob(detail){
 
   for(let i=0;i<rows.length && i<5;i++){
     const y = startY + i*rowH;
+
     drawKV(ctx, boxX + pad, y, colW, rows[i][0], rows[i][1]);
     drawKV(ctx, boxX + pad + colW + colGap, y, colW, rows[i][2], rows[i][3]);
 
@@ -1120,6 +1135,7 @@ function drawKV(ctx, x, y, w, key, val){
   ctx.fillText(out, x, y + 34);
 }
 
+/** Share handlers (เดิมของคุณ) */
 function buildShareText(detail){
   const safe = (v)=> (v===undefined || v===null || String(v).trim()==="" ? "-" : String(v).trim());
   const projectName = safe(detail.Project_Name || detail.ProjectName || detail.Project || project);
@@ -1204,14 +1220,18 @@ function wireShareButtons(){
   row.addEventListener("click", async (e)=>{
     const btn = e.target.closest(".shareBtn");
     if(!btn) return;
+
     const type = btn.getAttribute("data-type");
     if(!CURRENT_DETAIL) return;
+
     if(type === "copy") return copyLink();
     if(type === "native") return shareNative(CURRENT_DETAIL);
+
     openShareUrl(type, CURRENT_DETAIL);
   });
 }
 
+/** LOAD */
 (async function init(){
   hideError();
   showLoader();
@@ -1223,6 +1243,7 @@ function wireShareButtons(){
     return;
   }
 
+  // ✅ แก้ไขพารามิเตอร์ project เป็น HP00 ในการเรียกใช้ API
   const url = `${SCRIPT_URL}?mode=getUnitDetail&project=${encodeURIComponent(project)}&hpId=${encodeURIComponent(hpId)}`;
 
   let detail;
@@ -1245,6 +1266,7 @@ function wireShareButtons(){
   const plotText = String(detail.Plot || "-").trim() || "-";
   document.getElementById("pageTitle").textContent = `Detail Plot: ${plotText}`;
   document.getElementById("tagPlot").textContent = plotText;
+
   document.getElementById("priceText").textContent = moneyTHB(detail.Price || 0);
 
   const stText = String(detail.Status || "Available").trim() || "Available";
@@ -1279,6 +1301,11 @@ function wireShareButtons(){
 
   document.getElementById("btnPrev").addEventListener("click", ()=> setMain(idx-1));
   document.getElementById("btnNext").addEventListener("click", ()=> setMain(idx+1));
+
+  if(images[1]){
+    const pre = new Image();
+    pre.src = images[1];
+  }
 
   renderInfo(detail);
   loadOtherUnits();
