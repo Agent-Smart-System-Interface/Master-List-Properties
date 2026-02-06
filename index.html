@@ -88,6 +88,7 @@
     .iconbtn:active{transform:scale(.98)}
     .iconbtn svg{width:20px;height:20px;opacity:.9}
 
+    /* controls */
     .controls{
       margin-top:12px;
       display:flex;
@@ -135,6 +136,7 @@
       pointer-events:none;
     }
 
+    /* grid */
     .grid{
       margin-top:12px;
       display:grid;
@@ -267,6 +269,7 @@
       font-weight:900;
     }
 
+    /* toast */
     .toast{
       position:fixed;
       left:50%;
@@ -289,12 +292,7 @@
     }
     .toast.show{opacity:1; transform:translateX(-50%) translateY(-6px);}
 
-    @media (max-width: 360px){
-      .select{font-size:14px;padding:12px 38px 12px 12px}
-      .pill{font-size:14px;padding:9px 8px}
-      .pill .ico{font-size:16px}
-    }
-
+    /* Loading overlay */
     .loader{
       position:fixed;
       inset:0;
@@ -418,8 +416,8 @@
      **********************************************************/
     const API_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
     
-    // ✅ แก้ไข: เปลี่ยนค่าเริ่มต้นจาก Project_0 เป็น HP01
-    const PROJECT = "HP01";
+    // ✅ แก้ไข: เปลี่ยนค่าอ้างอิงจาก Project_0 เป็น HP00
+    const PROJECT = "HP00";
     
     const GATEWAY_URL = "https://agent-smart-system-interface.github.io/Master-List-Properties/gateway.html";
     const DETAILS_URL = "details.html?id=";
@@ -460,9 +458,9 @@
       return String(p||"").trim();
     }
 
-    // ✅ แก้ไข: อัปเดต Cache Key ให้ตรงกับชื่อโปรเจกต์ใหม่
+    // ✅ แก้ไข: เปลี่ยน Cache Key ให้ตรงกับโปรเจกต์ใหม่ HP00
     const CACHE_KEY = `SP_UNITLIST_${PROJECT}_v1`;
-
+    
     function readCache(){
       try{
         const raw = sessionStorage.getItem(CACHE_KEY);
@@ -482,9 +480,11 @@
     async function fetchUnitList(){
       const cached = readCache();
       if (cached) return cached;
+
       const url = new URL(API_URL);
       url.searchParams.set("mode", "getUnitList");
       url.searchParams.set("project", PROJECT);
+
       const res = await fetch(url.toString(), { cache: "no-store" });
       const data = await res.json();
       if (!Array.isArray(data)) throw new Error(data?.error || "API invalid");
@@ -515,16 +515,19 @@
     function applyFilters(){
       const plotVal = $("plotSelect").value;
       const sortVal = $("sortSelect").value;
+
       filtered = all.filter(x=>{
         if(plotVal === "__all__") return true;
         return normalizePlot(x.plot) === plotVal;
       });
+
       filtered.sort((a,b)=>{
         const pa = Number(String(a.price||"").replace(/,/g,"")) || 0;
         const pb = Number(String(b.price||"").replace(/,/g,"")) || 0;
         if(sortVal === "price_asc") return pa - pb;
         return pb - pa;
       });
+
       renderGrid();
     }
 
@@ -537,17 +540,22 @@
       filtered.forEach(item=>{
         const card = document.createElement("div");
         card.className = "card";
+
         const cover = document.createElement("div");
         cover.className = "cover";
+
         const sk = document.createElement("div");
         sk.className = "skeleton";
         cover.appendChild(sk);
+
         const img = document.createElement("img");
         img.alt = "image";
         img.loading = "lazy";
         img.decoding = "async";
+        img.referrerPolicy = "no-referrer";
         img.dataset.src = String(item.thumbnail||"").trim() || "";
         cover.appendChild(img);
+
         const st = document.createElement("div");
         st.className = "badgeStatus";
         const style = statusStyle(item.status);
@@ -555,37 +563,48 @@
         st.style.color = style.fg;
         st.textContent = String(item.status||"").trim() || "—";
         cover.appendChild(st);
+
         const body = document.createElement("div");
         body.className = "body";
+
         const row1 = document.createElement("div");
         row1.className = "row1";
+
         const plotLine = document.createElement("div");
         plotLine.className = "plotLine";
         plotLine.textContent = normalizePlot(item.plot) ? `PLOT : ${normalizePlot(item.plot)}` : "PLOT : -";
+
         const price = document.createElement("div");
         price.className = "price";
         price.textContent = fmtPrice(item.price);
+
         row1.appendChild(plotLine);
         row1.appendChild(price);
+
         const meta = document.createElement("div");
         meta.className = "meta";
         meta.appendChild(pillIcon("bed", item.bedrooms || "-", "Beds"));
         meta.appendChild(pillIcon("bath", item.bathrooms || "-", "Baths"));
         meta.appendChild(pillIcon("area", item.livingSqm || "-", "m²"));
+
         const btn = document.createElement("button");
         btn.className = "btn";
         btn.textContent = "ดูรายละเอียด";
         btn.addEventListener("click", ()=>{
           if(!item.id) return;
+          // ✅ แก้ไข: ส่งพารามิเตอร์ project=HP00 ไปยังหน้ารายละเอียดด้วย
           location.href = DETAILS_URL + encodeURIComponent(item.id) + `&project=${PROJECT}`;
         });
+
         body.appendChild(row1);
         body.appendChild(meta);
         body.appendChild(btn);
+
         card.appendChild(cover);
         card.appendChild(body);
         grid.appendChild(card);
       });
+
       setupLazyImages();
     }
 
@@ -644,6 +663,7 @@
           price: x.price || "",
           status: x.status || ""
         }));
+
         $("masterVill").textContent = pickMasterVillName(all) || "Master Vill";
         buildPlotOptions(all);
         applyFilters();
