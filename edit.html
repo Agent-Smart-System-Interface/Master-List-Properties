@@ -31,6 +31,12 @@
       user-select: none;
     }
     .img-x:hover { background: rgba(239,68,68,.95); }
+    
+    /* สไตล์สำหรับบาร์อัปโหลด PDF */
+    .pdf-bar { display: flex; align-items: center; gap: 10px; background: #f8fafc; padding: 10px; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 5px; }
+    .btn-pdf { background: #1e293b; color: white; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; }
+    .pdf-name { font-size: 12px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
+    .pdf-link { color: #3b82f6; font-size: 12px; font-weight: 600; text-decoration: underline; }
   </style>
 </head>
 
@@ -162,10 +168,34 @@
 
         <div><span class="field-label">Commission</span><input id="Commission" class="field-input"></div>
 
-        <div class="col-span-full border-t pt-6"><span class="field-label">Documents & Download Links (PDF/Gallery)</span></div>
-        <div><span class="field-label">Sales Gallery Link</span><input id="Sales_Gallery" class="field-input" placeholder="URL ลิงก์รูปภาพรวม"></div>
-        <div><span class="field-label">Material PDF Link</span><input id="Material_PDF" class="field-input" placeholder="URL ลิงก์ไฟล์สเปกวัสดุ"></div>
-        <div><span class="field-label">Floor Plan Link</span><input id="Floor_Plan" class="field-input" placeholder="URL ลิงก์ไฟล์แปลนบ้าน"></div>
+        <div class="col-span-full border-t pt-6"><span class="field-label">Documents & Download Links (Upload PDF)</span></div>
+        
+        <div>
+          <span class="field-label">Sales Gallery PDF</span>
+          <div class="pdf-bar">
+            <label class="btn-pdf">Choose File <input type="file" id="file_pdf_sales" class="hidden" accept="application/pdf" onchange="handlePdfSelect(this, 'name_sales')"></label>
+            <span id="name_sales" class="pdf-name">No file chosen</span>
+            <a id="link_pdf_sales" href="#" target="_blank" class="pdf-link hidden">Download</a>
+          </div>
+        </div>
+
+        <div>
+          <span class="field-label">Material PDF</span>
+          <div class="pdf-bar">
+            <label class="btn-pdf">Choose File <input type="file" id="file_pdf_material" class="hidden" accept="application/pdf" onchange="handlePdfSelect(this, 'name_material')"></label>
+            <span id="name_material" class="pdf-name">No file chosen</span>
+            <a id="link_pdf_material" href="#" target="_blank" class="pdf-link hidden">Download</a>
+          </div>
+        </div>
+
+        <div>
+          <span class="field-label">Floor Plan PDF</span>
+          <div class="pdf-bar">
+            <label class="btn-pdf">Choose File <input type="file" id="file_pdf_floor" class="hidden" accept="application/pdf" onchange="handlePdfSelect(this, 'name_floor')"></label>
+            <span id="name_floor" class="pdf-name">No file chosen</span>
+            <a id="link_pdf_floor" href="#" target="_blank" class="pdf-link hidden">Download</a>
+          </div>
+        </div>
 
         <div class="col-span-full border-t pt-6"><span class="field-label">Social & External Links</span></div>
         <div><span class="field-label">FB Link</span><input id="FB_Link" class="field-input" placeholder="ลิงก์โพสต์ Facebook"></div>
@@ -224,6 +254,11 @@
       document.getElementById("btn-info").classList.toggle("tab-active", tab === "info");
     }
 
+    function handlePdfSelect(input, displayId) {
+      const file = input.files[0];
+      if(file) document.getElementById(displayId).innerText = file.name;
+    }
+
     function setSubDistrictOptions(selectedDistrict, selectedSubDistrict = "") {
       const subSel = document.getElementById("SubDistrict");
       const list = SUBDISTRICTS_BY_DISTRICT[selectedDistrict] || [];
@@ -242,13 +277,6 @@
       subSel.disabled = false;
       if (selectedSubDistrict) {
         subSel.value = selectedSubDistrict;
-        if (subSel.value !== selectedSubDistrict) {
-          const custom = document.createElement("option");
-          custom.value = selectedSubDistrict;
-          custom.textContent = selectedSubDistrict + " (custom)";
-          subSel.appendChild(custom);
-          subSel.value = selectedSubDistrict;
-        }
       }
     }
 
@@ -273,24 +301,12 @@
       const keptExisting = existingGallery.filter(u => !removedGallery.includes(u));
       const tiles = [];
       keptExisting.forEach((url) => {
-        tiles.push(`
-          <div class="img-tile">
-            <div class="img-x" onclick="removeExistingImage('${encodeURIComponent(url)}')" title="Remove">✕</div>
-            <img src="${url}" class="w-full h-12 object-cover rounded-lg">
-          </div>
-        `);
+        tiles.push(`<div class="img-tile"><div class="img-x" onclick="removeExistingImage('${encodeURIComponent(url)}')" title="Remove">✕</div><img src="${url}" class="w-full h-12 object-cover rounded-lg"></div>`);
       });
       newGalleryQueue.forEach((it, idx) => {
-        tiles.push(`
-          <div class="img-tile">
-            <div class="img-x" onclick="removeNewQueuedImage(${idx})" title="Remove">✕</div>
-            <img src="${it.previewUrl}" class="w-full h-12 object-cover rounded-lg">
-          </div>
-        `);
+        tiles.push(`<div class="img-tile"><div class="img-x" onclick="removeNewQueuedImage(${idx})" title="Remove">✕</div><img src="${it.previewUrl}" class="w-full h-12 object-cover rounded-lg"></div>`);
       });
-      box.innerHTML = tiles.length
-        ? tiles.join("")
-        : `<span class="text-4xl text-slate-200 col-span-4 self-center justify-self-center">🗂️</span>`;
+      box.innerHTML = tiles.length ? tiles.join("") : `<span class="text-4xl text-slate-200 col-span-4 self-center justify-self-center">🗂️</span>`;
     }
 
     window.removeExistingImage = function(encodedUrl) {
@@ -301,7 +317,7 @@
 
     window.removeNewQueuedImage = function(index) {
       if (index < 0 || index >= newGalleryQueue.length) return;
-      try { URL.revokeObjectURL(newGalleryQueue[index].previewUrl); } catch(e){}
+      URL.revokeObjectURL(newGalleryQueue[index].previewUrl);
       newGalleryQueue.splice(index, 1);
       renderGallery();
     }
@@ -319,57 +335,51 @@
 
     async function loadData() {
       document.getElementById("displayId").innerText = HP_ID || "HP-XXXX";
-      if (!HP_ID || !PROJECT) return alert("Missing id/project in URL");
       try {
         const res = await fetch(`${API_URL}?mode=getUnitDetail&hpId=${encodeURIComponent(HP_ID)}&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`);
         const data = await res.json();
-        if (data && data.error) throw new Error(data.error);
-
+        
         Object.keys(data || {}).forEach(k => {
           const el = document.getElementById(k);
           if (el) el.value = (data[k] ?? "");
         });
 
-        const districtVal = (data.District ?? "").toString().trim();
-        const subDistrictVal = (data.SubDistrict ?? "").toString().trim();
-        if (districtVal) {
-          document.getElementById("District").value = districtVal;
-          setSubDistrictOptions(districtVal, subDistrictVal);
+        // จัดการปุ่มพรีวิว PDF หากมีลิงก์อยู่แล้ว
+        const pdfFields = ['Sales_Gallery', 'Material_PDF', 'Floor_Plan'];
+        pdfFields.forEach(field => {
+          const url = data[field];
+          if(url && url.startsWith('http')) {
+            const linkEl = document.getElementById('link_pdf_' + (field === 'Sales_Gallery' ? 'sales' : field === 'Material_PDF' ? 'material' : 'floor'));
+            linkEl.href = url;
+            linkEl.classList.remove('hidden');
+          }
+        });
+
+        if (data.District) {
+          document.getElementById("District").value = data.District;
+          setSubDistrictOptions(data.District, data.SubDistrict);
         }
 
         if (data.Thumbnail_Image) {
           document.getElementById("thumbPreview").innerHTML = `<img src="${data.Thumbnail_Image}" class="w-full h-full object-cover">`;
         }
 
-        existingGallery = [];
-        removedGallery = [];
-        newGalleryQueue = [];
-        if (data.Image_List) {
-          existingGallery = String(data.Image_List).split(",").map(s => s.trim()).filter(Boolean);
-        }
+        existingGallery = data.Image_List ? String(data.Image_List).split(",").map(s => s.trim()).filter(Boolean) : [];
         renderGallery();
-      } catch (e) {
-        alert("Error loading data: " + e.message);
-      }
+      } catch (e) { alert("Error loading data: " + e.message); }
     }
 
     const toBase64 = file => new Promise((resolve, reject) => {
-      try {
-        const reader = new FileReader();
-        reader.onload = () => resolve({ data: reader.result.split(",")[1], type: file.type });
-        reader.onerror = () => reject(new Error("File read error"));
-        reader.readAsDataURL(file);
-      } catch (e) { reject(e); }
+      const reader = new FileReader();
+      reader.onload = () => resolve({ data: reader.result.split(",")[1], type: file.type });
+      reader.onerror = () => reject(new Error("File read error"));
+      reader.readAsDataURL(file);
     });
 
     async function updateData() {
       const btn = document.getElementById("saveBtn");
       btn.disabled = true;
-      const oldText = btn.innerText;
       btn.innerText = "UPDATING DATABASE...";
-
-      const keepGallery = existingGallery.filter(u => !removedGallery.includes(u));
-      const removeGallery = removedGallery.slice();
 
       const payload = {
         mode: "updateUnit",
@@ -397,36 +407,38 @@
         Badge: document.getElementById("Badge").value,
         Description: document.getElementById("Description").value,
         Commission: document.getElementById("Commission").value,
-        
-        // New Links Fields
-        Sales_Gallery: document.getElementById("Sales_Gallery").value,
-        Material_PDF: document.getElementById("Material_PDF").value,
-        Floor_Plan: document.getElementById("Floor_Plan").value,
         FB_Link: document.getElementById("FB_Link").value,
         Map_Link: document.getElementById("Map_Link").value,
         Virtual_Tour: document.getElementById("Virtual_Tour").value,
-
-        keepGallery,
-        removeGallery,
-        file_thumb: null,
+        keepGallery: existingGallery.filter(u => !removedGallery.includes(u)),
+        removeGallery: removedGallery,
         files_gallery: []
       };
 
+      // จัดการไฟล์อัปโหลด
       const thumb = document.getElementById("file_thumb").files[0];
       if (thumb) payload.file_thumb = await toBase64(thumb);
-      for (const it of (newGalleryQueue || [])) {
-        payload.files_gallery.push(await toBase64(it.file));
-      }
+      
+      const pdfSales = document.getElementById("file_pdf_sales").files[0];
+      if (pdfSales) payload.pdf_sales_gallery = await toBase64(pdfSales);
+
+      const pdfMaterial = document.getElementById("file_pdf_material").files[0];
+      if (pdfMaterial) payload.pdf_material_pdf = await toBase64(pdfMaterial);
+
+      const pdfFloor = document.getElementById("file_pdf_floor").files[0];
+      if (pdfFloor) payload.pdf_floor_plan = await toBase64(pdfFloor);
+
+      for (const it of newGalleryQueue) payload.files_gallery.push(await toBase64(it.file));
 
       try {
         const res = await fetch(API_URL, { method:"POST", body: JSON.stringify(payload) });
-        const out = await res.json().catch(() => ({}));
-        if (!res.ok || out.error) throw new Error(out.error || "Save failed");
+        const out = await res.json();
+        if (out.error) throw new Error(out.error);
         document.getElementById("successPopup").classList.remove("hidden");
       } catch (e) {
         alert("Save Failed: " + e.message);
         btn.disabled = false;
-        btn.innerText = oldText;
+        btn.innerText = "Update Master Database";
       }
     }
 
