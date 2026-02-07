@@ -31,6 +31,63 @@
       user-select: none;
     }
     .img-x:hover { background: rgba(239,68,68,.95); }
+
+    /* ✅ NEW: PDF bar */
+    .pdfbar{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      padding:12px 12px;
+      border:2px dashed #e2e8f0;
+      border-radius: 16px;
+      background:#f8fafc;
+    }
+    .pdficon{
+      width:44px;height:44px;
+      border-radius: 14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#fee2e2;
+      color:#991b1b;
+      font-weight:900;
+    }
+    .pdfmeta{flex:1; min-width:0;}
+    .pdfname{
+      font-weight:900;
+      color:#0f172a;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .pdflink{
+      font-size:12px;
+      color:#64748b;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .pdfbtn{
+      padding:10px 12px;
+      border-radius: 14px;
+      font-weight:900;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      background:#0f172a;
+      color:#fff;
+    }
+    .pdfbtn2{
+      padding:10px 12px;
+      border-radius: 14px;
+      font-weight:900;
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      background:#2563eb;
+      color:#fff;
+    }
+    .pdfbtn:active,.pdfbtn2:active{transform:scale(.99)}
   </style>
 </head>
 
@@ -50,6 +107,7 @@
       <button onclick="switchTab('info')" id="btn-info" class="pb-4 font-bold text-slate-400">PROPERTY DATA</button>
     </div>
 
+    <!-- TAB: PHOTO -->
     <div id="tab-photo" class="space-y-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="input-card">
@@ -75,8 +133,54 @@
           </button>
         </div>
       </div>
+
+      <!-- ✅ NEW: PDF Upload 3 ช่อง (เป็นบาร์) -->
+      <div class="input-card">
+        <span class="field-label">PDF DOCUMENTS (UPLOAD / REPLACE)</span>
+
+        <!-- Sales -->
+        <div class="pdfbar mb-3">
+          <div class="pdficon">PDF</div>
+          <div class="pdfmeta">
+            <div class="pdfname">Sales Gallery Link</div>
+            <div class="pdflink" id="salesPdfLinkText">ยังไม่มีไฟล์</div>
+          </div>
+          <button class="pdfbtn" type="button" onclick="openPdfLink('sales')">Open</button>
+          <button class="pdfbtn2" type="button" onclick="document.getElementById('file_sales_pdf').click()">Upload</button>
+          <input type="file" id="file_sales_pdf" class="hidden" accept="application/pdf" onchange="onPickPdf(this,'sales')">
+        </div>
+
+        <!-- Material -->
+        <div class="pdfbar mb-3">
+          <div class="pdficon">PDF</div>
+          <div class="pdfmeta">
+            <div class="pdfname">Material PDF Link</div>
+            <div class="pdflink" id="materialPdfLinkText">ยังไม่มีไฟล์</div>
+          </div>
+          <button class="pdfbtn" type="button" onclick="openPdfLink('material')">Open</button>
+          <button class="pdfbtn2" type="button" onclick="document.getElementById('file_material_pdf').click()">Upload</button>
+          <input type="file" id="file_material_pdf" class="hidden" accept="application/pdf" onchange="onPickPdf(this,'material')">
+        </div>
+
+        <!-- Floor Plan -->
+        <div class="pdfbar">
+          <div class="pdficon">PDF</div>
+          <div class="pdfmeta">
+            <div class="pdfname">Floor Plan Link</div>
+            <div class="pdflink" id="floorplanPdfLinkText">ยังไม่มีไฟล์</div>
+          </div>
+          <button class="pdfbtn" type="button" onclick="openPdfLink('floorplan')">Open</button>
+          <button class="pdfbtn2" type="button" onclick="document.getElementById('file_floorplan_pdf').click()">Upload</button>
+          <input type="file" id="file_floorplan_pdf" class="hidden" accept="application/pdf" onchange="onPickPdf(this,'floorplan')">
+        </div>
+
+        <div class="text-[11px] text-slate-500 font-bold mt-3">
+          * อัปโหลดไฟล์ใหม่ = ระบบจะลบไฟล์เก่าในโฟลเดอร์ของ HP_ID แล้วแทนที่ด้วยไฟล์ล่าสุด
+        </div>
+      </div>
     </div>
 
+    <!-- TAB: INFO -->
     <div id="tab-info" class="hidden space-y-6">
       <div class="input-card grid grid-cols-1 md:grid-cols-3 gap-6">
         <div><span class="field-label">Plot</span><input id="Plot" class="field-input"></div>
@@ -200,13 +304,14 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
     const urlParams = new URLSearchParams(location.search);
     const HP_ID = urlParams.get("id");
-    
-    // ✅ แก้ไข: เปลี่ยนค่าเริ่มต้นจาก project_0 เป็น HP00
     const PROJECT = urlParams.get("project") || "HP00";
 
     let existingGallery = [];
     let removedGallery = [];
     let newGalleryQueue = [];
+
+    // ✅ NEW: pdf current links (from sheet)
+    let pdfLinks = { sales:"", material:"", floorplan:"" };
 
     const SUBDISTRICTS_BY_DISTRICT = {
       "Hua Hin": ["Hua Hin","Nong Kae","Hin Lek Fai","Thap Tai","Huai Sat Yai","Bueng Nakhon","Nong Phlap"],
@@ -321,6 +426,35 @@
       renderGallery();
     }
 
+    // ✅ NEW: PDF UI helpers
+    function setPdfText(key, link){
+      const map = {
+        sales: "salesPdfLinkText",
+        material: "materialPdfLinkText",
+        floorplan: "floorplanPdfLinkText"
+      };
+      const el = document.getElementById(map[key]);
+      if (!el) return;
+      el.textContent = link ? link : "ยังไม่มีไฟล์";
+    }
+
+    window.openPdfLink = function(key){
+      const link = (pdfLinks && pdfLinks[key]) ? String(pdfLinks[key]).trim() : "";
+      if(!link) return alert("ยังไม่มีไฟล์ PDF");
+      window.open(link, "_blank", "noopener");
+    }
+
+    window.onPickPdf = function(input, key){
+      const f = input.files && input.files[0];
+      if(!f) return;
+      if(String(f.type).toLowerCase() !== "application/pdf"){
+        input.value = "";
+        return alert("กรุณาเลือกไฟล์ PDF เท่านั้น");
+      }
+      // แค่โชว์ชื่อไฟล์ให้รู้ว่าเลือกแล้ว
+      setPdfText(key, "เลือกไฟล์ใหม่: " + f.name);
+    }
+
     async function loadData() {
       document.getElementById("displayId").innerText = HP_ID || "HP-XXXX";
       if (!HP_ID || !PROJECT) return alert("Missing id/project in URL");
@@ -362,6 +496,16 @@
         }
         renderGallery();
 
+        // ✅ NEW: load pdf links from sheet columns
+        pdfLinks = {
+          sales: (data.Sales_Gallery || "").toString().trim(),
+          material: (data.Material_PDF || "").toString().trim(),
+          floorplan: (data.FloorPlan_PDF || "").toString().trim()
+        };
+        setPdfText("sales", pdfLinks.sales);
+        setPdfText("material", pdfLinks.material);
+        setPdfText("floorplan", pdfLinks.floorplan);
+
       } catch (e) {
         alert("Error loading data: " + e.message);
       }
@@ -389,6 +533,7 @@
         mode: "updateUnit",
         project: PROJECT,
         hpId: HP_ID,
+
         Plot: document.getElementById("Plot").value,
         Type: document.getElementById("Type").value,
         Address: document.getElementById("Address").value,
@@ -396,28 +541,40 @@
         Bedrooms: document.getElementById("Bedrooms").value,
         Bathrooms: document.getElementById("Bathrooms").value,
         Parking: document.getElementById("Parking").value,
+
         Land_Area_sq_w: document.getElementById("Land_Area_sq_w").value,
         Land_Area_sq_m: document.getElementById("Land_Area_sq_m").value,
         Living_Area_sq_m: document.getElementById("Living_Area_sq_m").value,
+
         Pool_Size: document.getElementById("Pool_Size").value,
         Pool_Depth: document.getElementById("Pool_Depth").value,
+
         Furnishing: document.getElementById("Furnishing").value,
         Status: document.getElementById("Status").value,
         District: document.getElementById("District").value,
         SubDistrict: document.getElementById("SubDistrict").value,
         Zone: document.getElementById("Zone").value,
+
         Price: document.getElementById("Price").value,
         Price_SQM: document.getElementById("Price_SQM").value,
         Badge: document.getElementById("Badge").value,
+
         Description: document.getElementById("Description").value,
         FBLink: document.getElementById("FBLink").value,
         Map_Link: document.getElementById("Map_Link").value,
         Virtual_Tour: document.getElementById("Virtual_Tour").value,
         Commission: document.getElementById("Commission").value,
+
         keepGallery,
         removeGallery,
+
         file_thumb: null,
-        files_gallery: []
+        files_gallery: [],
+
+        // ✅ NEW: pdf payload slots
+        file_sales_pdf: null,
+        file_material_pdf: null,
+        file_floorplan_pdf: null
       };
 
       const thumb = document.getElementById("file_thumb").files[0];
@@ -426,6 +583,16 @@
       for (const it of (newGalleryQueue || [])) {
         payload.files_gallery.push(await toBase64(it.file));
       }
+
+      // ✅ NEW: PDFs
+      const salesPdf = document.getElementById("file_sales_pdf").files[0];
+      if (salesPdf) payload.file_sales_pdf = await toBase64(salesPdf);
+
+      const materialPdf = document.getElementById("file_material_pdf").files[0];
+      if (materialPdf) payload.file_material_pdf = await toBase64(materialPdf);
+
+      const floorplanPdf = document.getElementById("file_floorplan_pdf").files[0];
+      if (floorplanPdf) payload.file_floorplan_pdf = await toBase64(floorplanPdf);
 
       try {
         const res = await fetch(API_URL, { method:"POST", body: JSON.stringify(payload) });
