@@ -197,7 +197,32 @@
           </select>
         </div>
 
-        <div><span class="field-label">Badge</span><input id="Badge" class="field-input" placeholder="NEW / HOT / ..."></div>
+        <!-- ✅ Badge: เปลี่ยนเป็น Select ตามรายการที่คุณให้มา -->
+        <div>
+          <span class="field-label">Badge</span>
+          <select id="Badge" class="field-input">
+            <option value="">-- Select Badge --</option>
+            <option value="NEW LISTING">NEW LISTING</option>
+            <option value="JUST ADDED">JUST ADDED</option>
+            <option value="COMING SOON">COMING SOON</option>
+            <option value="NEW PROJECT">NEW PROJECT</option>
+            <option value="HOT DEAL">HOT DEAL</option>
+            <option value="BEST SELLER">BEST SELLER</option>
+            <option value="LAST UNIT">LAST UNIT</option>
+            <option value="MOST VIEWED">MOST VIEWED</option>
+            <option value="LIMITED OFFER">LIMITED OFFER</option>
+            <option value="SPECIAL PRICE">SPECIAL PRICE</option>
+            <option value="PRICE REDUCED">PRICE REDUCED</option>
+            <option value="BEST VALUE">BEST VALUE</option>
+            <option value="INVESTMENT PICK">INVESTMENT PICK</option>
+            <option value="READY TO MOVE">READY TO MOVE</option>
+            <option value="FULLY FURNISHED">FULLY FURNISHED</option>
+            <option value="SEA VIEW">SEA VIEW</option>
+            <option value="POOL ACCESS">POOL ACCESS</option>
+            <option value="PREMIUM QUALITY">PREMIUM QUALITY</option>
+            <option value="QUIET ZONE">QUIET ZONE</option>
+          </select>
+        </div>
 
         <div class="col-span-full"><span class="field-label">Description</span><textarea id="Description" rows="4" class="field-input"></textarea></div>
 
@@ -235,7 +260,10 @@
         <div><span class="field-label">Commission</span><input id="Commission" class="field-input"></div>
 
         <div class="col-span-full border-t pt-6"><span class="field-label">External Links</span></div>
-        <div><span class="field-label">FB Link</span><input id="FBLink" class="field-input"></div>
+
+        <!-- ✅ FIX: เปลี่ยน id ให้ตรงกับชื่อคอลัมน์/คีย์จาก GAS = FB_Link -->
+        <div><span class="field-label">FB Link</span><input id="FB_Link" class="field-input"></div>
+
         <div><span class="field-label">Map Link</span><input id="Map_Link" class="field-input"></div>
         <div><span class="field-label">Virtual Tour</span><input id="Virtual_Tour" class="field-input"></div>
 
@@ -529,7 +557,10 @@
         Price_SQM: document.getElementById("Price_SQM").value,
         Badge: document.getElementById("Badge").value,
         Description: document.getElementById("Description").value,
-        FBLink: document.getElementById("FBLink").value,
+
+        // ✅ FIX: ส่งคีย์ให้ตรงกับคอลัมน์ = FB_Link
+        FB_Link: document.getElementById("FB_Link").value,
+
         Map_Link: document.getElementById("Map_Link").value,
         Virtual_Tour: document.getElementById("Virtual_Tour").value,
         Commission: document.getElementById("Commission").value,
