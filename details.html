@@ -478,6 +478,66 @@
     .shareBtn:active .shareCircle{ transform: scale(.97); }
 
     #shareCanvas{ display:none; }
+
+    /* =========================================================
+       ✅ ADDED: Bottom Dock (ตำแหน่ง 1-4 ตามรูปที่คุณส่ง)
+       ========================================================= */
+    .wrap{ padding-bottom: 108px; } /* กันเนื้อหาถูกบาร์ล่างบัง */
+
+    .bottomDock{
+      position:fixed;
+      left:0; right:0; bottom:0;
+      z-index:9999;
+      padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
+      background: rgba(255,255,255,.40);
+      backdrop-filter: blur(14px);
+      border-top: 1px solid rgba(255,255,255,.55);
+    }
+    .dockInner{
+      max-width:1100px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap:10px;
+    }
+    .dockBtn{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding: 12px 10px;
+      border-radius: 18px;
+      text-decoration:none;
+      font-weight: 1100;
+      letter-spacing:.2px;
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(15,23,42,.10);
+      box-shadow: 0 10px 22px rgba(0,0,0,.10);
+      color: rgba(15,23,42,.92);
+      user-select:none;
+      cursor:pointer;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .dockBtn:active{ transform: scale(.99); }
+    .dockIcon{
+      width:26px; height:26px;
+      border-radius: 12px;
+      display:grid;
+      place-items:center;
+      font-size:14px;
+      flex:0 0 auto;
+      background: rgba(15,23,42,.08);
+    }
+    .dockBtn.disabled{
+      opacity:.42;
+      pointer-events:none;
+    }
+    @media (max-width:420px){
+      .dockBtn{ padding:11px 8px; border-radius:16px; font-size:12px; }
+      .dockIcon{ width:24px; height:24px; border-radius:11px; }
+    }
   </style>
 </head>
 <body>
@@ -638,6 +698,34 @@
           <div class="otherGrid" id="otherGrid"></div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       ✅ ADDED: Bottom Dock UI (ตำแหน่ง 1-4 ตามรูป)
+       ========================================================= -->
+  <div class="bottomDock" id="bottomDock" aria-label="Downloads">
+    <div class="dockInner">
+      <!-- 1 -->
+      <a class="dockBtn disabled" id="dockSales" href="#" target="_blank" rel="noopener">
+        <span class="dockIcon">📄</span>
+        <span>Sales PDF</span>
+      </a>
+      <!-- 2 -->
+      <a class="dockBtn disabled" id="dockMaterial" href="#" target="_blank" rel="noopener">
+        <span class="dockIcon">📄</span>
+        <span>Material PDF</span>
+      </a>
+      <!-- 3 -->
+      <a class="dockBtn disabled" id="dockFloorplan" href="#" target="_blank" rel="noopener">
+        <span class="dockIcon">📄</span>
+        <span>Floor Plan</span>
+      </a>
+      <!-- 4 -->
+      <a class="dockBtn disabled" id="dockFB" href="#" target="_blank" rel="noopener">
+        <span class="dockIcon">📘</span>
+        <span>FB_Link</span>
+      </a>
     </div>
   </div>
 
@@ -1231,6 +1319,26 @@ function wireShareButtons(){
   });
 }
 
+/* =========================================================
+   ✅ ADDED: Bottom Dock logic (1-4)
+   ========================================================= */
+function normalizeLink(v){
+  const s = String(v ?? "").trim();
+  return s && s !== "-" ? s : "";
+}
+function setDockLink(elId, link){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  const href = normalizeLink(link);
+  if(!href){
+    el.classList.add("disabled");
+    el.setAttribute("href", "#");
+    return;
+  }
+  el.classList.remove("disabled");
+  el.setAttribute("href", href);
+}
+
 /** LOAD */
 (async function init(){
   hideError();
@@ -1309,6 +1417,13 @@ function wireShareButtons(){
 
   renderInfo(detail);
   loadOtherUnits();
+
+  /* ✅ ADDED: set bottom dock links (คอลัมน์จากชีต) */
+  setDockLink("dockSales", detail.Sales_Gallery);
+  setDockLink("dockMaterial", detail.Material_PDF);
+  setDockLink("dockFloorplan", detail.FloorPlan_PDF);
+  setDockLink("dockFB", detail.FB_Link);
+
 })();
 </script>
 </body>
