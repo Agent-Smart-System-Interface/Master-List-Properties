@@ -197,11 +197,12 @@
           </select>
         </div>
 
-        <!-- ✅ Badge: เปลี่ยนเป็น Select ตามรายการที่คุณให้มา -->
+        <!-- ✅ FIX: Badge เป็น select + รายการตามที่คุณกำหนด -->
         <div>
           <span class="field-label">Badge</span>
           <select id="Badge" class="field-input">
             <option value="">-- Select Badge --</option>
+
             <option value="NEW LISTING">NEW LISTING</option>
             <option value="JUST ADDED">JUST ADDED</option>
             <option value="COMING SOON">COMING SOON</option>
@@ -261,7 +262,7 @@
 
         <div class="col-span-full border-t pt-6"><span class="field-label">External Links</span></div>
 
-        <!-- ✅ FIX: เปลี่ยน id ให้ตรงกับชื่อคอลัมน์/คีย์จาก GAS = FB_Link -->
+        <!-- ✅ FIX 100%: ต้องใช้ FB_Link (ตรงกับ sheet: "FB Link" -> normKey = FB_Link) -->
         <div><span class="field-label">FB Link</span><input id="FB_Link" class="field-input"></div>
 
         <div><span class="field-label">Map Link</span><input id="Map_Link" class="field-input"></div>
@@ -457,6 +458,23 @@
       setPdfText(key, "เลือกไฟล์ใหม่: " + f.name);
     }
 
+    // ✅ FIX: ให้ Badge/Select เลือกค่าเดิมได้แม้ไม่อยู่ใน options (กันกรณีค่าเก่า)
+    function ensureSelectHasValue(selectId, value) {
+      const sel = document.getElementById(selectId);
+      if (!sel) return;
+      const v = (value ?? "").toString().trim();
+      if (!v) return;
+
+      sel.value = v;
+      if (sel.value !== v) {
+        const opt = document.createElement("option");
+        opt.value = v;
+        opt.textContent = v + " (custom)";
+        sel.appendChild(opt);
+        sel.value = v;
+      }
+    }
+
     async function loadData() {
       document.getElementById("displayId").innerText = HP_ID || "HP-XXXX";
       if (!HP_ID || !PROJECT) return alert("Missing id/project in URL");
@@ -468,8 +486,15 @@
 
         Object.keys(data || {}).forEach(k => {
           const el = document.getElementById(k);
-          if (el) el.value = (data[k] ?? "");
+          if (el && el.tagName !== "SELECT") el.value = (data[k] ?? "");
         });
+
+        // Select fields
+        ensureSelectHasValue("Status", data.Status);
+        ensureSelectHasValue("Furnishing", data.Furnishing);
+        ensureSelectHasValue("Badge", data.Badge);
+        ensureSelectHasValue("District", data.District);
+        ensureSelectHasValue("Zone", data.Zone);
 
         const districtVal = (data.District ?? "").toString().trim();
         const subDistrictVal = (data.SubDistrict ?? "").toString().trim();
@@ -558,7 +583,7 @@
         Badge: document.getElementById("Badge").value,
         Description: document.getElementById("Description").value,
 
-        // ✅ FIX: ส่งคีย์ให้ตรงกับคอลัมน์ = FB_Link
+        // ✅ FIX 100%: ส่งคีย์ให้ตรงกับ sheet = FB_Link
         FB_Link: document.getElementById("FB_Link").value,
 
         Map_Link: document.getElementById("Map_Link").value,
@@ -585,7 +610,6 @@
           payload.files_gallery.push(await toBase64(it.file));
         }
 
-        // ✅ PDFs (ส่งจริงไป GAS)
         const salesPdf = document.getElementById("file_sales_pdf").files[0];
         if (salesPdf) payload.file_sales_pdf = await toBase64(salesPdf);
 
@@ -599,7 +623,6 @@
         const out = await res.json().catch(() => ({}));
         if (!res.ok || out.error) throw new Error(out.error || "Save failed");
 
-        // ✅ Update PDF UI immediately
         if (out.pdfLinks) {
           pdfLinks = {
             sales: out.pdfLinks.sales || "",
