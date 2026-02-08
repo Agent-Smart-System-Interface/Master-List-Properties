@@ -509,7 +509,7 @@
       const plots = Array.from(set).sort((a,b)=>a.localeCompare(b, "en"));
       const sel = $("plotSelect");
       sel.innerHTML =
-        `<option value="__all__">เลือก Plot</option>` +
+        `<option value="__all__">Select Plot</option>` +
         plots.map(p=>`<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
     }
 
