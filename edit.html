@@ -57,6 +57,7 @@
       <button onclick="switchTab('info')" id="btn-info" class="pb-4 font-bold text-slate-400">PROPERTY DATA</button>
     </div>
 
+    <!-- PHOTO TAB (คงเดิม) -->
     <div id="tab-photo" class="space-y-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="input-card">
@@ -119,6 +120,7 @@
       </div>
     </div>
 
+    <!-- INFO TAB -->
     <div id="tab-info" class="hidden space-y-6">
       <div class="input-card grid grid-cols-1 md:grid-cols-3 gap-6">
         <div><span class="field-label">Plot</span><input id="Plot" class="field-input"></div>
@@ -171,13 +173,22 @@
           </select>
         </div>
 
+        <div><span class="field-label">Badge</span><input id="Badge" class="field-input"></div>
+
+        <div class="col-span-full"><span class="field-label">Description</span><textarea id="Description" rows="4" class="field-input"></textarea></div>
+
+        <div><span class="field-label">District</span><input id="District" class="field-input"></div>
+        <div><span class="field-label">SubDistrict</span><input id="SubDistrict" class="field-input"></div>
+        <div><span class="field-label">Zone</span><input id="Zone" class="field-input"></div>
+
         <div><span class="field-label">Commission</span><input id="Commission" class="field-input"></div>
 
         <div class="col-span-full border-t pt-6"><span class="field-label">External Links</span></div>
 
+        <!-- ✅ ต้องเป็น FB_Link เท่านั้น -->
         <div><span class="field-label">FB Link</span><input id="FB_Link" class="field-input" placeholder="https://facebook.com/..."></div>
-        <div><span class="field-label">Map Link</span><input id="Map_Link" class="field-input"></div>
-        <div><span class="field-label">Virtual Tour</span><input id="Virtual_Tour" class="field-input"></div>
+        <div><span class="field-label">Map Link</span><input id="Map_Link" class="field-input" placeholder="https://..."></div>
+        <div><span class="field-label">Virtual Tour</span><input id="Virtual_Tour" class="field-input" placeholder="https://..."></div>
 
         <div class="col-span-full">
           <span class="field-label">System Status (Read Only)</span>
@@ -214,7 +225,6 @@
     let existingGallery = [];
     let removedGallery = [];
     let newGalleryQueue = [];
-
     let pdfLinks = { sales:"", material:"", floorplan:"" };
     const MAX_PDF_BYTES = 6 * 1024 * 1024;
 
@@ -309,13 +319,43 @@
         project: PROJECT,
         hpId: HP_ID,
 
-        // ✅ สำคัญ: ส่ง FB 2 ชื่อ (รองรับโค้ดเก่า/หัวคอลัมน์เพี้ยน)
+        Plot: document.getElementById("Plot")?.value,
+        Type: document.getElementById("Type")?.value,
+        Address: document.getElementById("Address")?.value,
+        Project_Name: document.getElementById("Project_Name")?.value,
+        Bedrooms: document.getElementById("Bedrooms")?.value,
+        Bathrooms: document.getElementById("Bathrooms")?.value,
+        Parking: document.getElementById("Parking")?.value,
+        Extras: document.getElementById("Extras")?.value,
+        Electricity: document.getElementById("Electricity")?.value,
+        Land_Area_sq_w: document.getElementById("Land_Area_sq_w")?.value,
+        Land_Area_sq_m: document.getElementById("Land_Area_sq_m")?.value,
+        Living_Area_sq_m: document.getElementById("Living_Area_sq_m")?.value,
+        Pool_Size: document.getElementById("Pool_Size")?.value,
+        Pool_Depth: document.getElementById("Pool_Depth")?.value,
+        Furnishing: document.getElementById("Furnishing")?.value,
+        Status: document.getElementById("Status")?.value,
+        Badge: document.getElementById("Badge")?.value,
+        Description: document.getElementById("Description")?.value,
+        District: document.getElementById("District")?.value,
+        SubDistrict: document.getElementById("SubDistrict")?.value,
+        Zone: document.getElementById("Zone")?.value,
+        Price: document.getElementById("Price")?.value,
+        Price_SQM: document.getElementById("Price_SQM")?.value,
+        Commission: document.getElementById("Commission")?.value,
+
+        // ✅ สำคัญ: ส่ง “FB_Link” ให้ตรงคอลัมน์ชื่อเดียวกัน
         FB_Link: normalizeUrl(document.getElementById("FB_Link").value),
-        FBLink:  normalizeUrl(document.getElementById("FB_Link").value),
+
+        // (เผื่อโค้ดเก่าบางเวอร์ชันเคยอ่าน FBLink)
+        FBLink: normalizeUrl(document.getElementById("FB_Link").value),
 
         Map_Link: normalizeUrl(document.getElementById("Map_Link").value),
         Virtual_Tour: normalizeUrl(document.getElementById("Virtual_Tour").value),
 
+        // (คงไว้ตามโครงสร้างเดิม)
+        keepGallery: [],
+        removeGallery: [],
         file_thumb: null,
         files_gallery: [],
         file_sales_pdf: null,
@@ -328,9 +368,15 @@
         const out = await res.json().catch(() => ({}));
         if (!res.ok || out.error) throw new Error(out.error || "Save failed");
 
-        // ✅ ถ้า fbSaved=false จะรู้เลยว่า “หา column ไม่เจอ” (ไม่ใช่ปัญหาค่าที่ส่ง)
+        // ✅ Debug ชัด ๆ ถ้า fbSaved=false แปลว่า “GS หา col FB ไม่เจอ”
         if (out && out.fbSaved === false) {
-          alert("บันทึกสำเร็จ แต่ยังไม่พบคอลัมน์ FB ในชีต (หัวคอลัมน์อาจเพี้ยน/มีตัวล่องหน)\nระบบกำลัง fuzzy หาให้แล้ว แต่ยังไม่ match");
+          alert(
+            "บันทึกสำเร็จ แต่ยังจับคอลัมน์ FB_Link ไม่ได้\n" +
+            "fbMatchBy: " + (out.fbMatchBy || "-") + "\n" +
+            "fbColIndex: " + (out.fbColIndex ?? "-") + "\n" +
+            "fbHeaderRaw: " + (out.fbHeaderRaw || "-") + "\n\n" +
+            "แปลว่าหัวคอลัมน์ในชีตอาจมีตัวล่องหน/สะกดแปลกมาก ๆ"
+          );
           btn.disabled = false;
           btn.innerText = oldText;
           return;
