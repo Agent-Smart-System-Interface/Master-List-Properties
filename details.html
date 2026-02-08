@@ -977,6 +977,20 @@ function fmtSqm(v){
   return s + " sq.m";
 }
 
+/* ✅ FIX: รองรับ key หลายรูปแบบ (กันกรณี Apps Script แปลงชื่อคอลัมน์) */
+const LAND_SQM_KEYS = [
+  "Land Area (sq.m)", "Land Area (sqm)", "Land Area sq.m", "Land Area sqm",
+  "Land_Area_sq_m", "Land_Area_SQM", "LandAreaSQM", "Land_sq_m", "LandSqm",
+  "Land_Area_(sq.m)", "Land_Area_(sqm)", "Land_Area_sq.m", "Land_Area_sqm",
+  "Land_Area__sq_m_", "Land_Area__sqm_", "Land_Area_sq_m_", "LandArea_sq_m",
+];
+const LIVING_SQM_KEYS = [
+  "Living Area (sq.m)", "Living Area (sqm)", "Living Area sq.m", "Living Area sqm",
+  "Living_Area_sq_m", "Living_Area_SQM", "LivingAreaSQM", "Living_sq_m", "LivingSqm",
+  "Living_Area_(sq.m)", "Living_Area_(sqm)", "Living_Area_sq.m", "Living_Area_sqm",
+  "Living_Area__sq_m_", "Living_Area__sqm_", "Living_Area_sq_m_", "LivingArea_sq_m",
+];
+
 /** ✅ จุดที่ 1: render Description ด้านบน */
 function renderDescription(detail){
   const desc = safeText(pick(detail, ["Description","description","Desc"]));
@@ -994,8 +1008,9 @@ function renderDescription(detail){
 
 /** ✅ จุดที่ 2: render Land/Living ใต้ราคา (สำหรับหน้า details หลัก) */
 function renderMiniMeta(detail){
-  const landM = fmtSqm(pick(detail, ["Land_Area_sq_m","Land_Area_SQM","LandAreaSQM","Land_sq_m","Land Area (sq.m)"]));
-  const livingM = fmtSqm(pick(detail, ["Living_Area_sq_m","Living_Area_SQM","LivingAreaSQM","Living_sq_m","Living Area (sq.m)"]));
+  // ✅ FIX: ใช้ชุด key ที่รองรับหลายรูปแบบ
+  const landM = fmtSqm(pick(detail, LAND_SQM_KEYS));
+  const livingM = fmtSqm(pick(detail, LIVING_SQM_KEYS));
   const el = document.getElementById("miniMeta");
   if(!el) return;
   el.textContent = `Land ${landM} · Living ${livingM}`;
@@ -1005,17 +1020,16 @@ function renderMiniMeta(detail){
 function renderInfo(detail){
   const grid = document.getElementById("infoGrid");
 
-  // ✅ ดึง 2 ค่าเพื่อโชว์ “แถวเดียวกัน”
-  const landW = safeText(pick(detail, ["Land_Area_sq_w","Land_Area_SQW","LandAreaSQW","Land_sq_w"]));
-  const livingM = safeText(pick(detail, ["Living_Area_sq_m","Living_Area_SQM","LivingAreaSQM","Living_sq_m"]));
+  // ✅ FIX: ให้ Living Area (sq.m) ดึงได้จากชื่อคอลัมน์จริงด้วย
+  const landW = safeText(pick(detail, ["Land_Area_sq_w","Land_Area_SQW","LandAreaSQW","Land_sq_w","Land Area (sq.w)","Land Area (sq.w.)"]));
+  const livingM = safeText(pick(detail, LIVING_SQM_KEYS));
+  const landM = safeText(pick(detail, LAND_SQM_KEYS));
 
   const items = [
     ["Project_Name", safeText(pick(detail, ["Project_Name","ProjectName","Project_Name_En","Project_Name_TH","Project"]))],
     ["District", safeText(pick(detail, ["District","district"]))],
     ["SubDistrict", safeText(pick(detail, ["SubDistrict","Sub_District","subdistrict"]))],
     ["Badge", safeText(pick(detail, ["Badge","badge"]))],
-
-    // ❌ ลบ Description ออกจาก grid (ย้ายไปด้านบนแล้ว)
 
     ["Bedrooms", safeText(pick(detail, ["Bedrooms","Bedroom","beds"]))],
     ["Bathrooms", safeText(pick(detail, ["Bathrooms","Bathroom","baths"]))],
@@ -1025,7 +1039,8 @@ function renderInfo(detail){
       k2: "Living Area (sq.m)", v2: livingM
     }],
 
-    ["Land Area (sq.m)", safeText(pick(detail, ["Land_Area_sq_m","Land_Area_SQM","LandAreaSQM","Land_sq_m"]))],
+    // ✅ FIX: แสดง Land Area (sq.m) ให้ดึงชื่อคอลัมน์จริงได้
+    ["Land Area (sq.m)", landM],
     ["Pool Size", safeText(pick(detail, ["Pool_Size","PoolSize"]))],
     ["Pool Depth", safeText(pick(detail, ["Pool_Depth","PoolDepth"]))],
     ["Furnishing", safeText(pick(detail, ["Furnishing","furnishing"]))],
@@ -1075,26 +1090,12 @@ function getPrice(u){
   return u?.Price ?? u?.price ?? 0;
 }
 
-/* ✅ ดึง Land Area (sq.m) และ Living Area (sq.m) จาก Unit List */
+/* ✅ FIX: ดึง Land/Living (sq.m) จาก Unit List ให้ “ตรงกับหัวคอลัมน์ในชีต” + รองรับหลายรูปแบบ */
 function getLandSqm(u){
-  return String(
-    u?.Land_Area_sq_m ??
-    u?.Land_Area_SQM ??
-    u?.LandAreaSQM ??
-    u?.Land_sq_m ??
-    u?.["Land Area (sq.m)"] ??
-    ""
-  ).trim();
+  return String(pick(u, LAND_SQM_KEYS) ?? "").trim();
 }
 function getLivingSqm(u){
-  return String(
-    u?.Living_Area_sq_m ??
-    u?.Living_Area_SQM ??
-    u?.LivingAreaSQM ??
-    u?.Living_sq_m ??
-    u?.["Living Area (sq.m)"] ??
-    ""
-  ).trim();
+  return String(pick(u, LIVING_SQM_KEYS) ?? "").trim();
 }
 
 function renderOtherUnits(units){
@@ -1117,7 +1118,7 @@ function renderOtherUnits(units){
     const price = moneyTHB(getPrice(u));
     const pill = statusStyle(st);
 
-    // ✅ จุดที่ 2: แสดง Land / Living พร้อมหน่วย sq.m (ตามวงกลม)
+    // ✅ จุดที่ต้องแก้: แสดง Land / Living จากคอลัมน์ (sq.m) พร้อมหน่วย
     const landM = fmtSqm(getLandSqm(u));
     const livingM = fmtSqm(getLivingSqm(u));
     const landLivingText = `Land ${landM} · Living ${livingM}`;
@@ -1177,7 +1178,7 @@ async function buildShareImageBlob(detail){
   const beds = safe(detail.Bedrooms || detail.Bedroom || detail.beds);
   const baths = safe(detail.Bathrooms || detail.Bathroom || detail.baths);
   const landW = safe(detail.Land_Area_sq_w || detail.Land_Area_SQW || detail.LandAreaSQW);
-  const livingM = safe(detail.Living_Area_sq_m || detail.Living_Area_SQM || detail.LivingAreaSQM);
+  const livingM = safe(pick(detail, LIVING_SQM_KEYS));
   const price = moneyTHB(detail.Price || 0);
   const status = safe(detail.Status || detail.status);
   const badge = safe(detail.Badge || detail.badge);
