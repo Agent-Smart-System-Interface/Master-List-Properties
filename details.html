@@ -174,61 +174,53 @@
       flex:0 0 auto;
     }
 
+    /* ✅ จุดที่ 2: แสดง Land/Living ใต้ราคา (ตำแหน่งเดียวกับที่วงกลม) */
+    .miniMeta{
+      margin-top:6px;
+      font-size:13px;
+      font-weight:900;
+      color: rgba(15,23,42,.55);
+      letter-spacing:.2px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
     @media (max-width:420px){
       .price{font-size:24px}
       .statusBelow{font-size:14px; padding:7px 10px;}
       .tagTopLeft{font-size:13px; padding:7px 10px;}
+      .miniMeta{font-size:12px;}
     }
 
-    /* ✅ ADDED: Land/Living mini line (จุดที่ 2) */
-    .miniLine{
-      margin-top:8px;
-      font-weight:900;
-      color: rgba(15,23,42,.55);
-      font-size:13px;
-      letter-spacing:.1px;
-      display:flex;
-      gap:6px;
-      align-items:center;
-      flex-wrap:wrap;
-      user-select:none;
-    }
-    .miniLine b{
-      color: rgba(15,23,42,.80);
-      font-weight:1100;
-    }
-
-    /* ✅ ADDED: Description box on top (จุดที่ 1) */
+    /* ✅ จุดที่ 1: Description box แยกด้านบน */
     .descBox{
       margin-top:12px;
-      padding:14px 14px;
+      background: rgba(255,255,255,.92);
+      border: 2px solid rgba(59,130,246,.35);
       border-radius: 18px;
-      background: rgba(255,255,255,.70);
-      border: 1px solid rgba(15,23,42,.08);
-      box-shadow: 0 10px 22px rgba(0,0,0,.06);
+      box-shadow: 0 10px 22px rgba(0,0,0,.08);
+      padding:12px 12px;
     }
     .descTitle{
       font-weight:1100;
       letter-spacing:.2px;
       color: rgba(15,23,42,.88);
-      margin-bottom:8px;
       display:flex;
       align-items:center;
       gap:8px;
-    }
-    .descTitle::before{
-      content:"";
-      width:10px; height:10px;
-      border-radius:999px;
-      background: rgba(239,68,68,.55);
-      box-shadow: 0 6px 14px rgba(239,68,68,.25);
-      flex:0 0 auto;
+      margin-bottom:6px;
     }
     .descText{
-      font-weight:1000;
+      font-weight:950;
       color: rgba(15,23,42,.92);
-      white-space:pre-wrap;
       line-height:1.45;
+      white-space:pre-wrap;
+      word-break:break-word;
+    }
+    .descEmpty{
+      color: rgba(15,23,42,.55);
+      font-weight:900;
     }
 
     .gridInfo{
@@ -679,11 +671,11 @@
           <div class="statusBelow" id="statusBelow">-</div>
         </div>
 
-        <!-- ✅ จุดที่ 2: แสดง Land/Living ใต้ราคา (ตำแหน่งวงกลม) -->
-        <div class="miniLine" id="landLivingLine">Land - · Living -</div>
+        <!-- ✅ จุดที่ 2: Land / Living ใต้ราคา (ตำแหน่งตามวงกลม) -->
+        <div class="miniMeta" id="miniMeta">Land - · Living -</div>
 
-        <!-- ✅ จุดที่ 1: กล่อง Description ย้ายมาไว้ด้านบน -->
-        <div class="descBox" id="descBox" style="display:none;">
+        <!-- ✅ จุดที่ 1: ย้าย Description มาไว้ด้านบน พร้อมกรอบเฉพาะ -->
+        <div class="descBox" id="descBox">
           <div class="descTitle">Description</div>
           <div class="descText" id="descText">-</div>
         </div>
@@ -832,8 +824,6 @@
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
 const qs = new URLSearchParams(location.search);
 const hpId = qs.get("id") || qs.get("hpId") || "";
-
-// ✅ แก้ไข: เปลี่ยนค่าเริ่มต้นจาก Project_0 เป็น HP00 ตามที่ระบุ
 const project = qs.get("project") || "HP00";
 
 /** Loader helpers */
@@ -968,9 +958,7 @@ function enableSwipe(){
   });
 }
 
-/** =========================
- * ✅ helpers (ใช้ทั้ง renderInfo + จุดที่ 1/2)
- * ========================= */
+/** ✅ helper: pick / safe */
 function safeText(v){
   const s = String(v ?? "").trim();
   return s === "" ? "-" : s;
@@ -981,40 +969,43 @@ function pick(obj, keys){
   }
   return "";
 }
-
-/** ✅ จุดที่ 1: render description box ด้านบน */
-function renderDescription(detail){
-  const desc = safeText(pick(detail, ["Description","description","Desc"]));
-  const box = document.getElementById("descBox");
-  const textEl = document.getElementById("descText");
-  if(!box || !textEl) return;
-
-  if(desc === "-" ){
-    box.style.display = "none";
-    textEl.textContent = "-";
-    return;
-  }
-  box.style.display = "block";
-  textEl.textContent = desc;
+function fmtSqm(v){
+  const s = safeText(v);
+  if(s === "-") return "-";
+  const low = s.toLowerCase();
+  if (low.includes("sq") || low.includes("ตร.ม") || low.includes("m2") || low.includes("m²")) return s;
+  return s + " sq.m";
 }
 
-/** ✅ จุดที่ 2: render Land/Living line ใต้ราคา */
-function renderLandLivingLine(detail){
-  const landM = safeText(pick(detail, ["Land_Area_sq_m","Land_Area_SQM","LandAreaSQM","Land_sq_m","Land Area (sq.m)"]));
-  const livingM = safeText(pick(detail, ["Living_Area_sq_m","Living_Area_SQM","LivingAreaSQM","Living_sq_m","Living Area (sq.m)"]));
-
-  const el = document.getElementById("landLivingLine");
+/** ✅ จุดที่ 1: render Description ด้านบน */
+function renderDescription(detail){
+  const desc = safeText(pick(detail, ["Description","description","Desc"]));
+  const el = document.getElementById("descText");
   if(!el) return;
 
-  // แสดงแบบสั้นเหมือนที่วงกลม: Land … · Living …
-  el.innerHTML = `Land <b>${landM}</b> · Living <b>${livingM}</b>`;
+  if(desc === "-" ){
+    el.textContent = "-";
+    el.classList.add("descEmpty");
+  }else{
+    el.textContent = desc;
+    el.classList.remove("descEmpty");
+  }
+}
+
+/** ✅ จุดที่ 2: render Land/Living ใต้ราคา (สำหรับหน้า details หลัก) */
+function renderMiniMeta(detail){
+  const landM = fmtSqm(pick(detail, ["Land_Area_sq_m","Land_Area_SQM","LandAreaSQM","Land_sq_m","Land Area (sq.m)"]));
+  const livingM = fmtSqm(pick(detail, ["Living_Area_sq_m","Living_Area_SQM","LivingAreaSQM","Living_sq_m","Living Area (sq.m)"]));
+  const el = document.getElementById("miniMeta");
+  if(!el) return;
+  el.textContent = `Land ${landM} · Living ${livingM}`;
 }
 
 /** จัดเรียงข้อมูล (ปรับเฉพาะข้อที่ขอ) */
 function renderInfo(detail){
   const grid = document.getElementById("infoGrid");
 
-  // ✅ ดึง 2 ค่าเพื่อโชว์ “แถวเดียวกัน” (sq.w + sq.m เดิมของคุณ)
+  // ✅ ดึง 2 ค่าเพื่อโชว์ “แถวเดียวกัน”
   const landW = safeText(pick(detail, ["Land_Area_sq_w","Land_Area_SQW","LandAreaSQW","Land_sq_w"]));
   const livingM = safeText(pick(detail, ["Living_Area_sq_m","Living_Area_SQM","LivingAreaSQM","Living_sq_m"]));
 
@@ -1024,8 +1015,7 @@ function renderInfo(detail){
     ["SubDistrict", safeText(pick(detail, ["SubDistrict","Sub_District","subdistrict"]))],
     ["Badge", safeText(pick(detail, ["Badge","badge"]))],
 
-    /* ✅ จุดที่ 1: เอา Description ออกจาก Grid (ย้ายไปกล่องด้านบนแล้ว) */
-    // ["Description", ...]  <-- removed
+    // ❌ ลบ Description ออกจาก grid (ย้ายไปด้านบนแล้ว)
 
     ["Bedrooms", safeText(pick(detail, ["Bedrooms","Bedroom","beds"]))],
     ["Bathrooms", safeText(pick(detail, ["Bathrooms","Bathroom","baths"]))],
@@ -1085,7 +1075,7 @@ function getPrice(u){
   return u?.Price ?? u?.price ?? 0;
 }
 
-/* ดึง Land Area (sq.m) และ Living Area (sq.m) จาก Unit List */
+/* ✅ ดึง Land Area (sq.m) และ Living Area (sq.m) จาก Unit List */
 function getLandSqm(u){
   return String(
     u?.Land_Area_sq_m ??
@@ -1125,11 +1115,11 @@ function renderOtherUnits(units){
     const thumb = getThumb(u);
     const st = getStatus(u);
     const price = moneyTHB(getPrice(u));
-
     const pill = statusStyle(st);
 
-    const landM = safeText(getLandSqm(u));
-    const livingM = safeText(getLivingSqm(u));
+    // ✅ จุดที่ 2: แสดง Land / Living พร้อมหน่วย sq.m (ตามวงกลม)
+    const landM = fmtSqm(getLandSqm(u));
+    const livingM = fmtSqm(getLivingSqm(u));
     const landLivingText = `Land ${landM} · Living ${livingM}`;
 
     const card = document.createElement("div");
@@ -1180,29 +1170,18 @@ async function buildShareImageBlob(detail){
   const canvas = document.getElementById("shareCanvas");
   const ctx = canvas.getContext("2d");
 
-  const safe = (v)=> {
-    if (v === undefined || v === null) return "-";
-    const s = String(v).trim();
-    return s === "" ? "-" : s;
-  };
-  const pick2 = (obj, keys)=> {
-    for (const k of keys){
-      if (obj && obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== "") return obj[k];
-    }
-    return "";
-  };
-
-  const projectName = safe(pick2(detail, ["Project_Name","ProjectName","Project"]));
-  const district = safe(pick2(detail, ["District","district"]));
-  const subDistrict = safe(pick2(detail, ["SubDistrict","Sub_District","subdistrict"]));
-  const beds = safe(pick2(detail, ["Bedrooms","Bedroom","beds"]));
-  const baths = safe(pick2(detail, ["Bathrooms","Bathroom","baths"]));
-  const landW = safe(pick2(detail, ["Land_Area_sq_w","Land_Area_SQW","LandAreaSQW"]));
-  const livingM = safe(pick2(detail, ["Living_Area_sq_m","Living_Area_SQM","LivingAreaSQM"]));
-  const price = moneyTHB(pick2(detail, ["Price","price"]) || 0);
-  const status = safe(pick2(detail, ["Status","status"]));
-  const badge = safe(pick2(detail, ["Badge","badge"]));
-  const plot = safe(pick2(detail, ["Plot","plot"]));
+  const safe = (v)=> (v===undefined || v===null || String(v).trim()==="" ? "-" : String(v).trim());
+  const projectName = safe(detail.Project_Name || detail.ProjectName || detail.Project || project);
+  const district = safe(detail.District || detail.district);
+  const subDistrict = safe(detail.SubDistrict || detail.Sub_District || detail.subdistrict);
+  const beds = safe(detail.Bedrooms || detail.Bedroom || detail.beds);
+  const baths = safe(detail.Bathrooms || detail.Bathroom || detail.baths);
+  const landW = safe(detail.Land_Area_sq_w || detail.Land_Area_SQW || detail.LandAreaSQW);
+  const livingM = safe(detail.Living_Area_sq_m || detail.Living_Area_SQM || detail.LivingAreaSQM);
+  const price = moneyTHB(detail.Price || 0);
+  const status = safe(detail.Status || detail.status);
+  const badge = safe(detail.Badge || detail.badge);
+  const plot = safe(detail.Plot || detail.plot);
 
   const rows = [
     ["Project_Name", projectName, "Badge", badge],
@@ -1345,6 +1324,7 @@ function drawKV(ctx, x, y, w, key, val){
   ctx.fillText(out, x, y + 34);
 }
 
+/** Share handlers (เดิมของคุณ) */
 function buildShareText(detail){
   const safe = (v)=> (v===undefined || v===null || String(v).trim()==="" ? "-" : String(v).trim());
   const projectName = safe(detail.Project_Name || detail.ProjectName || detail.Project || project);
@@ -1440,7 +1420,9 @@ function wireShareButtons(){
   });
 }
 
-/* Bottom Dock logic */
+/* =========================================================
+   ✅ Bottom Dock logic (1-3)
+   ========================================================= */
 function normalizeLink(v){
   const s = String(v ?? "").trim();
   return s && s !== "-" ? s : "";
@@ -1458,7 +1440,7 @@ function setDockLink(elId, link){
   el.setAttribute("href", href);
 }
 
-/* FB Link picker + render visit bar */
+/* ✅ ADDED: FB Link picker + render visit bar */
 function pickFbLink(detail){
   const keys = ["FB_Link","FBLink","FB_Link ","FB_LINK","facebook","Facebook","FB"];
   for(const k of keys){
@@ -1527,6 +1509,12 @@ function setFbVisitBar(link){
   stEl.style.borderColor = st.border;
   stEl.style.color = st.text;
 
+  // ✅ จุดที่ 2 (หน้า details หลัก)
+  renderMiniMeta(detail);
+
+  // ✅ จุดที่ 1
+  renderDescription(detail);
+
   const thumb = cleanDriveImage(detail.Thumbnail_Image || "");
   const list = String(detail.Image_List || "")
     .split(",").map(s=>cleanDriveImage(s.trim()))
@@ -1557,15 +1545,7 @@ function setFbVisitBar(link){
     pre.src = images[1];
   }
 
-  // ✅ จุดที่ 2: Land/Living ใต้ราคา
-  renderLandLivingLine(detail);
-
-  // ✅ จุดที่ 1: Description box ด้านบน
-  renderDescription(detail);
-
-  // Grid ข้อมูล (Description ถูกเอาออกแล้ว)
   renderInfo(detail);
-
   loadOtherUnits();
 
   setDockLink("dockSales", detail.Sales_Gallery);
@@ -1573,6 +1553,7 @@ function setFbVisitBar(link){
   setDockLink("dockFloorplan", detail.FloorPlan_PDF);
 
   setFbVisitBar(pickFbLink(detail));
+
 })();
 </script>
 </body>
