@@ -467,12 +467,14 @@
           if (el) el.value = (data[k] ?? "");
         });
 
-        // ✅ FIX: รองรับของเก่า (FBLink) -> เติมลงช่องใหม่ (FB_Link)
-        const fbNew = (data.FB_Link ?? "").toString().trim();
-        const fbOld = (data.FBLink ?? "").toString().trim();
-        if (!fbNew && fbOld) {
-          const fbEl = document.getElementById("FB_Link");
-          if (fbEl) fbEl.value = fbOld;
+        // ✅ FIX: รองรับชื่อเก่า FBLink -> เติมลงช่อง FB_Link (กันบางชีต/บางเวอร์ชันยังเป็นชื่อเดิม)
+        const fbEl = document.getElementById("FB_Link");
+        if (fbEl) {
+          const current = (fbEl.value ?? "").toString().trim();
+          if (!current) {
+            const legacy = (data.FBLink ?? data.FB_LINK ?? data.fbLink ?? "").toString().trim();
+            if (legacy) fbEl.value = legacy;
+          }
         }
 
         const districtVal = (data.District ?? "").toString().trim();
@@ -534,7 +536,7 @@
       const keepGallery = existingGallery.filter(u => !removedGallery.includes(u));
       const removeGallery = removedGallery.slice();
 
-      const fbValue = document.getElementById("FB_Link").value; // ✅ ค่าเดียว
+      const fbValue = document.getElementById("FB_Link").value;
 
       const payload = {
         mode: "updateUnit",
@@ -569,7 +571,7 @@
         Badge: document.getElementById("Badge").value,
         Description: document.getElementById("Description").value,
 
-        // ✅ FIX: ส่งทั้งชื่อใหม่+ชื่อเก่า ป้องกัน mismatch
+        // ✅ FIX: ส่งทั้งชื่อใหม่และชื่อเก่า เพื่อให้ GAS เขียนได้ไม่ว่า sheet ใช้หัวคอลัมน์ไหน
         FB_Link: fbValue,
         FBLink: fbValue,
 
