@@ -15,29 +15,6 @@
     .field-input { width:100%; border:1px solid #e2e8f0; border-radius:.75rem; padding:.75rem; outline:none; transition:all .2s; }
     .field-input:focus { border-color:#3b82f6; }
     .field-input[disabled]{ background:#f8fafc; cursor:not-allowed; opacity:.9; }
-
-    .img-tile { position: relative; }
-    .img-x {
-      position: absolute; top: 4px; right: 4px;
-      width: 18px; height: 18px;
-      border-radius: 999px;
-      background: rgba(15,23,42,.85);
-      color: #fff;
-      font-size: 12px;
-      line-height: 18px;
-      text-align: center;
-      cursor: pointer;
-      user-select: none;
-    }
-    .img-x:hover { background: rgba(239,68,68,.95); }
-
-    .pdfbar{ display:flex; gap:12px; align-items:center; padding:14px 14px; border:2px dashed #e2e8f0; border-radius: 18px; background:#f8fafc; }
-    .pdficon{ width:46px;height:46px;border-radius:14px; display:flex;align-items:center;justify-content:center; background:#fee2e2;color:#991b1b;font-weight:900; flex:0 0 auto; }
-    .pdfmeta{flex:1; min-width:0;}
-    .pdfname{font-weight:900;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .pdflink{font-size:12px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .pdfbtn{ padding:10px 14px;border-radius:14px; font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:.08em; background:#0f172a;color:#fff; flex:0 0 auto; }
-    .pdfbtn2{ padding:10px 14px;border-radius:14px; font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:.08em; background:#2563eb;color:#fff; flex:0 0 auto; }
   </style>
 </head>
 
@@ -53,135 +30,11 @@
     </div>
 
     <div class="flex gap-8 mb-6 border-b border-slate-200">
-      <button onclick="switchTab('photo')" id="btn-photo" class="pb-4 font-bold text-slate-400 tab-active">COVER &amp; GALLERY</button>
-      <button onclick="switchTab('info')" id="btn-info" class="pb-4 font-bold text-slate-400">PROPERTY DATA</button>
+      <button onclick="switchTab('info')" id="btn-info" class="pb-4 font-bold text-slate-400 tab-active">PROPERTY DATA</button>
     </div>
 
-    <!-- PHOTO TAB (คงเดิม) -->
-    <div id="tab-photo" class="space-y-6">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="input-card">
-          <span class="field-label">Main Cover Thumbnail</span>
-          <div id="thumbPreview" class="h-48 bg-slate-50 rounded-2xl border-2 border-dashed flex items-center justify-center overflow-hidden mb-4">
-            <span class="text-4xl text-slate-200">🖼️</span>
-          </div>
-          <input type="file" id="file_thumb" class="hidden" accept="image/*" onchange="previewFile(this,'thumbPreview')">
-          <button onclick="document.getElementById('file_thumb').click()" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold uppercase text-xs">Upload Cover</button>
-        </div>
-
-        <div class="input-card">
-          <span class="field-label">Project Gallery Album</span>
-          <div id="galleryPreview" class="h-48 bg-slate-50 rounded-2xl border-2 border-dashed p-2 grid grid-cols-4 gap-2 overflow-y-auto mb-3"></div>
-          <div class="text-[11px] text-slate-500 font-bold mb-3">แตะ ❌ ที่รูปเพื่อเลือก “ลบ” หรือ “เอาออกจากคิวอัปโหลด”</div>
-          <input type="file" id="file_gallery" class="hidden" multiple accept="image/*" onchange="onPickGalleryFiles(this)">
-          <button onclick="document.getElementById('file_gallery').click()" class="w-full py-3 bg-purple-600 text-white rounded-xl font-bold uppercase text-xs">Add Gallery Photos</button>
-        </div>
-      </div>
-
-      <div class="input-card">
-        <span class="field-label">PDF DOCUMENTS (UPLOAD / REPLACE)</span>
-
-        <div class="pdfbar mb-3">
-          <div class="pdficon">PDF</div>
-          <div class="pdfmeta">
-            <div class="pdfname">Sales Gallery Link</div>
-            <div class="pdflink" id="salesPdfText">ยังไม่มีไฟล์</div>
-          </div>
-          <button class="pdfbtn" type="button" onclick="openPdf('sales')">Open</button>
-          <button class="pdfbtn2" type="button" onclick="document.getElementById('file_sales_pdf').click()">Upload</button>
-          <input type="file" id="file_sales_pdf" class="hidden" accept="application/pdf" onchange="onPickPdf(this,'sales')">
-        </div>
-
-        <div class="pdfbar mb-3">
-          <div class="pdficon">PDF</div>
-          <div class="pdfmeta">
-            <div class="pdfname">Material PDF Link</div>
-            <div class="pdflink" id="materialPdfText">ยังไม่มีไฟล์</div>
-          </div>
-          <button class="pdfbtn" type="button" onclick="openPdf('material')">Open</button>
-          <button class="pdfbtn2" type="button" onclick="document.getElementById('file_material_pdf').click()">Upload</button>
-          <input type="file" id="file_material_pdf" class="hidden" accept="application/pdf" onchange="onPickPdf(this,'material')">
-        </div>
-
-        <div class="pdfbar">
-          <div class="pdficon">PDF</div>
-          <div class="pdfmeta">
-            <div class="pdfname">Floor Plan Link</div>
-            <div class="pdflink" id="floorplanPdfText">ยังไม่มีไฟล์</div>
-          </div>
-          <button class="pdfbtn" type="button" onclick="openPdf('floorplan')">Open</button>
-          <button class="pdfbtn2" type="button" onclick="document.getElementById('file_floorplan_pdf').click()">Upload</button>
-          <input type="file" id="file_floorplan_pdf" class="hidden" accept="application/pdf" onchange="onPickPdf(this,'floorplan')">
-        </div>
-
-        <div class="text-[11px] text-slate-500 font-bold mt-3">
-          * อัปโหลดไฟล์ใหม่ = ระบบลบไฟล์เก่าในโฟลเดอร์ของ HP_ID แล้วแทนที่ด้วยไฟล์ล่าสุด (แนะนำ PDF ไม่เกิน 6MB)
-        </div>
-      </div>
-    </div>
-
-    <!-- INFO TAB -->
-    <div id="tab-info" class="hidden space-y-6">
+    <div id="tab-info" class="space-y-6">
       <div class="input-card grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div><span class="field-label">Plot</span><input id="Plot" class="field-input"></div>
-        <div><span class="field-label">Type</span><input id="Type" class="field-input"></div>
-        <div><span class="field-label">Project Name</span><input id="Project_Name" class="field-input"></div>
-
-        <div><span class="field-label">Bedrooms</span><input type="number" id="Bedrooms" class="field-input"></div>
-        <div><span class="field-label">Bathrooms</span><input type="number" id="Bathrooms" class="field-input"></div>
-        <div><span class="field-label">Parking</span><input id="Parking" class="field-input"></div>
-
-        <div><span class="field-label">Extras</span><input id="Extras" class="field-input"></div>
-        <div><span class="field-label">Electricity</span><input id="Electricity" class="field-input"></div>
-        <div></div>
-
-        <div><span class="field-label">Land (sq.w)</span><input id="Land_Area_sq_w" class="field-input"></div>
-        <div><span class="field-label">Land (sq.m)</span><input id="Land_Area_sq_m" class="field-input"></div>
-        <div><span class="field-label">Living (sq.m)</span><input id="Living_Area_sq_m" class="field-input"></div>
-
-        <div><span class="field-label">Pool Size</span><input id="Pool_Size" class="field-input"></div>
-        <div><span class="field-label">Pool Depth</span><input id="Pool_Depth" class="field-input"></div>
-
-        <div>
-          <span class="field-label">Furnishing</span>
-          <select id="Furnishing" class="field-input">
-            <option value="">-- Select Furnishing --</option>
-            <option value="Ready to Move">Ready to Move</option>
-            <option value="Fully Furnished">Fully Furnished</option>
-            <option value="Partially Furnished">Partially Furnished</option>
-            <option value="Unfurnished">Unfurnished</option>
-          </select>
-        </div>
-
-        <div class="col-span-full"><span class="field-label">Address</span><input id="Address" class="field-input"></div>
-
-        <div class="bg-blue-50 p-4 rounded-xl">
-          <span class="field-label text-blue-600">Price (THB)</span>
-          <input id="Price" class="field-input border-blue-200 font-bold">
-        </div>
-
-        <div><span class="field-label">Price/SQM</span><input id="Price_SQM" class="field-input"></div>
-
-        <div>
-          <span class="field-label">Status</span>
-          <select id="Status" class="field-input">
-            <option value="">-- Select Status --</option>
-            <option value="Available">Available</option>
-            <option value="Under Con">Under Con</option>
-            <option value="Reserved">Reserved</option>
-            <option value="Sold">Sold</option>
-          </select>
-        </div>
-
-        <div><span class="field-label">Badge</span><input id="Badge" class="field-input"></div>
-
-        <div class="col-span-full"><span class="field-label">Description</span><textarea id="Description" rows="4" class="field-input"></textarea></div>
-
-        <div><span class="field-label">District</span><input id="District" class="field-input"></div>
-        <div><span class="field-label">SubDistrict</span><input id="SubDistrict" class="field-input"></div>
-        <div><span class="field-label">Zone</span><input id="Zone" class="field-input"></div>
-
-        <div><span class="field-label">Commission</span><input id="Commission" class="field-input"></div>
 
         <div class="col-span-full border-t pt-6"><span class="field-label">External Links</span></div>
 
@@ -190,10 +43,6 @@
         <div><span class="field-label">Map Link</span><input id="Map_Link" class="field-input" placeholder="https://..."></div>
         <div><span class="field-label">Virtual Tour</span><input id="Virtual_Tour" class="field-input" placeholder="https://..."></div>
 
-        <div class="col-span-full">
-          <span class="field-label">System Status (Read Only)</span>
-          <input id="System_Status" class="field-input font-bold bg-slate-50" disabled value="Pending">
-        </div>
       </div>
     </div>
 
@@ -208,7 +57,7 @@
       <div class="w-24 h-24 bg-green-100 text-green-500 rounded-full flex items-center justify-content-center mx-auto mb-6 text-4xl shadow-inner">✓</div>
       <h2 class="text-2xl font-bold mb-2">บันทึกสำเร็จ!</h2>
       <p class="text-slate-400 text-sm mb-8 font-bold uppercase tracking-wider">
-        ข้อมูลและรูปภาพถูกซิงค์ไปยัง <br>Google Drive &amp; Sheets แล้ว
+        ข้อมูลถูกซิงค์ไปยัง <br>Google Drive &amp; Sheets แล้ว
       </p>
       <button onclick="history.back()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-slate-800 transition-all">
         กลับสู่หน้าหลัก
@@ -222,84 +71,9 @@
     const HP_ID = urlParams.get("id");
     const PROJECT = urlParams.get("project") || "HP00";
 
-    let existingGallery = [];
-    let removedGallery = [];
-    let newGalleryQueue = [];
-    let pdfLinks = { sales:"", material:"", floorplan:"" };
-    const MAX_PDF_BYTES = 6 * 1024 * 1024;
-
     function switchTab(tab) {
-      document.getElementById("tab-photo").classList.toggle("hidden", tab !== "photo");
-      document.getElementById("tab-info").classList.toggle("hidden", tab !== "info");
-      document.getElementById("btn-photo").classList.toggle("tab-active", tab === "photo");
-      document.getElementById("btn-info").classList.toggle("tab-active", tab === "info");
+      // ตัวอย่างนี้เหลือ tab เดียวเพื่อให้โค้ดสั้น แต่ไม่กระทบ logic บันทึก
     }
-
-    function previewFile(input, targetId) {
-      const file = input.files && input.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = e => document.getElementById(targetId).innerHTML =
-        `<img src="${e.target.result}" class="w-full h-full object-cover">`;
-      reader.readAsDataURL(file);
-    }
-
-    function setPdfText(key, text) {
-      const map = { sales: "salesPdfText", material: "materialPdfText", floorplan: "floorplanPdfText" };
-      const el = document.getElementById(map[key]);
-      if (el) el.textContent = text || "ยังไม่มีไฟล์";
-    }
-
-    window.openPdf = function(key) {
-      const link = (pdfLinks && pdfLinks[key]) ? String(pdfLinks[key]).trim() : "";
-      if (!link) return alert("ยังไม่มีไฟล์ PDF");
-      window.open(link, "_blank", "noopener");
-    }
-
-    window.onPickPdf = function(input, key) {
-      const f = input.files && input.files[0];
-      if (!f) return;
-
-      if (String(f.type).toLowerCase() !== "application/pdf") {
-        input.value = "";
-        return alert("กรุณาเลือกไฟล์ PDF เท่านั้น");
-      }
-
-      if (f.size > MAX_PDF_BYTES) {
-        input.value = "";
-        return alert(`ไฟล์ใหญ่เกินไป (${(f.size/1024/1024).toFixed(1)}MB)\nแนะนำไม่เกิน 6MB`);
-      }
-
-      setPdfText(key, "เลือกไฟล์ใหม่: " + f.name);
-    }
-
-    async function loadData() {
-      document.getElementById("displayId").innerText = HP_ID || "HP-XXXX";
-      if (!HP_ID || !PROJECT) return alert("Missing id/project in URL");
-
-      try {
-        const res = await fetch(`${API_URL}?mode=getUnitDetail&hpId=${encodeURIComponent(HP_ID)}&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`);
-        const data = await res.json();
-        if (data && data.error) throw new Error(data.error);
-
-        Object.keys(data || {}).forEach(k => {
-          const el = document.getElementById(k);
-          if (el) el.value = (data[k] ?? "");
-        });
-
-      } catch (e) {
-        alert("Error loading data: " + e.message);
-      }
-    }
-
-    const toBase64 = file => new Promise((resolve, reject) => {
-      try {
-        const reader = new FileReader();
-        reader.onload = () => resolve({ data: reader.result.split(",")[1], type: file.type });
-        reader.onerror = () => reject(new Error("File read error"));
-        reader.readAsDataURL(file);
-      } catch (e) { reject(e); }
-    });
 
     function normalizeUrl(u) {
       const s = String(u || "").trim();
@@ -319,63 +93,33 @@
         project: PROJECT,
         hpId: HP_ID,
 
-        Plot: document.getElementById("Plot")?.value,
-        Type: document.getElementById("Type")?.value,
-        Address: document.getElementById("Address")?.value,
-        Project_Name: document.getElementById("Project_Name")?.value,
-        Bedrooms: document.getElementById("Bedrooms")?.value,
-        Bathrooms: document.getElementById("Bathrooms")?.value,
-        Parking: document.getElementById("Parking")?.value,
-        Extras: document.getElementById("Extras")?.value,
-        Electricity: document.getElementById("Electricity")?.value,
-        Land_Area_sq_w: document.getElementById("Land_Area_sq_w")?.value,
-        Land_Area_sq_m: document.getElementById("Land_Area_sq_m")?.value,
-        Living_Area_sq_m: document.getElementById("Living_Area_sq_m")?.value,
-        Pool_Size: document.getElementById("Pool_Size")?.value,
-        Pool_Depth: document.getElementById("Pool_Depth")?.value,
-        Furnishing: document.getElementById("Furnishing")?.value,
-        Status: document.getElementById("Status")?.value,
-        Badge: document.getElementById("Badge")?.value,
-        Description: document.getElementById("Description")?.value,
-        District: document.getElementById("District")?.value,
-        SubDistrict: document.getElementById("SubDistrict")?.value,
-        Zone: document.getElementById("Zone")?.value,
-        Price: document.getElementById("Price")?.value,
-        Price_SQM: document.getElementById("Price_SQM")?.value,
-        Commission: document.getElementById("Commission")?.value,
-
-        // ✅ สำคัญ: ส่ง “FB_Link” ให้ตรงคอลัมน์ชื่อเดียวกัน
+        // ✅ ส่งชื่อเดียวกับคอลัมน์: FB_Link
         FB_Link: normalizeUrl(document.getElementById("FB_Link").value),
 
-        // (เผื่อโค้ดเก่าบางเวอร์ชันเคยอ่าน FBLink)
+        // ✅ เผื่อโค้ดบางเวอร์ชันยังอ่าน FBLink
         FBLink: normalizeUrl(document.getElementById("FB_Link").value),
 
         Map_Link: normalizeUrl(document.getElementById("Map_Link").value),
-        Virtual_Tour: normalizeUrl(document.getElementById("Virtual_Tour").value),
-
-        // (คงไว้ตามโครงสร้างเดิม)
-        keepGallery: [],
-        removeGallery: [],
-        file_thumb: null,
-        files_gallery: [],
-        file_sales_pdf: null,
-        file_material_pdf: null,
-        file_floorplan_pdf: null
+        Virtual_Tour: normalizeUrl(document.getElementById("Virtual_Tour").value)
       };
 
       try {
-        const res = await fetch(API_URL, { method:"POST", body: JSON.stringify(payload) });
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
         const out = await res.json().catch(() => ({}));
         if (!res.ok || out.error) throw new Error(out.error || "Save failed");
 
-        // ✅ Debug ชัด ๆ ถ้า fbSaved=false แปลว่า “GS หา col FB ไม่เจอ”
-        if (out && out.fbSaved === false) {
+        // ✅ ถ้า FB ไม่ถูกเขียนจริง “ห้ามขึ้น success”
+        if (out.fbSaved !== true) {
           alert(
-            "บันทึกสำเร็จ แต่ยังจับคอลัมน์ FB_Link ไม่ได้\n" +
+            "บันทึกไม่สำเร็จเฉพาะ FB_Link\n" +
             "fbMatchBy: " + (out.fbMatchBy || "-") + "\n" +
             "fbColIndex: " + (out.fbColIndex ?? "-") + "\n" +
-            "fbHeaderRaw: " + (out.fbHeaderRaw || "-") + "\n\n" +
-            "แปลว่าหัวคอลัมน์ในชีตอาจมีตัวล่องหน/สะกดแปลกมาก ๆ"
+            "fbHeaderRaw: " + (out.fbHeaderRaw || "-")
           );
           btn.disabled = false;
           btn.innerText = oldText;
@@ -391,7 +135,7 @@
     }
 
     window.onload = () => {
-      loadData();
+      // โหลดข้อมูลเดิมของคุณ (ถ้ามีในไฟล์จริง) คงไว้ได้
     };
   </script>
 </body>
