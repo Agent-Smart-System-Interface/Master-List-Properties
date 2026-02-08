@@ -60,20 +60,6 @@
       background:#2563eb;color:#fff;
       flex:0 0 auto;
     }
-
-    /* ✅ FB open button */
-    .miniBtn{
-      padding:.75rem 1rem;
-      border-radius:.75rem;
-      font-weight:900;
-      font-size:.75rem;
-      letter-spacing:.08em;
-      text-transform:uppercase;
-      background:#0f172a;
-      color:#fff;
-      white-space:nowrap;
-    }
-    .miniBtn:disabled{opacity:.4; cursor:not-allowed;}
   </style>
 </head>
 
@@ -276,16 +262,10 @@
 
         <div class="col-span-full border-t pt-6"><span class="field-label">External Links</span></div>
 
-        <!-- ✅ แก้: FB link มีปุ่ม Open + sanitize "#" -->
-        <div class="md:col-span-1">
+        <!-- ✅ ช่องที่วงแดงในภาพ -->
+        <div>
           <span class="field-label">FB Link</span>
-          <div class="flex gap-3">
-            <input id="FB_Link" class="field-input" placeholder="https://facebook.com/..." oninput="syncFbOpenBtn()">
-            <button id="btnOpenFB" type="button" class="miniBtn" onclick="openFB()" disabled>OPEN</button>
-          </div>
-          <div class="text-[11px] text-slate-400 mt-2 font-bold">
-            * ถ้ากรอกแค่ชื่อเพจ ระบบจะเติม https:// ให้เอง
-          </div>
+          <input id="FB_Link" class="field-input" placeholder="https://facebook.com/...">
         </div>
 
         <div><span class="field-label">Map Link</span><input id="Map_Link" class="field-input"></div>
@@ -475,41 +455,6 @@
       setPdfText(key, "เลือกไฟล์ใหม่: " + f.name);
     }
 
-    // =========================
-    // ✅ FB helpers (แก้เฉพาะจุดนี้)
-    // =========================
-    function normalizeUrl(u){
-      let s = String(u ?? "").trim();
-      if (!s || s === "#") return "";
-      // ถ้าพิมพ์ facebook.com/xxx ให้เติม https://
-      if (!/^https?:\/\//i.test(s)) s = "https://" + s;
-      return s;
-    }
-
-    function getFbFromData(data){
-      // ✅ รองรับกรณีชีตเป็น FB_LINK (ตัวใหญ่) หรือ key อื่น
-      const v =
-        data?.FB_Link ??
-        data?.FB_LINK ??
-        data?.FBLink ??
-        data?.Fb_Link ??
-        data?.Fb_LINK ??
-        "";
-      return (v === "#") ? "" : String(v ?? "");
-    }
-
-    window.syncFbOpenBtn = function(){
-      const btn = document.getElementById("btnOpenFB");
-      const v = normalizeUrl(document.getElementById("FB_Link").value);
-      btn.disabled = !v;
-    }
-
-    window.openFB = function(){
-      const v = normalizeUrl(document.getElementById("FB_Link").value);
-      if(!v) return alert("ยังไม่มี FB URL");
-      window.open(v, "_blank", "noopener");
-    }
-
     async function loadData() {
       document.getElementById("displayId").innerText = HP_ID || "HP-XXXX";
       if (!HP_ID || !PROJECT) return alert("Missing id/project in URL");
@@ -519,18 +464,10 @@
         const data = await res.json();
         if (data && data.error) throw new Error(data.error);
 
-        // เติมค่าตาม id ที่ชื่อเดียวกับ key จาก GAS (normKey)
         Object.keys(data || {}).forEach(k => {
           const el = document.getElementById(k);
           if (el) el.value = (data[k] ?? "");
         });
-
-        // ✅ Fix FB field: แม้ key จาก GAS เป็น FB_LINK ก็เอามาใส่ FB_Link input
-        const fbVal = getFbFromData(data);
-        if (document.getElementById("FB_Link")) {
-          document.getElementById("FB_Link").value = fbVal;
-          syncFbOpenBtn();
-        }
 
         const districtVal = (data.District ?? "").toString().trim();
         const subDistrictVal = (data.SubDistrict ?? "").toString().trim();
@@ -582,6 +519,14 @@
       } catch (e) { reject(e); }
     });
 
+    /** ✅ FIX เฉพาะจุด: normalize FB URL (กันกรอกเป็น facebook.com โดยไม่มี https) */
+    function normalizeUrl(u) {
+      const s = String(u || "").trim();
+      if (!s) return "";
+      if (/^https?:\/\//i.test(s)) return s;
+      return "https://" + s.replace(/^\/+/, "");
+    }
+
     async function updateData() {
       const btn = document.getElementById("saveBtn");
       btn.disabled = true;
@@ -624,11 +569,11 @@
         Badge: document.getElementById("Badge").value,
         Description: document.getElementById("Description").value,
 
-        // ✅ สำคัญ: sanitize "#" + เติม https:// อัตโนมัติ
+        // ✅ จุดวงแดง: ส่ง FB_Link ให้ชัวร์ + normalize url
         FB_Link: normalizeUrl(document.getElementById("FB_Link").value),
 
-        Map_Link: document.getElementById("Map_Link").value,
-        Virtual_Tour: document.getElementById("Virtual_Tour").value,
+        Map_Link: normalizeUrl(document.getElementById("Map_Link").value),
+        Virtual_Tour: normalizeUrl(document.getElementById("Virtual_Tour").value),
         Commission: document.getElementById("Commission").value,
 
         keepGallery,
@@ -685,7 +630,6 @@
     window.onload = () => {
       bindDistrictChange();
       loadData();
-      syncFbOpenBtn();
     };
   </script>
 </body>
