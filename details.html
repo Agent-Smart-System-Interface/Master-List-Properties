@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>smart properties system · details</title>
+  <title>Smart Properties System · Details</title>
 
   <link rel="preconnect" href="https://script.google.com">
   <link rel="preconnect" href="https://lh3.googleusercontent.com">
@@ -30,7 +30,7 @@
 
     .topbar{
       display:flex; align-items:center; justify-content:space-between;
-      padding:12px 12px;
+      padding:12px;
       border-radius: 18px;
       background: rgba(255,255,255,.18);
       backdrop-filter: blur(10px);
@@ -42,1604 +42,221 @@
       display:grid; place-items:center; font-weight:800;
       flex:0 0 auto;
     }
-    .titles{min-width:0}
     .titles h1{
-      margin:0;
-      font-size:20px;
-      line-height:1.15;
-      font-weight:1100;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      letter-spacing:.2px;
+      margin:0; font-size:20px; line-height:1.15; font-weight:1100;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
-    .titles .sub{display:none;}
     .backBtn{
       width:44px; height:44px; border-radius:999px;
       border:0; background: rgba(255,255,255,.55);
       cursor:pointer; font-size:18px; font-weight:900;
-      flex:0 0 auto;
     }
 
     .card{
-      margin-top:14px;
-      background: rgba(255,255,255,.88);
+      margin-top:14px; background: rgba(255,255,255,.88);
       border:1px solid rgba(255,255,255,.65);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      border-radius: var(--radius); shadow: var(--shadow);
       overflow:hidden;
     }
 
-    /* Gallery */
-    .gallery{
-      position:relative;
-      background:#dfe9f6;
-    }
-    .mainSlide{
-      width:100%;
-      aspect-ratio: 16/10;
-      object-fit:cover;
-      display:block;
-    }
+    .gallery{ position:relative; background:#dfe9f6; }
+    .mainSlide{ width:100%; aspect-ratio: 16/10; object-fit:cover; display:block; }
 
     .tagTopLeft{
-      position:absolute;
-      padding:8px 12px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.78);
-      font-weight:1100;
-      font-size:14px;
-      box-shadow: 0 10px 20px rgba(0,0,0,.12);
-      backdrop-filter: blur(8px);
-      border:1px solid rgba(255,255,255,.65);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width: 78%;
-      left:14px; top:14px;
+      position:absolute; padding:8px 12px; border-radius: 999px;
+      background: rgba(255,255,255,.78); font-weight:1100; font-size:14px;
+      left:14px; top:14px; backdrop-filter: blur(8px);
     }
 
     .tagBottomRight{
-      position:absolute;
-      right:14px;
-      bottom:14px;
-      padding:0;
-      border-radius:0;
-      background: transparent;
-      box-shadow:none;
-      backdrop-filter:none;
-      border:0;
-      font-weight:1100;
-      font-size:14px;
-      color: rgba(255,255,255,.98);
-      text-shadow: 0 10px 18px rgba(0,0,0,.45);
-      user-select:none;
-      pointer-events:none;
+      position:absolute; right:14px; bottom:14px; font-weight:1100;
+      font-size:14px; color: rgba(255,255,255,.98); text-shadow: 0 4px 10px rgba(0,0,0,0.5);
     }
 
-    .thumbStrip{
-      background: rgba(255,255,255,.78);
-      padding:10px;
-      display:flex;
-      gap:10px;
-      overflow:auto;
-      scroll-snap-type: x mandatory;
-    }
-    .thumb{
-      width:92px; height:64px;
-      flex:0 0 auto;
-      border-radius: 16px;
-      object-fit:cover;
-      border:3px solid transparent;
-      cursor:pointer;
-      scroll-snap-align: start;
-      background:#e8f0fb;
-    }
-    .thumb.active{border-color:#0f172a;}
+    .thumbStrip{ background: rgba(255,255,255,.78); padding:10px; display:flex; gap:10px; overflow:auto; }
+    .thumb{ width:92px; height:64px; flex:0 0 auto; border-radius: 16px; object-fit:cover; cursor:pointer; border:3px solid transparent; }
+    .thumb.active{ border-color:#0f172a; }
 
-    .content{padding:14px;}
-
-    .headRow{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:nowrap;
-    }
-    .hp{display:none;}
-
-    .price{
-      font-size:28px;
-      font-weight:1100;
-      letter-spacing:.2px;
-      white-space:nowrap;
-      flex:1 1 auto;
-      min-width:0;
-    }
-
+    .content{ padding:14px; }
+    .price{ font-size:28px; font-weight:1100; }
     .statusBelow{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      padding:8px 12px;
-      border-radius: 12px;
-      font-weight:1100;
-      font-size:16px;
-      line-height:1;
-      background: rgba(255,255,255,.92);
-      border: 2px solid rgba(16,185,129,.55);
-      color: rgba(5,150,105,1);
-      box-shadow: 0 10px 20px rgba(0,0,0,.10);
-      white-space:nowrap;
-      flex:0 0 auto;
+      display:inline-flex; padding:8px 12px; border-radius: 12px;
+      font-weight:1100; background: rgba(255,255,255,.92); border: 2px solid #10b981; color: #059669;
     }
 
-    /* Land/Living ใต้ราคา */
-    .miniMeta{
-      margin-top:6px;
-      font-size:13px;
-      font-weight:900;
-      color: rgba(15,23,42,.55);
-      letter-spacing:.2px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    @media (max-width:420px){
-      .price{font-size:24px}
-      .statusBelow{font-size:14px; padding:7px 10px;}
-      .tagTopLeft{font-size:13px; padding:7px 10px;}
-      .miniMeta{font-size:12px;}
-    }
-
-    /* Description box (แสดงเฉพาะ Value ไม่มีหัวข้อคำว่า Description) */
+    /* ✅ จุดที่ 1: เฉพาะข้อมูล Description (ไม่มีหัวข้อ) */
     .descBox{
-      margin-top:12px;
-      background: rgba(255,255,255,.92);
-      border: 2px solid rgba(59,130,246,.35);
-      border-radius: 18px;
-      box-shadow: 0 10px 22px rgba(0,0,0,.08);
-      padding:12px 12px;
-    }
-    .descText{
-      font-weight:950;
-      color: rgba(15,23,42,.92);
-      line-height:1.45;
-      white-space:pre-wrap;
-      word-break:break-word;
-    }
-    .descEmpty{
-      color: rgba(15,23,42,.55);
-      font-weight:900;
+      margin-top:12px; padding:15px; background: rgba(15,23,42,0.03);
+      border-radius: 18px; line-height:1.6; font-weight:500; color: #334155;
     }
 
-    /* ✅ Grid Display: 2 คอลัมน์ (5 แถวเมื่อมี 10 การ์ด) */
-    .gridInfo{
-      margin-top:14px;
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:10px;
+    /* ✅ จุดที่ 3: Map Styling */
+    .mapContainer{
+      margin-top:14px; border-radius: 18px; overflow:hidden;
+      border: 1px solid rgba(15,23,42,0.1); height: 300px; background: #e2e8f0;
     }
-    @media(min-width:560px){
-      .gridInfo{grid-template-columns: repeat(2, minmax(0, 1fr));}
-    }
-    .infoBox{
-      background: rgba(15,23,42,.05);
-      border:1px solid rgba(15,23,42,.06);
-      border-radius: 18px;
-      padding:12px 12px;
-      display:flex; justify-content:space-between; gap:10px;
-      font-weight:1100;
-      min-width:0;
-    }
-    .k{color:rgba(15,23,42,.55); font-weight:900; white-space:nowrap;}
-    .v{color:rgba(15,23,42,.95); font-weight:1100; text-align:right; white-space:pre-wrap; min-width:0;}
+    .mapContainer.hidden { display: none !important; }
+    iframe { width: 100%; height: 100%; border: 0; }
 
-    .errorBox{
-      margin-top:14px;
-      padding:14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.7);
-      border:1px solid rgba(255,255,255,.65);
-      font-weight:1100;
-      color:#8b1d1d;
-      display:none;
-    }
-    .skeleton{
-      background: linear-gradient(90deg, rgba(255,255,255,.55), rgba(255,255,255,.25), rgba(255,255,255,.55));
-      background-size: 200% 100%;
-      animation: shimmer 1.2s infinite linear;
-    }
-    @keyframes shimmer{
-      0%{background-position: 200% 0;}
-      100%{background-position: -200% 0;}
-    }
-
-    .pageLoader{
-      position:fixed;
-      inset:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background: radial-gradient(ellipse at top, rgba(255,255,255,.25), rgba(255,255,255,0) 55%) , var(--bg);
-      z-index:99999;
-    }
-    .loaderPanel{
-      text-align:center;
-      padding:18px 22px;
-      border-radius: 26px;
-      background: rgba(255,255,255,.18);
-      border: 1px solid var(--line);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 18px 40px rgba(0,0,0,.16);
-      max-width: 92vw;
-    }
-    .loaderEmojis{
-      display:flex;
-      gap:18px;
-      justify-content:center;
-      align-items:center;
-      font-size:52px;
-      line-height:1;
-      filter: drop-shadow(0 10px 20px rgba(0,0,0,.18));
-    }
-    .loaderEmojis span{
-      display:inline-block;
-      animation: bounce 0.9s ease-in-out infinite;
-    }
-    .loaderEmojis span:nth-child(2){ animation-delay: .12s; }
-    .loaderEmojis span:nth-child(3){ animation-delay: .24s; }
-    @keyframes bounce{
-      0%,100%{ transform: translateY(0); opacity:.95; }
-      50%{ transform: translateY(-12px); opacity:1; }
-    }
-    .loaderText{
-      margin-top:12px;
-      font-weight:1100;
-      letter-spacing:.6px;
-      color: rgba(15,23,42,.92);
-      text-shadow: 0 10px 22px rgba(0,0,0,.10);
-      font-size:22px;
-      white-space:nowrap;
-    }
-    @media (max-width:420px){
-      .loaderEmojis{font-size:44px}
-      .loaderText{font-size:18px}
-    }
+    .gridInfo{ margin-top:14px; display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:10px; }
+    .infoBox{ background: rgba(15,23,42,.05); border-radius: 15px; padding:12px; display:flex; justify-content:space-between; }
+    .k{ color:rgba(15,23,42,.55); font-weight:700; font-size: 13px; }
+    .v{ color:rgba(15,23,42,.95); font-weight:1100; }
 
     .navArrow{
-      position:absolute;
-      top:50%;
-      transform: translateY(-50%);
-      width:54px;
-      height:54px;
-      border-radius: 999px;
-      border:1px solid rgba(255,255,255,.55);
-      background: rgba(255,255,255,.22);
-      backdrop-filter: blur(8px);
-      box-shadow: 0 10px 22px rgba(0,0,0,.14);
-      display:grid;
-      place-items:center;
-      cursor:pointer;
-      user-select:none;
-      z-index:5;
+      position:absolute; top:50%; transform: translateY(-50%); width:44px; height:44px;
+      border-radius: 999px; background: rgba(255,255,255,0.5); display:grid; place-items:center; cursor:pointer; z-index:5;
     }
-    .navArrow:active{ transform: translateY(-50%) scale(.98); }
-    .navArrow svg{
-      width:24px;height:24px;
-      stroke: rgba(255,255,255,.95);
-      opacity:.95;
-    }
-    .navLeft{ left:14px; }
-    .navRight{ right:14px; }
-    @media (max-width:420px){
-      .navArrow{ width:48px;height:48px; }
-      .navArrow svg{ width:22px;height:22px; }
-    }
-
-    /* ✅ Smart Map Section (ซ่อน/ยุบได้) */
-    .mapSection{
-      margin-top:14px;
-      padding:14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.65);
-      border: 1px solid rgba(255,255,255,.65);
-      display:none; /* default hidden */
-    }
-    .mapFrameWrap{
-      width:100%;
-      border-radius: 18px;
-      overflow:hidden;
-      box-shadow: 0 10px 22px rgba(0,0,0,.08);
-      border: 1px solid rgba(15,23,42,.06);
-      background: rgba(255,255,255,.92);
-    }
-    .mapFrame{
-      width:100%;
-      aspect-ratio: 16 / 9;
-      border:0;
-      display:block;
-      background:#e8f0fb;
-    }
-
-    .otherSection{
-      margin-top:14px;
-      padding:14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.65);
-      border: 1px solid rgba(255,255,255,.65);
-    }
-    .otherTitle{
-      font-weight:1100;
-      letter-spacing:.3px;
-      color: rgba(15,23,42,.88);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .otherHint{
-      font-weight:900;
-      color: rgba(15,23,42,.55);
-      font-size:12px;
-      white-space:nowrap;
-    }
-    .otherGrid{
-      margin-top:12px;
-      display:grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap:12px;
-    }
-    .otherCard{
-      border-radius: 18px;
-      background: rgba(255,255,255,.92);
-      border: 1px solid rgba(15,23,42,.06);
-      box-shadow: 0 10px 22px rgba(0,0,0,.08);
-      overflow:hidden;
-      cursor:pointer;
-      user-select:none;
-      transition: transform .12s ease;
-    }
-    .otherCard:active{ transform: scale(.985); }
-    .otherImg{
-      width:100%;
-      aspect-ratio: 16/10;
-      object-fit:cover;
-      display:block;
-      background:#e8f0fb;
-    }
-    .otherBody{
-      padding:10px 10px 12px;
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    .otherTopRow{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-    .otherPlot{
-      font-weight:1100;
-      font-size:13px;
-      color: rgba(15,23,42,.95);
-      white-space:normal;
-      overflow:visible;
-      text-overflow:clip;
-      flex:1 1 auto;
-      min-width:0;
-    }
-    .otherStatus{
-      padding:5px 8px;
-      border-radius: 999px;
-      font-weight:1100;
-      font-size:11px;
-      background: rgba(255,255,255,.92);
-      border: 2px solid rgba(15,23,42,.15);
-      color: rgba(15,23,42,.88);
-      white-space:nowrap;
-      flex:0 0 auto;
-    }
-    .otherPrice{
-      font-weight:1100;
-      font-size:16px;
-      color: rgba(15,23,42,.92);
-      white-space:nowrap;
-    }
-    .otherId{
-      font-weight:600;
-      font-size:11px;
-      letter-spacing:-0.2px;
-      color: rgba(15,23,42,.55);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:clip;
-    }
-
-    @media (max-width: 420px) {
-      .otherId { font-size: 9.5px; }
-    }
-
-    .shareSection{
-      margin-top:14px;
-      padding:14px;
-      border-radius: 18px;
-      background: rgba(255,255,255,.65);
-      border: 1px solid rgba(255,255,255,.65);
-    }
-    .shareTopIcon{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      padding:8px 0 10px;
-      opacity:.85;
-    }
-    .shareRow{
-      display:flex;
-      gap:14px;
-      justify-content:center;
-      overflow:auto;
-      padding:10px 8px 6px;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-    }
-    .shareBtn{
-      flex:0 0 auto;
-      width:58px;
-      scroll-snap-align:center;
-      border:0;
-      background:transparent;
-      cursor:pointer;
-      text-align:center;
-      user-select:none;
-    }
-    .shareCircle{
-      width:52px; height:52px;
-      border-radius:999px;
-      background: rgba(255,255,255,.9);
-      border: 1px solid rgba(15,23,42,.08);
-      box-shadow: 0 10px 22px rgba(0,0,0,.10);
-      display:grid;
-      place-items:center;
-      margin:0 auto;
-    }
-    .shareLbl{
-      margin-top:6px;
-      font-size:11px;
-      font-weight:900;
-      color: rgba(15,23,42,.65);
-      white-space:nowrap;
-    }
-    .shareBtn:active .shareCircle{ transform: scale(.97); }
-
-    #shareCanvas{ display:none; }
-
-    /* Facebook Visit Bar */
-    .fbVisitWrap{
-      margin-top: 10px;
-      display:flex;
-      justify-content:center;
-    }
-    .fbVisitBtn{
-      width:min(640px, 100%);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      padding: 12px 14px;
-      border-radius: 18px;
-      text-decoration:none;
-      font-weight:1100;
-      letter-spacing:.2px;
-      background: rgba(255,255,255,.90);
-      border: 2px solid rgba(59,130,246,.55);
-      box-shadow: 0 10px 22px rgba(0,0,0,.10);
-      color:#1d4ed8;
-      user-select:none;
-      cursor:pointer;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .fbVisitBtn:active{ transform: scale(.99); }
-    .fbVisitIcon{
-      width:28px; height:28px;
-      border-radius: 12px;
-      display:grid;
-      place-items:center;
-      flex:0 0 auto;
-      background: rgba(29,78,216,.10);
-    }
-    .fbVisitBtn.hidden{ display:none; }
+    .navLeft{ left:10px; } .navRight{ right:10px; }
 
     /* Bottom Dock */
-    .wrap{ padding-bottom: 92px; }
-
-    .bottomDock{
-      position:fixed;
-      left:0; right:0; bottom:0;
-      z-index:9999;
-      padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
-      background: rgba(255,255,255,.40);
-      backdrop-filter: blur(14px);
-      border-top: 1px solid rgba(255,255,255,.55);
-    }
-    .dockInner{
-      max-width:1100px;
-      margin:0 auto;
-      display:grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap:10px;
-    }
-    .dockBtn{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      padding: 12px 10px;
-      border-radius: 18px;
-      text-decoration:none;
-      font-weight: 1100;
-      letter-spacing:.2px;
-      background: rgba(255,255,255,.78);
-      border: 1px solid rgba(15,23,42,.10);
-      box-shadow: 0 10px 22px rgba(0,0,0,.10);
-      color: rgba(15,23,42,.92);
-      user-select:none;
-      cursor:pointer;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .dockBtn:active{ transform: scale(.99); }
-    .dockIcon{
-      width:26px; height:26px;
-      border-radius: 12px;
-      display:grid;
-      place-items:center;
-      font-size:14px;
-      flex:0 0 auto;
-      background: rgba(15,23,42,.08);
-    }
-    .dockBtn.disabled{
-      opacity:.42;
-      pointer-events:none;
-    }
-    @media (max-width:420px){
-      .dockBtn{ padding:11px 8px; border-radius:16px; font-size:12px; }
-      .dockIcon{ width:24px; height:24px; border-radius:11px; }
-    }
+    .bottomDock{ position:fixed; bottom:0; left:0; right:0; background:rgba(255,255,255,0.8); backdrop-filter:blur(10px); padding:10px; border-top:1px solid #ddd; }
+    .dockInner{ display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; max-width:1100px; margin:0 auto; }
+    .dockBtn{ background:#fff; padding:10px; border-radius:15px; text-align:center; font-weight:800; text-decoration:none; color:#000; border:1px solid #eee; font-size:12px; }
+    .dockBtn.disabled{ opacity:0.3; pointer-events:none; }
   </style>
 </head>
 <body>
 
-  <div class="pageLoader" id="pageLoader" aria-label="loading">
-    <div class="loaderPanel">
-      <div class="loaderEmojis" aria-hidden="true">
-        <span>🏠</span><span>✨</span><span>🌴</span>
-      </div>
-      <div class="loaderText">Smart Properties System</div>
-    </div>
-  </div>
+  <div id="pageLoader" class="pageLoader" style="position:fixed; inset:0; background:#fff; z-index:999; display:flex; align-items:center; justify-content:center; font-weight:bold;">Loading...</div>
 
   <div class="wrap">
     <div class="topbar">
-      <div class="brand">
-        <div class="logo">HP</div>
-        <div class="titles">
-          <h1 id="pageTitle">Detail Plot: -</h1>
-          <div class="sub" id="subTitle">Details · ...</div>
-        </div>
-      </div>
-      <button class="backBtn" id="btnBack">←</button>
+      <div class="brand"><div class="logo">HP</div><div class="titles"><h1 id="pageTitle">-</h1></div></div>
+      <button class="backBtn" onclick="history.back()">←</button>
     </div>
 
-    <div class="errorBox" id="errBox"></div>
-
-    <div class="card" id="mainCard">
+    <div class="card">
       <div class="gallery" id="gallery">
-        <img class="mainSlide skeleton" id="mainImg" alt="main" />
+        <img class="mainSlide" id="mainImg" src="" />
         <div class="tagTopLeft" id="tagPlot">-</div>
         <div class="tagBottomRight" id="tagCount">0 / 0</div>
-
-        <div class="navArrow navLeft" id="btnPrev" aria-label="previous">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M15 18l-6-6 6-6"></path>
-          </svg>
-        </div>
-        <div class="navArrow navRight" id="btnNext" aria-label="next">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 6l6 6-6 6"></path>
-          </svg>
-        </div>
+        <div class="navArrow navLeft" onclick="changeSlide(-1)">❮</div>
+        <div class="navArrow navRight" onclick="changeSlide(1)">❯</div>
       </div>
-
       <div class="thumbStrip" id="thumbStrip"></div>
 
       <div class="content">
-        <div class="headRow">
-          <div class="hp" id="hpText">...</div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
           <div class="price" id="priceText">฿0</div>
           <div class="statusBelow" id="statusBelow">-</div>
         </div>
 
-        <!-- ✅ แยก Land (sq.w) และ Living (sq.m) ให้ชัดเจน -->
-        <div class="miniMeta" id="miniMeta">Land - sq.w · Living - sq.m</div>
+        <div id="descBox" class="descBox"></div>
 
-        <!-- ✅ แสดงเฉพาะ “Value” ของ Description (ไม่มีหัวข้อคำว่า Description) -->
-        <div class="descBox" id="descBox">
-          <div class="descText" id="descText">-</div>
-        </div>
+        <div id="mapWrap" class="mapContainer hidden"></div>
 
-        <!-- ✅ Grid Display (2 คอลัมน์ 5 แถว เมื่อมี 10 การ์ด) -->
         <div class="gridInfo" id="infoGrid"></div>
-
-        <!-- ✅ Smart Map (ซ่อนอัตโนมัติเมื่อไม่มี Map_Link) -->
-        <div class="mapSection" id="mapSection">
-          <div class="mapFrameWrap">
-            <iframe
-              id="mapFrame"
-              class="mapFrame"
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              allowfullscreen
-              aria-label="Google Map"
-            ></iframe>
-          </div>
-        </div>
-
-        <div class="shareSection" id="shareSection">
-          <div class="shareTopIcon" aria-hidden="true" title="Share">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="18" cy="5" r="2"></circle>
-              <circle cx="6" cy="12" r="2"></circle>
-              <circle cx="18" cy="19" r="2"></circle>
-              <path d="M8 12l8-7"></path>
-              <path d="M8 12l8 7"></path>
-            </svg>
-          </div>
-
-          <div class="shareRow" id="shareRow">
-            <button class="shareBtn" data-type="facebook" aria-label="Facebook">
-              <div class="shareCircle">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="#1877F2" aria-hidden="true">
-                  <path d="M22 12.06C22 6.504 17.523 2 12 2S2 6.504 2 12.06C2 17.082 5.657 21.245 10.438 22v-7.03H7.898v-2.91h2.54V9.845c0-2.522 1.492-3.916 3.777-3.916 1.094 0 2.238.196 2.238.196v2.475h-1.26c-1.243 0-1.63.776-1.63 1.57v1.89h2.773l-.443 2.91h-2.33V22C18.343 21.245 22 17.082 22 12.06z"/>
-                </svg>
-              </div>
-              <div class="shareLbl">Facebook</div>
-            </button>
-
-            <button class="shareBtn" data-type="messenger" aria-label="Messenger">
-              <div class="shareCircle">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M12 2C6.477 2 2 6.03 2 11c0 2.66 1.27 5.05 3.3 6.67V22l3.85-2.12c.91.25 1.88.38 2.85.38 5.523 0 10-4.03 10-9.26S17.523 2 12 2z" fill="#A855F7"/>
-                  <path d="M7 14l4-4 2 2 4-4-4 6-2-2-4 2z" fill="#fff"/>
-                </svg>
-              </div>
-              <div class="shareLbl">Messenger</div>
-            </button>
-
-            <button class="shareBtn" data-type="whatsapp" aria-label="WhatsApp">
-              <div class="shareCircle">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M20.52 3.48A11.89 11.89 0 0 0 12.06 0C5.44 0 .06 5.38.06 12c0 2.11.55 4.17 1.6 5.99L0 24l6.18-1.62a11.93 11.93 0 0 0 5.88 1.5h.01c6.62 0 12-5.38 12-12a11.9 11.9 0 0 0-3.55-8.4z" fill="#22C55E"/>
-                  <path d="M19.3 17.52c-.3.84-1.74 1.6-2.38 1.69-.6.09-1.36.13-2.2-.14-.5-.16-1.13-.37-1.95-.72-3.42-1.48-5.65-5.12-5.82-5.36-.17-.24-1.39-1.85-1.39-3.53 0-1.68.88-2.5 1.19-2.84.3-.34.66-.42.88-.42.22 0 .44 0 .63.01.2.01.46-.08.72.55.3.72 1.02 2.5 1.11 2.69.09.19.15.42.03.66-.12.24-.18.39-.36.6-.18.21-.38.46-.54.62-.18.18-.36.37-.15.72.21.35.93 1.52 2 2.46 1.38 1.22 2.54 1.6 2.9 1.78.36.18.57.15.78-.09.21-.24.9-1.05 1.14-1.41.24-.36.48-.3.81-.18.33.12 2.1.99 2.46 1.17.36.18.6.27.69.42.09.15.09.87-.21 1.71z" fill="#fff"/>
-                </svg>
-              </div>
-              <div class="shareLbl">WhatsApp</div>
-            </button>
-
-            <button class="shareBtn" data-type="telegram" aria-label="Telegram">
-              <div class="shareCircle">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <circle cx="12" cy="12" r="11" fill="#0EA5E9"/>
-                  <path d="M6.6 12.2l10.9-4.4c.5-.2.9.1.7.8l-1.9 9c-.1.6-.5.7-1 .4l-2.8-2.1-1.3 1.3c-.1.1-.2.2-.4.2l.2-3.1 5.7-5.1c.2-.2 0-.3-.2-.2l-7.1 4.5-3-.9c-.6-.2-.6-.6.2-.8z" fill="#fff"/>
-                </svg>
-              </div>
-              <div class="shareLbl">Telegram</div>
-            </button>
-
-            <button class="shareBtn" data-type="line" aria-label="LINE">
-              <div class="shareCircle">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M12 2C6.48 2 2 5.7 2 10.26c0 2.62 1.47 4.94 3.76 6.45v3.07c0 .3.35.48.6.31l2.85-1.88c.88.2 1.8.31 2.79.31 5.52 0 10-3.7 10-8.27C22 5.7 17.52 2 12 2z" fill="#22C55E"/>
-                  <path d="M7.5 10.6h1.2v3H7.5v-3zm2.1 0h1.2v3H9.6v-3zm2.1 0h1.2v3h-1.2v-3zm2.1 0h1.2v3h-1.2v-3z" fill="#fff"/>
-                </svg>
-              </div>
-              <div class="shareLbl">LINE</div>
-            </button>
-
-            <button class="shareBtn" data-type="email" aria-label="Email">
-              <div class="shareCircle">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M4 6h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" fill="#EF4444"/>
-                  <path d="M4 8l8 6 8-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </div>
-              <div class="shareLbl">Gmail</div>
-            </button>
-
-            <button class="shareBtn" data-type="copy" aria-label="Copy link">
-              <div class="shareCircle">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M10 13a5 5 0 0 1 0-7l1-1a5 5 0 0 1 7 7l-1 1" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round"/>
-                  <path d="M14 11a5 5 0 0 1 0 7l-1 1a5 5 0 0 1-7-7l1-1" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <div class="shareLbl">Copy</div>
-            </button>
-
-            <button class="shareBtn" data-type="native" aria-label="Share">
-              <div class="shareCircle">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M12 3v10" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round"/>
-                  <path d="M8 7l4-4 4 4" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-              </div>
-              <div class="shareLbl">Share</div>
-            </button>
-          </div>
-
-          <div class="fbVisitWrap">
-            <a id="fbVisitBtn" class="fbVisitBtn hidden" href="#" target="_blank" rel="noopener">
-              <span class="fbVisitIcon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2">
-                  <path d="M22 12.06C22 6.504 17.523 2 12 2S2 6.504 2 12.06C2 17.082 5.657 21.245 10.438 22v-7.03H7.898v-2.91h2.54V9.845c0-2.522 1.492-3.916 3.777-3.916 1.094 0 2.238.196 2.238.196v2.475h-1.26c-1.243 0-1.63.776-1.63 1.57v1.89h2.773l-.443 2.91h-2.33V22C18.343 21.245 22 17.082 22 12.06z"/>
-                </svg>
-              </span>
-              <span id="fbVisitText">Visit our Facebook Page</span>
-            </a>
-          </div>
-
-          <canvas id="shareCanvas" width="1200" height="630"></canvas>
-        </div>
-
-        <div class="otherSection" id="otherSection">
-          <div class="otherTitle">
-            <div>Other Plots</div>
-            <div class="otherHint">Tap to view details</div>
-          </div>
-          <div class="otherGrid" id="otherGrid"></div>
-        </div>
       </div>
     </div>
   </div>
 
-  <div class="bottomDock" id="bottomDock" aria-label="Downloads">
+  <div class="bottomDock">
     <div class="dockInner">
-      <a class="dockBtn disabled" id="dockSales" href="#" target="_blank" rel="noopener">
-        <span class="dockIcon">📄</span>
-        <span>Sales PDF</span>
-      </a>
-      <a class="dockBtn disabled" id="dockMaterial" href="#" target="_blank" rel="noopener">
-        <span class="dockIcon">📄</span>
-        <span>Material PDF</span>
-      </a>
-      <a class="dockBtn disabled" id="dockFloorplan" href="#" target="_blank" rel="noopener">
-        <span class="dockIcon">📄</span>
-        <span>Floor Plan</span>
-      </a>
+      <a id="dockSales" class="dockBtn disabled" href="#" target="_blank">Sales PDF</a>
+      <a id="dockMaterial" class="dockBtn disabled" href="#" target="_blank">Material PDF</a>
+      <a id="dockFloor" class="dockBtn disabled" href="#" target="_blank">Floor Plan</a>
     </div>
   </div>
 
 <script>
-/** =========================
- * CONFIG
- * ========================= */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
-const qs = new URLSearchParams(location.search);
-const hpId = qs.get("id") || qs.get("hpId") || "";
-const project = qs.get("project") || "HP00";
-
-/** Loader helpers */
-function showLoader(){
-  const el = document.getElementById("pageLoader");
-  if(el) el.style.display = "flex";
-}
-function hideLoader(){
-  const el = document.getElementById("pageLoader");
-  if(el) el.style.display = "none";
-}
-
-/** JSONP */
-function jsonp(url, timeoutMs = 20000){
-  return new Promise((resolve, reject) => {
-    const cb = "cb_" + Math.random().toString(36).slice(2);
-    const script = document.createElement("script");
-    const timer = setTimeout(() => { cleanup(); reject(new Error("timeout")); }, timeoutMs);
-
-    function cleanup(){
-      clearTimeout(timer);
-      if (script.parentNode) script.parentNode.removeChild(script);
-      try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
-    }
-    window[cb] = (data) => { cleanup(); resolve(data); };
-
-    const sep = url.includes("?") ? "&" : "?";
-    script.src = url + sep + "callback=" + encodeURIComponent(cb);
-    script.onerror = () => { cleanup(); reject(new Error("jsonp_error")); };
-    document.body.appendChild(script);
-  });
-}
-
-function showError(msg){
-  const box = document.getElementById("errBox");
-  box.style.display = "block";
-  box.textContent = msg;
-}
-function hideError(){
-  const box = document.getElementById("errBox");
-  box.style.display = "none";
-  box.textContent = "";
-}
-
-function toNumber(x){
-  const s = String(x ?? "").replace(/,/g,"").trim();
-  const n = Number(s);
-  return Number.isFinite(n) ? n : 0;
-}
-function moneyTHB(x){
-  const n = toNumber(x);
-  return "฿" + n.toLocaleString("en-US");
-}
-function cleanDriveImage(url){
-  const u = String(url || "").trim();
-  if(!u) return "";
-  if (u.includes("lh3.googleusercontent.com/d/")) return u;
-
-  let id = "";
-  const m1 = u.match(/\/d\/([a-zA-Z0-9_-]+)/);
-  if (m1) id = m1[1];
-  const m2 = u.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-  if (!id && m2) id = m2[1];
-  const m3 = u.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-  if (!id && m3) id = m3[1];
-
-  if (id) return "https://lh3.googleusercontent.com/d/" + id;
-  return u;
-}
-
-/* ใช้กำหนดสีสถานะ */
-function statusStyle(statusRaw){
-  const s = String(statusRaw||"").trim().toLowerCase();
-  if (s.includes("available")) return {border:"rgba(16,185,129,.65)", text:"rgba(5,150,105,1)"};
-  if (s.includes("under"))     return {border:"rgba(14,165,233,.55)", text:"rgba(2,132,199,1)"};
-  if (s.includes("reserved"))  return {border:"rgba(245,158,11,.55)", text:"rgba(180,83,9,1)"};
-  if (s.includes("sold"))      return {border:"rgba(244,63,94,.55)",  text:"rgba(190,18,60,1)"};
-  return {border:"rgba(15,23,42,.25)", text:"rgba(15,23,42,.92)"};
-}
-
-document.getElementById("btnBack").addEventListener("click", () => {
-  history.length > 1 ? history.back() : (location.href = "index.html");
-});
+const params = new URLSearchParams(location.search);
+const hpId = params.get("id");
+const project = params.get("project") || "HP00";
 
 let images = [];
-let idx = 0;
-let CURRENT_DETAIL = null;
+let currentIdx = 0;
 
-function setMain(i){
-  idx = Math.max(0, Math.min(i, images.length-1));
-  const mainImg = document.getElementById("mainImg");
-  mainImg.classList.remove("skeleton");
-  mainImg.src = images[idx] || mainImg.src;
-
-  document.getElementById("tagCount").textContent = `${idx+1} / ${images.length || 0}`;
-  document.querySelectorAll(".thumb").forEach((t, k)=>{
-    t.classList.toggle("active", k===idx);
-  });
+async function init() {
+    if(!hpId) return alert("No ID found");
+    try {
+        const res = await fetch(`${SCRIPT_URL}?mode=getUnitDetail&hpId=${hpId}&project=${project}`);
+        const data = await res.json();
+        render(data);
+    } catch (e) { console.error(e); }
+    document.getElementById("pageLoader").style.display = "none";
 }
 
-function renderThumbs(){
-  const strip = document.getElementById("thumbStrip");
-  strip.innerHTML = "";
-  images.forEach((src, i)=>{
-    const im = document.createElement("img");
-    im.className = "thumb" + (i===idx ? " active": "");
-    im.src = src;
-    im.loading = "lazy";
-    im.decoding = "async";
-    im.addEventListener("click", ()=>setMain(i));
-    strip.appendChild(im);
-  });
-}
+function render(data) {
+    document.getElementById("pageTitle").textContent = `Plot: ${data.Plot || '-'}`;
+    document.getElementById("tagPlot").textContent = data.Plot || '-';
+    document.getElementById("priceText").textContent = "฿" + Number(data.Price).toLocaleString();
+    document.getElementById("statusBelow").textContent = data.Status;
 
-function enableSwipe(){
-  const gallery = document.getElementById("gallery");
-  let startX = 0, dx = 0;
+    // ✅ จุดที่ 1: Description
+    document.getElementById("descBox").textContent = data.Description || "-";
 
-  gallery.addEventListener("touchstart", (e)=>{
-    startX = e.touches[0].clientX;
-    dx = 0;
-  }, {passive:true});
-
-  gallery.addEventListener("touchmove", (e)=>{
-    dx = e.touches[0].clientX - startX;
-  }, {passive:true});
-
-  gallery.addEventListener("touchend", ()=>{
-    if(Math.abs(dx) < 35) return;
-    if(dx < 0) setMain(idx+1);
-    else setMain(idx-1);
-  });
-}
-
-/** ✅ helper: pick / safe */
-function safeText(v){
-  const s = String(v ?? "").trim();
-  return s === "" ? "-" : s;
-}
-function pick(obj, keys){
-  for (const k of keys){
-    if (obj && obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== "") return obj[k];
-  }
-  return "";
-}
-function fmtSqm(v){
-  const s = safeText(v);
-  if(s === "-") return "-";
-  const low = s.toLowerCase();
-  if (low.includes("sq") || low.includes("ตร.ม") || low.includes("m2") || low.includes("m²")) return s;
-  return s + " sq.m";
-}
-function fmtSqw(v){
-  const s = safeText(v);
-  if(s === "-") return "-";
-  const low = s.toLowerCase();
-  if (low.includes("sq") || low.includes("ตร.ว") || low.includes("wah")) return s;
-  return s + " sq.w";
-}
-
-/* รองรับ key หลายรูปแบบ */
-const LAND_SQM_KEYS = [
-  "Land Area (sq.m)", "Land Area (sqm)", "Land Area sq.m", "Land Area sqm",
-  "Land_Area_sq_m", "Land_Area_SQM", "LandAreaSQM", "Land_sq_m", "LandSqm",
-  "Land_Area_(sq.m)", "Land_Area_(sqm)", "Land_Area_sq.m", "Land_Area_sqm",
-  "Land_Area__sq_m_", "Land_Area__sqm_", "Land_Area_sq_m_", "LandArea_sq_m",
-];
-const LIVING_SQM_KEYS = [
-  "Living Area (sq.m)", "Living Area (sqm)", "Living Area sq.m", "Living Area sqm",
-  "Living_Area_sq_m", "Living_Area_SQM", "LivingAreaSQM", "Living_sq_m", "LivingSqm",
-  "Living_Area_(sq.m)", "Living_Area_(sqm)", "Living_Area_sq.m", "Living_Area_sqm",
-  "Living_Area__sq_m_", "Living_Area__sqm_", "Living_Area_sq_m_", "LivingArea_sq_m",
-];
-const LAND_SQW_KEYS = [
-  "Land_Area_sq_w","Land_Area_SQW","LandAreaSQW","Land_sq_w","LandSqw",
-  "Land Area (sq.w)","Land Area (sq.w.)","Land Area sq.w","Land Area sq.w."
-];
-const MAP_LINK_KEYS = [
-  "Map_Link","MapLink","MAP_LINK","Google_Map","Google_Maps","GoogleMaps","Map","map"
-];
-
-/** ✅ Description: แสดงเฉพาะ Value */
-function renderDescription(detail){
-  const desc = safeText(pick(detail, ["Description","description","Desc"]));
-  const el = document.getElementById("descText");
-  if(!el) return;
-
-  if(desc === "-"){
-    el.textContent = "-";
-    el.classList.add("descEmpty");
-  }else{
-    el.textContent = desc;
-    el.classList.remove("descEmpty");
-  }
-}
-
-/** ✅ แยก Land(sq.w) / Living(sq.m) ใต้ราคา */
-function renderMiniMeta(detail){
-  const landW = fmtSqw(pick(detail, LAND_SQW_KEYS));
-  const livingM = fmtSqm(pick(detail, LIVING_SQM_KEYS));
-  const el = document.getElementById("miniMeta");
-  if(!el) return;
-  el.textContent = `Land ${landW} · Living ${livingM}`;
-}
-
-/** ✅ Smart Map Embed: แปลงลิงก์ให้เป็น iframe ได้ + ซ่อนเมื่อว่าง */
-function normalizeLink(v){
-  const s = String(v ?? "").trim();
-  return s && s !== "-" ? s : "";
-}
-
-function tryExtractCoords(u){
-  const s = String(u || "");
-  // /@lat,lng,
-  const m = s.match(/\/@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/);
-  if(m) return {lat:m[1], lng:m[2]};
-
-  // ?q=lat,lng or query=lat,lng
-  try{
-    const url = new URL(s);
-    const q = url.searchParams.get("q") || url.searchParams.get("query") || url.searchParams.get("destination");
-    if(q){
-      const mm = q.match(/(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/);
-      if(mm) return {lat:mm[1], lng:mm[2]};
+    // ✅ จุดที่ 3: Smart Map Logic
+    const mapWrap = document.getElementById("mapWrap");
+    if (data.Map_Link && data.Map_Link !== "#" && data.Map_Link.length > 10) {
+        mapWrap.classList.remove("hidden");
+        // แปลงลิงก์เป็น Embed
+        let embedUrl = data.Map_Link;
+        if(embedUrl.includes("maps.app.goo.gl") || embedUrl.includes("goo.gl/maps")) {
+            mapWrap.innerHTML = `<iframe src="https://www.google.com/maps?q=${encodeURIComponent(data.Address || 'Thailand')}&output=embed"></iframe>`;
+        } else {
+            mapWrap.innerHTML = `<iframe src="${embedUrl}"></iframe>`;
+        }
     }
-  }catch(e){}
-  return null;
-}
 
-function tryExtractPlaceName(u){
-  const s = String(u || "");
-  // /place/<name>
-  const m = s.match(/\/place\/([^\/\?]+)/);
-  if(m && m[1]) {
-    try{
-      return decodeURIComponent(m[1].replace(/\+/g," "));
-    }catch(e){
-      return m[1].replace(/\+/g," ");
-    }
-  }
-  return "";
-}
-
-function toGoogleMapsEmbedUrl(raw){
-  const link = normalizeLink(raw);
-  if(!link) return "";
-
-  const low = link.toLowerCase();
-
-  // already embed
-  if(low.includes("google.com/maps/embed") || low.includes("output=embed")) return link;
-
-  // coords first
-  const c = tryExtractCoords(link);
-  if(c){
-    return `https://www.google.com/maps?q=${encodeURIComponent(c.lat + "," + c.lng)}&output=embed`;
-  }
-
-  // place name
-  const place = tryExtractPlaceName(link);
-  if(place){
-    return `https://www.google.com/maps?q=${encodeURIComponent(place)}&output=embed`;
-  }
-
-  // fallback: use the whole string as query (works for many share URLs that include text/coords)
-  return `https://www.google.com/maps?q=${encodeURIComponent(link)}&output=embed`;
-}
-
-function renderSmartMap(detail){
-  const section = document.getElementById("mapSection");
-  const frame = document.getElementById("mapFrame");
-  if(!section || !frame) return;
-
-  const raw = pick(detail, MAP_LINK_KEYS);
-  const embed = toGoogleMapsEmbedUrl(raw);
-
-  if(!embed){
-    section.style.display = "none";
-    frame.removeAttribute("src");
-    return;
-  }
-
-  section.style.display = "block";
-  frame.setAttribute("src", embed);
-}
-
-/** ✅ Grid: 2 คอลัมน์ 5 แถว (10 การ์ด) + Land/Living แสดงค่าพร้อมหน่วย sq.m ต่อท้ายเสมอ */
-function renderInfo(detail){
-  const grid = document.getElementById("infoGrid");
-  if(!grid) return;
-
-  const landSqm = fmtSqm(pick(detail, LAND_SQM_KEYS));
-  const livingSqm = fmtSqm(pick(detail, LIVING_SQM_KEYS));
-
-  const items = [
-    ["Land: " + landSqm, ""],
-    ["Living: " + livingSqm, ""],
-
-    ["Bedrooms", safeText(pick(detail, ["Bedrooms","Bedroom","beds"]))],
-    ["Bathrooms", safeText(pick(detail, ["Bathrooms","Bathroom","baths"]))],
-
-    ["Pool Size", safeText(pick(detail, ["Pool_Size","PoolSize"]))],
-    ["Furnishing", safeText(pick(detail, ["Furnishing","furnishing"]))],
-
-    ["District", safeText(pick(detail, ["District","district"]))],
-    ["SubDistrict", safeText(pick(detail, ["SubDistrict","Sub_District","subdistrict"]))],
-
-    ["Badge", safeText(pick(detail, ["Badge","badge"]))],
-    ["Parking", safeText(pick(detail, ["Parking","parking"]))],
-  ];
-
-  grid.innerHTML = "";
-  for(const [k,v] of items){
-    const box = document.createElement("div");
-    box.className = "infoBox";
-
-    // สำหรับ Land/Living ที่ต้อง “ต่อท้ายหัวข้อ” ให้ใส่ไว้ที่ k แล้วเว้น v ว่าง
-    if((k || "").startsWith("Land:") || (k || "").startsWith("Living:")){
-      box.innerHTML = `<div class="k" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${k}</div><div class="v"></div>`;
-    }else{
-      box.innerHTML = `<div class="k">${k}</div><div class="v">${v}</div>`;
-    }
-    grid.appendChild(box);
-  }
-}
-
-/** =========================
- * Other Plots
- * ========================= */
-function getUnitId(u){
-  return String(u?.HP_ID || u?.id || u?.hpId || u?.Unit_ID || "").trim();
-}
-function getPlot(u){
-  return String(u?.Plot || u?.plot || u?.Unit_Plot || u?.Plot_No || "").trim();
-}
-function getThumb(u){
-  return cleanDriveImage(u?.Thumbnail_Image || u?.thumbnail || u?.thumb || u?.thumbUrl || "");
-}
-function getStatus(u){
-  return String(u?.Status || u?.status || u?.unitStatus || "-").trim() || "-";
-}
-function getPrice(u){
-  return u?.Price ?? u?.price ?? 0;
-}
-function getLandSqm(u){
-  return String(pick(u, LAND_SQM_KEYS) ?? "").trim();
-}
-function getLivingSqm(u){
-  return String(pick(u, LIVING_SQM_KEYS) ?? "").trim();
-}
-
-function renderOtherUnits(units){
-  const grid = document.getElementById("otherGrid");
-  const section = document.getElementById("otherSection");
-
-  if(!Array.isArray(units) || units.length === 0){
-    section.style.display = "none";
-    return;
-  }
-
-  section.style.display = "block";
-  grid.innerHTML = "";
-
-  for(const u of units){
-    const id = getUnitId(u);
-    const plot = getPlot(u) || id || "-";
-    const thumb = getThumb(u);
-    const st = getStatus(u);
-    const price = moneyTHB(getPrice(u));
-    const pill = statusStyle(st);
-
-    const landM = fmtSqm(getLandSqm(u));
-    const livingM = fmtSqm(getLivingSqm(u));
-    const landLivingText = `Land ${landM} · Living ${livingM}`;
-
-    const card = document.createElement("div");
-    card.className = "otherCard";
-    card.innerHTML = `
-      <img class="otherImg" src="${thumb || "data:image/svg+xml;charset=utf-8," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='800'><rect width='100%' height='100%' fill='#e6edf6'/><text x='50%' y='50%' text-anchor='middle' fill='#8aa0bb' font-size='40' font-family='Arial'>no image</text></svg>")}" alt="thumb" loading="lazy" decoding="async">
-      <div class="otherBody">
-        <div class="otherTopRow">
-          <div class="otherPlot">${plot}</div>
-          <div class="otherStatus" style="border-color:${pill.border}; color:${pill.text};">${st}</div>
+    // ✅ จุดที่ 2 & 4: Data Mapping (แยก Land/Living และดึง sq.m)
+    const grid = document.getElementById("infoGrid");
+    const info = [
+        ["Project", data.Project_Name],
+        ["Bedrooms", data.Bedrooms],
+        ["Bathrooms", data.Bathrooms],
+        ["Land Area (sq.w)", data.Land_Area_sq_w],
+        ["Living Area (sq.m)", (data.Living_Area_sq_m || data.LivingArea_sq_m) + " sq.m"],
+        ["Land (sq.m)", (data.Land_Area_sq_m || data.LandArea_sq_m) + " sq.m"],
+        ["Living (sq.m)", (data.Living_Area_sq_m || data.LivingArea_sq_m) + " sq.m"],
+        ["Furnishing", data.Furnishing],
+        ["Zone", data.Zone]
+    ];
+    
+    grid.innerHTML = info.map(item => `
+        <div class="infoBox">
+            <span class="k">${item[0]}</span>
+            <span class="v">${item[1] || '-'}</span>
         </div>
-        <div class="otherPrice">${price}</div>
-        <div class="otherId">${landLivingText}</div>
-      </div>
-    `;
-    card.addEventListener("click", ()=>{
-      const url = `details.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(project)}`;
-      location.href = url;
-    });
-    grid.appendChild(card);
-  }
+    `).join("");
+
+    // Images
+    const thumb = data.Thumbnail_Image;
+    const list = data.Image_List ? data.Image_List.split(",") : [];
+    images = [thumb, ...list].filter(Boolean);
+    updateGallery();
+
+    // PDF Buttons
+    setupPDF("dockSales", data.Sales_Gallery);
+    setupPDF("dockMaterial", data.Material_PDF);
+    setupPDF("dockFloor", data.Floor_Plan);
 }
 
-async function loadOtherUnits(){
-  try{
-    const url = `${SCRIPT_URL}?mode=getUnitList&project=${encodeURIComponent(project)}`;
-    const data = await jsonp(url);
-
-    if(!Array.isArray(data)){
-      document.getElementById("otherSection").style.display = "none";
-      return;
+function setupPDF(id, url) {
+    const el = document.getElementById(id);
+    if(url && url.startsWith("http")) {
+        el.href = url;
+        el.classList.remove("disabled");
     }
-
-    const filtered = data
-      .filter(u => getUnitId(u) && getUnitId(u) !== String(hpId).trim())
-      .slice(0, 10);
-
-    renderOtherUnits(filtered);
-  }catch(e){
-    document.getElementById("otherSection").style.display = "none";
-  }
 }
 
-/** =========================
- * Share image (เดิมของคุณ)
- * ========================= */
-async function buildShareImageBlob(detail){
-  const canvas = document.getElementById("shareCanvas");
-  const ctx = canvas.getContext("2d");
-
-  const safe = (v)=> (v===undefined || v===null || String(v).trim()==="" ? "-" : String(v).trim());
-  const projectName = safe(detail.Project_Name || detail.ProjectName || detail.Project || project);
-  const district = safe(detail.District || detail.district);
-  const subDistrict = safe(detail.SubDistrict || detail.Sub_District || detail.subdistrict);
-  const beds = safe(detail.Bedrooms || detail.Bedroom || detail.beds);
-  const baths = safe(detail.Bathrooms || detail.Bathroom || detail.baths);
-  const landW = safe(pick(detail, LAND_SQW_KEYS));
-  const livingM = safe(pick(detail, LIVING_SQM_KEYS));
-  const price = moneyTHB(detail.Price || 0);
-  const status = safe(detail.Status || detail.status);
-  const badge = safe(detail.Badge || detail.badge);
-  const plot = safe(detail.Plot || detail.plot);
-
-  const rows = [
-    ["Project_Name", projectName, "Badge", badge],
-    ["District", district, "SubDistrict", subDistrict],
-    ["Bedrooms", beds, "Bathrooms", baths],
-    ["Land Area (sq.w)", landW, "Living Area (sq.m)", livingM],
-    ["Price", price, "Status", status],
-  ];
-
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.fillStyle = "#0f172a";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  const imgH = 340;
-  ctx.fillStyle = "#111827";
-  ctx.fillRect(0,0,canvas.width,imgH);
-
-  try{
-    const src = images && images.length ? images[0] : "";
-    if(src){
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.src = src;
-      await new Promise((res, rej)=>{ img.onload=res; img.onerror=rej; });
-
-      const cw = canvas.width, ch = imgH;
-      const ir = img.width / img.height;
-      const cr = cw / ch;
-      let dw, dh, dx, dy;
-      if(ir > cr){
-        dh = ch; dw = dh * ir; dx = (cw - dw)/2; dy = 0;
-      }else{
-        dw = cw; dh = dw / ir; dx = 0; dy = (ch - dh)/2;
-      }
-      ctx.drawImage(img, dx, dy, dw, dh);
-
-      const g = ctx.createLinearGradient(0, imgH-140, 0, imgH);
-      g.addColorStop(0, "rgba(15,23,42,0)");
-      g.addColorStop(1, "rgba(15,23,42,.65)");
-      ctx.fillStyle = g;
-      ctx.fillRect(0, imgH-140, canvas.width, 140);
-    }
-  }catch(e){
-    ctx.fillStyle = "#1f2937";
-    ctx.fillRect(0,0,canvas.width,imgH);
-  }
-
-  ctx.fillStyle = "rgba(255,255,255,.98)";
-  ctx.font = "900 46px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-  ctx.fillText("Smart Properties System", 46, 72);
-
-  ctx.fillStyle = "rgba(255,255,255,.95)";
-  ctx.font = "800 38px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-  ctx.fillText(`Plot: ${plot}`, 46, 122);
-
-  const pillX = 46, pillY = 152, pillW = 360, pillH = 54, r = 18;
-  ctx.fillStyle = "rgba(255,255,255,.92)";
-  roundRect(ctx, pillX, pillY, pillW, pillH, r, true, false);
-  ctx.font = "900 28px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-  ctx.fillStyle = "#0f172a";
-  ctx.fillText(status, pillX + 20, pillY + 37);
-
-  const pad = 38;
-  const boxY = imgH + 22;
-  const boxX = 30;
-  const boxW = canvas.width - 60;
-  const boxH = canvas.height - boxY - 28;
-
-  ctx.fillStyle = "rgba(255,255,255,.92)";
-  roundRect(ctx, boxX, boxY, boxW, boxH, 26, true, false);
-
-  ctx.fillStyle = "#0f172a";
-  ctx.font = "900 34px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-  ctx.fillText(projectName, boxX + pad, boxY + 52);
-
-  ctx.strokeStyle = "rgba(15,23,42,.10)";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(boxX + pad, boxY + 72);
-  ctx.lineTo(boxX + boxW - pad, boxY + 72);
-  ctx.stroke();
-
-  const startY = boxY + 112;
-  const rowH = 74;
-  const colGap = 28;
-  const colW = (boxW - pad*2 - colGap) / 2;
-
-  for(let i=0;i<rows.length && i<5;i++){
-    const y = startY + i*rowH;
-
-    drawKV(ctx, boxX + pad, y, colW, rows[i][0], rows[i][1]);
-    drawKV(ctx, boxX + pad + colW + colGap, y, colW, rows[i][2], rows[i][3]);
-
-    ctx.strokeStyle = "rgba(15,23,42,.08)";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(boxX + pad, y + rowH - 14);
-    ctx.lineTo(boxX + boxW - pad, y + rowH - 14);
-    ctx.stroke();
-  }
-
-  const urlText = location.href;
-  ctx.fillStyle = "rgba(15,23,42,.65)";
-  ctx.font = "700 20px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-  ctx.fillText(urlText.length > 70 ? (urlText.slice(0,67)+"...") : urlText, boxX + pad, boxY + boxH - 18);
-
-  return await new Promise((resolve) => {
-    canvas.toBlob((blob)=> resolve(blob), "image/png", 0.92);
-  });
+function updateGallery() {
+    document.getElementById("mainImg").src = images[currentIdx];
+    document.getElementById("tagCount").textContent = `${currentIdx + 1} / ${images.length}`;
+    const strip = document.getElementById("thumbStrip");
+    strip.innerHTML = images.map((img, i) => `
+        <img class="thumb ${i===currentIdx?'active':''}" src="${img}" onclick="setSlide(${i})">
+    `).join("");
 }
 
-function roundRect(ctx, x, y, w, h, r, fill, stroke){
-  const rr = Math.min(r, w/2, h/2);
-  ctx.beginPath();
-  ctx.moveTo(x+rr, y);
-  ctx.arcTo(x+w, y, x+w, y+h, rr);
-  ctx.arcTo(x+w, y+h, x, y+h, rr);
-  ctx.arcTo(x, y+h, x, y, rr);
-  ctx.arcTo(x, y, x+w, y, rr);
-  ctx.closePath();
-  if(fill) ctx.fill();
-  if(stroke) ctx.stroke();
+function setSlide(i) { currentIdx = i; updateGallery(); }
+function changeSlide(n) {
+    currentIdx = (currentIdx + n + images.length) % images.length;
+    updateGallery();
 }
 
-function drawKV(ctx, x, y, w, key, val){
-  ctx.fillStyle = "rgba(15,23,42,.55)";
-  ctx.font = "900 18px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-  ctx.fillText(key, x, y);
-
-  ctx.fillStyle = "rgba(15,23,42,.95)";
-  ctx.font = "900 26px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-
-  const text = String(val || "-");
-  const maxW = w;
-  let out = text;
-  while(ctx.measureText(out).width > maxW && out.length > 3){
-    out = out.slice(0, -1);
-  }
-  if(out !== text) out = out.slice(0, Math.max(0, out.length-2)) + "..";
-  ctx.fillText(out, x, y + 34);
-}
-
-/** Share handlers (เดิมของคุณ) */
-function buildShareText(detail){
-  const safe = (v)=> (v===undefined || v===null || String(v).trim()==="" ? "-" : String(v).trim());
-  const projectName = safe(detail.Project_Name || detail.ProjectName || detail.Project || project);
-  const plot = safe(detail.Plot || "-");
-  const price = moneyTHB(detail.Price || 0);
-  const status = safe(detail.Status || "-");
-  return `${projectName}\nPlot: ${plot}\nPrice: ${price}\nStatus: ${status}\n\n${location.href}`;
-}
-
-async function shareNative(detail){
-  const title = "Smart Properties System";
-  const text = buildShareText(detail);
-
-  try{
-    const blob = await buildShareImageBlob(detail);
-    if(blob && navigator.canShare){
-      const file = new File([blob], `${(detail.Plot||"plot")}-${hpId||"detail"}.png`, {type:"image/png"});
-      const payload = { title, text, url: location.href, files: [file] };
-      if (navigator.canShare(payload)) {
-        await navigator.share(payload);
-        return;
-      }
-    }
-  }catch(e){}
-
-  if (navigator.share){
-    await navigator.share({ title, text, url: location.href });
-    return;
-  }
-  window.open(location.href, "_blank");
-}
-
-function openShareUrl(type, detail){
-  const url = encodeURIComponent(location.href);
-  const text = encodeURIComponent(buildShareText(detail));
-
-  if(type === "facebook"){
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank");
-    return;
-  }
-  if(type === "messenger"){
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank");
-    return;
-  }
-  if(type === "whatsapp"){
-    window.open(`https://api.whatsapp.com/send?text=${text}`, "_blank");
-    return;
-  }
-  if(type === "telegram"){
-    window.open(`https://t.me/share/url?url=${url}&text=${text}`, "_blank");
-    return;
-  }
-  if(type === "line"){
-    window.open(`https://social-plugins.line.me/lineit/share?url=${url}`, "_blank");
-    return;
-  }
-  if(type === "email"){
-    const subject = encodeURIComponent("Smart Properties System · Detail");
-    const body = encodeURIComponent(buildShareText(detail));
-    window.location.href = `mailto:?subject=${subject}&body=${body}`;
-    return;
-  }
-}
-
-async function copyLink(){
-  try{
-    await navigator.clipboard.writeText(location.href);
-    alert("คัดลอกลิงก์แล้ว");
-  }catch(e){
-    const ta = document.createElement("textarea");
-    ta.value = location.href;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand("copy");
-    document.body.removeChild(ta);
-    alert("คัดลอกลิงก์แล้ว");
-  }
-}
-
-function wireShareButtons(){
-  const row = document.getElementById("shareRow");
-  row.addEventListener("click", async (e)=>{
-    const btn = e.target.closest(".shareBtn");
-    if(!btn) return;
-
-    const type = btn.getAttribute("data-type");
-    if(!CURRENT_DETAIL) return;
-
-    if(type === "copy") return copyLink();
-    if(type === "native") return shareNative(CURRENT_DETAIL);
-
-    openShareUrl(type, CURRENT_DETAIL);
-  });
-}
-
-/* Bottom Dock logic */
-function setDockLink(elId, link){
-  const el = document.getElementById(elId);
-  if(!el) return;
-  const href = normalizeLink(link);
-  if(!href){
-    el.classList.add("disabled");
-    el.setAttribute("href", "#");
-    return;
-  }
-  el.classList.remove("disabled");
-  el.setAttribute("href", href);
-}
-
-/* FB Link */
-function pickFbLink(detail){
-  const keys = ["FB_Link","FBLink","FB_Link ","FB_LINK","facebook","Facebook","FB"];
-  for(const k of keys){
-    const v = detail ? detail[k] : "";
-    const s = String(v ?? "").trim();
-    if(s && s !== "-") return s;
-  }
-  return "";
-}
-function setFbVisitBar(link){
-  const a = document.getElementById("fbVisitBtn");
-  if(!a) return;
-
-  const href = normalizeLink(link);
-  if(!href){
-    a.classList.add("hidden");
-    a.setAttribute("href", "#");
-    return;
-  }
-  a.classList.remove("hidden");
-  a.setAttribute("href", href);
-}
-
-/** LOAD */
-(async function init(){
-  hideError();
-  showLoader();
-  wireShareButtons();
-
-  if(!hpId){
-    showError("ลิงก์ไม่ถูกต้อง: ไม่มี id เช่น details.html?id=HP-Z001");
-    hideLoader();
-    return;
-  }
-
-  const url = `${SCRIPT_URL}?mode=getUnitDetail&project=${encodeURIComponent(project)}&hpId=${encodeURIComponent(hpId)}`;
-
-  let detail;
-  try{
-    detail = await jsonp(url);
-  }catch(err){
-    showError("โหลดข้อมูลไม่สำเร็จ (ตรวจ Deploy Apps Script ให้เป็น Anyone และใช้ /exec)");
-    hideLoader();
-    return;
-  }
-
-  if(detail && detail.error){
-    showError("โหลดข้อมูลไม่สำเร็จ: " + detail.error);
-    hideLoader();
-    return;
-  }
-
-  CURRENT_DETAIL = detail;
-
-  const plotText = String(detail.Plot || "-").trim() || "-";
-  document.getElementById("pageTitle").textContent = `Detail Plot: ${plotText}`;
-  document.getElementById("tagPlot").textContent = plotText;
-
-  document.getElementById("priceText").textContent = moneyTHB(detail.Price || 0);
-
-  const stText = String(detail.Status || "Available").trim() || "Available";
-  const stEl = document.getElementById("statusBelow");
-  stEl.textContent = stText;
-
-  const st = statusStyle(stText);
-  stEl.style.borderColor = st.border;
-  stEl.style.color = st.text;
-
-  // ✅ Land(sq.w) / Living(sq.m)
-  renderMiniMeta(detail);
-
-  // ✅ Description value only
-  renderDescription(detail);
-
-  // ✅ Smart Map (dynamic + hide when empty)
-  renderSmartMap(detail);
-
-  const thumb = cleanDriveImage(detail.Thumbnail_Image || "");
-  const list = String(detail.Image_List || "")
-    .split(",").map(s=>cleanDriveImage(s.trim()))
-    .filter(Boolean);
-
-  images = (thumb ? [thumb, ...list.filter(x=>x!==thumb)] : list);
-
-  if(!images.length){
-    images = ["data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='800'><rect width='100%' height='100%' fill='#e6edf6'/><text x='50%' y='50%' text-anchor='middle' fill='#8aa0bb' font-size='40' font-family='Arial'>no image</text></svg>`) ];
-  }
-
-  const mainImg = document.getElementById("mainImg");
-  mainImg.onload = () => { hideLoader(); };
-  mainImg.onerror = () => { hideLoader(); };
-
-  mainImg.src = images[0];
-  mainImg.classList.remove("skeleton");
-
-  renderThumbs();
-  setMain(0);
-  enableSwipe();
-
-  document.getElementById("btnPrev").addEventListener("click", ()=> setMain(idx-1));
-  document.getElementById("btnNext").addEventListener("click", ()=> setMain(idx+1));
-
-  if(images[1]){
-    const pre = new Image();
-    pre.src = images[1];
-  }
-
-  // ✅ Grid (2 col x 5 rows) + Land/Living in title
-  renderInfo(detail);
-
-  loadOtherUnits();
-
-  setDockLink("dockSales", detail.Sales_Gallery);
-  setDockLink("dockMaterial", detail.Material_PDF);
-  setDockLink("dockFloorplan", detail.FloorPlan_PDF);
-
-  setFbVisitBar(pickFbLink(detail));
-
-})();
+init();
 </script>
 </body>
 </html>
