@@ -76,58 +76,60 @@ aspect-ratio: 16/10;
 object-fit:cover;
 display:block;
 }
+
+/* =========================================================
+✅ FIX ONLY: ป้าย Plot (ซ้ายบน) + ตัวเลขจำนวนรูป (ขวาล่าง)
+ให้ "ขนาด/รูปแบบ" ตามภาพตัวอย่าง
+========================================================= */
 .tagTopLeft{
 position:absolute;
-padding:8px 12px;
+left:24px;
+top:24px;
+
+padding:18px 34px;
 border-radius: 999px;
-background: rgba(255,255,255,.78);
+
+background: rgba(255,255,255,.92);
+border: 0;
+box-shadow: none;
+backdrop-filter: blur(0);
+
 font-weight:1100;
-font-size:14px;
-box-shadow: 0 10px 20px rgba(0,0,0,.12);
-backdrop-filter: blur(8px);
-border:1px solid rgba(255,255,255,.65);
+font-size:44px;
+line-height:1;
+
+color:#0f172a;
+
 white-space:nowrap;
 overflow:hidden;
 text-overflow:ellipsis;
 max-width: 78%;
-left:14px; top:14px;
 }
 
-/* ✅ แก้เฉพาะจุดนี้: ตัวเลขนับรูปให้เล็กลง ไม่มีพื้นหลัง */
 .tagBottomRight{
 position:absolute;
-right:16px;
-bottom:16px;
+right:24px;
+bottom:24px;
 
-/* ไม่มีพื้นหลัง/ป้าย */
 padding:0;
 border-radius:0;
+
 background: transparent;
 border:0;
 box-shadow:none;
 backdrop-filter:none;
 
-/* ตัวเลขเล็ก */
-font-weight:800;
-font-size:12px;
+font-weight:1100;
+font-size:40px;
 line-height:1;
-letter-spacing:.2px;
 
-/* สี + เงานิดๆ ให้มองเห็นบนรูป (ไม่เป็นป้าย) */
-color: rgba(255,255,255,.98);
-text-shadow: 0 2px 10px rgba(0,0,0,.35);
+color: rgba(255,255,255,1);
+text-shadow: 0 10px 18px rgba(0,0,0,.45);
 
 user-select:none;
 pointer-events:none;
 }
-/* ✅ (มือถือเล็กมาก) ย่อเพิ่มอีกนิด */
-@media (max-width:420px){
-.tagBottomRight{
-right:14px;
-bottom:14px;
-font-size:11px;
-}
-}
+/* ========================================================= */
 
 .thumbStrip{
 background: rgba(255,255,255,.78);
@@ -195,7 +197,7 @@ text-overflow:ellipsis;
 @media (max-width:420px){
 .price{font-size:24px}
 .statusBelow{font-size:14px; padding:7px 10px;}
-.tagTopLeft{font-size:13px; padding:7px 10px;}
+/* ✅ ห้ามย่อ tagTopLeft / tagBottomRight (คงค่าตามภาพ) */
 .miniMeta{font-size:12px;}
 }
 /* ✅ Description box: เอาหัวข้อออก เหลือข้อความอย่างเดียว */
@@ -817,6 +819,7 @@ pointer-events:none;
 </a>
 </div>
 
+<!-- ✅ MAP: ถ้า Map_Link ว่าง => ซ่อน + ยุบพื้นที่ / ถ้ามี => แสดง + มีปุ่มนำทาง -->
 <div class="mapSection" id="mapSection">
 <div class="mapCard">
   <div class="mapHead">
@@ -1079,15 +1082,20 @@ function normalizeMapLink(link){
 const s = String(link || "").trim();
 return s && s !== "-" ? s : "";
 }
+/* ทำให้ iframe ใช้โดเมน google.com (ลดโอกาสโดน X-Frame-Options จากลิงก์สั้น) */
 function buildEmbedUrl(link){
 const raw = normalizeMapLink(link);
 if(!raw) return "";
+// ถ้าเป็น embed อยู่แล้ว ใช้ได้เลย
 if (raw.includes("google.com/maps/embed")) return raw;
+// ใช้ q + output=embed รองรับทั้ง google.com/maps และ maps.app.goo.gl
 return `https://www.google.com/maps?q=${encodeURIComponent(raw)}&output=embed`;
 }
+/* ปุ่ม Open / Navigate (Google Maps) */
 function buildOpenUrl(link){
 const raw = normalizeMapLink(link);
 if(!raw) return "";
+// ถ้าเป็นลิงก์ maps อยู่แล้ว เปิดได้เลย
 if (raw.includes("google.com/maps")) return raw;
 if (raw.startsWith("http")) return raw;
 return `https://www.google.com/maps?q=${encodeURIComponent(raw)}`;
@@ -1095,6 +1103,7 @@ return `https://www.google.com/maps?q=${encodeURIComponent(raw)}`;
 function buildNavUrl(link){
 const raw = normalizeMapLink(link);
 if(!raw) return "";
+// ใช้ destination เป็นสตริงได้ (รองรับพิกัด/ชื่อสถานที่/ลิงก์สั้น)
 return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(raw)}`;
 }
 function setMapSection(link){
@@ -1106,6 +1115,7 @@ if(!sec || !frame || !openBtn || !navBtn) return;
 
 const raw = normalizeMapLink(link);
 if(!raw){
+/* ✅ ว่าง => ซ่อนทั้งหมด + ยุบพื้นที่ */
 sec.style.display = "none";
 frame.src = "";
 openBtn.href = "#";
@@ -1113,11 +1123,18 @@ navBtn.href = "#";
 return;
 }
 
+/* ✅ มีข้อมูล => แสดง */
 sec.style.display = "block";
 openBtn.href = buildOpenUrl(raw);
 navBtn.href = buildNavUrl(raw);
+
+/* ✅ iframe แผนที่ (รองรับลิงก์สั้น maps.app.goo.gl) */
 frame.src = buildEmbedUrl(raw);
-frame.onerror = () => { frame.src = ""; };
+
+/* ถ้าบางกรณี iframe error ให้ยังคงมีปุ่ม Navigate/Open ใช้งานได้ */
+frame.onerror = () => {
+frame.src = "";
+};
 }
 
 /** จัดเรียงข้อมูล (เดิมของคุณ) */
@@ -1237,229 +1254,6 @@ document.getElementById("otherSection").style.display = "none";
 }
 }
 
-/** =========================
-* Share image (เดิมของคุณ)
-* ========================= */
-async function buildShareImageBlob(detail){
-const canvas = document.getElementById("shareCanvas");
-const ctx = canvas.getContext("2d");
-const safe = (v)=> (v===undefined || v===null || String(v).trim()==="" ? "-" : String(v).trim());
-const projectName = safe(detail.Project_Name || detail.ProjectName || detail.Project || project);
-const district = safe(detail.District || detail.district);
-const subDistrict = safe(detail.SubDistrict || detail.Sub_District || detail.subdistrict);
-const beds = safe(detail.Bedrooms || detail.Bedroom || detail.beds);
-const baths = safe(detail.Bathrooms || detail.Bathroom || detail.baths);
-const landW = safe(detail.Land_Area_sq_w || detail.Land_Area_SQW || detail.LandAreaSQW);
-const livingM = safe(pick(detail, LIVING_SQM_KEYS));
-const price = moneyTHB(detail.Price || 0);
-const status = safe(detail.Status || detail.status);
-const badge = safe(detail.Badge || detail.badge);
-const plot = safe(detail.Plot || detail.plot);
-const rows = [
-["Project_Name", projectName, "Badge", badge],
-["District", district, "SubDistrict", subDistrict],
-["Bedrooms", beds, "Bathrooms", baths],
-["Land Area (sq.w)", landW, "Living Area (sq.m)", livingM],
-["Price", price, "Status", status],
-];
-ctx.clearRect(0,0,canvas.width,canvas.height);
-ctx.fillStyle = "#0f172a";
-ctx.fillRect(0,0,canvas.width,canvas.height);
-const imgH = 340;
-ctx.fillStyle = "#111827";
-ctx.fillRect(0,0,canvas.width,imgH);
-try{
-const src = images && images.length ? images[0] : "";
-if(src){
-const img = new Image();
-img.crossOrigin = "anonymous";
-img.src = src;
-await new Promise((res, rej)=>{ img.onload=res; img.onerror=rej; });
-const cw = canvas.width, ch = imgH;
-const ir = img.width / img.height;
-const cr = cw / ch;
-let dw, dh, dx, dy;
-if(ir > cr){
-dh = ch; dw = dh * ir; dx = (cw - dw)/2; dy = 0;
-}else{
-dw = cw; dh = dw / ir; dx = 0; dy = (ch - dh)/2;
-}
-ctx.drawImage(img, dx, dy, dw, dh);
-const g = ctx.createLinearGradient(0, imgH-140, 0, imgH);
-g.addColorStop(0, "rgba(15,23,42,0)");
-g.addColorStop(1, "rgba(15,23,42,.65)");
-ctx.fillStyle = g;
-ctx.fillRect(0, imgH-140, canvas.width, 140);
-}
-}catch(e){
-ctx.fillStyle = "#1f2937";
-ctx.fillRect(0,0,canvas.width,imgH);
-}
-ctx.fillStyle = "rgba(255,255,255,.98)";
-ctx.font = "900 46px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-ctx.fillText("Smart Properties System", 46, 72);
-ctx.fillStyle = "rgba(255,255,255,.95)";
-ctx.font = "800 38px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-ctx.fillText(`Plot: ${plot}`, 46, 122);
-const pillX = 46, pillY = 152, pillW = 360, pillH = 54, r = 18;
-ctx.fillStyle = "rgba(255,255,255,.92)";
-roundRect(ctx, pillX, pillY, pillW, pillH, r, true, false);
-ctx.font = "900 28px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-ctx.fillStyle = "#0f172a";
-ctx.fillText(status, pillX + 20, pillY + 37);
-const pad = 38;
-const boxY = imgH + 22;
-const boxX = 30;
-const boxW = canvas.width - 60;
-const boxH = canvas.height - boxY - 28;
-ctx.fillStyle = "rgba(255,255,255,.92)";
-roundRect(ctx, boxX, boxY, boxW, boxH, 26, true, false);
-ctx.fillStyle = "#0f172a";
-ctx.font = "900 34px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-ctx.fillText(projectName, boxX + pad, boxY + 52);
-ctx.strokeStyle = "rgba(15,23,42,.10)";
-ctx.lineWidth = 2;
-ctx.beginPath();
-ctx.moveTo(boxX + pad, boxY + 72);
-ctx.lineTo(boxX + boxW - pad, boxY + 72);
-ctx.stroke();
-const startY = boxY + 112;
-const rowH = 74;
-const colGap = 28;
-const colW = (boxW - pad*2 - colGap) / 2;
-for(let i=0;i<rows.length && i<5;i++){
-const y = startY + i*rowH;
-drawKV(ctx, boxX + pad, y, colW, rows[i][0], rows[i][1]);
-drawKV(ctx, boxX + pad + colW + colGap, y, colW, rows[i][2], rows[i][3]);
-ctx.strokeStyle = "rgba(15,23,42,.08)";
-ctx.lineWidth = 1;
-ctx.beginPath();
-ctx.moveTo(boxX + pad, y + rowH - 14);
-ctx.lineTo(boxX + boxW - pad, y + rowH - 14);
-ctx.stroke();
-}
-const urlText = location.href;
-ctx.fillStyle = "rgba(15,23,42,.65)";
-ctx.font = "700 20px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-ctx.fillText(urlText.length > 70 ? (urlText.slice(0,67)+"...") : urlText, boxX + pad, boxY + boxH - 18);
-return await new Promise((resolve) => {
-canvas.toBlob((blob)=> resolve(blob), "image/png", 0.92);
-});
-}
-function roundRect(ctx, x, y, w, h, r, fill, stroke){
-const rr = Math.min(r, w/2, h/2);
-ctx.beginPath();
-ctx.moveTo(x+rr, y);
-ctx.arcTo(x+w, y, x+w, y+h, rr);
-ctx.arcTo(x+w, y+h, x, y+h, rr);
-ctx.arcTo(x, y+h, x, y, rr);
-ctx.arcTo(x, y, x+w, y, rr);
-ctx.closePath();
-if(fill) ctx.fill();
-if(stroke) ctx.stroke();
-}
-function drawKV(ctx, x, y, w, key, val){
-ctx.fillStyle = "rgba(15,23,42,.55)";
-ctx.font = "900 18px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-ctx.fillText(key, x, y);
-ctx.fillStyle = "rgba(15,23,42,.95)";
-ctx.font = "900 26px system-ui, -apple-system, Segoe UI, Roboto, Arial";
-const text = String(val || "-");
-const maxW = w;
-let out = text;
-while(ctx.measureText(out).width > maxW && out.length > 3){
-out = out.slice(0, -1);
-}
-if(out !== text) out = out.slice(0, Math.max(0, out.length-2)) + "..";
-ctx.fillText(out, x, y + 34);
-}
-
-/** Share handlers */
-function buildShareText(detail){
-const safe = (v)=> (v===undefined || v===null || String(v).trim()==="" ? "-" : String(v).trim());
-const projectName = safe(detail.Project_Name || detail.ProjectName || detail.Project || project);
-const plot = safe(detail.Plot || "-");
-const price = moneyTHB(detail.Price || 0);
-const status = safe(detail.Status || "-");
-return `${projectName}\nPlot: ${plot}\nPrice: ${price}\nStatus: ${status}\n\n${location.href}`;
-}
-async function shareNative(detail){
-const title = "Smart Properties System";
-const text = buildShareText(detail);
-try{
-const blob = await buildShareImageBlob(detail);
-if(blob && navigator.canShare){
-const file = new File([blob], `${(detail.Plot||"plot")}-${hpId||"detail"}.png`, {type:"image/png"});
-const payload = { title, text, url: location.href, files: [file] };
-if (navigator.canShare(payload)) {
-await navigator.share(payload);
-return;
-}
-}
-}catch(e){}
-if (navigator.share){
-await navigator.share({ title, text, url: location.href });
-return;
-}
-window.open(location.href, "_blank");
-}
-function openShareUrl(type, detail){
-const url = encodeURIComponent(location.href);
-const text = encodeURIComponent(buildShareText(detail));
-if(type === "facebook"){
-window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank");
-return;
-}
-if(type === "messenger"){
-window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank");
-return;
-}
-if(type === "whatsapp"){
-window.open(`https://api.whatsapp.com/send?text=${text}`, "_blank");
-return;
-}
-if(type === "telegram"){
-window.open(`https://t.me/share/url?url=${url}&text=${text}`, "_blank");
-return;
-}
-if(type === "line"){
-window.open(`https://social-plugins.line.me/lineit/share?url=${url}`, "_blank");
-return;
-}
-if(type === "email"){
-const subject = encodeURIComponent("Smart Properties System · Detail");
-const body = encodeURIComponent(buildShareText(detail));
-window.location.href = `mailto:?subject=${subject}&body=${body}`;
-return;
-}
-}
-async function copyLink(){
-try{
-await navigator.clipboard.writeText(location.href);
-alert("คัดลอกลิงก์แล้ว");
-}catch(e){
-const ta = document.createElement("textarea");
-ta.value = location.href;
-document.body.appendChild(ta);
-ta.select();
-document.execCommand("copy");
-document.body.removeChild(ta);
-alert("คัดลอกลิงก์แล้ว");
-}
-}
-function wireShareButtons(){
-const row = document.getElementById("shareRow");
-row.addEventListener("click", async (e)=>{
-const btn = e.target.closest(".shareBtn");
-if(!btn) return;
-const type = btn.getAttribute("data-type");
-if(!CURRENT_DETAIL) return;
-if(type === "copy") return copyLink();
-if(type === "native") return shareNative(CURRENT_DETAIL);
-openShareUrl(type, CURRENT_DETAIL);
-});
-}
-
 /* =========================================================
 Bottom Dock logic
 ========================================================= */
@@ -1507,7 +1301,6 @@ a.setAttribute("href", href);
 (async function init(){
 hideError();
 showLoader();
-wireShareButtons();
 
 if(!hpId){
 showError("ลิงก์ไม่ถูกต้อง: ไม่มี id เช่น details.html?id=HP-Z001");
@@ -1549,6 +1342,7 @@ stEl.style.color = st.text;
 renderMiniMeta(detail);
 renderDescription(detail);
 
+/* ✅ Map: แสดง/ซ่อน + ยุบอัตโนมัติ */
 setMapSection(pickMapLink(detail));
 
 const thumb = cleanDriveImage(detail.Thumbnail_Image || "");
