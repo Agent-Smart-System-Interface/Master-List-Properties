@@ -106,7 +106,7 @@
       </div>
 
       <div class="input-card">
-        <span class="field-label">PDF DOCUMENTS (UPLOAD / REPLACE)</span>
+        <span class="field-label">PDF DOCUMENTS (UPLOAD / REPLACE)</span><br>
 
         <div class="pdfbar mb-3">
           <div class="pdficon">PDF</div>
@@ -157,7 +157,6 @@
         <div><span class="field-label">Bathrooms</span><input type="number" id="Bathrooms" class="field-input"></div>
         <div><span class="field-label">Parking</span><input id="Parking" class="field-input"></div>
 
-        <!-- ✅ เพิ่มให้ตรงชีต -->
         <div><span class="field-label">Extras</span><input id="Extras" class="field-input" placeholder="เช่น Built-in, Solar, etc."></div>
         <div><span class="field-label">Electricity</span><input id="Electricity" class="field-input" placeholder="เช่น Government / 5-15 baht"></div>
         <div></div>
@@ -200,7 +199,6 @@
           </select>
         </div>
 
-        <!-- ✅ Badge = Dropdown ตามที่คุณให้ -->
         <div>
           <span class="field-label">Badge</span>
           <select id="Badge" class="field-input">
@@ -264,7 +262,6 @@
 
         <div class="col-span-full border-t pt-6"><span class="field-label">External Links</span></div>
 
-        <!-- ✅ สำคัญ: ID ต้องเป็น FB_Link ให้ตรงชีต -->
         <div><span class="field-label">FB Link</span><input id="FB_Link" class="field-input"></div>
 
         <div><span class="field-label">Map Link</span><input id="Map_Link" class="field-input"></div>
@@ -284,6 +281,7 @@
       class="w-full mt-10 py-6 sm:py-8 bg-slate-900 text-white rounded-[2.5rem] font-bold uppercase tracking-[0.4em] sm:tracking-[0.5em] shadow-2xl hover:bg-blue-600 transition-all active:scale-95">
       Update Master Database
     </button>
+
   </div>
 
   <div id="successPopup" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-6">
@@ -454,14 +452,28 @@
       setPdfText(key, "เลือกไฟล์ใหม่: " + f.name);
     }
 
+    // ✅✅ FIX: normalize keys จาก server ให้ FB_Link ไม่หาย (รองรับ key เก่า)
+    function normalizeKeysForEditor_(data){
+      data = data || {};
+      // FB_Link fallback จาก key เก่า
+      if ((data.FB_Link === undefined || String(data.FB_Link).trim() === "") ) {
+        if (data.FBLink !== undefined) data.FB_Link = data.FBLink;
+        if (data.FB_LINK !== undefined) data.FB_Link = data.FB_LINK;
+      }
+      return data;
+    }
+
     async function loadData() {
       document.getElementById("displayId").innerText = HP_ID || "HP-XXXX";
       if (!HP_ID || !PROJECT) return alert("Missing id/project in URL");
 
       try {
         const res = await fetch(`${API_URL}?mode=getUnitDetail&hpId=${encodeURIComponent(HP_ID)}&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`);
-        const data = await res.json();
+        let data = await res.json();
         if (data && data.error) throw new Error(data.error);
+
+        // ✅ normalize ก่อน map เข้า input
+        data = normalizeKeysForEditor_(data);
 
         // เติมค่าตาม id ที่ชื่อเดียวกับ key จาก GAS (normKey)
         Object.keys(data || {}).forEach(k => {
@@ -561,7 +573,7 @@
         Badge: document.getElementById("Badge").value,
         Description: document.getElementById("Description").value,
 
-        // ✅ สำคัญ: ส่งเป็น FB_Link ให้ตรงชีต + GAS
+        // ✅ สำคัญ: ส่งเป็น FB_Link (underscore)
         FB_Link: document.getElementById("FB_Link").value,
 
         Map_Link: document.getElementById("Map_Link").value,
