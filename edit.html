@@ -464,7 +464,7 @@
           if (el) el.value = (data[k] ?? "");
         });
 
-        // ✅ สำคัญ: บังคับใส่ FB_Link ให้ชัวร์ (กัน mapping หลุด)
+        // ✅ FIX: ยืนยันให้ FB_Link แสดงผลแน่นอน (กันข้อมูลเดิมหาย/กันบันทึกค่าว่างทับ)
         const fbEl = document.getElementById("FB_Link");
         if (fbEl) fbEl.value = (data.FB_Link ?? "");
 
