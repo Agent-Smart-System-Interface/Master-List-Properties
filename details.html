@@ -174,7 +174,7 @@
       flex:0 0 auto;
     }
 
-    /* ✅ miniMeta ใต้ราคา */
+    /* Land/Living ใต้ราคา */
     .miniMeta{
       margin-top:6px;
       font-size:13px;
@@ -193,7 +193,7 @@
       .miniMeta{font-size:12px;}
     }
 
-    /* ✅ Description box: เอาหัวข้อออก เหลือข้อความอย่างเดียว */
+    /* Description box (แสดงเฉพาะ Value ไม่มีหัวข้อคำว่า Description) */
     .descBox{
       margin-top:12px;
       background: rgba(255,255,255,.92);
@@ -214,14 +214,15 @@
       font-weight:900;
     }
 
+    /* ✅ Grid Display: 2 คอลัมน์ (5 แถวเมื่อมี 10 การ์ด) */
     .gridInfo{
       margin-top:14px;
       display:grid;
       grid-template-columns: 1fr;
       gap:10px;
     }
-    @media(min-width:900px){
-      .gridInfo{grid-template-columns: repeat(3, 1fr);}
+    @media(min-width:560px){
+      .gridInfo{grid-template-columns: repeat(2, minmax(0, 1fr));}
     }
     .infoBox{
       background: rgba(15,23,42,.05);
@@ -230,9 +231,10 @@
       padding:12px 12px;
       display:flex; justify-content:space-between; gap:10px;
       font-weight:1100;
+      min-width:0;
     }
-    .k{color:rgba(15,23,42,.55); font-weight:900;}
-    .v{color:rgba(15,23,42,.95); font-weight:1100; text-align:right; white-space:pre-wrap;}
+    .k{color:rgba(15,23,42,.55); font-weight:900; white-space:nowrap;}
+    .v{color:rgba(15,23,42,.95); font-weight:1100; text-align:right; white-space:pre-wrap; min-width:0;}
 
     .errorBox{
       margin-top:14px;
@@ -334,6 +336,31 @@
     @media (max-width:420px){
       .navArrow{ width:48px;height:48px; }
       .navArrow svg{ width:22px;height:22px; }
+    }
+
+    /* ✅ Smart Map Section (ซ่อน/ยุบได้) */
+    .mapSection{
+      margin-top:14px;
+      padding:14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.65);
+      border: 1px solid rgba(255,255,255,.65);
+      display:none; /* default hidden */
+    }
+    .mapFrameWrap{
+      width:100%;
+      border-radius: 18px;
+      overflow:hidden;
+      box-shadow: 0 10px 22px rgba(0,0,0,.08);
+      border: 1px solid rgba(15,23,42,.06);
+      background: rgba(255,255,255,.92);
+    }
+    .mapFrame{
+      width:100%;
+      aspect-ratio: 16 / 9;
+      border:0;
+      display:block;
+      background:#e8f0fb;
     }
 
     .otherSection{
@@ -490,7 +517,7 @@
 
     #shareCanvas{ display:none; }
 
-    /* ✅ Facebook Visit Bar */
+    /* Facebook Visit Bar */
     .fbVisitWrap{
       margin-top: 10px;
       display:flex;
@@ -528,34 +555,7 @@
     }
     .fbVisitBtn.hidden{ display:none; }
 
-    /* ✅ (จุดที่ 3) Map Section: แสดงเฉพาะเมื่อมีลิงก์ */
-    .mapSection{
-      margin-top: 12px;
-      display:none;
-    }
-    .mapCard{
-      width:min(900px, 100%);
-      margin: 0 auto;
-      border-radius: 18px;
-      overflow:hidden;
-      border: 1px solid rgba(255,255,255,.65);
-      box-shadow: 0 10px 22px rgba(0,0,0,.10);
-      background: rgba(255,255,255,.92);
-    }
-    .mapFrame{
-      width:100%;
-      height: 320px;
-      border:0;
-      display:block;
-      background:#e8f0fb;
-    }
-    @media (max-width:420px){
-      .mapFrame{ height: 260px; }
-    }
-
-    /* =========================================================
-       Bottom Dock
-       ========================================================= */
+    /* Bottom Dock */
     .wrap{ padding-bottom: 92px; }
 
     .bottomDock{
@@ -666,15 +666,30 @@
           <div class="statusBelow" id="statusBelow">-</div>
         </div>
 
-        <!-- ✅ จุดที่ 4: Land/Living ใต้ราคา (ดึงจาก sq.m) -->
-        <div class="miniMeta" id="miniMeta">Land - · Living -</div>
+        <!-- ✅ แยก Land (sq.w) และ Living (sq.m) ให้ชัดเจน -->
+        <div class="miniMeta" id="miniMeta">Land - sq.w · Living - sq.m</div>
 
-        <!-- ✅ จุดที่ 1: ไม่มีหัวข้อ Description แล้ว เหลือเฉพาะข้อความ -->
+        <!-- ✅ แสดงเฉพาะ “Value” ของ Description (ไม่มีหัวข้อคำว่า Description) -->
         <div class="descBox" id="descBox">
           <div class="descText" id="descText">-</div>
         </div>
 
+        <!-- ✅ Grid Display (2 คอลัมน์ 5 แถว เมื่อมี 10 การ์ด) -->
         <div class="gridInfo" id="infoGrid"></div>
+
+        <!-- ✅ Smart Map (ซ่อนอัตโนมัติเมื่อไม่มี Map_Link) -->
+        <div class="mapSection" id="mapSection">
+          <div class="mapFrameWrap">
+            <iframe
+              id="mapFrame"
+              class="mapFrame"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              allowfullscreen
+              aria-label="Google Map"
+            ></iframe>
+          </div>
+        </div>
 
         <div class="shareSection" id="shareSection">
           <div class="shareTopIcon" aria-hidden="true" title="Share">
@@ -778,21 +793,6 @@
               </span>
               <span id="fbVisitText">Visit our Facebook Page</span>
             </a>
-          </div>
-
-          <!-- ✅ จุดที่ 3: Map แสดงตรงตำแหน่งที่คุณวงไว้ / ซ่อนอัตโนมัติถ้าไม่มีลิงก์ -->
-          <div class="mapSection" id="mapSection">
-            <div class="mapCard">
-              <iframe
-                id="mapFrame"
-                class="mapFrame"
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-                allowfullscreen
-                src=""
-                title="Google Map">
-              </iframe>
-            </div>
           </div>
 
           <canvas id="shareCanvas" width="1200" height="630"></canvas>
@@ -985,6 +985,13 @@ function fmtSqm(v){
   if (low.includes("sq") || low.includes("ตร.ม") || low.includes("m2") || low.includes("m²")) return s;
   return s + " sq.m";
 }
+function fmtSqw(v){
+  const s = safeText(v);
+  if(s === "-") return "-";
+  const low = s.toLowerCase();
+  if (low.includes("sq") || low.includes("ตร.ว") || low.includes("wah")) return s;
+  return s + " sq.w";
+}
 
 /* รองรับ key หลายรูปแบบ */
 const LAND_SQM_KEYS = [
@@ -999,114 +1006,155 @@ const LIVING_SQM_KEYS = [
   "Living_Area_(sq.m)", "Living_Area_(sqm)", "Living_Area_sq.m", "Living_Area_sqm",
   "Living_Area__sq_m_", "Living_Area__sqm_", "Living_Area_sq_m_", "LivingArea_sq_m",
 ];
+const LAND_SQW_KEYS = [
+  "Land_Area_sq_w","Land_Area_SQW","LandAreaSQW","Land_sq_w","LandSqw",
+  "Land Area (sq.w)","Land Area (sq.w.)","Land Area sq.w","Land Area sq.w."
+];
+const MAP_LINK_KEYS = [
+  "Map_Link","MapLink","MAP_LINK","Google_Map","Google_Maps","GoogleMaps","Map","map"
+];
 
-/** ✅ จุดที่ 1: render Description (ไม่มีหัวข้อ) + ซ่อนกรอบถ้าไม่มีข้อความ */
+/** ✅ Description: แสดงเฉพาะ Value */
 function renderDescription(detail){
   const desc = safeText(pick(detail, ["Description","description","Desc"]));
-  const box = document.getElementById("descBox");
   const el = document.getElementById("descText");
-  if(!box || !el) return;
+  if(!el) return;
 
-  if(desc === "-" ){
-    box.style.display = "none";
-    return;
+  if(desc === "-"){
+    el.textContent = "-";
+    el.classList.add("descEmpty");
+  }else{
+    el.textContent = desc;
+    el.classList.remove("descEmpty");
   }
-  box.style.display = "block";
-  el.textContent = desc;
-  el.classList.remove("descEmpty");
 }
 
-/** ✅ จุดที่ 4: render Land/Living ใต้ราคา (ดึงจาก sq.m) */
+/** ✅ แยก Land(sq.w) / Living(sq.m) ใต้ราคา */
 function renderMiniMeta(detail){
-  const landM = fmtSqm(pick(detail, LAND_SQM_KEYS));
+  const landW = fmtSqw(pick(detail, LAND_SQW_KEYS));
   const livingM = fmtSqm(pick(detail, LIVING_SQM_KEYS));
   const el = document.getElementById("miniMeta");
   if(!el) return;
-  el.textContent = `Land ${landM} · Living ${livingM}`;
+  el.textContent = `Land ${landW} · Living ${livingM}`;
 }
 
-/** ✅ จุดที่ 3: Map section (แสดง/ซ่อนอัตโนมัติ) */
-function pickMapLink(detail){
-  const keys = ["Map_Link","MapLink","MAP_LINK","GoogleMap","Google_Map","Map","map","Location","Location_Link"];
-  for(const k of keys){
-    const v = detail ? detail[k] : "";
-    const s = String(v ?? "").trim();
-    if(s && s !== "-") return s;
+/** ✅ Smart Map Embed: แปลงลิงก์ให้เป็น iframe ได้ + ซ่อนเมื่อว่าง */
+function normalizeLink(v){
+  const s = String(v ?? "").trim();
+  return s && s !== "-" ? s : "";
+}
+
+function tryExtractCoords(u){
+  const s = String(u || "");
+  // /@lat,lng,
+  const m = s.match(/\/@(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/);
+  if(m) return {lat:m[1], lng:m[2]};
+
+  // ?q=lat,lng or query=lat,lng
+  try{
+    const url = new URL(s);
+    const q = url.searchParams.get("q") || url.searchParams.get("query") || url.searchParams.get("destination");
+    if(q){
+      const mm = q.match(/(-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)/);
+      if(mm) return {lat:mm[1], lng:mm[2]};
+    }
+  }catch(e){}
+  return null;
+}
+
+function tryExtractPlaceName(u){
+  const s = String(u || "");
+  // /place/<name>
+  const m = s.match(/\/place\/([^\/\?]+)/);
+  if(m && m[1]) {
+    try{
+      return decodeURIComponent(m[1].replace(/\+/g," "));
+    }catch(e){
+      return m[1].replace(/\+/g," ");
+    }
   }
   return "";
 }
 
-/** ✅ NEW: แปลง Map_Link (รวม short link maps.app.goo.gl) ให้เป็น Embed URL */
-function buildMapEmbedUrl(link){
-  const s = String(link || "").trim();
-  if(!s) return "";
+function toGoogleMapsEmbedUrl(raw){
+  const link = normalizeLink(raw);
+  if(!link) return "";
 
-  // ถ้าเป็น embed อยู่แล้ว
-  if (/google\.com\/maps\/embed/i.test(s)) return s;
+  const low = link.toLowerCase();
 
-  // ใช้ output=embed + q= (รองรับ short link / long link / text)
-  return "https://www.google.com/maps?output=embed&q=" + encodeURIComponent(s);
+  // already embed
+  if(low.includes("google.com/maps/embed") || low.includes("output=embed")) return link;
+
+  // coords first
+  const c = tryExtractCoords(link);
+  if(c){
+    return `https://www.google.com/maps?q=${encodeURIComponent(c.lat + "," + c.lng)}&output=embed`;
+  }
+
+  // place name
+  const place = tryExtractPlaceName(link);
+  if(place){
+    return `https://www.google.com/maps?q=${encodeURIComponent(place)}&output=embed`;
+  }
+
+  // fallback: use the whole string as query (works for many share URLs that include text/coords)
+  return `https://www.google.com/maps?q=${encodeURIComponent(link)}&output=embed`;
 }
 
-/** ✅ UPDATED: ไม่มีข้อมูล = remove section (ไม่เหลือพื้นที่) / มีข้อมูล = set iframe src */
-function setMapSection(link){
-  const sec = document.getElementById("mapSection");
+function renderSmartMap(detail){
+  const section = document.getElementById("mapSection");
   const frame = document.getElementById("mapFrame");
-  if(!sec || !frame) return;
+  if(!section || !frame) return;
 
-  const href = String(link ?? "").trim();
+  const raw = pick(detail, MAP_LINK_KEYS);
+  const embed = toGoogleMapsEmbedUrl(raw);
 
-  // ไม่มีข้อมูล = ลบทิ้งทั้งก้อน (ไม่มีพื้นที่ว่าง/ไม่มีกรอบ)
-  if(!href || href === "-"){
-    sec.remove();
+  if(!embed){
+    section.style.display = "none";
+    frame.removeAttribute("src");
     return;
   }
 
-  sec.style.display = "block";
-  frame.src = buildMapEmbedUrl(href);
-
-  // safety: ถ้า iframe โหลดมีปัญหา ให้ซ่อนทั้งส่วน (ยังไม่เหลือกรอบ)
-  frame.addEventListener("error", () => {
-    try{ sec.remove(); }catch(e){}
-  }, { once:true });
+  section.style.display = "block";
+  frame.setAttribute("src", embed);
 }
 
-/** จัดเรียงข้อมูล (ปรับเฉพาะข้อที่ขอ) */
+/** ✅ Grid: 2 คอลัมน์ 5 แถว (10 การ์ด) + Land/Living แสดงค่าพร้อมหน่วย sq.m ต่อท้ายเสมอ */
 function renderInfo(detail){
   const grid = document.getElementById("infoGrid");
+  if(!grid) return;
 
-  const landW = safeText(pick(detail, ["Land_Area_sq_w","Land_Area_SQW","LandAreaSQW","Land_sq_w","Land Area (sq.w)","Land Area (sq.w.)"]));
-  const livingM = safeText(pick(detail, LIVING_SQM_KEYS));
-  const landM = safeText(pick(detail, LAND_SQM_KEYS));
+  const landSqm = fmtSqm(pick(detail, LAND_SQM_KEYS));
+  const livingSqm = fmtSqm(pick(detail, LIVING_SQM_KEYS));
 
   const items = [
-    ["Project_Name", safeText(pick(detail, ["Project_Name","ProjectName","Project_Name_En","Project_Name_TH","Project"]))],
-    ["District", safeText(pick(detail, ["District","district"]))],
-    ["SubDistrict", safeText(pick(detail, ["SubDistrict","Sub_District","subdistrict"]))],
-    ["Badge", safeText(pick(detail, ["Badge","badge"]))],
+    ["Land: " + landSqm, ""],
+    ["Living: " + livingSqm, ""],
 
     ["Bedrooms", safeText(pick(detail, ["Bedrooms","Bedroom","beds"]))],
     ["Bathrooms", safeText(pick(detail, ["Bathrooms","Bathroom","baths"]))],
 
-    ["Land Area (sq.w)", landW],
-    ["Living Area (sq.m)", livingM],
-
-    ["Land Area (sq.m)", landM],
     ["Pool Size", safeText(pick(detail, ["Pool_Size","PoolSize"]))],
-    ["Pool Depth", safeText(pick(detail, ["Pool_Depth","PoolDepth"]))],
     ["Furnishing", safeText(pick(detail, ["Furnishing","furnishing"]))],
-    ["Price_SQM", safeText(pick(detail, ["Price_SQM","PriceSQM"]))],
-    ["Status", safeText(pick(detail, ["Status","status"]))],
+
+    ["District", safeText(pick(detail, ["District","district"]))],
+    ["SubDistrict", safeText(pick(detail, ["SubDistrict","Sub_District","subdistrict"]))],
+
+    ["Badge", safeText(pick(detail, ["Badge","badge"]))],
     ["Parking", safeText(pick(detail, ["Parking","parking"]))],
-    ["Extras", safeText(pick(detail, ["Extras","extras"]))],
-    ["Electricity", safeText(pick(detail, ["Electricity","electricity"]))],
   ];
 
   grid.innerHTML = "";
   for(const [k,v] of items){
     const box = document.createElement("div");
     box.className = "infoBox";
-    box.innerHTML = `<div class="k">${k}</div><div class="v">${v}</div>`;
+
+    // สำหรับ Land/Living ที่ต้อง “ต่อท้ายหัวข้อ” ให้ใส่ไว้ที่ k แล้วเว้น v ว่าง
+    if((k || "").startsWith("Land:") || (k || "").startsWith("Living:")){
+      box.innerHTML = `<div class="k" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${k}</div><div class="v"></div>`;
+    }else{
+      box.innerHTML = `<div class="k">${k}</div><div class="v">${v}</div>`;
+    }
     grid.appendChild(box);
   }
 }
@@ -1129,7 +1177,6 @@ function getStatus(u){
 function getPrice(u){
   return u?.Price ?? u?.price ?? 0;
 }
-
 function getLandSqm(u){
   return String(pick(u, LAND_SQM_KEYS) ?? "").trim();
 }
@@ -1215,7 +1262,7 @@ async function buildShareImageBlob(detail){
   const subDistrict = safe(detail.SubDistrict || detail.Sub_District || detail.subdistrict);
   const beds = safe(detail.Bedrooms || detail.Bedroom || detail.beds);
   const baths = safe(detail.Bathrooms || detail.Bathroom || detail.baths);
-  const landW = safe(detail.Land_Area_sq_w || detail.Land_Area_SQW || detail.LandAreaSQW);
+  const landW = safe(pick(detail, LAND_SQW_KEYS));
   const livingM = safe(pick(detail, LIVING_SQM_KEYS));
   const price = moneyTHB(detail.Price || 0);
   const status = safe(detail.Status || detail.status);
@@ -1363,7 +1410,7 @@ function drawKV(ctx, x, y, w, key, val){
   ctx.fillText(out, x, y + 34);
 }
 
-/** Share handlers */
+/** Share handlers (เดิมของคุณ) */
 function buildShareText(detail){
   const safe = (v)=> (v===undefined || v===null || String(v).trim()==="" ? "-" : String(v).trim());
   const projectName = safe(detail.Project_Name || detail.ProjectName || detail.Project || project);
@@ -1459,13 +1506,7 @@ function wireShareButtons(){
   });
 }
 
-/* =========================================================
-   Bottom Dock logic
-   ========================================================= */
-function normalizeLink(v){
-  const s = String(v ?? "").trim();
-  return s && s !== "-" ? s : "";
-}
+/* Bottom Dock logic */
 function setDockLink(elId, link){
   const el = document.getElementById(elId);
   if(!el) return;
@@ -1479,7 +1520,7 @@ function setDockLink(elId, link){
   el.setAttribute("href", href);
 }
 
-/* FB Link bar */
+/* FB Link */
 function pickFbLink(detail){
   const keys = ["FB_Link","FBLink","FB_Link ","FB_LINK","facebook","Facebook","FB"];
   for(const k of keys){
@@ -1548,11 +1589,14 @@ function setFbVisitBar(link){
   stEl.style.borderColor = st.border;
   stEl.style.color = st.text;
 
+  // ✅ Land(sq.w) / Living(sq.m)
   renderMiniMeta(detail);
+
+  // ✅ Description value only
   renderDescription(detail);
 
-  // ✅ ✅ ✅ จุดที่ 3 (Smart Map Display)
-  setMapSection(pickMapLink(detail));
+  // ✅ Smart Map (dynamic + hide when empty)
+  renderSmartMap(detail);
 
   const thumb = cleanDriveImage(detail.Thumbnail_Image || "");
   const list = String(detail.Image_List || "")
@@ -1584,6 +1628,7 @@ function setFbVisitBar(link){
     pre.src = images[1];
   }
 
+  // ✅ Grid (2 col x 5 rows) + Land/Living in title
   renderInfo(detail);
 
   loadOtherUnits();
