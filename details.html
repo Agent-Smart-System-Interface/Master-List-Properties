@@ -92,23 +92,43 @@ text-overflow:ellipsis;
 max-width: 78%;
 left:14px; top:14px;
 }
+
+/* ✅ แก้เฉพาะจุดนี้: ตัวเลขนับรูปให้เล็กลง ไม่มีพื้นหลัง */
 .tagBottomRight{
 position:absolute;
-right:14px;
-bottom:14px;
+right:16px;
+bottom:16px;
+
+/* ไม่มีพื้นหลัง/ป้าย */
 padding:0;
 border-radius:0;
 background: transparent;
+border:0;
 box-shadow:none;
 backdrop-filter:none;
-border:0;
-font-weight:1100;
-font-size:14px;
+
+/* ตัวเลขเล็ก */
+font-weight:800;
+font-size:12px;
+line-height:1;
+letter-spacing:.2px;
+
+/* สี + เงานิดๆ ให้มองเห็นบนรูป (ไม่เป็นป้าย) */
 color: rgba(255,255,255,.98);
-text-shadow: 0 10px 18px rgba(0,0,0,.45);
+text-shadow: 0 2px 10px rgba(0,0,0,.35);
+
 user-select:none;
 pointer-events:none;
 }
+/* ✅ (มือถือเล็กมาก) ย่อเพิ่มอีกนิด */
+@media (max-width:420px){
+.tagBottomRight{
+right:14px;
+bottom:14px;
+font-size:11px;
+}
+}
+
 .thumbStrip{
 background: rgba(255,255,255,.78);
 padding:10px;
@@ -797,7 +817,6 @@ pointer-events:none;
 </a>
 </div>
 
-<!-- ✅ MAP: ถ้า Map_Link ว่าง => ซ่อน + ยุบพื้นที่ / ถ้ามี => แสดง + มีปุ่มนำทาง -->
 <div class="mapSection" id="mapSection">
 <div class="mapCard">
   <div class="mapHead">
@@ -1060,20 +1079,15 @@ function normalizeMapLink(link){
 const s = String(link || "").trim();
 return s && s !== "-" ? s : "";
 }
-/* ทำให้ iframe ใช้โดเมน google.com (ลดโอกาสโดน X-Frame-Options จากลิงก์สั้น) */
 function buildEmbedUrl(link){
 const raw = normalizeMapLink(link);
 if(!raw) return "";
-// ถ้าเป็น embed อยู่แล้ว ใช้ได้เลย
 if (raw.includes("google.com/maps/embed")) return raw;
-// ใช้ q + output=embed รองรับทั้ง google.com/maps และ maps.app.goo.gl
 return `https://www.google.com/maps?q=${encodeURIComponent(raw)}&output=embed`;
 }
-/* ปุ่ม Open / Navigate (Google Maps) */
 function buildOpenUrl(link){
 const raw = normalizeMapLink(link);
 if(!raw) return "";
-// ถ้าเป็นลิงก์ maps อยู่แล้ว เปิดได้เลย
 if (raw.includes("google.com/maps")) return raw;
 if (raw.startsWith("http")) return raw;
 return `https://www.google.com/maps?q=${encodeURIComponent(raw)}`;
@@ -1081,7 +1095,6 @@ return `https://www.google.com/maps?q=${encodeURIComponent(raw)}`;
 function buildNavUrl(link){
 const raw = normalizeMapLink(link);
 if(!raw) return "";
-// ใช้ destination เป็นสตริงได้ (รองรับพิกัด/ชื่อสถานที่/ลิงก์สั้น)
 return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(raw)}`;
 }
 function setMapSection(link){
@@ -1093,7 +1106,6 @@ if(!sec || !frame || !openBtn || !navBtn) return;
 
 const raw = normalizeMapLink(link);
 if(!raw){
-/* ✅ ว่าง => ซ่อนทั้งหมด + ยุบพื้นที่ */
 sec.style.display = "none";
 frame.src = "";
 openBtn.href = "#";
@@ -1101,18 +1113,11 @@ navBtn.href = "#";
 return;
 }
 
-/* ✅ มีข้อมูล => แสดง */
 sec.style.display = "block";
 openBtn.href = buildOpenUrl(raw);
 navBtn.href = buildNavUrl(raw);
-
-/* ✅ iframe แผนที่ (รองรับลิงก์สั้น maps.app.goo.gl) */
 frame.src = buildEmbedUrl(raw);
-
-/* ถ้าบางกรณี iframe error ให้ยังคงมีปุ่ม Navigate/Open ใช้งานได้ */
-frame.onerror = () => {
-frame.src = "";
-};
+frame.onerror = () => { frame.src = ""; };
 }
 
 /** จัดเรียงข้อมูล (เดิมของคุณ) */
@@ -1544,7 +1549,6 @@ stEl.style.color = st.text;
 renderMiniMeta(detail);
 renderDescription(detail);
 
-/* ✅ Map: แสดง/ซ่อน + ยุบอัตโนมัติ */
 setMapSection(pickMapLink(detail));
 
 const thumb = cleanDriveImage(detail.Thumbnail_Image || "");
