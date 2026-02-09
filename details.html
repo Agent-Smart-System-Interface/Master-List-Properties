@@ -174,44 +174,10 @@
       flex:0 0 auto;
     }
 
-    /* ✅ miniMeta ใต้ราคา */
-    .miniMeta{
-      margin-top:6px;
-      font-size:13px;
-      font-weight:900;
-      color: rgba(15,23,42,.55);
-      letter-spacing:.2px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
     @media (max-width:420px){
       .price{font-size:24px}
       .statusBelow{font-size:14px; padding:7px 10px;}
       .tagTopLeft{font-size:13px; padding:7px 10px;}
-      .miniMeta{font-size:12px;}
-    }
-
-    /* ✅ Description box: เอาหัวข้อออก เหลือข้อความอย่างเดียว */
-    .descBox{
-      margin-top:12px;
-      background: rgba(255,255,255,.92);
-      border: 2px solid rgba(59,130,246,.35);
-      border-radius: 18px;
-      box-shadow: 0 10px 22px rgba(0,0,0,.08);
-      padding:12px 12px;
-    }
-    .descText{
-      font-weight:950;
-      color: rgba(15,23,42,.92);
-      line-height:1.45;
-      white-space:pre-wrap;
-      word-break:break-word;
-    }
-    .descEmpty{
-      color: rgba(15,23,42,.55);
-      font-weight:900;
     }
 
     .gridInfo{
@@ -233,6 +199,27 @@
     }
     .k{color:rgba(15,23,42,.55); font-weight:900;}
     .v{color:rgba(15,23,42,.95); font-weight:1100; text-align:right; white-space:pre-wrap;}
+
+    .infoBox.double{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      align-items:start;
+    }
+    .infoPair{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      min-width:0;
+    }
+    .infoPair .k{white-space:nowrap;}
+    .infoPair .v{
+      text-align:right;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      min-width:0;
+    }
 
     .errorBox{
       margin-top:14px;
@@ -433,7 +420,9 @@
     }
 
     @media (max-width: 420px) {
-      .otherId { font-size: 9.5px; }
+      .otherId {
+        font-size: 9.5px;
+      }
     }
 
     .shareSection{
@@ -489,129 +478,6 @@
     .shareBtn:active .shareCircle{ transform: scale(.97); }
 
     #shareCanvas{ display:none; }
-
-    /* ✅ Facebook Visit Bar */
-    .fbVisitWrap{
-      margin-top: 10px;
-      display:flex;
-      justify-content:center;
-    }
-    .fbVisitBtn{
-      width:min(640px, 100%);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      padding: 12px 14px;
-      border-radius: 18px;
-      text-decoration:none;
-      font-weight:1100;
-      letter-spacing:.2px;
-      background: rgba(255,255,255,.90);
-      border: 2px solid rgba(59,130,246,.55);
-      box-shadow: 0 10px 22px rgba(0,0,0,.10);
-      color:#1d4ed8;
-      user-select:none;
-      cursor:pointer;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .fbVisitBtn:active{ transform: scale(.99); }
-    .fbVisitIcon{
-      width:28px; height:28px;
-      border-radius: 12px;
-      display:grid;
-      place-items:center;
-      flex:0 0 auto;
-      background: rgba(29,78,216,.10);
-    }
-    .fbVisitBtn.hidden{ display:none; }
-
-    /* ✅ (จุดที่ 3) Map Section: แสดงเฉพาะเมื่อมีลิงก์ */
-    .mapSection{
-      margin-top: 12px;
-      display:none;
-    }
-    .mapCard{
-      width:min(900px, 100%);
-      margin: 0 auto;
-      border-radius: 18px;
-      overflow:hidden;
-      border: 1px solid rgba(255,255,255,.65);
-      box-shadow: 0 10px 22px rgba(0,0,0,.10);
-      background: rgba(255,255,255,.92);
-    }
-    .mapFrame{
-      width:100%;
-      height: 320px;
-      border:0;
-      display:block;
-      background:#e8f0fb;
-    }
-    @media (max-width:420px){
-      .mapFrame{ height: 260px; }
-    }
-
-    /* =========================================================
-       Bottom Dock
-       ========================================================= */
-    .wrap{ padding-bottom: 92px; }
-
-    .bottomDock{
-      position:fixed;
-      left:0; right:0; bottom:0;
-      z-index:9999;
-      padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
-      background: rgba(255,255,255,.40);
-      backdrop-filter: blur(14px);
-      border-top: 1px solid rgba(255,255,255,.55);
-    }
-    .dockInner{
-      max-width:1100px;
-      margin:0 auto;
-      display:grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap:10px;
-    }
-    .dockBtn{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      padding: 12px 10px;
-      border-radius: 18px;
-      text-decoration:none;
-      font-weight: 1100;
-      letter-spacing:.2px;
-      background: rgba(255,255,255,.78);
-      border: 1px solid rgba(15,23,42,.10);
-      box-shadow: 0 10px 22px rgba(0,0,0,.10);
-      color: rgba(15,23,42,.92);
-      user-select:none;
-      cursor:pointer;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .dockBtn:active{ transform: scale(.99); }
-    .dockIcon{
-      width:26px; height:26px;
-      border-radius: 12px;
-      display:grid;
-      place-items:center;
-      font-size:14px;
-      flex:0 0 auto;
-      background: rgba(15,23,42,.08);
-    }
-    .dockBtn.disabled{
-      opacity:.42;
-      pointer-events:none;
-    }
-    @media (max-width:420px){
-      .dockBtn{ padding:11px 8px; border-radius:16px; font-size:12px; }
-      .dockIcon{ width:24px; height:24px; border-radius:11px; }
-    }
   </style>
 </head>
 <body>
@@ -664,14 +530,6 @@
           <div class="hp" id="hpText">...</div>
           <div class="price" id="priceText">฿0</div>
           <div class="statusBelow" id="statusBelow">-</div>
-        </div>
-
-        <!-- ✅ จุดที่ 4: Land/Living ใต้ราคา (ดึงจาก sq.m) -->
-        <div class="miniMeta" id="miniMeta">Land - · Living -</div>
-
-        <!-- ✅ จุดที่ 1: ไม่มีหัวข้อ Description แล้ว เหลือเฉพาะข้อความ -->
-        <div class="descBox" id="descBox">
-          <div class="descText" id="descText">-</div>
         </div>
 
         <div class="gridInfo" id="infoGrid"></div>
@@ -769,32 +627,6 @@
             </button>
           </div>
 
-          <div class="fbVisitWrap">
-            <a id="fbVisitBtn" class="fbVisitBtn hidden" href="#" target="_blank" rel="noopener">
-              <span class="fbVisitIcon" aria-hidden="true">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2">
-                  <path d="M22 12.06C22 6.504 17.523 2 12 2S2 6.504 2 12.06C2 17.082 5.657 21.245 10.438 22v-7.03H7.898v-2.91h2.54V9.845c0-2.522 1.492-3.916 3.777-3.916 1.094 0 2.238.196 2.238.196v2.475h-1.26c-1.243 0-1.63.776-1.63 1.57v1.89h2.773l-.443 2.91h-2.33V22C18.343 21.245 22 17.082 22 12.06z"/>
-                </svg>
-              </span>
-              <span id="fbVisitText">Visit our Facebook Page</span>
-            </a>
-          </div>
-
-          <!-- ✅ จุดที่ 3: Map แสดงตรงตำแหน่งที่คุณวงไว้ / ซ่อนอัตโนมัติถ้าไม่มีลิงก์ -->
-          <div class="mapSection" id="mapSection">
-            <div class="mapCard">
-              <iframe
-                id="mapFrame"
-                class="mapFrame"
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade"
-                allowfullscreen
-                src=""
-                title="Google Map">
-              </iframe>
-            </div>
-          </div>
-
           <canvas id="shareCanvas" width="1200" height="630"></canvas>
         </div>
 
@@ -809,23 +641,6 @@
     </div>
   </div>
 
-  <div class="bottomDock" id="bottomDock" aria-label="Downloads">
-    <div class="dockInner">
-      <a class="dockBtn disabled" id="dockSales" href="#" target="_blank" rel="noopener">
-        <span class="dockIcon">📄</span>
-        <span>Sales PDF</span>
-      </a>
-      <a class="dockBtn disabled" id="dockMaterial" href="#" target="_blank" rel="noopener">
-        <span class="dockIcon">📄</span>
-        <span>Material PDF</span>
-      </a>
-      <a class="dockBtn disabled" id="dockFloorplan" href="#" target="_blank" rel="noopener">
-        <span class="dockIcon">📄</span>
-        <span>Floor Plan</span>
-      </a>
-    </div>
-  </div>
-
 <script>
 /** =========================
  * CONFIG
@@ -833,6 +648,8 @@
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
 const qs = new URLSearchParams(location.search);
 const hpId = qs.get("id") || qs.get("hpId") || "";
+
+// ✅ แก้ไข: เปลี่ยนค่าเริ่มต้นจาก Project_0 เป็น HP00 ตามที่ระบุ
 const project = qs.get("project") || "HP00";
 
 /** Loader helpers */
@@ -967,134 +784,66 @@ function enableSwipe(){
   });
 }
 
-/** ✅ helper: pick / safe */
-function safeText(v){
-  const s = String(v ?? "").trim();
-  return s === "" ? "-" : s;
-}
-function pick(obj, keys){
-  for (const k of keys){
-    if (obj && obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== "") return obj[k];
-  }
-  return "";
-}
-function fmtSqm(v){
-  const s = safeText(v);
-  if(s === "-") return "-";
-  const low = s.toLowerCase();
-  if (low.includes("sq") || low.includes("ตร.ม") || low.includes("m2") || low.includes("m²")) return s;
-  return s + " sq.m";
-}
-
-/* รองรับ key หลายรูปแบบ */
-const LAND_SQM_KEYS = [
-  "Land Area (sq.m)", "Land Area (sqm)", "Land Area sq.m", "Land Area sqm",
-  "Land_Area_sq_m", "Land_Area_SQM", "LandAreaSQM", "Land_sq_m", "LandSqm",
-  "Land_Area_(sq.m)", "Land_Area_(sqm)", "Land_Area_sq.m", "Land_Area_sqm",
-  "Land_Area__sq_m_", "Land_Area__sqm_", "Land_Area_sq_m_", "LandArea_sq_m",
-];
-const LIVING_SQM_KEYS = [
-  "Living Area (sq.m)", "Living Area (sqm)", "Living Area sq.m", "Living Area sqm",
-  "Living_Area_sq_m", "Living_Area_SQM", "LivingAreaSQM", "Living_sq_m", "LivingSqm",
-  "Living_Area_(sq.m)", "Living_Area_(sqm)", "Living_Area_sq.m", "Living_Area_sqm",
-  "Living_Area__sq_m_", "Living_Area__sqm_", "Living_Area_sq_m_", "LivingArea_sq_m",
-];
-
-/** ✅ จุดที่ 1: render Description (ไม่มีหัวข้อ) + ซ่อนกรอบถ้าไม่มีข้อความ */
-function renderDescription(detail){
-  const desc = safeText(pick(detail, ["Description","description","Desc"]));
-  const box = document.getElementById("descBox");
-  const el = document.getElementById("descText");
-  if(!box || !el) return;
-
-  if(desc === "-" ){
-    // ถ้าไม่มีจริง ๆ ให้ซ่อนทั้งกล่อง (ยุบพื้นที่)
-    box.style.display = "none";
-    return;
-  }
-  box.style.display = "block";
-  el.textContent = desc;
-  el.classList.remove("descEmpty");
-}
-
-/** ✅ จุดที่ 4: render Land/Living ใต้ราคา (ดึงจาก sq.m) */
-function renderMiniMeta(detail){
-  const landM = fmtSqm(pick(detail, LAND_SQM_KEYS));
-  const livingM = fmtSqm(pick(detail, LIVING_SQM_KEYS));
-  const el = document.getElementById("miniMeta");
-  if(!el) return;
-  el.textContent = `Land ${landM} · Living ${livingM}`;
-}
-
-/** ✅ จุดที่ 3: Map section (แสดง/ซ่อนอัตโนมัติ) */
-function pickMapLink(detail){
-  const keys = ["Map_Link","MapLink","MAP_LINK","GoogleMap","Google_Map","Map","map","Location","Location_Link"];
-  for(const k of keys){
-    const v = detail ? detail[k] : "";
-    const s = String(v ?? "").trim();
-    if(s && s !== "-") return s;
-  }
-  return "";
-}
-function normalizeMapSrc(link){
-  const s = String(link || "").trim();
-  if(!s) return "";
-  // ถ้าเป็น embed อยู่แล้ว ใช้ได้เลย
-  if (s.includes("/maps/embed")) return s;
-  // ถ้าเป็นลิงก์ maps ปกติ ใส่ iframe ได้ในหลายกรณี
-  if (s.includes("google.com/maps")) return s;
-  // fallback: เปิดค้นหาตามสตริง
-  return "https://www.google.com/maps?q=" + encodeURIComponent(s);
-}
-function setMapSection(link){
-  const sec = document.getElementById("mapSection");
-  const frame = document.getElementById("mapFrame");
-  if(!sec || !frame) return;
-
-  const href = String(link ?? "").trim();
-  if(!href || href === "-"){
-    sec.style.display = "none";
-    frame.src = "";
-    return;
-  }
-  sec.style.display = "block";
-  frame.src = normalizeMapSrc(href);
-}
-
 /** จัดเรียงข้อมูล (ปรับเฉพาะข้อที่ขอ) */
 function renderInfo(detail){
   const grid = document.getElementById("infoGrid");
 
-  const landW = safeText(pick(detail, ["Land_Area_sq_w","Land_Area_SQW","LandAreaSQW","Land_sq_w","Land Area (sq.w)","Land Area (sq.w.)"]));
-  const livingM = safeText(pick(detail, LIVING_SQM_KEYS));
-  const landM = safeText(pick(detail, LAND_SQM_KEYS));
+  const safe = (v)=> {
+    if (v === undefined || v === null) return "-";
+    const s = String(v).trim();
+    return s === "" ? "-" : s;
+  };
 
-  // ✅ จุดที่ 2: แยก Land Area (sq.w) และ Living Area (sq.m) เป็นคนละแถว
+  const pick = (obj, keys)=> {
+    for (const k of keys){
+      if (obj && obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== "") return obj[k];
+    }
+    return "";
+  };
+
+  // ✅ จุดที่ 3: ดึง 2 ค่าเพื่อโชว์ “แถวเดียวกัน”
+  const landW = safe(pick(detail, ["Land_Area_sq_w","Land_Area_SQW","LandAreaSQW","Land_sq_w"]));
+  const livingM = safe(pick(detail, ["Living_Area_sq_m","Living_Area_SQM","LivingAreaSQM","Living_sq_m"]));
+
   const items = [
-    ["Project_Name", safeText(pick(detail, ["Project_Name","ProjectName","Project_Name_En","Project_Name_TH","Project"]))],
-    ["District", safeText(pick(detail, ["District","district"]))],
-    ["SubDistrict", safeText(pick(detail, ["SubDistrict","Sub_District","subdistrict"]))],
-    ["Badge", safeText(pick(detail, ["Badge","badge"]))],
+    ["Project_Name", safe(pick(detail, ["Project_Name","ProjectName","Project_Name_En","Project_Name_TH","Project"]))],
+    ["District", safe(pick(detail, ["District","district"]))],
+    ["SubDistrict", safe(pick(detail, ["SubDistrict","Sub_District","subdistrict"]))],
+    ["Badge", safe(pick(detail, ["Badge","badge"]))],
+    ["Description", safe(pick(detail, ["Description","description","Desc"]))],
+    ["Bedrooms", safe(pick(detail, ["Bedrooms","Bedroom","beds"]))],
+    ["Bathrooms", safe(pick(detail, ["Bathrooms","Bathroom","baths"]))],
 
-    ["Bedrooms", safeText(pick(detail, ["Bedrooms","Bedroom","beds"]))],
-    ["Bathrooms", safeText(pick(detail, ["Bathrooms","Bathroom","baths"]))],
+    // ✅ จุดที่ 3: 2 อย่างในแถวเดียวกัน
+    ["__DOUBLE__", {
+      k1: "Land Area (sq.w)", v1: landW,
+      k2: "Living Area (sq.m)", v2: livingM
+    }],
 
-    ["Land Area (sq.w)", landW],
-    ["Living Area (sq.m)", livingM],
-
-    ["Land Area (sq.m)", landM],
-    ["Pool Size", safeText(pick(detail, ["Pool_Size","PoolSize"]))],
-    ["Pool Depth", safeText(pick(detail, ["Pool_Depth","PoolDepth"]))],
-    ["Furnishing", safeText(pick(detail, ["Furnishing","furnishing"]))],
-    ["Price_SQM", safeText(pick(detail, ["Price_SQM","PriceSQM"]))],
-    ["Status", safeText(pick(detail, ["Status","status"]))],
-    ["Parking", safeText(pick(detail, ["Parking","parking"]))],
-    ["Extras", safeText(pick(detail, ["Extras","extras"]))],
-    ["Electricity", safeText(pick(detail, ["Electricity","electricity"]))],
+    ["Land Area (sq.m)", safe(pick(detail, ["Land_Area_sq_m","Land_Area_SQM","LandAreaSQM","Land_sq_m"]))],
+    ["Pool Size", safe(pick(detail, ["Pool_Size","PoolSize"]))],
+    ["Pool Depth", safe(pick(detail, ["Pool_Depth","PoolDepth"]))],
+    ["Furnishing", safe(pick(detail, ["Furnishing","furnishing"]))],
+    ["Price_SQM", safe(pick(detail, ["Price_SQM","PriceSQM"]))],
+    ["Status", safe(pick(detail, ["Status","status"]))],
+    ["Parking", safe(pick(detail, ["Parking","parking"]))],
+    ["Extras", safe(pick(detail, ["Extras","extras"]))],
+    ["Electricity", safe(pick(detail, ["Electricity","electricity"]))],
   ];
 
   grid.innerHTML = "";
   for(const [k,v] of items){
+    if(k === "__DOUBLE__"){
+      const box = document.createElement("div");
+      box.className = "infoBox double";
+      box.innerHTML = `
+        <div class="infoPair"><div class="k">${v.k1}</div><div class="v">${v.v1}</div></div>
+        <div class="infoPair"><div class="k">${v.k2}</div><div class="v">${v.v2}</div></div>
+      `;
+      grid.appendChild(box);
+      continue;
+    }
+
     const box = document.createElement("div");
     box.className = "infoBox";
     box.innerHTML = `<div class="k">${k}</div><div class="v">${v}</div>`;
@@ -1121,11 +870,30 @@ function getPrice(u){
   return u?.Price ?? u?.price ?? 0;
 }
 
+/* ✅ จุดที่ 1: ดึง Land Area (sq.m) และ Living Area (sq.m) จาก Unit List */
 function getLandSqm(u){
-  return String(pick(u, LAND_SQM_KEYS) ?? "").trim();
+  return String(
+    u?.Land_Area_sq_m ??
+    u?.Land_Area_SQM ??
+    u?.LandAreaSQM ??
+    u?.Land_sq_m ??
+    u?.["Land Area (sq.m)"] ??
+    ""
+  ).trim();
 }
 function getLivingSqm(u){
-  return String(pick(u, LIVING_SQM_KEYS) ?? "").trim();
+  return String(
+    u?.Living_Area_sq_m ??
+    u?.Living_Area_SQM ??
+    u?.LivingAreaSQM ??
+    u?.Living_sq_m ??
+    u?.["Living Area (sq.m)"] ??
+    ""
+  ).trim();
+}
+function safeText(v){
+  const s = String(v ?? "").trim();
+  return s === "" ? "-" : s;
 }
 
 function renderOtherUnits(units){
@@ -1146,11 +914,12 @@ function renderOtherUnits(units){
     const thumb = getThumb(u);
     const st = getStatus(u);
     const price = moneyTHB(getPrice(u));
+
     const pill = statusStyle(st);
 
-    // ✅ จุดที่ 4: Land/Living จาก sq.m พร้อมหน่วย
-    const landM = fmtSqm(getLandSqm(u));
-    const livingM = fmtSqm(getLivingSqm(u));
+    // ✅ จุดที่ 1: เปลี่ยนเป็น Land / Living ให้สั้นลงเพื่อโชว์ครบ 1 แถว
+    const landM = safeText(getLandSqm(u));
+    const livingM = safeText(getLivingSqm(u));
     const landLivingText = `Land ${landM} · Living ${livingM}`;
 
     const card = document.createElement("div");
@@ -1201,18 +970,29 @@ async function buildShareImageBlob(detail){
   const canvas = document.getElementById("shareCanvas");
   const ctx = canvas.getContext("2d");
 
-  const safe = (v)=> (v===undefined || v===null || String(v).trim()==="" ? "-" : String(v).trim());
-  const projectName = safe(detail.Project_Name || detail.ProjectName || detail.Project || project);
-  const district = safe(detail.District || detail.district);
-  const subDistrict = safe(detail.SubDistrict || detail.Sub_District || detail.subdistrict);
-  const beds = safe(detail.Bedrooms || detail.Bedroom || detail.beds);
-  const baths = safe(detail.Bathrooms || detail.Bathroom || detail.baths);
-  const landW = safe(detail.Land_Area_sq_w || detail.Land_Area_SQW || detail.LandAreaSQW);
-  const livingM = safe(pick(detail, LIVING_SQM_KEYS));
-  const price = moneyTHB(detail.Price || 0);
-  const status = safe(detail.Status || detail.status);
-  const badge = safe(detail.Badge || detail.badge);
-  const plot = safe(detail.Plot || detail.plot);
+  const safe = (v)=> {
+    if (v === undefined || v === null) return "-";
+    const s = String(v).trim();
+    return s === "" ? "-" : s;
+  };
+  const pick = (obj, keys)=> {
+    for (const k of keys){
+      if (obj && obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== "") return obj[k];
+    }
+    return "";
+  };
+
+  const projectName = safe(pick(detail, ["Project_Name","ProjectName","Project"]));
+  const district = safe(pick(detail, ["District","district"]));
+  const subDistrict = safe(pick(detail, ["SubDistrict","Sub_District","subdistrict"]));
+  const beds = safe(pick(detail, ["Bedrooms","Bedroom","beds"]));
+  const baths = safe(pick(detail, ["Bathrooms","Bathroom","baths"]));
+  const landW = safe(pick(detail, ["Land_Area_sq_w","Land_Area_SQW","LandAreaSQW"]));
+  const livingM = safe(pick(detail, ["Living_Area_sq_m","Living_Area_SQM","LivingAreaSQM"]));
+  const price = moneyTHB(pick(detail, ["Price","price"]) || 0);
+  const status = safe(pick(detail, ["Status","status"]));
+  const badge = safe(pick(detail, ["Badge","badge"]));
+  const plot = safe(pick(detail, ["Plot","plot"]));
 
   const rows = [
     ["Project_Name", projectName, "Badge", badge],
@@ -1355,7 +1135,7 @@ function drawKV(ctx, x, y, w, key, val){
   ctx.fillText(out, x, y + 34);
 }
 
-/** Share handlers */
+/** Share handlers (เดิมของคุณ) */
 function buildShareText(detail){
   const safe = (v)=> (v===undefined || v===null || String(v).trim()==="" ? "-" : String(v).trim());
   const projectName = safe(detail.Project_Name || detail.ProjectName || detail.Project || project);
@@ -1451,50 +1231,6 @@ function wireShareButtons(){
   });
 }
 
-/* =========================================================
-   Bottom Dock logic
-   ========================================================= */
-function normalizeLink(v){
-  const s = String(v ?? "").trim();
-  return s && s !== "-" ? s : "";
-}
-function setDockLink(elId, link){
-  const el = document.getElementById(elId);
-  if(!el) return;
-  const href = normalizeLink(link);
-  if(!href){
-    el.classList.add("disabled");
-    el.setAttribute("href", "#");
-    return;
-  }
-  el.classList.remove("disabled");
-  el.setAttribute("href", href);
-}
-
-/* FB Link bar */
-function pickFbLink(detail){
-  const keys = ["FB_Link","FBLink","FB_Link ","FB_LINK","facebook","Facebook","FB"];
-  for(const k of keys){
-    const v = detail ? detail[k] : "";
-    const s = String(v ?? "").trim();
-    if(s && s !== "-") return s;
-  }
-  return "";
-}
-function setFbVisitBar(link){
-  const a = document.getElementById("fbVisitBtn");
-  if(!a) return;
-
-  const href = normalizeLink(link);
-  if(!href){
-    a.classList.add("hidden");
-    a.setAttribute("href", "#");
-    return;
-  }
-  a.classList.remove("hidden");
-  a.setAttribute("href", href);
-}
-
 /** LOAD */
 (async function init(){
   hideError();
@@ -1507,6 +1243,7 @@ function setFbVisitBar(link){
     return;
   }
 
+  // ✅ แก้ไขพารามิเตอร์ project เป็น HP00 ในการเรียกใช้ API
   const url = `${SCRIPT_URL}?mode=getUnitDetail&project=${encodeURIComponent(project)}&hpId=${encodeURIComponent(hpId)}`;
 
   let detail;
@@ -1540,15 +1277,6 @@ function setFbVisitBar(link){
   stEl.style.borderColor = st.border;
   stEl.style.color = st.text;
 
-  // ✅ จุดที่ 4
-  renderMiniMeta(detail);
-
-  // ✅ จุดที่ 1
-  renderDescription(detail);
-
-  // ✅ จุดที่ 3 (Map)
-  setMapSection(pickMapLink(detail));
-
   const thumb = cleanDriveImage(detail.Thumbnail_Image || "");
   const list = String(detail.Image_List || "")
     .split(",").map(s=>cleanDriveImage(s.trim()))
@@ -1579,17 +1307,8 @@ function setFbVisitBar(link){
     pre.src = images[1];
   }
 
-  // ✅ จุดที่ 2
   renderInfo(detail);
-
   loadOtherUnits();
-
-  setDockLink("dockSales", detail.Sales_Gallery);
-  setDockLink("dockMaterial", detail.Material_PDF);
-  setDockLink("dockFloorplan", detail.FloorPlan_PDF);
-
-  setFbVisitBar(pickFbLink(detail));
-
 })();
 </script>
 </body>
