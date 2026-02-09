@@ -56,13 +56,13 @@
   </style>
 </head>
 
-<body class="p-4 md:p-10">
+<body class="p-4 md:p-10 italic">
   <div class="max-w-5xl mx-auto">
 
     <div class="bg-slate-900 rounded-[2.5rem] p-6 sm:p-8 md:p-12 text-white flex justify-between items-center mb-8 shadow-2xl">
       <div>
         <p class="text-blue-400 font-bold uppercase tracking-widest text-xs mb-2">Master Database Editor</p>
-        <h1 id="displayId" class="text-3xl sm:text-4xl font-bold tracking-tighter">HP-XXXX</h1>
+        <h1 id="displayId" class="text-3xl sm:text-4xl font-bold tracking-tighter italic">HP-XXXX</h1>
       </div>
       <button onclick="history.back()" class="bg-white/10 hover:bg-white/20 p-4 rounded-2xl transition-all" title="Close">✕</button>
     </div>
@@ -142,7 +142,6 @@
 
     <div id="tab-info" class="hidden space-y-6">
       <div class="input-card grid grid-cols-1 md:grid-cols-3 gap-6">
-
         <div><span class="field-label">Plot</span><input id="Plot" class="field-input"></div>
         <div><span class="field-label">Type</span><input id="Type" class="field-input"></div>
         <div><span class="field-label">Project Name</span><input id="Project_Name" class="field-input"></div>
@@ -151,8 +150,8 @@
         <div><span class="field-label">Bathrooms</span><input type="number" id="Bathrooms" class="field-input"></div>
         <div><span class="field-label">Parking</span><input id="Parking" class="field-input"></div>
 
-        <div><span class="field-label">Extras</span><input id="Extras" class="field-input"></div>
-        <div><span class="field-label">Electricity</span><input id="Electricity" class="field-input"></div>
+        <div><span class="field-label">Extras</span><input id="Extras" class="field-input" placeholder="เช่น Built-in, Solar, etc."></div>
+        <div><span class="field-label">Electricity</span><input id="Electricity" class="field-input" placeholder="เช่น Government / 5-15 baht"></div>
         <div></div>
 
         <div><span class="field-label">Land (sq.w)</span><input id="Land_Area_sq_w" class="field-input"></div>
@@ -264,6 +263,9 @@
         <div class="col-span-full">
           <span class="field-label">System Status (Read Only)</span>
           <input id="System_Status" class="field-input font-bold bg-slate-50" disabled value="Pending">
+          <p class="text-xs text-slate-400 mt-2 italic">
+            Offline = ไม่แสดงออนไลน์ | Pending = ยังไม่แสดงออนไลน์แต่แก้ไขข้อมูลได้ | Online = ข้อมูลพร้อมแล้ว (กำหนดโดย Master ใหญ่)
+          </p>
         </div>
       </div>
     </div>
@@ -289,18 +291,18 @@
   </div>
 
   <script>
-    // ✅ กันจอขาว: ดัก error ให้เด้งข้อความ (สำคัญมาก)
+    const API_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
+    const urlParams = new URLSearchParams(location.search);
+    const HP_ID = urlParams.get("id");
+    const PROJECT = urlParams.get("project") || "HP00";
+
+    // ✅ กันจอขาว (สำคัญมาก)
     window.addEventListener("error", (ev) => {
       try { alert("JS Error: " + (ev.message || "unknown")); } catch(e){}
     });
     window.addEventListener("unhandledrejection", (ev) => {
       try { alert("Promise Error: " + (ev.reason?.message || ev.reason || "unknown")); } catch(e){}
     });
-
-    const API_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
-    const urlParams = new URLSearchParams(location.search);
-    const HP_ID = urlParams.get("id");
-    const PROJECT = urlParams.get("project") || "HP00";
 
     let existingGallery = [];
     let removedGallery = [];
@@ -356,9 +358,7 @@
 
     function bindDistrictChange() {
       const districtSel = document.getElementById("District");
-      districtSel.addEventListener("change", () => {
-        setSubDistrictOptions(districtSel.value, "");
-      });
+      districtSel.addEventListener("change", () => setSubDistrictOptions(districtSel.value, ""));
     }
 
     function previewFile(input, targetId) {
@@ -464,10 +464,9 @@
         if (el) el.value = (data[k] ?? "");
       });
 
-      // ✅ สำคัญ: map FB_Link กลับเข้าช่องให้ชัวร์
-      const fb = (data.FB_Link ?? "").toString();
+      // ✅ สำคัญ: map FB_Link ให้ชัวร์ (กันกรณี normKey/คีย์อื่น)
       const fbEl = document.getElementById("FB_Link");
-      if (fbEl) fbEl.value = fb;
+      if (fbEl) fbEl.value = (data.FB_Link ?? "");
 
       const districtVal = (data.District ?? "").toString().trim();
       const subDistrictVal = (data.SubDistrict ?? "").toString().trim();
@@ -507,10 +506,12 @@
     }
 
     const toBase64 = file => new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve({ data: reader.result.split(",")[1], type: file.type });
-      reader.onerror = () => reject(new Error("File read error"));
-      reader.readAsDataURL(file);
+      try {
+        const reader = new FileReader();
+        reader.onload = () => resolve({ data: reader.result.split(",")[1], type: file.type });
+        reader.onerror = () => reject(new Error("File read error"));
+        reader.readAsDataURL(file);
+      } catch (e) { reject(e); }
     });
 
     async function updateData() {
@@ -556,7 +557,7 @@
         Badge: document.getElementById("Badge").value,
         Description: document.getElementById("Description").value,
 
-        // ✅ สำคัญ: ส่งแค่ FB_Link (ไม่ใช้ FBLink)
+        // ✅ สำคัญ
         FB_Link: document.getElementById("FB_Link").value,
 
         Map_Link: document.getElementById("Map_Link").value,
@@ -594,6 +595,17 @@
         const out = await res.json().catch(() => ({}));
         if (!res.ok || out.error) throw new Error(out.error || "Save failed");
 
+        if (out.pdfLinks) {
+          pdfLinks = {
+            sales: out.pdfLinks.sales || "",
+            material: out.pdfLinks.material || "",
+            floorplan: out.pdfLinks.floorplan || ""
+          };
+          setPdfText("sales", pdfLinks.sales || "ยังไม่มีไฟล์");
+          setPdfText("material", pdfLinks.material || "ยังไม่มีไฟล์");
+          setPdfText("floorplan", pdfLinks.floorplan || "ยังไม่มีไฟล์");
+        }
+
         document.getElementById("successPopup").classList.remove("hidden");
       } catch (e) {
         alert("Save Failed: " + e.message);
@@ -602,9 +614,9 @@
       }
     }
 
-    window.onload = async () => {
+    window.onload = () => {
       bindDistrictChange();
-      try { await loadData(); } catch(e) { alert("Load Failed: " + e.message); }
+      loadData();
     };
   </script>
 </body>
