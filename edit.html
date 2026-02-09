@@ -18,17 +18,12 @@
 
     .img-tile { position: relative; }
     .img-x {
-      position: absolute;
-      top: 4px; right: 4px;
+      position: absolute; top: 4px; right: 4px;
       width: 18px; height: 18px;
       border-radius: 999px;
       background: rgba(15,23,42,.85);
-      color: #fff;
-      font-size: 12px;
-      line-height: 18px;
-      text-align: center;
-      cursor: pointer;
-      user-select: none;
+      color: #fff; font-size: 12px; line-height: 18px;
+      text-align: center; cursor: pointer; user-select: none;
     }
     .img-x:hover { background: rgba(239,68,68,.95); }
 
@@ -51,25 +46,23 @@
     .pdfbtn{
       padding:10px 14px;border-radius:14px;
       font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:.08em;
-      background:#0f172a;color:#fff;
-      flex:0 0 auto;
+      background:#0f172a;color:#fff; flex:0 0 auto;
     }
     .pdfbtn2{
       padding:10px 14px;border-radius:14px;
       font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:.08em;
-      background:#2563eb;color:#fff;
-      flex:0 0 auto;
+      background:#2563eb;color:#fff; flex:0 0 auto;
     }
   </style>
 </head>
 
-<body class="p-4 md:p-10 italic">
+<body class="p-4 md:p-10">
   <div class="max-w-5xl mx-auto">
 
     <div class="bg-slate-900 rounded-[2.5rem] p-6 sm:p-8 md:p-12 text-white flex justify-between items-center mb-8 shadow-2xl">
       <div>
         <p class="text-blue-400 font-bold uppercase tracking-widest text-xs mb-2">Master Database Editor</p>
-        <h1 id="displayId" class="text-3xl sm:text-4xl font-bold tracking-tighter italic">HP-XXXX</h1>
+        <h1 id="displayId" class="text-3xl sm:text-4xl font-bold tracking-tighter">HP-XXXX</h1>
       </div>
       <button onclick="history.back()" class="bg-white/10 hover:bg-white/20 p-4 rounded-2xl transition-all" title="Close">✕</button>
     </div>
@@ -158,8 +151,8 @@
         <div><span class="field-label">Bathrooms</span><input type="number" id="Bathrooms" class="field-input"></div>
         <div><span class="field-label">Parking</span><input id="Parking" class="field-input"></div>
 
-        <div><span class="field-label">Extras</span><input id="Extras" class="field-input" placeholder="เช่น Built-in, Solar, etc."></div>
-        <div><span class="field-label">Electricity</span><input id="Electricity" class="field-input" placeholder="เช่น Government / 5-15 baht"></div>
+        <div><span class="field-label">Extras</span><input id="Extras" class="field-input"></div>
+        <div><span class="field-label">Electricity</span><input id="Electricity" class="field-input"></div>
         <div></div>
 
         <div><span class="field-label">Land (sq.w)</span><input id="Land_Area_sq_w" class="field-input"></div>
@@ -265,18 +258,13 @@
 
         <!-- ✅ สำคัญ -->
         <div><span class="field-label">FB Link</span><input id="FB_Link" class="field-input"></div>
-
         <div><span class="field-label">Map Link</span><input id="Map_Link" class="field-input"></div>
         <div><span class="field-label">Virtual Tour</span><input id="Virtual_Tour" class="field-input"></div>
 
         <div class="col-span-full">
           <span class="field-label">System Status (Read Only)</span>
           <input id="System_Status" class="field-input font-bold bg-slate-50" disabled value="Pending">
-          <p class="text-xs text-slate-400 mt-2 italic">
-            Offline = ไม่แสดงออนไลน์ | Pending = ยังไม่แสดงออนไลน์แต่แก้ไขข้อมูลได้ | Online = ข้อมูลพร้อมแล้ว (กำหนดโดย Master ใหญ่)
-          </p>
         </div>
-
       </div>
     </div>
 
@@ -301,12 +289,12 @@
   </div>
 
   <script>
-    // ✅ กันจอขาว (ถ้า JS พัง ให้เด้ง error)
+    // ✅ กันจอขาว: ดัก error ให้เด้งข้อความ (สำคัญมาก)
     window.addEventListener("error", (ev) => {
-      try { alert("JS Error: " + (ev.message || ev.error || "unknown")); } catch(e){}
+      try { alert("JS Error: " + (ev.message || "unknown")); } catch(e){}
     });
     window.addEventListener("unhandledrejection", (ev) => {
-      try { alert("Promise Error: " + (ev.reason && ev.reason.message ? ev.reason.message : ev.reason)); } catch(e){}
+      try { alert("Promise Error: " + (ev.reason?.message || ev.reason || "unknown")); } catch(e){}
     });
 
     const API_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
@@ -467,70 +455,62 @@
       document.getElementById("displayId").innerText = HP_ID || "HP-XXXX";
       if (!HP_ID || !PROJECT) return alert("Missing id/project in URL");
 
-      try {
-        const res = await fetch(`${API_URL}?mode=getUnitDetail&hpId=${encodeURIComponent(HP_ID)}&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`);
-        const data = await res.json();
-        if (data && data.error) throw new Error(data.error);
+      const res = await fetch(`${API_URL}?mode=getUnitDetail&hpId=${encodeURIComponent(HP_ID)}&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`);
+      const data = await res.json();
+      if (data && data.error) throw new Error(data.error);
 
-        // เติมค่าตาม id ที่ชื่อเดียวกับ key จาก GAS (normKey)
-        Object.keys(data || {}).forEach(k => {
-          const el = document.getElementById(k);
-          if (el) el.value = (data[k] ?? "");
-        });
+      Object.keys(data || {}).forEach(k => {
+        const el = document.getElementById(k);
+        if (el) el.value = (data[k] ?? "");
+      });
 
-        // ✅ บังคับ FB_Link ให้ชัวร์ (รองรับของเก่า FBLink)
-        const fb = (data.FB_Link ?? data.FBLink ?? "").toString();
-        const fbEl = document.getElementById("FB_Link");
-        if (fbEl) fbEl.value = fb;
+      // ✅ สำคัญ: map FB_Link กลับเข้าช่องให้ชัวร์
+      const fb = (data.FB_Link ?? "").toString();
+      const fbEl = document.getElementById("FB_Link");
+      if (fbEl) fbEl.value = fb;
 
-        const districtVal = (data.District ?? "").toString().trim();
-        const subDistrictVal = (data.SubDistrict ?? "").toString().trim();
-        if (districtVal) {
-          document.getElementById("District").value = districtVal;
-          setSubDistrictOptions(districtVal, subDistrictVal);
-        } else {
-          setSubDistrictOptions("", "");
-        }
-
-        const rawSys = (data.System_Status ?? "").toString().trim();
-        const mapSys = { "Live":"Online", "Online (Live)":"Online", "Online":"Online", "Pending":"Pending", "Offline":"Offline" };
-        const normalized = mapSys[rawSys] || (rawSys ? rawSys : "Pending");
-        document.getElementById("System_Status").value = normalized;
-
-        if (data.Thumbnail_Image) {
-          document.getElementById("thumbPreview").innerHTML = `<img src="${data.Thumbnail_Image}" class="w-full h-full object-cover">`;
-        }
-
-        existingGallery = [];
-        removedGallery = [];
-        newGalleryQueue = [];
-
-        if (data.Image_List) {
-          existingGallery = String(data.Image_List).split(",").map(s => s.trim()).filter(Boolean);
-        }
-        renderGallery();
-
-        pdfLinks = {
-          sales: (data.Sales_Gallery || "").toString().trim(),
-          material: (data.Material_PDF || "").toString().trim(),
-          floorplan: (data.FloorPlan_PDF || "").toString().trim()
-        };
-        setPdfText("sales", pdfLinks.sales || "ยังไม่มีไฟล์");
-        setPdfText("material", pdfLinks.material || "ยังไม่มีไฟล์");
-        setPdfText("floorplan", pdfLinks.floorplan || "ยังไม่มีไฟล์");
-
-      } catch (e) {
-        alert("Error loading data: " + e.message);
+      const districtVal = (data.District ?? "").toString().trim();
+      const subDistrictVal = (data.SubDistrict ?? "").toString().trim();
+      if (districtVal) {
+        document.getElementById("District").value = districtVal;
+        setSubDistrictOptions(districtVal, subDistrictVal);
+      } else {
+        setSubDistrictOptions("", "");
       }
+
+      const rawSys = (data.System_Status ?? "").toString().trim();
+      const mapSys = { "Live":"Online", "Online (Live)":"Online", "Online":"Online", "Pending":"Pending", "Offline":"Offline" };
+      const normalized = mapSys[rawSys] || (rawSys ? rawSys : "Pending");
+      document.getElementById("System_Status").value = normalized;
+
+      if (data.Thumbnail_Image) {
+        document.getElementById("thumbPreview").innerHTML = `<img src="${data.Thumbnail_Image}" class="w-full h-full object-cover">`;
+      }
+
+      existingGallery = [];
+      removedGallery = [];
+      newGalleryQueue = [];
+
+      if (data.Image_List) {
+        existingGallery = String(data.Image_List).split(",").map(s => s.trim()).filter(Boolean);
+      }
+      renderGallery();
+
+      pdfLinks = {
+        sales: (data.Sales_Gallery || "").toString().trim(),
+        material: (data.Material_PDF || "").toString().trim(),
+        floorplan: (data.FloorPlan_PDF || "").toString().trim()
+      };
+      setPdfText("sales", pdfLinks.sales || "ยังไม่มีไฟล์");
+      setPdfText("material", pdfLinks.material || "ยังไม่มีไฟล์");
+      setPdfText("floorplan", pdfLinks.floorplan || "ยังไม่มีไฟล์");
     }
 
     const toBase64 = file => new Promise((resolve, reject) => {
-      try {
-        const reader = new FileReader();
-        reader.onload = () => resolve({ data: reader.result.split(",")[1], type: file.type });
-        reader.onerror = () => reject(new Error("File read error"));
-        reader.readAsDataURL(file);
-      } catch (e) { reject(e); }
+      const reader = new FileReader();
+      reader.onload = () => resolve({ data: reader.result.split(",")[1], type: file.type });
+      reader.onerror = () => reject(new Error("File read error"));
+      reader.readAsDataURL(file);
     });
 
     async function updateData() {
@@ -541,8 +521,6 @@
 
       const keepGallery = existingGallery.filter(u => !removedGallery.includes(u));
       const removeGallery = removedGallery.slice();
-
-      const fbValue = document.getElementById("FB_Link").value;
 
       const payload = {
         mode: "updateUnit",
@@ -563,6 +541,7 @@
         Land_Area_sq_w: document.getElementById("Land_Area_sq_w").value,
         Land_Area_sq_m: document.getElementById("Land_Area_sq_m").value,
         Living_Area_sq_m: document.getElementById("Living_Area_sq_m").value,
+
         Pool_Size: document.getElementById("Pool_Size").value,
         Pool_Depth: document.getElementById("Pool_Depth").value,
         Furnishing: document.getElementById("Furnishing").value,
@@ -577,9 +556,8 @@
         Badge: document.getElementById("Badge").value,
         Description: document.getElementById("Description").value,
 
-        // ✅ NEW: ส่งทั้ง 2 key (กันของเดิม)
-        FB_Link: fbValue,
-        FBLink: fbValue,
+        // ✅ สำคัญ: ส่งแค่ FB_Link (ไม่ใช้ FBLink)
+        FB_Link: document.getElementById("FB_Link").value,
 
         Map_Link: document.getElementById("Map_Link").value,
         Virtual_Tour: document.getElementById("Virtual_Tour").value,
@@ -590,7 +568,6 @@
 
         file_thumb: null,
         files_gallery: [],
-
         file_sales_pdf: null,
         file_material_pdf: null,
         file_floorplan_pdf: null
@@ -617,22 +594,6 @@
         const out = await res.json().catch(() => ({}));
         if (!res.ok || out.error) throw new Error(out.error || "Save failed");
 
-        // ✅ ถ้า FB เขียนไม่สำเร็จ ให้แจ้งชัด (จะได้รู้ว่าเป็น protection/formula)
-        if (out.fbWrite && out.fbWrite.ok === false) {
-          alert("บันทึกสำเร็จ แต่ FB_Link เขียนไม่เข้า (อาจติด Protection/Formula) | " + (out.fbWrite.error || ""));
-        }
-
-        if (out.pdfLinks) {
-          pdfLinks = {
-            sales: out.pdfLinks.sales || "",
-            material: out.pdfLinks.material || "",
-            floorplan: out.pdfLinks.floorplan || ""
-          };
-          setPdfText("sales", pdfLinks.sales || "ยังไม่มีไฟล์");
-          setPdfText("material", pdfLinks.material || "ยังไม่มีไฟล์");
-          setPdfText("floorplan", pdfLinks.floorplan || "ยังไม่มีไฟล์");
-        }
-
         document.getElementById("successPopup").classList.remove("hidden");
       } catch (e) {
         alert("Save Failed: " + e.message);
@@ -641,9 +602,9 @@
       }
     }
 
-    window.onload = () => {
+    window.onload = async () => {
       bindDistrictChange();
-      loadData();
+      try { await loadData(); } catch(e) { alert("Load Failed: " + e.message); }
     };
   </script>
 </body>
