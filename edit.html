@@ -47,13 +47,23 @@
     }
     .pdfmeta{flex:1; min-width:0;}
     .pdfname{font-weight:900;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .pdflink{font-size:12px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .pdfbtn{
-      padding:10px 14px;border-radius:14px;
-      font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:.08em;
-      background:#0f172a;color:#fff;
+
+    /* ✅ ตำแหน่งโชว์ลิงก์ + ปุ่มลบลิงก์ */
+    .pdflinkrow{display:flex; align-items:center; gap:8px; min-width:0;}
+    .pdflink{font-size:12px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; min-width:0;}
+    .pdfdel{
+      width:22px;height:22px;border-radius:999px;
+      display:flex;align-items:center;justify-content:center;
+      background: rgba(15,23,42,.85);
+      color:#fff;
+      font-size:12px;
+      line-height:22px;
+      cursor:pointer;
+      user-select:none;
       flex:0 0 auto;
     }
+    .pdfdel:hover{ background: rgba(239,68,68,.95); }
+
     .pdfbtn2{
       padding:10px 14px;border-radius:14px;
       font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:.08em;
@@ -108,13 +118,16 @@
       <div class="input-card">
         <span class="field-label">PDF DOCUMENTS (UPLOAD / REPLACE)</span><br>
 
+        <!-- ✅ 1) ลบปุ่ม OPEN ออก / ✅ 2) เพิ่มปุ่มลบลิงก์ (✕) -->
         <div class="pdfbar mb-3">
           <div class="pdficon">PDF</div>
           <div class="pdfmeta">
             <div class="pdfname">Sales Gallery Link</div>
-            <div class="pdflink" id="salesPdfText">ยังไม่มีไฟล์</div>
+            <div class="pdflinkrow">
+              <div class="pdflink" id="salesPdfText">ยังไม่มีไฟล์</div>
+              <div class="pdfdel" title="ลบลิงก์" onclick="clearPdfLink('sales')">✕</div>
+            </div>
           </div>
-          <button class="pdfbtn" type="button" onclick="openPdf('sales')">Open</button>
           <button class="pdfbtn2" type="button" onclick="document.getElementById('file_sales_pdf').click()">Upload</button>
           <input type="file" id="file_sales_pdf" class="hidden" accept="application/pdf" onchange="onPickPdf(this,'sales')">
         </div>
@@ -123,9 +136,11 @@
           <div class="pdficon">PDF</div>
           <div class="pdfmeta">
             <div class="pdfname">Material PDF Link</div>
-            <div class="pdflink" id="materialPdfText">ยังไม่มีไฟล์</div>
+            <div class="pdflinkrow">
+              <div class="pdflink" id="materialPdfText">ยังไม่มีไฟล์</div>
+              <div class="pdfdel" title="ลบลิงก์" onclick="clearPdfLink('material')">✕</div>
+            </div>
           </div>
-          <button class="pdfbtn" type="button" onclick="openPdf('material')">Open</button>
           <button class="pdfbtn2" type="button" onclick="document.getElementById('file_material_pdf').click()">Upload</button>
           <input type="file" id="file_material_pdf" class="hidden" accept="application/pdf" onchange="onPickPdf(this,'material')">
         </div>
@@ -134,9 +149,11 @@
           <div class="pdficon">PDF</div>
           <div class="pdfmeta">
             <div class="pdfname">Floor Plan Link</div>
-            <div class="pdflink" id="floorplanPdfText">ยังไม่มีไฟล์</div>
+            <div class="pdflinkrow">
+              <div class="pdflink" id="floorplanPdfText">ยังไม่มีไฟล์</div>
+              <div class="pdfdel" title="ลบลิงก์" onclick="clearPdfLink('floorplan')">✕</div>
+            </div>
           </div>
-          <button class="pdfbtn" type="button" onclick="openPdf('floorplan')">Open</button>
           <button class="pdfbtn2" type="button" onclick="document.getElementById('file_floorplan_pdf').click()">Upload</button>
           <input type="file" id="file_floorplan_pdf" class="hidden" accept="application/pdf" onchange="onPickPdf(this,'floorplan')">
         </div>
@@ -309,6 +326,9 @@
     let pdfLinks = { sales:"", material:"", floorplan:"" };
     const MAX_PDF_BYTES = 6 * 1024 * 1024;
 
+    /* ✅ ใช้บอกระบบว่าลิงก์ PDF ถูก "ลบ" หรือ "แทนที่" */
+    let pdfAction = { sales:"keep", material:"keep", floorplan:"keep" }; // keep | clear | replace
+
     const SUBDISTRICTS_BY_DISTRICT = {
       "Hua Hin": ["Hua Hin","Nong Kae","Hin Lek Fai","Thap Tai","Huai Sat Yai","Bueng Nakhon","Nong Phlap"],
       "Cha-am": ["Cha-am","Bang Kao","Na Yang","Khao Yai","Nong Sala","Huai Sai Nuea","Rai Mai Phatthana"],
@@ -426,10 +446,14 @@
       if (el) el.textContent = text || "ยังไม่มีไฟล์";
     }
 
-    window.openPdf = function(key) {
-      const link = (pdfLinks && pdfLinks[key]) ? String(pdfLinks[key]).trim() : "";
-      if (!link) return alert("ยังไม่มีไฟล์ PDF");
-      window.open(link, "_blank", "noopener");
+    /* ✅ ปุ่มลบลิงก์ (✕): เคลียร์ค่า + เคลียร์ไฟล์ที่เลือกไว้ด้วย */
+    window.clearPdfLink = function(key){
+      const mapFile = { sales:"file_sales_pdf", material:"file_material_pdf", floorplan:"file_floorplan_pdf" };
+      pdfLinks[key] = "";
+      pdfAction[key] = "clear";
+      setPdfText(key, "ยังไม่มีไฟล์");
+      const f = document.getElementById(mapFile[key]);
+      if (f) f.value = "";
     }
 
     window.onPickPdf = function(input, key) {
@@ -446,6 +470,8 @@
         return alert(`ไฟล์ใหญ่เกินไป (${(f.size/1024/1024).toFixed(1)}MB)\nแนะนำไม่เกิน 6MB`);
       }
 
+      /* ✅ ผู้ใช้เลือกไฟล์ใหม่ = replace */
+      pdfAction[key] = "replace";
       setPdfText(key, "เลือกไฟล์ใหม่: " + f.name);
     }
 
@@ -499,6 +525,10 @@
           material: (data.Material_PDF || "").toString().trim(),
           floorplan: (data.FloorPlan_PDF || "").toString().trim()
         };
+
+        /* ✅ รีเซ็ตสถานะการทำงานของ PDF ทุกครั้งที่โหลด */
+        pdfAction = { sales:"keep", material:"keep", floorplan:"keep" };
+
         setPdfText("sales", pdfLinks.sales || "ยังไม่มีไฟล์");
         setPdfText("material", pdfLinks.material || "ยังไม่มีไฟล์");
         setPdfText("floorplan", pdfLinks.floorplan || "ยังไม่มีไฟล์");
@@ -575,7 +605,15 @@
 
         file_sales_pdf: null,
         file_material_pdf: null,
-        file_floorplan_pdf: null
+        file_floorplan_pdf: null,
+
+        /* ✅ ส่งสถานะ PDF เพื่อให้ฝั่ง GS เคลียร์ลิงก์ได้ */
+        pdfAction: { ...pdfAction },
+
+        /* ✅ สำรอง: ถ้า user กดลบ ให้ส่งค่าว่างไปด้วย (เผื่อ GS รองรับเขียนทับคอลัมน์) */
+        Sales_Gallery: (pdfAction.sales === "clear") ? "" : undefined,
+        Material_PDF: (pdfAction.material === "clear") ? "" : undefined,
+        FloorPlan_PDF: (pdfAction.floorplan === "clear") ? "" : undefined
       };
 
       try {
@@ -608,6 +646,11 @@
           setPdfText("sales", pdfLinks.sales || "ยังไม่มีไฟล์");
           setPdfText("material", pdfLinks.material || "ยังไม่มีไฟล์");
           setPdfText("floorplan", pdfLinks.floorplan || "ยังไม่มีไฟล์");
+        } else {
+          // ✅ ถ้าเป็นการลบอย่างเดียว แล้ว GS ไม่ส่ง pdfLinks กลับมา ให้สะท้อนค่าหน้าเว็บ
+          if (pdfAction.sales === "clear") setPdfText("sales", "ยังไม่มีไฟล์");
+          if (pdfAction.material === "clear") setPdfText("material", "ยังไม่มีไฟล์");
+          if (pdfAction.floorplan === "clear") setPdfText("floorplan", "ยังไม่มีไฟล์");
         }
 
         document.getElementById("successPopup").classList.remove("hidden");
