@@ -1008,7 +1008,6 @@ function renderDescription(detail){
   if(!box || !el) return;
 
   if(desc === "-" ){
-    // ถ้าไม่มีจริง ๆ ให้ซ่อนทั้งกล่อง (ยุบพื้นที่)
     box.style.display = "none";
     return;
   }
@@ -1036,29 +1035,40 @@ function pickMapLink(detail){
   }
   return "";
 }
-function normalizeMapSrc(link){
+
+/** ✅ NEW: แปลง Map_Link (รวม short link maps.app.goo.gl) ให้เป็น Embed URL */
+function buildMapEmbedUrl(link){
   const s = String(link || "").trim();
   if(!s) return "";
-  // ถ้าเป็น embed อยู่แล้ว ใช้ได้เลย
-  if (s.includes("/maps/embed")) return s;
-  // ถ้าเป็นลิงก์ maps ปกติ ใส่ iframe ได้ในหลายกรณี
-  if (s.includes("google.com/maps")) return s;
-  // fallback: เปิดค้นหาตามสตริง
-  return "https://www.google.com/maps?q=" + encodeURIComponent(s);
+
+  // ถ้าเป็น embed อยู่แล้ว
+  if (/google\.com\/maps\/embed/i.test(s)) return s;
+
+  // ใช้ output=embed + q= (รองรับ short link / long link / text)
+  return "https://www.google.com/maps?output=embed&q=" + encodeURIComponent(s);
 }
+
+/** ✅ UPDATED: ไม่มีข้อมูล = remove section (ไม่เหลือพื้นที่) / มีข้อมูล = set iframe src */
 function setMapSection(link){
   const sec = document.getElementById("mapSection");
   const frame = document.getElementById("mapFrame");
   if(!sec || !frame) return;
 
   const href = String(link ?? "").trim();
+
+  // ไม่มีข้อมูล = ลบทิ้งทั้งก้อน (ไม่มีพื้นที่ว่าง/ไม่มีกรอบ)
   if(!href || href === "-"){
-    sec.style.display = "none";
-    frame.src = "";
+    sec.remove();
     return;
   }
+
   sec.style.display = "block";
-  frame.src = normalizeMapSrc(href);
+  frame.src = buildMapEmbedUrl(href);
+
+  // safety: ถ้า iframe โหลดมีปัญหา ให้ซ่อนทั้งส่วน (ยังไม่เหลือกรอบ)
+  frame.addEventListener("error", () => {
+    try{ sec.remove(); }catch(e){}
+  }, { once:true });
 }
 
 /** จัดเรียงข้อมูล (ปรับเฉพาะข้อที่ขอ) */
@@ -1069,7 +1079,6 @@ function renderInfo(detail){
   const livingM = safeText(pick(detail, LIVING_SQM_KEYS));
   const landM = safeText(pick(detail, LAND_SQM_KEYS));
 
-  // ✅ จุดที่ 2: แยก Land Area (sq.w) และ Living Area (sq.m) เป็นคนละแถว
   const items = [
     ["Project_Name", safeText(pick(detail, ["Project_Name","ProjectName","Project_Name_En","Project_Name_TH","Project"]))],
     ["District", safeText(pick(detail, ["District","district"]))],
@@ -1148,7 +1157,6 @@ function renderOtherUnits(units){
     const price = moneyTHB(getPrice(u));
     const pill = statusStyle(st);
 
-    // ✅ จุดที่ 4: Land/Living จาก sq.m พร้อมหน่วย
     const landM = fmtSqm(getLandSqm(u));
     const livingM = fmtSqm(getLivingSqm(u));
     const landLivingText = `Land ${landM} · Living ${livingM}`;
@@ -1540,13 +1548,10 @@ function setFbVisitBar(link){
   stEl.style.borderColor = st.border;
   stEl.style.color = st.text;
 
-  // ✅ จุดที่ 4
   renderMiniMeta(detail);
-
-  // ✅ จุดที่ 1
   renderDescription(detail);
 
-  // ✅ จุดที่ 3 (Map)
+  // ✅ ✅ ✅ จุดที่ 3 (Smart Map Display)
   setMapSection(pickMapLink(detail));
 
   const thumb = cleanDriveImage(detail.Thumbnail_Image || "");
@@ -1579,7 +1584,6 @@ function setFbVisitBar(link){
     pre.src = images[1];
   }
 
-  // ✅ จุดที่ 2
   renderInfo(detail);
 
   loadOtherUnits();
