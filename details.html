@@ -84,19 +84,19 @@ display:block;
 .tagTopLeft{
 position:absolute;
 
-/* ✅ ค่าเริ่มต้น (เดสก์ท็อป/จอใหญ่): ให้สุภาพ ไม่บวม */
-left:24px;
-top:24px;
-padding:16px 30px;
+/* ✅ ค่าเริ่มต้น: ให้เหมือนตัวอย่าง (ทรง/สัดส่วนพอดี ไม่บวม) */
+left:18px;
+top:18px;
+padding:12px 22px;
 border-radius:999px;
 
-background: rgba(255,255,255,.92);
+background: rgba(255,255,255,.90);
 border:0;
 box-shadow:none;
 backdrop-filter:none;
 
 font-weight:1100;
-font-size:42px;
+font-size:34px;
 line-height:1;
 color:#0f172a;
 
@@ -109,9 +109,9 @@ max-width:78%;
 .tagBottomRight{
 position:absolute;
 
-/* ✅ ค่าเริ่มต้น (เดสก์ท็อป/จอใหญ่): ตัวเลขเล็ก + ไม่มีพื้น */
-right:24px;
-bottom:22px;
+/* ✅ ค่าเริ่มต้น: ตัวเลขขาวล้วน + เงานุ่ม (ไม่มีพื้นหลัง) */
+right:18px;
+bottom:18px;
 
 padding:0;
 border-radius:0;
@@ -122,10 +122,10 @@ box-shadow:none;
 backdrop-filter:none;
 
 font-weight:1100;
-font-size:36px;
+font-size:28px;
 line-height:1;
 color: rgba(255,255,255,1);
-text-shadow: 0 8px 16px rgba(0,0,0,.38);
+text-shadow: 0 10px 18px rgba(0,0,0,.40);
 
 user-select:none;
 pointer-events:none;
@@ -134,16 +134,16 @@ pointer-events:none;
 /* ✅ มือถือ: “ล็อค” ให้เหมือนภาพตัวอย่างเป๊ะ */
 @media (max-width: 520px){
 .tagTopLeft{
-left:24px;
-top:24px;
-padding:18px 34px;
-font-size:44px;
+left:18px;
+top:18px;
+padding:12px 22px;
+font-size:34px;
 }
 .tagBottomRight{
-right:24px;
-bottom:20px;
-font-size:40px;
-text-shadow: 0 10px 18px rgba(0,0,0,.45);
+right:18px;
+bottom:18px;
+font-size:28px;
+text-shadow: 0 10px 18px rgba(0,0,0,.40);
 }
 }
 /* ========================================================= */
