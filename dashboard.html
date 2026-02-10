@@ -166,14 +166,31 @@
     }
 
     // ================================
-    // RENDERERS
+    // ✅ EDIT NAV (FIX: ทำให้คลิกดินสอแล้วไปหน้า edit ได้ชัวร์)
     // ================================
-    function goEdit(id){
-      // ✅ ส่ง token ไปหน้า edit
-      window.location.href =
-        `edit.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(PROJECT_ID)}&token=${encodeURIComponent(TOKEN)}`;
+    function goEditById(id){
+      const hpId = (id || "").toString().trim();
+      if (!hpId || hpId === "-") return;
+
+      // ✅ ส่ง token ไปหน้า edit (edit.html จะใช้ token นี้เรียก getUnitDetail)
+      const url =
+        `edit.html?id=${encodeURIComponent(hpId)}&project=${encodeURIComponent(PROJECT_ID)}&token=${encodeURIComponent(TOKEN)}`;
+
+      window.location.href = url;
     }
 
+    // ใช้ event delegation กันปัญหา onclick ไม่ทำงาน
+    document.addEventListener("click", (ev) => {
+      const btn = ev.target.closest("[data-edit-id]");
+      if (!btn) return;
+      ev.preventDefault();
+      const id = btn.getAttribute("data-edit-id") || "";
+      goEditById(id);
+    });
+
+    // ================================
+    // RENDERERS
+    // ================================
     function renderDesktop(units) {
       const tbody = document.getElementById("unitTableBody");
 
@@ -183,7 +200,7 @@
       }
 
       tbody.innerHTML = units.map(u => {
-        const id = u.id || "-";
+        const id = (u.id || "-").toString();
         const plot = u.plot || "-";
         const unitStatus = u.status || u.unitStatus || "-";
         const sysStatus = u.sysStatus || "-";
@@ -200,9 +217,11 @@
             <td>${visibilityBadge(sysStatus)}</td>
             <td>
               <button
-                onclick="goEdit('${encodeURIComponent(id)}')"
+                type="button"
+                data-edit-id="${escapeHtml(id)}"
                 class="p-2 text-orange-500 hover:scale-110 transition-all"
                 aria-label="Edit"
+                title="Edit"
               >
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
@@ -221,7 +240,7 @@
       }
 
       list.innerHTML = units.map(u => {
-        const id = u.id || "-";
+        const id = (u.id || "-").toString();
         const plot = u.plot || "-";
         const unitStatus = u.status || u.unitStatus || "-";
         const sysStatus = u.sysStatus || "-";
@@ -247,9 +266,11 @@
               </div>
 
               <button
-                onclick="goEdit('${encodeURIComponent(id)}')"
-                class="w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-content-center hover:bg-orange-100 transition-all active:scale-95 shrink-0"
+                type="button"
+                data-edit-id="${escapeHtml(id)}"
+                class="w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center hover:bg-orange-100 transition-all active:scale-95 shrink-0"
                 aria-label="Edit"
+                title="Edit"
               >
                 <i class="fa-solid fa-pen"></i>
               </button>
@@ -332,8 +353,6 @@
         renderByViewport();
       }
     });
-
-    window.goEdit = (encodedId) => goEdit(decodeURIComponent(encodedId));
 
     window.onload = init;
   </script>
