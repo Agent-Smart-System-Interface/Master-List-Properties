@@ -17,29 +17,16 @@
 <body class="p-4 md:p-10 italic">
   <div class="max-w-6xl mx-auto">
 
-    <div class="bg-slate-900 rounded-[2.2rem] px-6 py-6 md:px-10 md:py-7 text-white mb-6 shadow-2xl flex items-center justify-between gap-4">
-      <div class="min-w-0">
-        <div id="projectTitle" class="text-xl md:text-2xl font-bold tracking-tight italic truncate">
-          Loading...
-        </div>
-        <div id="roleLine" class="text-[10px] font-bold uppercase tracking-[0.25em] text-white/60 mt-1">
-          Role: -
-        </div>
+    <div class="bg-slate-900 rounded-[2.2rem] px-6 py-6 md:px-10 md:py-7 text-white mb-6 shadow-2xl flex items-center justify-between">
+      <div id="projectTitle" class="text-xl md:text-2xl font-bold tracking-tight italic truncate">
+        Loading...
       </div>
 
-      <div class="flex items-center gap-3">
-        <button id="logoutBtn"
-          class="w-14 h-14 rounded-2xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all active:scale-95"
-          aria-label="Logout" title="Logout">
-          <i class="fa-solid fa-right-from-bracket text-xl"></i>
-        </button>
-
-        <a id="homeBtn" href="index.html"
-           class="w-14 h-14 rounded-2xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all active:scale-95"
-           aria-label="Home">
-          <i class="fa-solid fa-house text-xl"></i>
-        </a>
-      </div>
+      <a id="homeBtn" href="index.html"
+         class="w-14 h-14 md:w-14 md:h-14 rounded-2xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all active:scale-95"
+         aria-label="Home">
+        <i class="fa-solid fa-house text-xl"></i>
+      </a>
     </div>
 
     <div id="loadingBlock" class="bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-8 text-center text-slate-300 font-bold animate-pulse uppercase">
@@ -70,45 +57,22 @@
     // ================================
     // CONFIG
     // ================================
-    const API_URL = "https://script.google.com/macros/s/AKfycbxc76n6YKLUCCHZZR12c5K4_0k40gHa2ZzDMVZn29BElQlSO3X6O8B7dFIFi0bEukqJ/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
     const urlParams = new URLSearchParams(window.location.search);
     const PROJECT_ID = urlParams.get("project") || "HP00";
-
     const HOME_URL = "index.html";
     document.getElementById("homeBtn").href = HOME_URL;
 
-    // ================================
-    // AUTH GUARD
-    // ================================
-    const TOKEN = (localStorage.getItem("HP_AUTH_TOKEN") || "").trim();
-    const ROLE = (localStorage.getItem("HP_AUTH_ROLE") || "").trim() || "-";
-    const AUTH_PROJECT = (localStorage.getItem("HP_AUTH_PROJECT") || "").trim();
+    // ✅ token จาก localStorage (มาจาก gateway)
+    const TOKEN = localStorage.getItem("HP_AUTH_TOKEN") || "";
 
-    function goLogin(){
+    // ถ้าไม่มี token ให้กลับไปหน้า gateway
+    if (!TOKEN) {
       location.href = `gateway.html?project=${encodeURIComponent(PROJECT_ID)}`;
     }
 
-    if (!TOKEN) {
-      goLogin();
-    } else {
-      // Project role ต้องตรงโปรเจค
-      if (ROLE !== "HQ" && AUTH_PROJECT && AUTH_PROJECT !== PROJECT_ID) {
-        goLogin();
-      }
-    }
-
-    document.getElementById("roleLine").innerText = `Role: ${ROLE}`;
-
-    document.getElementById("logoutBtn").addEventListener("click", ()=>{
-      localStorage.removeItem("HP_AUTH_TOKEN");
-      localStorage.removeItem("HP_AUTH_ROLE");
-      localStorage.removeItem("HP_AUTH_PROJECT");
-      localStorage.removeItem("HP_AUTH_EXPIRES");
-      goLogin();
-    });
-
     // ================================
-    // HELPERS: Badge Colors
+    // HELPERS
     // ================================
     function statusBadge(status) {
       const raw = (status ?? "").toString().trim();
@@ -119,31 +83,26 @@
                   <span class="w-2 h-2 rounded-full bg-slate-300"></span> -
                 </span>`;
       }
-
       if (s.includes("available")) {
         return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-emerald-50 text-emerald-700">
                   <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Available
                 </span>`;
       }
-
       if (s.includes("under") || s.includes("construct")) {
         return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-sky-50 text-sky-700">
                   <span class="w-2 h-2 rounded-full bg-sky-500"></span> Under Construction
                 </span>`;
       }
-
       if (s.includes("reserved")) {
         return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-amber-50 text-amber-700">
                   <span class="w-2 h-2 rounded-full bg-amber-500"></span> Reserved
                 </span>`;
       }
-
       if (s.includes("sold")) {
         return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-rose-50 text-rose-700">
                   <span class="w-2 h-2 rounded-full bg-rose-500"></span> Sold
                 </span>`;
       }
-
       return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-50 text-slate-700">
                 <span class="w-2 h-2 rounded-full bg-slate-400"></span> ${escapeHtml(raw)}
               </span>`;
@@ -158,25 +117,21 @@
                   <span class="w-2 h-2 rounded-full bg-slate-300"></span> -
                 </span>`;
       }
-
       if (s.includes("live") || s.includes("online")) {
         return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-blue-50 text-blue-700">
                   <span class="w-2 h-2 rounded-full bg-blue-500"></span> Live
                 </span>`;
       }
-
       if (s.includes("pending") || s.includes("review")) {
         return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-amber-50 text-amber-700">
                   <span class="w-2 h-2 rounded-full bg-amber-500"></span> Pending
                 </span>`;
       }
-
       if (s.includes("off") || s.includes("offline") || s.includes("hide")) {
         return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-100 text-slate-600">
                   <span class="w-2 h-2 rounded-full bg-slate-400"></span> Offline
                 </span>`;
       }
-
       return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-50 text-slate-700">
                 <span class="w-2 h-2 rounded-full bg-slate-400"></span> ${escapeHtml(raw)}
               </span>`;
@@ -195,9 +150,6 @@
       return window.matchMedia("(max-width: 768px)").matches;
     }
 
-    // ================================
-    // THUMBNAIL HELPERS
-    // ================================
     function pickThumb(u) {
       return (u.Thumbnail_Image || u.thumbnail || u.thumb || u.thumbUrl || "").toString().trim();
     }
@@ -210,13 +162,18 @@
       if (!url) {
         return `<div class="${base} bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-300 font-bold">🏠</div>`;
       }
-
       return `<img src="${url}" class="${base} object-cover border border-slate-200 shadow-sm" loading="lazy" decoding="async">`;
     }
 
     // ================================
     // RENDERERS
     // ================================
+    function goEdit(id){
+      // ✅ ส่ง token ไปหน้า edit
+      window.location.href =
+        `edit.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(PROJECT_ID)}&token=${encodeURIComponent(TOKEN)}`;
+    }
+
     function renderDesktop(units) {
       const tbody = document.getElementById("unitTableBody");
 
@@ -243,7 +200,7 @@
             <td>${visibilityBadge(sysStatus)}</td>
             <td>
               <button
-                onclick="window.location.href='edit.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(PROJECT_ID)}'"
+                onclick="goEdit('${encodeURIComponent(id)}')"
                 class="p-2 text-orange-500 hover:scale-110 transition-all"
                 aria-label="Edit"
               >
@@ -290,8 +247,8 @@
               </div>
 
               <button
-                onclick="window.location.href='edit.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(PROJECT_ID)}'"
-                class="w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center hover:bg-orange-100 transition-all active:scale-95 shrink-0"
+                onclick="goEdit('${encodeURIComponent(id)}')"
+                class="w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-content-center hover:bg-orange-100 transition-all active:scale-95 shrink-0"
                 aria-label="Edit"
               >
                 <i class="fa-solid fa-pen"></i>
@@ -326,7 +283,7 @@
     }
 
     // ================================
-    // LOAD + CACHE + SMART RESIZE (NO RELOAD)
+    // LOAD + CACHE + SMART RESIZE
     // ================================
     let CACHE_UNITS = [];
     let CURRENT_MOBILE = isMobile();
@@ -375,6 +332,8 @@
         renderByViewport();
       }
     });
+
+    window.goEdit = (encodedId) => goEdit(decodeURIComponent(encodedId));
 
     window.onload = init;
   </script>
