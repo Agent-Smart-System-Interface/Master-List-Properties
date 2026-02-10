@@ -1006,15 +1006,7 @@ function renderMiniMeta(detail){
   el.textContent = `Land ${landM} · Living ${livingM}`;
 }
 
-/* ===========================================================
-   ✅ FIX ONLY (MAP): รองรับ Map_Link เป็น
-   - Google Maps share link
-   - "lat,lng"
-   - ชื่อสถานที่/คำค้น
-   ทำให้ “Open Map + Navigate + Embed” เสถียรมากขึ้น
-   =========================================================== */
 function pickMapLink(detail){
-  // ✅ ใช้คอลัมน์เดิม Map_Link เป็นหลัก (รองรับชื่ออื่นไว้เหมือนเดิม)
   const keys = ["Map_Link","MapLink","GoogleMap","Google_Maps","Map","Location","Location_Link"];
   for(const k of keys){
     const v = detail ? detail[k] : "";
@@ -1027,58 +1019,23 @@ function normalizeMapLink(link){
   const s = String(link || "").trim();
   return s && s !== "-" ? s : "";
 }
-function extractDestinationFromMapLink(raw){
-  const s = normalizeMapLink(raw);
-  if(!s) return "";
-
-  // 1) ถ้าผู้ใช้กรอก "lat,lng" อยู่แล้ว
-  const latlngDirect = s.match(/^\s*(-?\d{1,3}(?:\.\d+)?)\s*,\s*(-?\d{1,3}(?:\.\d+)?)\s*$/);
-  if(latlngDirect) return `${latlngDirect[1]},${latlngDirect[2]}`;
-
-  // 2) ดึงจาก @lat,lng
-  const at = s.match(/@(-?\d{1,3}(?:\.\d+)?),\s*(-?\d{1,3}(?:\.\d+)?)/);
-  if(at) return `${at[1]},${at[2]}`;
-
-  // 3) ดึงจาก !3dLAT!4dLNG
-  const bang = s.match(/!3d(-?\d{1,3}(?:\.\d+)?)!4d(-?\d{1,3}(?:\.\d+)?)/);
-  if(bang) return `${bang[1]},${bang[2]}`;
-
-  // 4) ดึงจาก ?q= หรือ ?query=
-  try{
-    const u = new URL(s.startsWith("http") ? s : `https://dummy.local/?q=${encodeURIComponent(s)}`);
-    const q = (u.searchParams.get("q") || u.searchParams.get("query") || u.searchParams.get("destination") || "").trim();
-    if(q) return q;
-  }catch(_){}
-
-  // 5) fallback: ใช้ทั้งสตริงเป็น destination (Google Maps รับชื่อสถานที่/คำค้นได้)
-  return s;
+function buildEmbedUrl(link){
+  const raw = normalizeMapLink(link);
+  if(!raw) return "";
+  if (raw.includes("google.com/maps/embed")) return raw;
+  return `https://www.google.com/maps?q=${encodeURIComponent(raw)}&output=embed`;
 }
 function buildOpenUrl(link){
   const raw = normalizeMapLink(link);
   if(!raw) return "";
-  // ถ้าเป็นลิงก์ maps อยู่แล้ว เปิดอันนั้นได้เลย
+  if (raw.includes("google.com/maps")) return raw;
   if (raw.startsWith("http")) return raw;
-  // ถ้าเป็นคำค้น/latlng ก็เปิดแบบ q=
   return `https://www.google.com/maps?q=${encodeURIComponent(raw)}`;
 }
 function buildNavUrl(link){
   const raw = normalizeMapLink(link);
   if(!raw) return "";
-  const dest = extractDestinationFromMapLink(raw);
-  if(!dest) return "";
-  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(dest)}&travelmode=driving`;
-}
-function buildEmbedUrl(link){
-  const raw = normalizeMapLink(link);
-  if(!raw) return "";
-  if (raw.includes("google.com/maps/embed")) return raw;
-
-  // ใช้ destination ที่ parse แล้ว เพื่อ embed ให้เสถียร
-  const dest = extractDestinationFromMapLink(raw);
-  if(!dest) return "";
-
-  // embed แบบ q= (รองรับทั้ง lat,lng และคำค้น)
-  return `https://www.google.com/maps?q=${encodeURIComponent(dest)}&output=embed`;
+  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(raw)}`;
 }
 function setMapSection(link){
   const sec = document.getElementById("mapSection");
@@ -1101,7 +1058,6 @@ function setMapSection(link){
   frame.src = buildEmbedUrl(raw);
   frame.onerror = () => { frame.src = ""; };
 }
-/* ===== END MAP FIX ONLY ===== */
 
 function renderInfo(detail){
   const grid = document.getElementById("infoGrid");
@@ -1312,7 +1268,6 @@ async function loadOtherUnits(){
   renderMiniMeta(detail);
   renderDescription(detail);
 
-  // ✅ MAP: ใช้ Map_Link คอลัมน์เดิม แล้วโชว์/นำทางได้ทั้งลิงก์/latlng/ชื่อสถานที่
   setMapSection(pickMapLink(detail));
 
   const thumb = cleanDriveImage(detail.Thumbnail_Image || "");
