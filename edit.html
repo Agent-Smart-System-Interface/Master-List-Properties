@@ -48,6 +48,7 @@
     .pdfmeta{flex:1; min-width:0;}
     .pdfname{font-weight:900;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
+    /* ✅ ตำแหน่งโชว์ลิงก์ + ปุ่มลบลิงก์ */
     .pdflinkrow{display:flex; align-items:center; gap:8px; min-width:0;}
     .pdflink{font-size:12px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; min-width:0;}
     .pdfdel{
@@ -117,6 +118,7 @@
       <div class="input-card">
         <span class="field-label">PDF DOCUMENTS (UPLOAD / REPLACE)</span><br>
 
+        <!-- ✅ 1) ลบปุ่ม OPEN ออก / ✅ 2) เพิ่มปุ่มลบลิงก์ (✕) -->
         <div class="pdfbar mb-3">
           <div class="pdficon">PDF</div>
           <div class="pdfmeta">
@@ -282,15 +284,10 @@
         <div><span class="field-label">Virtual Tour</span><input id="Virtual_Tour" class="field-input"></div>
 
         <div class="col-span-full">
-          <span class="field-label">System Status <span id="sysHint" class="text-slate-300">(READ ONLY)</span></span>
-          <select id="System_Status_Select" class="field-input font-bold bg-slate-50" disabled>
-            <option value="Offline">Offline</option>
-            <option value="Pending">Pending</option>
-            <option value="Live">Live</option>
-          </select>
-          <input id="System_Status" class="hidden" value="Pending">
+          <span class="field-label">System Status (Read Only)</span>
+          <input id="System_Status" class="field-input font-bold bg-slate-50" disabled value="Pending">
           <p class="text-xs text-slate-400 mt-2 italic">
-            Offline = ไม่แสดงออนไลน์ | Pending = ยังไม่แสดงออนไลน์แต่แก้ไขข้อมูลได้ | Live = ข้อมูลพร้อมแล้ว (กำหนดโดย Master/HQ)
+            Offline = ไม่แสดงออนไลน์ | Pending = ยังไม่แสดงออนไลน์แต่แก้ไขข้อมูลได้ | Online = ข้อมูลพร้อมแล้ว (กำหนดโดย Master ใหญ่)
           </p>
         </div>
       </div>
@@ -317,16 +314,10 @@
   </div>
 
   <script>
-    // ============================
-    // CONFIG
-    // ============================
-    const API_URL = "https://script.google.com/macros/s/AKfycbxc76n6YKLUCCHZZR12c5K4_0k40gHa2ZzDMVZn29BElQlSO3X6O8B7dFIFi0bEukqJ/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
     const urlParams = new URLSearchParams(location.search);
     const HP_ID = urlParams.get("id");
     const PROJECT = urlParams.get("project") || "HP00";
-
-    const TOKEN = (urlParams.get("token") || localStorage.getItem("HP_AUTH_TOKEN") || "").trim();
-    const ROLE  = (localStorage.getItem("HP_AUTH_ROLE") || "").trim();
 
     let existingGallery = [];
     let removedGallery = [];
@@ -335,7 +326,8 @@
     let pdfLinks = { sales:"", material:"", floorplan:"" };
     const MAX_PDF_BYTES = 6 * 1024 * 1024;
 
-    let pdfAction = { sales:"keep", material:"keep", floorplan:"keep" };
+    /* ✅ ใช้บอกระบบว่าลิงก์ PDF ถูก "ลบ" หรือ "แทนที่" */
+    let pdfAction = { sales:"keep", material:"keep", floorplan:"keep" }; // keep | clear | replace
 
     const SUBDISTRICTS_BY_DISTRICT = {
       "Hua Hin": ["Hua Hin","Nong Kae","Hin Lek Fai","Thap Tai","Huai Sat Yai","Bueng Nakhon","Nong Phlap"],
@@ -454,6 +446,7 @@
       if (el) el.textContent = text || "ยังไม่มีไฟล์";
     }
 
+    /* ✅ ปุ่มลบลิงก์ (✕): เคลียร์ค่า + เคลียร์ไฟล์ที่เลือกไว้ด้วย */
     window.clearPdfLink = function(key){
       const mapFile = { sales:"file_sales_pdf", material:"file_material_pdf", floorplan:"file_floorplan_pdf" };
       pdfLinks[key] = "";
@@ -477,56 +470,9 @@
         return alert(`ไฟล์ใหญ่เกินไป (${(f.size/1024/1024).toFixed(1)}MB)\nแนะนำไม่เกิน 6MB`);
       }
 
+      /* ✅ ผู้ใช้เลือกไฟล์ใหม่ = replace */
       pdfAction[key] = "replace";
       setPdfText(key, "เลือกไฟล์ใหม่: " + f.name);
-    }
-
-    function jsonp_(paramsObj){
-      return new Promise((resolve, reject) => {
-        const cbName = "cb_" + Math.random().toString(16).slice(2);
-        const timeout = setTimeout(() => { cleanup(); reject(new Error("JSONP timeout")); }, 15000);
-
-        function cleanup(){
-          clearTimeout(timeout);
-          try { delete window[cbName]; } catch(e){ window[cbName] = undefined; }
-          if (script && script.parentNode) script.parentNode.removeChild(script);
-        }
-
-        window[cbName] = (data) => { cleanup(); resolve(data); };
-
-        const urlParams = new URLSearchParams();
-        Object.entries(paramsObj || {}).forEach(([k,v]) => {
-          if (v === undefined || v === null) return;
-          urlParams.set(k, String(v));
-        });
-        urlParams.set("callback", cbName);
-        urlParams.set("t", Date.now());
-
-        const script = document.createElement("script");
-        script.src = API_URL + "?" + urlParams.toString();
-        script.onerror = () => { cleanup(); reject(new Error("JSONP network error")); };
-        document.body.appendChild(script);
-      });
-    }
-
-    function applyRoleLock_(){
-      const isHQ = (ROLE === "HQ");
-      const sel = document.getElementById("System_Status_Select");
-      const hint = document.getElementById("sysHint");
-
-      if (isHQ){
-        sel.disabled = false;
-        sel.classList.remove("bg-slate-50");
-        hint.textContent = "(HQ ONLY)";
-        hint.classList.remove("text-slate-300");
-        hint.classList.add("text-blue-600");
-      } else {
-        sel.disabled = true;
-        sel.classList.add("bg-slate-50");
-        hint.textContent = "(READ ONLY)";
-        hint.classList.remove("text-blue-600");
-        hint.classList.add("text-slate-300");
-      }
     }
 
     async function loadData() {
@@ -534,19 +480,8 @@
       if (!HP_ID || !PROJECT) return alert("Missing id/project in URL");
 
       try {
-        let data = null;
-        try{
-          data = await jsonp_({
-            mode: "getUnitDetail",
-            hpId: HP_ID,
-            project: PROJECT,
-            token: TOKEN
-          });
-        }catch(_){
-          const res = await fetch(`${API_URL}?mode=getUnitDetail&hpId=${encodeURIComponent(HP_ID)}&project=${encodeURIComponent(PROJECT)}&token=${encodeURIComponent(TOKEN)}&t=${Date.now()}`);
-          data = await res.json();
-        }
-
+        const res = await fetch(`${API_URL}?mode=getUnitDetail&hpId=${encodeURIComponent(HP_ID)}&project=${encodeURIComponent(PROJECT)}&t=${Date.now()}`);
+        const data = await res.json();
         if (data && data.error) throw new Error(data.error);
 
         Object.keys(data || {}).forEach(k => {
@@ -554,6 +489,7 @@
           if (el) el.value = (data[k] ?? "");
         });
 
+        // ✅ FIX: ยืนยันให้ FB_Link ถูกเติมค่าทุกครั้ง (กันข้อมูลเดิมหาย)
         const fbEl = document.getElementById("FB_Link");
         if (fbEl) fbEl.value = (data.FB_Link ?? "");
 
@@ -567,11 +503,9 @@
         }
 
         const rawSys = (data.System_Status ?? "").toString().trim();
-        const sysVal = rawSys || "Pending";
-        document.getElementById("System_Status").value = sysVal;
-        document.getElementById("System_Status_Select").value = sysVal;
-
-        applyRoleLock_();
+        const mapSys = { "Live":"Online", "Online (Live)":"Online", "Online":"Online", "Pending":"Pending", "Offline":"Offline" };
+        const normalized = mapSys[rawSys] || (rawSys ? rawSys : "Pending");
+        document.getElementById("System_Status").value = normalized;
 
         if (data.Thumbnail_Image) {
           document.getElementById("thumbPreview").innerHTML = `<img src="${data.Thumbnail_Image}" class="w-full h-full object-cover">`;
@@ -592,6 +526,7 @@
           floorplan: (data.FloorPlan_PDF || "").toString().trim()
         };
 
+        /* ✅ รีเซ็ตสถานะการทำงานของ PDF ทุกครั้งที่โหลด */
         pdfAction = { sales:"keep", material:"keep", floorplan:"keep" };
 
         setPdfText("sales", pdfLinks.sales || "ยังไม่มีไฟล์");
@@ -612,24 +547,11 @@
       } catch (e) { reject(e); }
     });
 
-    async function verifyAfterSave_(){
-      let data = null;
-      try{
-        data = await jsonp_({ mode:"getUnitDetail", hpId: HP_ID, project: PROJECT, token: TOKEN });
-      }catch(_){
-        const res = await fetch(`${API_URL}?mode=getUnitDetail&hpId=${encodeURIComponent(HP_ID)}&project=${encodeURIComponent(PROJECT)}&token=${encodeURIComponent(TOKEN)}&t=${Date.now()}`);
-        data = await res.json();
-      }
-      return data;
-    }
-
     async function updateData() {
       const btn = document.getElementById("saveBtn");
       btn.disabled = true;
       const oldText = btn.innerText;
       btn.innerText = "UPDATING DATABASE...";
-
-      document.getElementById("System_Status").value = document.getElementById("System_Status_Select").value;
 
       const keepGallery = existingGallery.filter(u => !removedGallery.includes(u));
       const removeGallery = removedGallery.slice();
@@ -638,7 +560,6 @@
         mode: "updateUnit",
         project: PROJECT,
         hpId: HP_ID,
-        token: TOKEN,
 
         Plot: document.getElementById("Plot").value,
         Type: document.getElementById("Type").value,
@@ -669,12 +590,12 @@
         Badge: document.getElementById("Badge").value,
         Description: document.getElementById("Description").value,
 
+        // ✅ สำคัญ: FB_Link (underscore)
         FB_Link: document.getElementById("FB_Link").value,
+
         Map_Link: document.getElementById("Map_Link").value,
         Virtual_Tour: document.getElementById("Virtual_Tour").value,
         Commission: document.getElementById("Commission").value,
-
-        System_Status: document.getElementById("System_Status").value,
 
         keepGallery,
         removeGallery,
@@ -686,8 +607,10 @@
         file_material_pdf: null,
         file_floorplan_pdf: null,
 
+        /* ✅ ส่งสถานะ PDF เพื่อให้ฝั่ง GS เคลียร์ลิงก์ได้ */
         pdfAction: { ...pdfAction },
 
+        /* ✅ สำรอง: ถ้า user กดลบ ให้ส่งค่าว่างไปด้วย (เผื่อ GS รองรับเขียนทับคอลัมน์) */
         Sales_Gallery: (pdfAction.sales === "clear") ? "" : undefined,
         Material_PDF: (pdfAction.material === "clear") ? "" : undefined,
         FloorPlan_PDF: (pdfAction.floorplan === "clear") ? "" : undefined
@@ -710,47 +633,11 @@
         const floorPdf = document.getElementById("file_floorplan_pdf").files[0];
         if (floorPdf) payload.file_floorplan_pdf = await toBase64(floorPdf);
 
-        let out = null;
-        try{
-          const res = await fetch(API_URL, { method:"POST", body: JSON.stringify(payload) });
-          out = await res.json().catch(() => ({}));
-          if (!res.ok || out.error) throw new Error(out.error || "Save failed");
-        }catch(err1){
-          try{
-            await fetch(API_URL, { method:"POST", mode:"no-cors", body: JSON.stringify(payload) });
-          }catch(_){}
+        const res = await fetch(API_URL, { method:"POST", body: JSON.stringify(payload) });
+        const out = await res.json().catch(() => ({}));
+        if (!res.ok || out.error) throw new Error(out.error || "Save failed");
 
-          const after = await verifyAfterSave_();
-          if (after && after.error) throw new Error(after.error);
-
-          // ✅ FIX: ตรวจสอบ Status + Map_Link + Virtual_Tour หลังบันทึก (กันหลอกว่าสำเร็จ)
-          const wantStatus = String(payload.Status || "").trim();
-          const gotStatus  = String(after.Status || "").trim();
-
-          const wantMap = String(payload.Map_Link || "").trim();
-          const gotMap  = String(after.Map_Link || "").trim();
-
-          const wantVT = String(payload.Virtual_Tour || "").trim();
-          const gotVT  = String(after.Virtual_Tour || "").trim();
-
-          if (wantStatus && gotStatus && wantStatus !== gotStatus) {
-            throw new Error("บันทึกไม่สำเร็จ (Status ยังไม่เปลี่ยนในชีท)");
-          }
-          if (wantMap !== gotMap) {
-            throw new Error("บันทึกไม่สำเร็จ (Map_Link ยังไม่เปลี่ยนในชีท)");
-          }
-          if (wantVT !== gotVT) {
-            throw new Error("บันทึกไม่สำเร็จ (Virtual_Tour ยังไม่เปลี่ยนในชีท)");
-          }
-
-          out = { ok:true, pdfLinks: {
-            sales: after.Sales_Gallery || "",
-            material: after.Material_PDF || "",
-            floorplan: after.FloorPlan_PDF || ""
-          }};
-        }
-
-        if (out && out.pdfLinks) {
+        if (out.pdfLinks) {
           pdfLinks = {
             sales: out.pdfLinks.sales || "",
             material: out.pdfLinks.material || "",
@@ -760,13 +647,13 @@
           setPdfText("material", pdfLinks.material || "ยังไม่มีไฟล์");
           setPdfText("floorplan", pdfLinks.floorplan || "ยังไม่มีไฟล์");
         } else {
+          // ✅ ถ้าเป็นการลบอย่างเดียว แล้ว GS ไม่ส่ง pdfLinks กลับมา ให้สะท้อนค่าหน้าเว็บ
           if (pdfAction.sales === "clear") setPdfText("sales", "ยังไม่มีไฟล์");
           if (pdfAction.material === "clear") setPdfText("material", "ยังไม่มีไฟล์");
           if (pdfAction.floorplan === "clear") setPdfText("floorplan", "ยังไม่มีไฟล์");
         }
 
         document.getElementById("successPopup").classList.remove("hidden");
-
       } catch (e) {
         alert("Save Failed: " + e.message);
         btn.disabled = false;
