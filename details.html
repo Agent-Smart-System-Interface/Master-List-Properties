@@ -454,7 +454,7 @@ opacity:.85;
 .shareRow{
 display:flex;
 gap:14px;
-justify-content:center;
+justify-content:center; /* ✅ ให้อยู่กึ่งกลางซ้ายขวา */
 overflow:auto;
 padding:10px 8px 6px;
 scroll-snap-type: x mandatory;
@@ -489,6 +489,7 @@ white-space:nowrap;
 }
 .shareBtn:active .shareCircle{ transform: scale(.97); }
 #shareCanvas{ display:none; }
+
 .fbVisitWrap{
 margin-top: 10px;
 display:flex;
@@ -525,72 +526,62 @@ flex:0 0 auto;
 background: rgba(29,78,216,.10);
 }
 .fbVisitBtn.hidden{ display:none; }
+
+/* ✅ FIX ONLY: เปลี่ยน Map จาก iframe/card → เป็น 2 แท็บ Open Map + Virtual Tour ใต้ Facebook */
 .mapSection{
-margin-top: 12px;
+margin-top: 10px;
 display:none;
 }
-.mapCard{
-width:min(900px, 100%);
-margin: 0 auto;
-border-radius: 18px;
-overflow:hidden;
-border: 1px solid rgba(255,255,255,.65);
-box-shadow: 0 10px 22px rgba(0,0,0,.10);
-background: rgba(255,255,255,.92);
+.mapTabsWrap{
+width:min(640px, 100%);
+margin:0 auto;
+display:grid;
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap:10px;
 }
-.mapHead{
+.mapTab{
 display:flex;
 align-items:center;
-justify-content:space-between;
+justify-content:center;
 gap:10px;
-padding:10px 12px;
-border-bottom: 1px solid rgba(15,23,42,.08);
-}
-.mapTitle{
+padding: 12px 14px;
+border-radius: 18px;
+text-decoration:none;
 font-weight:1100;
-color: rgba(15,23,42,.88);
+letter-spacing:.2px;
+background: rgba(255,255,255,.90);
+border: 2px solid rgba(15,23,42,.12);
+box-shadow: 0 10px 22px rgba(0,0,0,.10);
+color: rgba(15,23,42,.92);
+user-select:none;
+cursor:pointer;
 white-space:nowrap;
 overflow:hidden;
 text-overflow:ellipsis;
 }
-.mapActions{
-display:flex;
-gap:8px;
-flex-wrap:wrap;
-justify-content:flex-end;
-}
-.mapBtn{
-display:inline-flex;
-align-items:center;
-justify-content:center;
-gap:8px;
-padding:8px 10px;
-border-radius: 14px;
-text-decoration:none;
-font-weight:1100;
-font-size:12px;
-background: rgba(255,255,255,.92);
-border: 1px solid rgba(15,23,42,.12);
-box-shadow: 0 10px 20px rgba(0,0,0,.08);
-color: rgba(15,23,42,.92);
-user-select:none;
-}
-.mapBtn:active{ transform: scale(.99); }
-.mapBtnPrimary{
-border-color: rgba(59,130,246,.45);
+.mapTab:active{ transform: scale(.99); }
+.mapTabPrimary{
+border-color: rgba(59,130,246,.55);
 color:#1d4ed8;
 }
-.mapFrame{
-width:100%;
-height: 320px;
-border:0;
-display:block;
-background:#e8f0fb;
+.mapTabIcon{
+width:28px; height:28px;
+border-radius: 12px;
+display:grid;
+place-items:center;
+flex:0 0 auto;
+background: rgba(15,23,42,.06);
 }
-@media (max-width:420px){
-.mapFrame{ height: 260px; }
-.mapBtn{ font-size:11px; padding:8px 9px; }
+.mapTabPrimary .mapTabIcon{
+background: rgba(29,78,216,.10);
 }
+.mapTab.hidden{ display:none; }
+@media (max-width: 420px){
+  .mapTabsWrap{ gap:8px; }
+  .mapTab{ padding: 11px 10px; font-size:12px; border-radius:16px; }
+  .mapTabIcon{ width:26px; height:26px; border-radius:11px; }
+}
+
 .wrap{ padding-bottom: 92px; }
 .bottomDock{
 position:fixed;
@@ -724,8 +715,47 @@ pointer-events:none;
 </svg>
 </div>
 
+<!-- ✅ FIX ONLY: คืนไอคอนแชร์ 8 อัน + กดแชร์ได้จริง -->
 <div class="shareRow" id="shareRow">
-  <!-- (คงปุ่ม share เดิมของคุณทั้งหมด) -->
+  <button class="shareBtn" id="shFacebook" type="button" aria-label="Share to Facebook" title="Facebook">
+    <div class="shareCircle" aria-hidden="true">f</div>
+    <div class="shareLbl">Facebook</div>
+  </button>
+
+  <button class="shareBtn" id="shMessenger" type="button" aria-label="Share to Messenger" title="Messenger">
+    <div class="shareCircle" aria-hidden="true">💬</div>
+    <div class="shareLbl">Messenger</div>
+  </button>
+
+  <button class="shareBtn" id="shWhatsApp" type="button" aria-label="Share to WhatsApp" title="WhatsApp">
+    <div class="shareCircle" aria-hidden="true">🟢</div>
+    <div class="shareLbl">WhatsApp</div>
+  </button>
+
+  <button class="shareBtn" id="shTelegram" type="button" aria-label="Share to Telegram" title="Telegram">
+    <div class="shareCircle" aria-hidden="true">✈️</div>
+    <div class="shareLbl">Telegram</div>
+  </button>
+
+  <button class="shareBtn" id="shLine" type="button" aria-label="Share to LINE" title="LINE">
+    <div class="shareCircle" aria-hidden="true">LINE</div>
+    <div class="shareLbl">LINE</div>
+  </button>
+
+  <button class="shareBtn" id="shEmail" type="button" aria-label="Share by Email" title="Email">
+    <div class="shareCircle" aria-hidden="true">✉️</div>
+    <div class="shareLbl">Email</div>
+  </button>
+
+  <button class="shareBtn" id="shCopy" type="button" aria-label="Copy link" title="Copy link">
+    <div class="shareCircle" aria-hidden="true">⧉</div>
+    <div class="shareLbl">Copy</div>
+  </button>
+
+  <button class="shareBtn" id="shMore" type="button" aria-label="More share" title="More">
+    <div class="shareCircle" aria-hidden="true">⤴︎</div>
+    <div class="shareLbl">More</div>
+  </button>
 </div>
 
 <div class="fbVisitWrap">
@@ -739,25 +769,18 @@ pointer-events:none;
 </a>
 </div>
 
-<div class="mapSection" id="mapSection">
-<div class="mapCard">
-  <div class="mapHead">
-    <div class="mapTitle">Map & Navigation</div>
-    <div class="mapActions">
-      <a class="mapBtn" id="mapOpenBtn" href="#" target="_blank" rel="noopener">Open Map</a>
-      <a class="mapBtn mapBtnPrimary" id="mapNavBtn" href="#" target="_blank" rel="noopener">Navigate</a>
-    </div>
+<!-- ✅ FIX ONLY: ใต้ Facebook → 2 Tab: Open Map + Virtual Tour -->
+<div class="mapSection" id="mapSection" aria-label="Map & Virtual Tour">
+  <div class="mapTabsWrap">
+    <a class="mapTab mapTabPrimary" id="mapOpenBtn" href="#" target="_blank" rel="noopener">
+      <span class="mapTabIcon" aria-hidden="true">🗺️</span>
+      <span>Open Map</span>
+    </a>
+    <a class="mapTab" id="vtBtn" href="#" target="_blank" rel="noopener">
+      <span class="mapTabIcon" aria-hidden="true">🎥</span>
+      <span>Virtual Tour</span>
+    </a>
   </div>
-  <iframe
-    id="mapFrame"
-    class="mapFrame"
-    loading="lazy"
-    referrerpolicy="no-referrer-when-downgrade"
-    allowfullscreen
-    src=""
-    title="Google Map">
-  </iframe>
-</div>
 </div>
 
 <canvas id="shareCanvas" width="1200" height="630"></canvas>
@@ -869,8 +892,6 @@ function showError(msg, showLoginBtn = false){
     btn.style.background = "rgba(15,23,42,.9)";
     btn.style.color = "#fff";
     btn.onclick = () => {
-      // ✅ ถ้าคุณมี gateway.html ให้ปรับชื่อไฟล์ได้ที่นี่
-      // ถ้าไม่มี ให้กลับไปหน้า index แล้วให้ระบบ index พาไปล็อกอิน
       location.href = `index.html?project=${encodeURIComponent(project)}`;
     };
     box.appendChild(btn);
@@ -1006,6 +1027,9 @@ function renderMiniMeta(detail){
   el.textContent = `Land ${landM} · Living ${livingM}`;
 }
 
+/** =========================
+* ✅ Map + Virtual Tour (ใช้ลิงก์ maps.app.goo.gl ได้)
+* ========================= */
 function pickMapLink(detail){
   const keys = ["Map_Link","MapLink","GoogleMap","Google_Maps","Map","Location","Location_Link"];
   for(const k of keys){
@@ -1015,48 +1039,81 @@ function pickMapLink(detail){
   }
   return "";
 }
-function normalizeMapLink(link){
-  const s = String(link || "").trim();
-  return s && s !== "-" ? s : "";
+function pickVirtualTourLink(detail){
+  const keys = ["Virtual_Tour","VirtualTour","Virtual_Tour_Link","VirtualTour_Link","VT_Link","VirtualTourURL","Virtual_Tour_URL"];
+  for(const k of keys){
+    const v = detail ? detail[k] : "";
+    const s = String(v ?? "").trim();
+    if(s && s !== "-") return s;
+  }
+  return "";
 }
-function buildEmbedUrl(link){
-  const raw = normalizeMapLink(link);
-  if(!raw) return "";
-  if (raw.includes("google.com/maps/embed")) return raw;
-  return `https://www.google.com/maps?q=${encodeURIComponent(raw)}&output=embed`;
+function normalizeUrl(v){
+  const s = String(v ?? "").trim();
+  if(!s || s === "-") return "";
+  return s;
 }
-function buildOpenUrl(link){
-  const raw = normalizeMapLink(link);
+function isShortMapLink(raw){
+  const s = String(raw||"").toLowerCase();
+  return s.includes("maps.app.goo.gl") || s.includes("goo.gl/maps");
+}
+function buildOpenMapUrl(link){
+  const raw = normalizeUrl(link);
   if(!raw) return "";
-  if (raw.includes("google.com/maps")) return raw;
-  if (raw.startsWith("http")) return raw;
+  if (raw.startsWith("http")) return raw; // maps.app.goo.gl / google.com/maps / อื่นๆ
   return `https://www.google.com/maps?q=${encodeURIComponent(raw)}`;
 }
-function buildNavUrl(link){
-  const raw = normalizeMapLink(link);
+function buildNavigateUrl(link){
+  const raw = normalizeUrl(link);
   if(!raw) return "";
+  // ถ้าเป็น short link → เปิดลิงก์เดิม (Google Maps มีปุ่ม Directions/Navigate ให้เอง)
+  if(isShortMapLink(raw)) return raw;
+  // ถ้าเป็นที่อยู่/พิกัด/ลิงก์อื่น → ใช้ dir API
   return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(raw)}`;
 }
-function setMapSection(link){
+function setMapAndTourTabs(mapLink, tourLink){
   const sec = document.getElementById("mapSection");
-  const frame = document.getElementById("mapFrame");
   const openBtn = document.getElementById("mapOpenBtn");
-  const navBtn = document.getElementById("mapNavBtn");
-  if(!sec || !frame || !openBtn || !navBtn) return;
+  const vtBtn = document.getElementById("vtBtn");
+  if(!sec || !openBtn || !vtBtn) return;
 
-  const raw = normalizeMapLink(link);
-  if(!raw){
+  const mapRaw = normalizeUrl(mapLink);
+  const tourRaw = normalizeUrl(tourLink);
+
+  if(!mapRaw && !tourRaw){
     sec.style.display = "none";
-    frame.src = "";
     openBtn.href = "#";
-    navBtn.href = "#";
+    vtBtn.href = "#";
     return;
   }
+
   sec.style.display = "block";
-  openBtn.href = buildOpenUrl(raw);
-  navBtn.href = buildNavUrl(raw);
-  frame.src = buildEmbedUrl(raw);
-  frame.onerror = () => { frame.src = ""; };
+
+  if(mapRaw){
+    // Open Map = เปิดแผนที่
+    openBtn.href = buildOpenMapUrl(mapRaw);
+    // เพื่อให้ "นำทางได้" จริง: กด Open Map แล้วใน Google Maps จะมี Directions/Navigate
+    // (ถ้าคุณอยากเปลี่ยนปุ่มซ้ายให้เป็น Navigate ให้สลับ label ได้)
+    openBtn.classList.remove("hidden");
+  }else{
+    openBtn.classList.add("hidden");
+    openBtn.href = "#";
+  }
+
+  if(tourRaw){
+    vtBtn.href = tourRaw;
+    vtBtn.classList.remove("hidden");
+  }else{
+    vtBtn.classList.add("hidden");
+    vtBtn.href = "#";
+  }
+
+  // ถ้าเหลือปุ่มเดียว ให้ยืดเต็มแถว (คงความสวยงาม)
+  const wrap = sec.querySelector(".mapTabsWrap");
+  if(wrap){
+    const visibleCount = [openBtn, vtBtn].filter(el => el && !el.classList.contains("hidden")).length;
+    wrap.style.gridTemplateColumns = visibleCount === 1 ? "1fr" : "repeat(2, minmax(0, 1fr))";
+  }
 }
 
 function renderInfo(detail){
@@ -1128,6 +1185,108 @@ function setFbVisitBar(link){
 }
 
 /** =========================
+* ✅ SHARE (8 icons) — แชร์ได้จริง
+* ========================= */
+function getShareUrl(){
+  return location.href;
+}
+function getShareText(){
+  const plot = String(CURRENT_DETAIL?.Plot || "").trim();
+  const price = CURRENT_DETAIL?.Price ? moneyTHB(CURRENT_DETAIL.Price) : "";
+  const title = plot ? `Plot ${plot}` : "Smart Properties";
+  const parts = [title, price].filter(Boolean);
+  return parts.join(" · ");
+}
+function openPopup(url){
+  try{
+    window.open(url, "_blank", "noopener,noreferrer");
+  }catch(e){
+    location.href = url;
+  }
+}
+async function copyText(text){
+  try{
+    await navigator.clipboard.writeText(text);
+    return true;
+  }catch(e){
+    // fallback
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try{
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      return true;
+    }catch(err){
+      document.body.removeChild(ta);
+      return false;
+    }
+  }
+}
+function bindShareButtons(){
+  const url = getShareUrl();
+  const text = getShareText();
+  const encodedUrl = encodeURIComponent(url);
+  const encodedText = encodeURIComponent(text);
+
+  const fb = document.getElementById("shFacebook");
+  const ms = document.getElementById("shMessenger");
+  const wa = document.getElementById("shWhatsApp");
+  const tg = document.getElementById("shTelegram");
+  const ln = document.getElementById("shLine");
+  const em = document.getElementById("shEmail");
+  const cp = document.getElementById("shCopy");
+  const mo = document.getElementById("shMore");
+
+  if(fb) fb.onclick = ()=> openPopup(`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`);
+
+  // Messenger: บนมือถือจะทำงานดีมาก, บนเดสก์ท็อป fallback ไป sharer
+  if(ms) ms.onclick = ()=>{
+    const messengerDeep = `fb-messenger://share?link=${encodedUrl}`;
+    // พยายามเปิด deep link ก่อน
+    try{
+      location.href = messengerDeep;
+      setTimeout(()=> openPopup(`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`), 450);
+    }catch(e){
+      openPopup(`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`);
+    }
+  };
+
+  if(wa) wa.onclick = ()=> openPopup(`https://wa.me/?text=${encodedText}%0A${encodedUrl}`);
+  if(tg) tg.onclick = ()=> openPopup(`https://t.me/share/url?url=${encodedUrl}&text=${encodedText}`);
+  if(ln) ln.onclick = ()=> openPopup(`https://social-plugins.line.me/lineit/share?url=${encodedUrl}`);
+
+  if(em) em.onclick = ()=>{
+    const subject = encodeURIComponent(text || "Property details");
+    const body = encodeURIComponent(`${text}\n${url}`);
+    location.href = `mailto:?subject=${subject}&body=${body}`;
+  };
+
+  if(cp) cp.onclick = async ()=>{
+    const ok = await copyText(url);
+    cp.querySelector(".shareLbl").textContent = ok ? "Copied" : "Copy";
+    setTimeout(()=>{ cp.querySelector(".shareLbl").textContent = "Copy"; }, 1200);
+  };
+
+  // More: ใช้ Web Share API (มือถือ) ถ้าไม่มีให้ copy link
+  if(mo) mo.onclick = async ()=>{
+    if(navigator.share){
+      try{
+        await navigator.share({ title: document.title, text, url });
+        return;
+      }catch(e){}
+    }
+    const ok = await copyText(url);
+    mo.querySelector(".shareLbl").textContent = ok ? "Copied" : "More";
+    setTimeout(()=>{ mo.querySelector(".shareLbl").textContent = "More"; }, 1200);
+  };
+}
+
+/** =========================
 * Other Plots
 * ========================= */
 function getUnitId(u){
@@ -1189,7 +1348,6 @@ async function loadOtherUnits(){
     const url = `${SCRIPT_URL}?mode=getUnitList&project=${encodeURIComponent(project)}${t}`;
     const data = await jsonp(url);
     if(data && data.error){
-      // ถ้า token หมดอายุ จะมาตรงนี้
       if(String(data.error).toLowerCase().includes("unauthorized")){
         showError("โหลดข้อมูลไม่สำเร็จ: unauthorized (token หมดอายุ/ไม่มี token)", true);
       }
@@ -1220,7 +1378,6 @@ async function loadOtherUnits(){
     return;
   }
 
-  // ✅ ถ้าไม่มี token ให้แจ้งชัดเจน (นี่คือเคสในรูปคุณ)
   if(!token){
     showError("โหลดข้อมูลไม่สำเร็จ: unauthorized: missing/expired token", true);
     hideLoader();
@@ -1239,7 +1396,6 @@ async function loadOtherUnits(){
   }
 
   if(detail && detail.error){
-    // ✅ สำคัญ: ตรงนี้คือจุดที่ขึ้น error unauthorized ของคุณ
     const errText = String(detail.error || "");
     if(errText.toLowerCase().includes("unauthorized")){
       showError("โหลดข้อมูลไม่สำเร็จ: unauthorized: missing/expired token", true);
@@ -1268,7 +1424,8 @@ async function loadOtherUnits(){
   renderMiniMeta(detail);
   renderDescription(detail);
 
-  setMapSection(pickMapLink(detail));
+  // ✅ แสดงแท็บ Open Map + Virtual Tour (รองรับ maps.app.goo.gl)
+  setMapAndTourTabs(pickMapLink(detail), pickVirtualTourLink(detail));
 
   const thumb = cleanDriveImage(detail.Thumbnail_Image || "");
   const list = String(detail.Image_List || "")
@@ -1302,6 +1459,10 @@ async function loadOtherUnits(){
   setDockLink("dockFloorplan", detail.FloorPlan_PDF);
 
   setFbVisitBar(pickFbLink(detail));
+
+  // ✅ bind share 8 icons (หลังได้ detail แล้ว จะได้ text ดีขึ้น)
+  bindShareButtons();
+
 })();
 </script>
 </body>
