@@ -38,7 +38,14 @@ border: 1px solid var(--line);
 width:44px; height:44px; border-radius:999px; background:rgba(255,255,255,.55);
 display:grid; place-items:center; font-weight:800;
 flex:0 0 auto;
+
+/* ✅ FIX ONLY: ทำให้คลิกได้แบบลิงก์ และไม่เปลี่ยนสไตล์เดิม */
+text-decoration:none;
+color: inherit;
 }
+.logo:active{ transform: scale(.99); }
+.logo svg{ width:22px; height:22px; display:block; }
+
 .titles{min-width:0}
 .titles h1{
 margin:0;
@@ -683,7 +690,14 @@ pointer-events:none;
 <div class="wrap">
 <div class="topbar">
 <div class="brand">
-<div class="logo">HP</div>
+  <!-- ✅ FIX ONLY: ใส่ไอคอน Home ในวงกลม + ทำลิงก์ไปหน้า index -->
+  <a class="logo" id="homeLink" href="index.html" aria-label="Home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.92)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M3 10.5L12 3l9 7.5"></path>
+      <path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"></path>
+    </svg>
+  </a>
+
 <div class="titles">
 <h1 id="pageTitle">Detail Plot: -</h1>
 <div class="sub" id="subTitle">Details · ...</div>
@@ -897,6 +911,13 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh6
 const qs = new URLSearchParams(location.search);
 const hpId = qs.get("id") || qs.get("hpId") || "";
 const project = qs.get("project") || "HP00";
+
+/* ✅ FIX ONLY: ให้ไอคอน Home ลิงก์กลับ index พร้อมพารามิเตอร์ project */
+(function setHomeLink(){
+  const a = document.getElementById("homeLink");
+  if(!a) return;
+  a.href = `index.html?project=${encodeURIComponent(project)}`;
+})();
 
 /** Loader helpers */
 function showLoader(){
