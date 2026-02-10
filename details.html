@@ -525,61 +525,72 @@ flex:0 0 auto;
 background: rgba(29,78,216,.10);
 }
 .fbVisitBtn.hidden{ display:none; }
-
-/* ====== MAP SECTION (แก้เฉพาะให้เป็น 2 แท็บอยู่ใต้ Visit our Facebook Page) ====== */
 .mapSection{
-margin-top: 10px;
+margin-top: 12px;
 display:none;
 }
-.mapTabsWrap{
-width:min(640px, 100%);
-margin:0 auto;
-display:grid;
-grid-template-columns: repeat(2, minmax(0, 1fr));
-gap:10px;
+.mapCard{
+width:min(900px, 100%);
+margin: 0 auto;
+border-radius: 18px;
+overflow:hidden;
+border: 1px solid rgba(255,255,255,.65);
+box-shadow: 0 10px 22px rgba(0,0,0,.10);
+background: rgba(255,255,255,.92);
 }
-.mapTab{
+.mapHead{
 display:flex;
 align-items:center;
-justify-content:center;
+justify-content:space-between;
 gap:10px;
-padding: 12px 14px;
-border-radius: 18px;
-text-decoration:none;
+padding:10px 12px;
+border-bottom: 1px solid rgba(15,23,42,.08);
+}
+.mapTitle{
 font-weight:1100;
-letter-spacing:.2px;
-background: rgba(255,255,255,.90);
-border: 2px solid rgba(15,23,42,.12);
-box-shadow: 0 10px 22px rgba(0,0,0,.10);
-color: rgba(15,23,42,.92);
-user-select:none;
-cursor:pointer;
+color: rgba(15,23,42,.88);
 white-space:nowrap;
 overflow:hidden;
 text-overflow:ellipsis;
 }
-.mapTab:active{ transform: scale(.99); }
-.mapTabPrimary{
-border-color: rgba(59,130,246,.55);
+.mapActions{
+display:flex;
+gap:8px;
+flex-wrap:wrap;
+justify-content:flex-end;
+}
+.mapBtn{
+display:inline-flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+padding:8px 10px;
+border-radius: 14px;
+text-decoration:none;
+font-weight:1100;
+font-size:12px;
+background: rgba(255,255,255,.92);
+border: 1px solid rgba(15,23,42,.12);
+box-shadow: 0 10px 20px rgba(0,0,0,.08);
+color: rgba(15,23,42,.92);
+user-select:none;
+}
+.mapBtn:active{ transform: scale(.99); }
+.mapBtnPrimary{
+border-color: rgba(59,130,246,.45);
 color:#1d4ed8;
 }
-.mapTabIcon{
-width:28px; height:28px;
-border-radius: 12px;
-display:grid;
-place-items:center;
-flex:0 0 auto;
-background: rgba(15,23,42,.06);
+.mapFrame{
+width:100%;
+height: 320px;
+border:0;
+display:block;
+background:#e8f0fb;
 }
-.mapTabPrimary .mapTabIcon{
-background: rgba(29,78,216,.10);
+@media (max-width:420px){
+.mapFrame{ height: 260px; }
+.mapBtn{ font-size:11px; padding:8px 9px; }
 }
-@media (max-width: 420px){
-  .mapTabsWrap{ gap:8px; }
-  .mapTab{ padding: 11px 10px; font-size:12px; border-radius:16px; }
-  .mapTabIcon{ width:26px; height:26px; border-radius:11px; }
-}
-
 .wrap{ padding-bottom: 92px; }
 .bottomDock{
 position:fixed;
@@ -728,18 +739,25 @@ pointer-events:none;
 </a>
 </div>
 
-<!-- ✅ NEW: Map Tabs อยู่ใต้ Visit our Facebook Page -->
-<div class="mapSection" id="mapSection" aria-label="Map tabs">
-  <div class="mapTabsWrap">
-    <a class="mapTab" id="mapOpenBtn" href="#" target="_blank" rel="noopener">
-      <span class="mapTabIcon" aria-hidden="true">🗺️</span>
-      <span>Open Map</span>
-    </a>
-    <a class="mapTab mapTabPrimary" id="mapNavBtn" href="#" target="_blank" rel="noopener">
-      <span class="mapTabIcon" aria-hidden="true">🧭</span>
-      <span>Navigate</span>
-    </a>
+<div class="mapSection" id="mapSection">
+<div class="mapCard">
+  <div class="mapHead">
+    <div class="mapTitle">Map & Navigation</div>
+    <div class="mapActions">
+      <a class="mapBtn" id="mapOpenBtn" href="#" target="_blank" rel="noopener">Open Map</a>
+      <a class="mapBtn mapBtnPrimary" id="mapNavBtn" href="#" target="_blank" rel="noopener">Navigate</a>
+    </div>
   </div>
+  <iframe
+    id="mapFrame"
+    class="mapFrame"
+    loading="lazy"
+    referrerpolicy="no-referrer-when-downgrade"
+    allowfullscreen
+    src=""
+    title="Google Map">
+  </iframe>
+</div>
 </div>
 
 <canvas id="shareCanvas" width="1200" height="630"></canvas>
@@ -851,6 +869,8 @@ function showError(msg, showLoginBtn = false){
     btn.style.background = "rgba(15,23,42,.9)";
     btn.style.color = "#fff";
     btn.onclick = () => {
+      // ✅ ถ้าคุณมี gateway.html ให้ปรับชื่อไฟล์ได้ที่นี่
+      // ถ้าไม่มี ให้กลับไปหน้า index แล้วให้ระบบ index พาไปล็อกอิน
       location.href = `index.html?project=${encodeURIComponent(project)}`;
     };
     box.appendChild(btn);
@@ -999,48 +1019,44 @@ function normalizeMapLink(link){
   const s = String(link || "").trim();
   return s && s !== "-" ? s : "";
 }
-
-/* ✅ รองรับลิงก์แบบ https://maps.app.goo.gl/... สำหรับ Open Map โดยตรง */
+function buildEmbedUrl(link){
+  const raw = normalizeMapLink(link);
+  if(!raw) return "";
+  if (raw.includes("google.com/maps/embed")) return raw;
+  return `https://www.google.com/maps?q=${encodeURIComponent(raw)}&output=embed`;
+}
 function buildOpenUrl(link){
   const raw = normalizeMapLink(link);
   if(!raw) return "";
+  if (raw.includes("google.com/maps")) return raw;
   if (raw.startsWith("http")) return raw;
   return `https://www.google.com/maps?q=${encodeURIComponent(raw)}`;
-}
-
-/* ✅ Navigate:
-   - ถ้าเป็น maps.app.goo.gl ให้เปิดลิงก์เดิม (ใน Google Maps จะกด Directions ได้ทันที)
-   - ถ้าไม่ใช่ short link ใช้ dir/?api=1 แบบเดิม
-*/
-function isShortMapLink(raw){
-  const s = String(raw||"").toLowerCase();
-  return s.includes("maps.app.goo.gl") || s.includes("goo.gl/maps");
 }
 function buildNavUrl(link){
   const raw = normalizeMapLink(link);
   if(!raw) return "";
-  if(isShortMapLink(raw)) return raw;
   return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(raw)}`;
 }
-
-/* ✅ Set Map Tabs (ไม่มี iframe แล้ว) */
 function setMapSection(link){
   const sec = document.getElementById("mapSection");
+  const frame = document.getElementById("mapFrame");
   const openBtn = document.getElementById("mapOpenBtn");
   const navBtn = document.getElementById("mapNavBtn");
-  if(!sec || !openBtn || !navBtn) return;
+  if(!sec || !frame || !openBtn || !navBtn) return;
 
   const raw = normalizeMapLink(link);
   if(!raw){
     sec.style.display = "none";
+    frame.src = "";
     openBtn.href = "#";
     navBtn.href = "#";
     return;
   }
-
   sec.style.display = "block";
   openBtn.href = buildOpenUrl(raw);
-  navBtn.href  = buildNavUrl(raw);
+  navBtn.href = buildNavUrl(raw);
+  frame.src = buildEmbedUrl(raw);
+  frame.onerror = () => { frame.src = ""; };
 }
 
 function renderInfo(detail){
@@ -1173,6 +1189,7 @@ async function loadOtherUnits(){
     const url = `${SCRIPT_URL}?mode=getUnitList&project=${encodeURIComponent(project)}${t}`;
     const data = await jsonp(url);
     if(data && data.error){
+      // ถ้า token หมดอายุ จะมาตรงนี้
       if(String(data.error).toLowerCase().includes("unauthorized")){
         showError("โหลดข้อมูลไม่สำเร็จ: unauthorized (token หมดอายุ/ไม่มี token)", true);
       }
@@ -1203,6 +1220,7 @@ async function loadOtherUnits(){
     return;
   }
 
+  // ✅ ถ้าไม่มี token ให้แจ้งชัดเจน (นี่คือเคสในรูปคุณ)
   if(!token){
     showError("โหลดข้อมูลไม่สำเร็จ: unauthorized: missing/expired token", true);
     hideLoader();
@@ -1221,6 +1239,7 @@ async function loadOtherUnits(){
   }
 
   if(detail && detail.error){
+    // ✅ สำคัญ: ตรงนี้คือจุดที่ขึ้น error unauthorized ของคุณ
     const errText = String(detail.error || "");
     if(errText.toLowerCase().includes("unauthorized")){
       showError("โหลดข้อมูลไม่สำเร็จ: unauthorized: missing/expired token", true);
@@ -1249,7 +1268,6 @@ async function loadOtherUnits(){
   renderMiniMeta(detail);
   renderDescription(detail);
 
-  /* ✅ แสดงแท็บ Open Map + Navigate (รองรับ maps.app.goo.gl) */
   setMapSection(pickMapLink(detail));
 
   const thumb = cleanDriveImage(detail.Thumbnail_Image || "");
