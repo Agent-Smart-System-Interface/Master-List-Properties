@@ -22,10 +22,12 @@
     <div class="bg-slate-50 rounded-[2rem] p-5 mb-6 border border-slate-100">
       <div class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-2">Project</div>
       <input id="projectInput" class="w-full text-center font-extrabold text-slate-900 bg-white border border-slate-200 rounded-2xl px-4 py-3 outline-none" value="HP00">
+
       <div class="text-[11px] font-bold text-slate-500 uppercase tracking-widest mt-4 mb-2">PIN</div>
       <input id="pinInput" type="password" inputmode="numeric" autocomplete="off"
              class="w-full text-center font-extrabold text-slate-900 bg-white border border-slate-200 rounded-2xl px-4 py-3 outline-none tracking-[0.3em]"
              placeholder="••••">
+
       <div id="err" class="text-[11px] font-bold text-rose-500 mt-3 hidden">Invalid PIN</div>
     </div>
 
@@ -41,8 +43,8 @@
   </div>
 
   <script>
-    // ✅ ใส่ URL เดียวกันทุกไฟล์ (gateway/dashboard/edit)
-    const API_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
+    // ✅ ใส่ URL ใหม่ที่คุณให้มา
+    const API_URL = "https://script.google.com/macros/s/AKfycbxc76n6YKLUCCHZZR12c5K4_0k40gHa2ZzDMVZn29BElQlSO3X6O8B7dFIFi0bEukqJ/exec";
 
     const urlParams = new URLSearchParams(location.search);
     const defaultProject = urlParams.get("project") || "HP00";
@@ -72,10 +74,18 @@
       try{
         const res = await fetch(API_URL, {
           method: "POST",
+          headers: { "Content-Type": "application/json" }, // ✅ สำคัญ
           body: JSON.stringify({ mode:"login", project, pin })
         });
-        const out = await res.json().catch(()=> ({}));
-        if (!res.ok || !out.ok) throw new Error(out.error || "Login failed");
+
+        const outText = await res.text();
+        let out = {};
+        try { out = JSON.parse(outText); } catch(e) {}
+
+        if (!res.ok || !out.ok) {
+          const msg = (out && (out.error || out.message)) ? (out.error || out.message) : outText;
+          throw new Error(msg || "Login failed");
+        }
 
         localStorage.setItem("HP_AUTH_TOKEN", out.token);
         localStorage.setItem("HP_AUTH_ROLE", out.role);
