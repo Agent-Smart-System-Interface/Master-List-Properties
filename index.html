@@ -27,27 +27,30 @@
       min-height:100vh;
     }
 
-    .wrap{max-width:1180px;margin:0 auto;padding:14px 14px 44px}
+    /* ✅ FIX ONLY: ลดขนาด Front ลง ~30% (เฉพาะ CSS ส่วน UI) */
+    .wrap{max-width:1180px;margin:0 auto;padding:10px 10px 32px}
+
     .topbar{
       background: rgba(255,255,255,.18);
       border: 1px solid var(--line);
-      border-radius: 26px;
-      padding: 12px 12px;
+      border-radius: 18px;
+      padding: 8px 8px;
       display:flex;
       align-items:center;
-      gap:12px;
+      gap:8px;
       backdrop-filter: blur(8px);
     }
     .logo{
-      width:44px;height:44px;border-radius:999px;
+      width:32px;height:32px;border-radius:999px;
       background: rgba(255,255,255,.55);
       display:grid;place-items:center;
       font-weight:900;
       letter-spacing:.5px;
+      font-size:12px;
     }
     .titlebox{flex:1;min-width:0}
     .title{
-      font-size:18px;
+      font-size:13px;
       font-weight:900;
       line-height:1.1;
       margin:0;
@@ -56,27 +59,28 @@
       text-overflow:ellipsis;
     }
     .subtitle{
-      margin-top:4px;
-      font-size:13px;
+      margin-top:3px;
+      font-size:10px;
       color:rgba(11,19,32,.7);
       display:flex;
-      gap:8px;
+      gap:6px;
       align-items:center;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
     }
     .chip{
-      display:inline-flex;align-items:center;gap:6px;
-      padding:6px 10px;
+      display:inline-flex;align-items:center;gap:5px;
+      padding:4px 7px;
       border-radius:999px;
       background: rgba(255,255,255,.55);
       border: 1px solid rgba(255,255,255,.45);
       font-weight:700;
       color:rgba(11,19,32,.75);
+      font-size:10px;
     }
     .iconbtn{
-      width:44px;height:44px;border-radius:999px;
+      width:32px;height:32px;border-radius:999px;
       border: 1px solid rgba(255,255,255,.55);
       background: rgba(255,255,255,.55);
       display:grid;place-items:center;
@@ -86,19 +90,19 @@
       color:inherit;
     }
     .iconbtn:active{transform:scale(.98)}
-    .iconbtn svg{width:20px;height:20px;opacity:.9}
+    .iconbtn svg{width:16px;height:16px;opacity:.9}
 
     /* controls */
     .controls{
-      margin-top:12px;
+      margin-top:10px;
       display:flex;
       justify-content:center;
     }
     .controlsInner{
       width:100%;
-      max-width:860px;
+      max-width:600px;
       display:flex;
-      gap:10px;
+      gap:8px;
       align-items:center;
       justify-content:center;
       flex-wrap:nowrap;
@@ -115,32 +119,32 @@
       -webkit-appearance:none;
       border:1px solid rgba(255,255,255,.55);
       background: rgba(255,255,255,.45);
-      border-radius: 18px;
-      padding: 12px 44px 12px 14px;
+      border-radius: 13px;
+      padding: 9px 36px 9px 11px;
       font-weight:900;
       color:rgba(11,19,32,.85);
       outline:none;
       box-shadow: 0 10px 22px rgba(0,0,0,.08);
-      font-size:16px;
+      font-size:12px;
       line-height:1.2;
     }
     .selectWrap:after{
       content:"";
       position:absolute;
-      right:14px; top:50%;
+      right:11px; top:50%;
       width:0;height:0;
-      border-left:6px solid transparent;
-      border-right:6px solid transparent;
-      border-top:8px solid rgba(11,19,32,.7);
+      border-left:5px solid transparent;
+      border-right:5px solid transparent;
+      border-top:7px solid rgba(11,19,32,.7);
       transform: translateY(-20%);
       pointer-events:none;
     }
 
     /* grid */
     .grid{
-      margin-top:12px;
+      margin-top:10px;
       display:grid;
-      gap:14px;
+      gap:10px;
       grid-template-columns: 1fr;
     }
     @media (min-width: 880px){
@@ -176,11 +180,11 @@
 
     .badgeStatus{
       position:absolute;
-      top:12px; right:12px;
-      padding:10px 14px;
+      top:8px; right:8px;
+      padding:7px 10px;
       border-radius: 999px;
       font-weight:1000;
-      font-size:14px;
+      font-size:10px;
       letter-spacing:.2px;
       box-shadow: 0 10px 20px rgba(0,0,0,.10);
       border: 1px solid rgba(255,255,255,.7);
@@ -191,35 +195,36 @@
       text-overflow:ellipsis;
     }
 
-    .body{padding:12px 14px 14px}
+    .body{padding:9px 10px 10px}
     .row1{
       display:flex;
       align-items:flex-end;
       justify-content:space-between;
-      gap:10px;
+      gap:8px;
     }
     .plotLine{
       font-weight:1000;
       color: rgba(11,19,32,.75);
       letter-spacing:.2px;
+      font-size:11px;
     }
     .price{
-      font-size:20px;
+      font-size:14px;
       font-weight:1000;
       white-space:nowrap;
     }
 
     .meta{
-      margin-top:10px;
+      margin-top:7px;
       display:flex;
-      gap:10px;
+      gap:7px;
       flex-wrap:nowrap;
     }
     .pill{
       display:inline-flex;
       align-items:center;
-      gap:8px;
-      padding:10px 10px;
+      gap:6px;
+      padding:7px 7px;
       border-radius: 999px;
       background: rgba(11,19,32,.04);
       border: 1px solid rgba(11,19,32,.08);
@@ -231,10 +236,10 @@
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-      font-size:16px;
+      font-size:12px;
     }
     .pill .ico{
-      font-size:18px;
+      font-size:13px;
       line-height:1;
       opacity:.95;
       flex:0 0 auto;
@@ -245,12 +250,12 @@
     }
 
     .btn{
-      margin-top:12px;
+      margin-top:9px;
       width:100%;
       border:none;
-      border-radius: 18px;
-      padding:14px 14px;
-      font-size:18px;
+      border-radius: 13px;
+      padding:10px 10px;
+      font-size:13px;
       font-weight:1000;
       background: #c6f0d8;
       color: rgba(11,19,32,.86);
@@ -259,28 +264,29 @@
     .btn:active{transform:scale(.99)}
 
     .empty{
-      margin-top:14px;
+      margin-top:10px;
       background: rgba(255,255,255,.55);
       border: 1px solid rgba(255,255,255,.55);
-      border-radius: 18px;
-      padding: 14px;
+      border-radius: 13px;
+      padding: 10px;
       text-align:center;
       color: rgba(11,19,32,.75);
       font-weight:900;
+      font-size:12px;
     }
 
     /* toast */
     .toast{
       position:fixed;
       left:50%;
-      bottom:18px;
+      bottom:16px;
       transform:translateX(-50%);
       background: rgba(11,19,32,.88);
       color:#fff;
-      padding:10px 14px;
+      padding:8px 11px;
       border-radius: 999px;
       font-weight:800;
-      font-size:13px;
+      font-size:10px;
       opacity:0;
       pointer-events:none;
       transition: opacity .2s ease, transform .2s ease;
@@ -305,9 +311,9 @@
                   linear-gradient(180deg, #8faac8, #a7bdd5 55%, #95b2cf);
     }
     .loaderCard{
-      width:min(92vw, 520px);
-      padding:28px 18px;
-      border-radius:28px;
+      width:min(92vw, 420px);
+      padding:20px 14px;
+      border-radius:20px;
       border:1px solid rgba(255,255,255,.5);
       background: rgba(255,255,255,.16);
       backdrop-filter: blur(10px);
@@ -315,11 +321,11 @@
     }
     .loaderIcons{
       display:flex;
-      gap:16px;
+      gap:12px;
       justify-content:center;
       align-items:center;
-      margin-bottom:14px;
-      font-size:42px;
+      margin-bottom:10px;
+      font-size:32px;
     }
     .wiggle{
       display:inline-block;
@@ -338,14 +344,14 @@
     .loaderText{
       font-weight:1000;
       letter-spacing:1px;
-      font-size:22px;
+      font-size:16px;
       color: rgba(255,255,255,.92);
       text-shadow: 0 10px 18px rgba(0,0,0,.20);
     }
     .loaderSub{
-      margin-top:8px;
+      margin-top:6px;
       font-weight:800;
-      font-size:14px;
+      font-size:11px;
       color: rgba(255,255,255,.85);
       opacity:.95;
     }
