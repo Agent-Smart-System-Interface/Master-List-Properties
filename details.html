@@ -437,6 +437,8 @@ text-overflow:clip;
 @media (max-width: 420px) {
 .otherId { font-size: 9.5px; }
 }
+
+/* ====== SHARE SECTION (ของเดิมคุณ) ====== */
 .shareSection{
 margin-top:14px;
 padding:14px;
@@ -459,7 +461,12 @@ overflow:auto;
 padding:10px 8px 6px;
 scroll-snap-type: x mandatory;
 -webkit-overflow-scrolling: touch;
+
+/* ✅ เพิ่ม: ให้ดูเนียนเหมือนรูป (ซ่อน scrollbar) */
+scrollbar-width: none;
 }
+.shareRow::-webkit-scrollbar{ display:none; }
+
 .shareBtn{
 flex:0 0 auto;
 width:58px;
@@ -489,6 +496,8 @@ white-space:nowrap;
 }
 .shareBtn:active .shareCircle{ transform: scale(.97); }
 #shareCanvas{ display:none; }
+
+/* ====== FB VISIT (ของเดิมคุณ) ====== */
 .fbVisitWrap{
 margin-top: 10px;
 display:flex;
@@ -525,72 +534,57 @@ flex:0 0 auto;
 background: rgba(29,78,216,.10);
 }
 .fbVisitBtn.hidden{ display:none; }
-.mapSection{
-margin-top: 12px;
-display:none;
-}
-.mapCard{
-width:min(900px, 100%);
-margin: 0 auto;
-border-radius: 18px;
-overflow:hidden;
-border: 1px solid rgba(255,255,255,.65);
-box-shadow: 0 10px 22px rgba(0,0,0,.10);
-background: rgba(255,255,255,.92);
-}
-.mapHead{
+
+/* ✅ NEW: Quick Link buttons (Open Map + Virtual Tour) ให้เหมือนรูป */
+.quickLinks{
+margin-top: 10px;
 display:flex;
-align-items:center;
-justify-content:space-between;
-gap:10px;
-padding:10px 12px;
-border-bottom: 1px solid rgba(15,23,42,.08);
-}
-.mapTitle{
-font-weight:1100;
-color: rgba(15,23,42,.88);
-white-space:nowrap;
-overflow:hidden;
-text-overflow:ellipsis;
-}
-.mapActions{
-display:flex;
-gap:8px;
+justify-content:center;
+gap:12px;
 flex-wrap:wrap;
-justify-content:flex-end;
 }
-.mapBtn{
+.quickBtn{
 display:inline-flex;
 align-items:center;
 justify-content:center;
-gap:8px;
-padding:8px 10px;
-border-radius: 14px;
+gap:10px;
+padding: 12px 14px;
+border-radius: 18px;
 text-decoration:none;
 font-weight:1100;
-font-size:12px;
-background: rgba(255,255,255,.92);
-border: 1px solid rgba(15,23,42,.12);
-box-shadow: 0 10px 20px rgba(0,0,0,.08);
+letter-spacing:.2px;
+background: rgba(255,255,255,.90);
+border: 2px solid rgba(15,23,42,.12);
+box-shadow: 0 10px 22px rgba(0,0,0,.10);
 color: rgba(15,23,42,.92);
 user-select:none;
+cursor:pointer;
+min-width: 180px;
 }
-.mapBtn:active{ transform: scale(.99); }
-.mapBtnPrimary{
+.quickBtn:active{ transform: scale(.99); }
+.quickIcon{
+width:28px; height:28px;
+border-radius: 12px;
+display:grid;
+place-items:center;
+flex:0 0 auto;
+background: rgba(15,23,42,.08);
+}
+.quickBtnPrimary{
 border-color: rgba(59,130,246,.45);
 color:#1d4ed8;
 }
-.mapFrame{
-width:100%;
-height: 320px;
-border:0;
-display:block;
-background:#e8f0fb;
+.quickBtnPrimary .quickIcon{
+background: rgba(29,78,216,.10);
 }
+.quickBtn.hidden{ display:none; }
+
 @media (max-width:420px){
-.mapFrame{ height: 260px; }
-.mapBtn{ font-size:11px; padding:8px 9px; }
+  .quickBtn{ min-width: 150px; padding:11px 12px; border-radius:16px; font-size:12px; }
+  .quickIcon{ width:24px; height:24px; border-radius:11px; }
 }
+
+/* ====== Bottom dock (ของเดิมคุณ) ====== */
 .wrap{ padding-bottom: 92px; }
 .bottomDock{
 position:fixed;
@@ -650,146 +644,153 @@ pointer-events:none;
 </head>
 <body>
 <div class="pageLoader" id="pageLoader" aria-label="loading">
-<div class="loaderPanel">
-<div class="loaderEmojis" aria-hidden="true">
-<span>🏠</span><span>✨</span><span>🌴</span>
-</div>
-<div class="loaderText">Smart Properties System</div>
-</div>
+  <div class="loaderPanel">
+    <div class="loaderEmojis" aria-hidden="true">
+      <span>🏠</span><span>✨</span><span>🌴</span>
+    </div>
+    <div class="loaderText">Smart Properties System</div>
+  </div>
 </div>
 
 <div class="wrap">
-<div class="topbar">
-<div class="brand">
-  <a class="logo" id="homeLink" href="index.html" aria-label="Home">
-    <svg viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.92)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-      <path d="M3 10.5L12 3l9 7.5"></path>
-      <path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"></path>
-    </svg>
-  </a>
+  <div class="topbar">
+    <div class="brand">
+      <a class="logo" id="homeLink" href="index.html" aria-label="Home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.92)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 10.5L12 3l9 7.5"></path>
+          <path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"></path>
+        </svg>
+      </a>
 
-<div class="titles">
-<h1 id="pageTitle">Detail Plot: -</h1>
-<div class="sub" id="subTitle">Details · ...</div>
-</div>
-</div>
-<button class="backBtn" id="btnBack">←</button>
-</div>
+      <div class="titles">
+        <h1 id="pageTitle">Detail Plot: -</h1>
+        <div class="sub" id="subTitle">Details · ...</div>
+      </div>
+    </div>
+    <button class="backBtn" id="btnBack">←</button>
+  </div>
 
-<div class="errorBox" id="errBox"></div>
+  <div class="errorBox" id="errBox"></div>
 
-<div class="card" id="mainCard">
-<div class="gallery" id="gallery">
-<img class="mainSlide skeleton" id="mainImg" alt="main" />
-<div class="tagTopLeft" id="tagPlot">-</div>
-<div class="tagBottomRight" id="tagCount">0 / 0</div>
+  <div class="card" id="mainCard">
+    <div class="gallery" id="gallery">
+      <img class="mainSlide skeleton" id="mainImg" alt="main" />
+      <div class="tagTopLeft" id="tagPlot">-</div>
+      <div class="tagBottomRight" id="tagCount">0 / 0</div>
 
-<div class="navArrow navLeft" id="btnPrev" aria-label="previous">
-<svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-<path d="M15 18l-6-6 6-6"></path>
-</svg>
-</div>
-<div class="navArrow navRight" id="btnNext" aria-label="next">
-<svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-<path d="M9 6l6 6-6 6"></path>
-</svg>
-</div>
-</div>
+      <div class="navArrow navLeft" id="btnPrev" aria-label="previous">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"></path>
+        </svg>
+      </div>
+      <div class="navArrow navRight" id="btnNext" aria-label="next">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 6l6 6-6 6"></path>
+        </svg>
+      </div>
+    </div>
 
-<div class="thumbStrip" id="thumbStrip"></div>
+    <div class="thumbStrip" id="thumbStrip"></div>
 
-<div class="content">
-<div class="headRow">
-<div class="hp" id="hpText">...</div>
-<div class="price" id="priceText">฿0</div>
-<div class="statusBelow" id="statusBelow">-</div>
-</div>
+    <div class="content">
+      <div class="headRow">
+        <div class="hp" id="hpText">...</div>
+        <div class="price" id="priceText">฿0</div>
+        <div class="statusBelow" id="statusBelow">-</div>
+      </div>
 
-<div class="miniMeta" id="miniMeta">Land - · Living -</div>
+      <div class="miniMeta" id="miniMeta">Land - · Living -</div>
 
-<div class="descBox" id="descBox">
-<div class="descText" id="descText">-</div>
-</div>
+      <div class="descBox" id="descBox">
+        <div class="descText" id="descText">-</div>
+      </div>
 
-<div class="gridInfo" id="infoGrid"></div>
+      <div class="gridInfo" id="infoGrid"></div>
 
-<div class="shareSection" id="shareSection">
-<div class="shareTopIcon" aria-hidden="true" title="Share">
-<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<circle cx="18" cy="5" r="2"></circle>
-<circle cx="6" cy="12" r="2"></circle>
-<circle cx="18" cy="19" r="2"></circle>
-<path d="M8 12l8-7"></path>
-<path d="M8 12l8 7"></path>
-</svg>
-</div>
+      <!-- ====== SHARE / LINKS (กรอบแดง) ====== -->
+      <div class="shareSection" id="shareSection">
+        <div class="shareTopIcon" aria-hidden="true" title="Share">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="2"></circle>
+            <circle cx="6" cy="12" r="2"></circle>
+            <circle cx="18" cy="19" r="2"></circle>
+            <path d="M8 12l8-7"></path>
+            <path d="M8 12l8 7"></path>
+          </svg>
+        </div>
 
-<div class="shareRow" id="shareRow">
-  <!-- (คงปุ่ม share เดิมของคุณทั้งหมด) -->
-</div>
+        <!-- ✅ 8 Share icons จะถูก render ด้วย JS ให้เหมือนรูป -->
+        <div class="shareRow" id="shareRow"></div>
 
-<div class="fbVisitWrap">
-<a id="fbVisitBtn" class="fbVisitBtn hidden" href="#" target="_blank" rel="noopener">
-<span class="fbVisitIcon" aria-hidden="true">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2">
-<path d="M22 12.06C22 6.504 17.523 2 12 2S2 6.504 2 12.06C2 17.082 5.657 21.245 10.438 22v-7.03H7.898v-2.91h2.54V9.845c0-2.522 1.492-3.916 3.777-3.916 1.094 0 2.238.196 2.238.196v2.475h-1.26c-1.243 0-1.63.776-1.63 1.57v1.89h2.773l-.443 2.91h-2.33V22C18.343 21.245 22 17.082 22 12.06z"/>
-</svg>
-</span>
-<span id="fbVisitText">Visit our Facebook Page</span>
-</a>
-</div>
+        <div class="fbVisitWrap">
+          <a id="fbVisitBtn" class="fbVisitBtn hidden" href="#" target="_blank" rel="noopener">
+            <span class="fbVisitIcon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2">
+                <path d="M22 12.06C22 6.504 17.523 2 12 2S2 6.504 2 12.06C2 17.082 5.657 21.245 10.438 22v-7.03H7.898v-2.91h2.54V9.845c0-2.522 1.492-3.916 3.777-3.916 1.094 0 2.238.196 2.238.196v2.475h-1.26c-1.243 0-1.63.776-1.63 1.57v1.89h2.773l-.443 2.91h-2.33V22C18.343 21.245 22 17.082 22 12.06z"/>
+              </svg>
+            </span>
+            <span id="fbVisitText">Visit our Facebook Page</span>
+          </a>
+        </div>
 
-<div class="mapSection" id="mapSection">
-<div class="mapCard">
-  <div class="mapHead">
-    <div class="mapTitle">Map & Navigation</div>
-    <div class="mapActions">
-      <a class="mapBtn" id="mapOpenBtn" href="#" target="_blank" rel="noopener">Open Map</a>
-      <a class="mapBtn mapBtnPrimary" id="mapNavBtn" href="#" target="_blank" rel="noopener">Navigate</a>
+        <!-- ✅ NEW: Open Map + Virtual Tour (เหมือนรูป) -->
+        <div class="quickLinks" id="quickLinks">
+          <a id="openMapBtn" class="quickBtn hidden" href="#" target="_blank" rel="noopener">
+            <span class="quickIcon" aria-hidden="true">
+              <!-- map icon -->
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 20l-5 2V6l5-2 6 2 5-2v16l-5 2-6-2z"></path>
+                <path d="M9 4v16"></path>
+                <path d="M15 6v16"></path>
+              </svg>
+            </span>
+            <span>Open Map</span>
+          </a>
+
+          <a id="virtualTourBtn" class="quickBtn quickBtnPrimary hidden" href="#" target="_blank" rel="noopener">
+            <span class="quickIcon" aria-hidden="true">
+              <!-- tour icon -->
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 10l9-7 9 7"></path>
+                <path d="M5 10v10h14V10"></path>
+                <path d="M10 20v-6h4v6"></path>
+              </svg>
+            </span>
+            <span>Virtual Tour</span>
+          </a>
+        </div>
+
+        <canvas id="shareCanvas" width="1200" height="630"></canvas>
+      </div>
+      <!-- ====== END SHARE / LINKS ====== -->
+
+      <div class="otherSection" id="otherSection">
+        <div class="otherTitle">
+          <div>Other Plots</div>
+          <div class="otherHint">Tap to view details</div>
+        </div>
+        <div class="otherGrid" id="otherGrid"></div>
+      </div>
+
     </div>
   </div>
-  <iframe
-    id="mapFrame"
-    class="mapFrame"
-    loading="lazy"
-    referrerpolicy="no-referrer-when-downgrade"
-    allowfullscreen
-    src=""
-    title="Google Map">
-  </iframe>
-</div>
-</div>
-
-<canvas id="shareCanvas" width="1200" height="630"></canvas>
-</div>
-
-<div class="otherSection" id="otherSection">
-<div class="otherTitle">
-<div>Other Plots</div>
-<div class="otherHint">Tap to view details</div>
-</div>
-<div class="otherGrid" id="otherGrid"></div>
-</div>
-
-</div>
-</div>
 </div>
 
 <div class="bottomDock" id="bottomDock" aria-label="Downloads">
-<div class="dockInner">
-<a class="dockBtn disabled" id="dockSales" href="#" target="_blank" rel="noopener">
-<span class="dockIcon">📄</span>
-<span>Sales PDF</span>
-</a>
-<a class="dockBtn disabled" id="dockMaterial" href="#" target="_blank" rel="noopener">
-<span class="dockIcon">📄</span>
-<span>Material PDF</span>
-</a>
-<a class="dockBtn disabled" id="dockFloorplan" href="#" target="_blank" rel="noopener">
-<span class="dockIcon">📄</span>
-<span>Floor Plan</span>
-</a>
-</div>
+  <div class="dockInner">
+    <a class="dockBtn disabled" id="dockSales" href="#" target="_blank" rel="noopener">
+      <span class="dockIcon">📄</span>
+      <span>Sales PDF</span>
+    </a>
+    <a class="dockBtn disabled" id="dockMaterial" href="#" target="_blank" rel="noopener">
+      <span class="dockIcon">📄</span>
+      <span>Material PDF</span>
+    </a>
+    <a class="dockBtn disabled" id="dockFloorplan" href="#" target="_blank" rel="noopener">
+      <span class="dockIcon">📄</span>
+      <span>Floor Plan</span>
+    </a>
+  </div>
 </div>
 
 <script>
@@ -816,7 +817,6 @@ function goGateway(reason){
   try{
     if (reason) console.warn("[AUTH]", reason);
     const back = encodeURIComponent(location.pathname + location.search);
-    // ✅ ถ้าคุณใช้ชื่อหน้า login คนละชื่อ เปลี่ยนตรงนี้
     location.href = `gateway.html?project=${encodeURIComponent(project)}&back=${back}`;
   }catch(e){
     location.href = `gateway.html?project=${encodeURIComponent(project)}`;
@@ -860,7 +860,6 @@ function jsonp(url, timeoutMs = 20000){
     }
     window[cb] = (data) => { cleanup(); resolve(data); };
 
-    // ✅ IMPORTANT: กัน cache ของ JSONP
     const sep = url.includes("?") ? "&" : "?";
     script.src = url + sep + "callback=" + encodeURIComponent(cb) + "&t=" + Date.now();
 
@@ -1024,59 +1023,6 @@ function renderMiniMeta(detail){
   el.textContent = `Land ${landM} · Living ${livingM}`;
 }
 
-function pickMapLink(detail){
-  const keys = ["Map_Link","MapLink","GoogleMap","Google_Maps","Map","Location","Location_Link"];
-  for(const k of keys){
-    const v = detail ? detail[k] : "";
-    const s = String(v ?? "").trim();
-    if(s && s !== "-") return s;
-  }
-  return "";
-}
-function normalizeMapLink(link){
-  const s = String(link || "").trim();
-  return s && s !== "-" ? s : "";
-}
-function buildEmbedUrl(link){
-  const raw = normalizeMapLink(link);
-  if(!raw) return "";
-  if (raw.includes("google.com/maps/embed")) return raw;
-  return `https://www.google.com/maps?q=${encodeURIComponent(raw)}&output=embed`;
-}
-function buildOpenUrl(link){
-  const raw = normalizeMapLink(link);
-  if(!raw) return "";
-  if (raw.includes("google.com/maps")) return raw;
-  if (raw.startsWith("http")) return raw;
-  return `https://www.google.com/maps?q=${encodeURIComponent(raw)}`;
-}
-function buildNavUrl(link){
-  const raw = normalizeMapLink(link);
-  if(!raw) return "";
-  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(raw)}`;
-}
-function setMapSection(link){
-  const sec = document.getElementById("mapSection");
-  const frame = document.getElementById("mapFrame");
-  const openBtn = document.getElementById("mapOpenBtn");
-  const navBtn = document.getElementById("mapNavBtn");
-  if(!sec || !frame || !openBtn || !navBtn) return;
-
-  const raw = normalizeMapLink(link);
-  if(!raw){
-    sec.style.display = "none";
-    frame.src = "";
-    openBtn.href = "#";
-    navBtn.href = "#";
-    return;
-  }
-  sec.style.display = "block";
-  openBtn.href = buildOpenUrl(raw);
-  navBtn.href = buildNavUrl(raw);
-  frame.src = buildEmbedUrl(raw);
-  frame.onerror = () => { frame.src = ""; };
-}
-
 function renderInfo(detail){
   const grid = document.getElementById("infoGrid");
   const items = [
@@ -1123,6 +1069,7 @@ function setDockLink(elId, link){
   el.setAttribute("href", href);
 }
 
+/** ====== AD: FB_Link ====== */
 function pickFbLink(detail){
   const keys = ["FB_Link","FBLink","FB_LINK","facebook","Facebook","FB"];
   for(const k of keys){
@@ -1145,8 +1092,161 @@ function setFbVisitBar(link){
   a.setAttribute("href", href);
 }
 
+/** ====== AE: Map_Link ====== */
+function pickMapLink(detail){
+  const keys = ["Map_Link","MapLink","GoogleMap","Google_Maps","Map","Location","Location_Link"];
+  for(const k of keys){
+    const v = detail ? detail[k] : "";
+    const s = String(v ?? "").trim();
+    if(s && s !== "-") return s;
+  }
+  return "";
+}
+function buildOpenMapUrl(link){
+  const raw = String(link || "").trim();
+  if(!raw) return "";
+  if (raw.includes("google.com/maps")) return raw;
+  if (raw.startsWith("http")) return raw;
+  return `https://www.google.com/maps?q=${encodeURIComponent(raw)}`;
+}
+
+/** ====== AF: Virtual_Tour ====== */
+function pickVirtualTour(detail){
+  const keys = ["Virtual_Tour","VirtualTour","Virtual_TOUR","VirtualTour_Link","Virtual","Tour","VR_Link","Virtual_Link"];
+  for(const k of keys){
+    const v = detail ? detail[k] : "";
+    const s = String(v ?? "").trim();
+    if(s && s !== "-") return s;
+  }
+  return "";
+}
+function setQuickLinks(mapLink, tourLink){
+  const mapBtn = document.getElementById("openMapBtn");
+  const tourBtn = document.getElementById("virtualTourBtn");
+
+  const mapHref = normalizeLink(mapLink);
+  if(mapHref){
+    mapBtn.classList.remove("hidden");
+    mapBtn.href = buildOpenMapUrl(mapHref);
+  }else{
+    mapBtn.classList.add("hidden");
+    mapBtn.href = "#";
+  }
+
+  const tourHref = normalizeLink(tourLink);
+  if(tourHref){
+    tourBtn.classList.remove("hidden");
+    tourBtn.href = tourHref;
+  }else{
+    tourBtn.classList.add("hidden");
+    tourBtn.href = "#";
+  }
+}
+
 /** =========================
-* Other Plots
+* SHARE (8 ICONS) - ใช้งานได้จริง
+* ========================= */
+function getPublicShareUrl(){
+  // แชร์แบบไม่พก token
+  const u = new URL(location.href);
+  u.searchParams.delete("token");
+  // ยืนยันว่ามี id + project
+  if (hpId) u.searchParams.set("id", hpId);
+  if (project) u.searchParams.set("project", project);
+  return u.toString();
+}
+
+function openPopup(url){
+  const w = 640, h = 640;
+  const left = (screen.width - w) / 2;
+  const top = (screen.height - h) / 2;
+  window.open(url, "_blank", `noopener,noreferrer,width=${w},height=${h},left=${left},top=${top}`);
+}
+
+async function copyToClipboard(text){
+  try{
+    await navigator.clipboard.writeText(text);
+    return true;
+  }catch(e){
+    // fallback
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position="fixed";
+    ta.style.left="-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    try{ document.execCommand("copy"); }catch(err){}
+    document.body.removeChild(ta);
+    return true;
+  }
+}
+
+function renderShareIcons(detail){
+  const row = document.getElementById("shareRow");
+  if(!row) return;
+
+  const url = getPublicShareUrl();
+  const plot = String(detail?.Plot || hpId || "Property").trim() || "Property";
+  const price = moneyTHB(detail?.Price || 0);
+  const title = `Plot ${plot} · ${price}`;
+  const text = `Check this property: ${title}`;
+
+  // SVG icons (หน้าตาใกล้รูป + สีเหมือนแอป)
+  const ICONS = {
+    fb: `<svg width="22" height="22" viewBox="0 0 24 24" fill="#1877F2" aria-hidden="true"><path d="M22 12.06C22 6.504 17.523 2 12 2S2 6.504 2 12.06C2 17.082 5.657 21.245 10.438 22v-7.03H7.898v-2.91h2.54V9.845c0-2.522 1.492-3.916 3.777-3.916 1.094 0 2.238.196 2.238.196v2.475h-1.26c-1.243 0-1.63.776-1.63 1.57v1.89h2.773l-.443 2.91h-2.33V22C18.343 21.245 22 17.082 22 12.06z"/></svg>`,
+    msg: `<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00C6FF"/><stop offset="1" stop-color="#A100FF"/></linearGradient></defs><path fill="url(#g)" d="M12 2C6.477 2 2 6.078 2 11.111c0 2.867 1.455 5.423 3.73 7.087V22l3.59-1.97c.84.23 1.727.36 2.68.36 5.523 0 10-4.078 10-9.279C22 6.078 17.523 2 12 2z"/><path fill="#fff" d="M6.9 14.6l3.9-4.1 2.6 2.2 3.7-2.2-3.9 4.1-2.6-2.2-3.7 2.2z"/></svg>`,
+    wa: `<svg width="22" height="22" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true"><path d="M12.05 2C6.57 2 2.13 6.35 2.13 11.72c0 1.7.46 3.36 1.35 4.82L2 22l5.62-1.43c1.41.76 3.01 1.16 4.67 1.16 5.48 0 9.92-4.35 9.92-9.72S17.53 2 12.05 2zm0 17.76c-1.5 0-2.96-.42-4.22-1.2l-.3-.18-3.34.85.9-3.19-.2-.32a7.54 7.54 0 0 1-1.2-4c0-4.16 3.45-7.55 7.56-7.55 4.17 0 7.56 3.39 7.56 7.55 0 4.16-3.39 7.55-7.56 7.55z"/><path fill="#25D366" d="M9.23 7.98c-.17-.38-.35-.39-.51-.4l-.44-.01c-.15 0-.39.06-.6.28-.2.22-.78.76-.78 1.85 0 1.09.8 2.15.92 2.3.11.14 1.55 2.45 3.8 3.34 1.86.74 2.25.59 2.65.55.4-.04 1.29-.54 1.47-1.06.18-.52.18-.97.13-1.06-.05-.09-.2-.14-.42-.25-.22-.11-1.29-.66-1.49-.73-.2-.07-.35-.11-.5.11-.15.22-.58.73-.71.88-.13.15-.26.17-.48.06-.22-.11-.92-.35-1.76-1.12-.65-.58-1.1-1.3-1.23-1.52-.13-.22-.01-.34.1-.45.1-.1.22-.26.33-.39.11-.13.15-.22.22-.36.07-.15.04-.28-.01-.39-.06-.11-.5-1.25-.69-1.7z"/></svg>`,
+    tg: `<svg width="22" height="22" viewBox="0 0 24 24" fill="#2AABEE" aria-hidden="true"><path d="M9.7 15.6l-.4 5.6c.6 0 .9-.3 1.2-.6l2.9-2.8 6 4.4c1.1.6 1.9.3 2.2-1l4-18.7c.4-1.5-.5-2.1-1.6-1.7L1.6 10.3c-1.4.6-1.4 1.5-.2 1.9l5.7 1.8L20 6.1c.6-.4 1.1-.2.7.2"/></svg>`,
+    line: `<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="#06C755" d="M19.2 4.6c-1.9-1.7-4.4-2.6-7.1-2.6C6.6 2 2.3 5.5 2.3 9.8c0 2.4 1.4 4.6 3.7 6.1l-.5 3c-.1.4.3.7.7.5l3.4-1.8c.9.2 1.9.3 2.9.3 5.5 0 9.8-3.5 9.8-7.8 0-2-1-3.9-2.8-5.5z"/><path fill="#fff" d="M8 10.3c0-.2.2-.4.4-.4h1.2c.2 0 .4.2.4.4s-.2.4-.4.4H8.4c-.2 0-.4-.2-.4-.4zm0-2.3c0-.2.2-.4.4-.4h4.8c.2 0 .4.2.4.4s-.2.4-.4.4H8.4c-.2 0-.4-.2-.4-.4zm0 4.6c0-.2.2-.4.4-.4h3.4c.2 0 .4.2.4.4s-.2.4-.4.4H8.4c-.2 0-.4-.2-.4-.4z"/></svg>`,
+    link: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07L11.5 4.5"/><path d="M14 11a5 5 0 0 0-7.07 0L4.1 13.83a5 5 0 0 0 7.07 7.07L12.5 19.5"/></svg>`,
+    mail: `<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="#EA4335" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/><path fill="#fff" d="M20 8l-8 5-8-5V6l8 5 8-5v2z"/></svg>`,
+    more: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>`,
+  };
+
+  const items = [
+    {key:"fb",  label:"Facebook",   onClick: ()=> openPopup(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`)},
+    {key:"msg", label:"Messenger",  onClick: ()=> {
+      // ใช้ลิงก์ scheme สำหรับมือถือ + fallback web share
+      const scheme = `fb-messenger://share?link=${encodeURIComponent(url)}`;
+      const fallback = () => (navigator.share ? navigator.share({title, text, url}) : openPopup(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`));
+      try{
+        location.href = scheme;
+        setTimeout(fallback, 900);
+      }catch(e){ fallback(); }
+    }},
+    {key:"wa",  label:"WhatsApp",   onClick: ()=> openPopup(`https://wa.me/?text=${encodeURIComponent(text + "\n" + url)}`)},
+    {key:"tg",  label:"Telegram",   onClick: ()=> openPopup(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`)},
+    {key:"line",label:"LINE",       onClick: ()=> openPopup(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}`)},
+    {key:"link",label:"Copy",       onClick: async()=> { await copyToClipboard(url); }},
+    {key:"mail",label:"Gmail",      onClick: ()=> { location.href = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(text + "\n\n" + url)}`; }},
+    {key:"more",label:"More",       onClick: ()=> {
+      if(navigator.share){
+        navigator.share({ title, text, url }).catch(()=>{});
+      }else{
+        // fallback = copy
+        copyToClipboard(url);
+      }
+    }},
+  ];
+
+  row.innerHTML = items.map((it, i)=>`
+    <button class="shareBtn" type="button" data-k="${it.key}">
+      <div class="shareCircle">${ICONS[it.key] || ""}</div>
+      <div class="shareLbl">${it.label}</div>
+    </button>
+  `).join("");
+
+  row.querySelectorAll(".shareBtn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const k = btn.getAttribute("data-k");
+      const it = items.find(x=>x.key===k);
+      if(it && it.onClick) it.onClick();
+    });
+  });
+}
+
+/** =========================
+* Other Plots (ของเดิมคุณ)
 * ========================= */
 function getUnitId(u){
   return String(u?.HP_ID || u?.id || u?.hpId || u?.Unit_ID || "").trim();
@@ -1203,15 +1303,12 @@ function renderOtherUnits(units){
 
 async function loadOtherUnits(){
   try{
-    // NOTE: ฝั่ง Apps Script ของคุณ getUnitList ไม่ require token (จากโค้ด GS ที่คุณส่ง)
-    // แต่ใส่ token ไปก็ไม่เป็นไร แค่เพิ่มความยาว URL
     const t = token ? `&token=${encodeURIComponent(token)}` : "";
     const url = `${SCRIPT_URL}?mode=getUnitList&project=${encodeURIComponent(project)}${t}`;
     const data = await jsonp(url);
 
     if(data && data.error){
       if(String(data.error).toLowerCase().includes("unauthorized")){
-        // ✅ ถ้าถูกบังคับ auth ในอนาคต ให้เด้งไป login
         clearToken();
         goGateway("unauthorized on getUnitList");
         return;
@@ -1243,7 +1340,6 @@ async function loadOtherUnits(){
     return;
   }
 
-  // ✅ ถ้าไม่มี token → เด้งไป gateway (แทนการค้างหน้า error)
   if(!token){
     hideLoader();
     goGateway("missing token");
@@ -1268,7 +1364,6 @@ async function loadOtherUnits(){
   if(detail && detail.error){
     const errText = String(detail.error || "");
     if(errText.toLowerCase().includes("unauthorized")){
-      // ✅ สำคัญสุด: token หมดอายุ/ถูกล้าง → ลบทิ้ง แล้วไป login ใหม่
       clearToken();
       hideLoader();
       goGateway("expired/invalid token");
@@ -1298,8 +1393,18 @@ async function loadOtherUnits(){
   renderMiniMeta(detail);
   renderDescription(detail);
 
-  setMapSection(pickMapLink(detail));
+  // ✅ (1) Render share 8 icons
+  renderShareIcons(detail);
 
+  // ✅ (2) FB Link (AD)
+  setFbVisitBar(pickFbLink(detail));
+
+  // ✅ (3) Map Link (AE) + (4) Virtual Tour (AF)
+  const mapLink = pickMapLink(detail);
+  const tourLink = pickVirtualTour(detail);
+  setQuickLinks(mapLink, tourLink);
+
+  // ===== ภาพบ้าน (ของเดิมคุณ) =====
   const thumb = cleanDriveImage(detail.Thumbnail_Image || "");
   const list = String(detail.Image_List || "")
     .split(",").map(s=>cleanDriveImage(s.trim()))
@@ -1330,8 +1435,6 @@ async function loadOtherUnits(){
   setDockLink("dockSales", detail.Sales_Gallery);
   setDockLink("dockMaterial", detail.Material_PDF);
   setDockLink("dockFloorplan", detail.FloorPlan_PDF);
-
-  setFbVisitBar(pickFbLink(detail));
 })();
 </script>
 </body>
