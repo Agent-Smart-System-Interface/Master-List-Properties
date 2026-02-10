@@ -84,19 +84,19 @@ display:block;
 .tagTopLeft{
 position:absolute;
 
-/* ✅ ค่าเริ่มต้น: ให้เหมือนตัวอย่าง (ทรง/สัดส่วนพอดี ไม่บวม) */
-left:18px;
-top:18px;
-padding:12px 22px;
+/* ✅ ค่าเริ่มต้น (เดสก์ท็อป/จอใหญ่): ให้สุภาพ ไม่บวม */
+left:24px;
+top:24px;
+padding:16px 30px;
 border-radius:999px;
 
-background: rgba(255,255,255,.90);
+background: rgba(255,255,255,.92);
 border:0;
 box-shadow:none;
 backdrop-filter:none;
 
 font-weight:1100;
-font-size:34px;
+font-size:42px;
 line-height:1;
 color:#0f172a;
 
@@ -109,9 +109,9 @@ max-width:78%;
 .tagBottomRight{
 position:absolute;
 
-/* ✅ ค่าเริ่มต้น: ตัวเลขขาวล้วน + เงานุ่ม (ไม่มีพื้นหลัง) */
-right:18px;
-bottom:18px;
+/* ✅ ค่าเริ่มต้น (เดสก์ท็อป/จอใหญ่): ตัวเลขเล็ก + ไม่มีพื้น */
+right:24px;
+bottom:22px;
 
 padding:0;
 border-radius:0;
@@ -122,29 +122,29 @@ box-shadow:none;
 backdrop-filter:none;
 
 font-weight:1100;
-font-size:28px;
+font-size:36px;
 line-height:1;
 color: rgba(255,255,255,1);
-text-shadow: 0 10px 18px rgba(0,0,0,.40);
+text-shadow: 0 8px 16px rgba(0,0,0,.38);
 
 user-select:none;
 pointer-events:none;
 }
 
-/* ✅ มือถือ: “ล็อค” ให้เหมือนภาพตัวอย่างเป๊ะ */
+/* ✅ มือถือ: “ล็อค” ให้เหมือนภาพตัวอย่างเป๊ะ 100% */
 @media (max-width: 520px){
-.tagTopLeft{
-left:18px;
-top:18px;
-padding:12px 22px;
-font-size:34px;
-}
-.tagBottomRight{
-right:18px;
-bottom:18px;
-font-size:28px;
-text-shadow: 0 10px 18px rgba(0,0,0,.40);
-}
+  .tagTopLeft{
+    left:18px;
+    top:18px;
+    padding:12px 22px;
+    font-size:34px;
+  }
+  .tagBottomRight{
+    right:18px;
+    bottom:18px;
+    font-size:24px;
+    text-shadow: 0 10px 18px rgba(0,0,0,.40);
+  }
 }
 /* ========================================================= */
 
@@ -212,7 +212,7 @@ overflow:hidden;
 text-overflow:ellipsis;
 }
 @media (max-width:420px){
-.price{font-size:24px}
+price{font-size:24px}
 .statusBelow{font-size:14px; padding:7px 10px;}
 .miniMeta{font-size:12px;}
 }
@@ -1098,20 +1098,15 @@ function normalizeMapLink(link){
 const s = String(link || "").trim();
 return s && s !== "-" ? s : "";
 }
-/* ทำให้ iframe ใช้โดเมน google.com (ลดโอกาสโดน X-Frame-Options จากลิงก์สั้น) */
 function buildEmbedUrl(link){
 const raw = normalizeMapLink(link);
 if(!raw) return "";
-// ถ้าเป็น embed อยู่แล้ว ใช้ได้เลย
 if (raw.includes("google.com/maps/embed")) return raw;
-// ใช้ q + output=embed รองรับทั้ง google.com/maps และ maps.app.goo.gl
 return `https://www.google.com/maps?q=${encodeURIComponent(raw)}&output=embed`;
 }
-/* ปุ่ม Open / Navigate (Google Maps) */
 function buildOpenUrl(link){
 const raw = normalizeMapLink(link);
 if(!raw) return "";
-// ถ้าเป็นลิงก์ maps อยู่แล้ว เปิดได้เลย
 if (raw.includes("google.com/maps")) return raw;
 if (raw.startsWith("http")) return raw;
 return `https://www.google.com/maps?q=${encodeURIComponent(raw)}`;
@@ -1119,7 +1114,6 @@ return `https://www.google.com/maps?q=${encodeURIComponent(raw)}`;
 function buildNavUrl(link){
 const raw = normalizeMapLink(link);
 if(!raw) return "";
-// ใช้ destination เป็นสตริงได้ (รองรับพิกัด/ชื่อสถานที่/ลิงก์สั้น)
 return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(raw)}`;
 }
 function setMapSection(link){
@@ -1131,26 +1125,17 @@ if(!sec || !frame || !openBtn || !navBtn) return;
 
 const raw = normalizeMapLink(link);
 if(!raw){
-/* ✅ ว่าง => ซ่อนทั้งหมด + ยุบพื้นที่ */
 sec.style.display = "none";
 frame.src = "";
 openBtn.href = "#";
 navBtn.href = "#";
 return;
 }
-
-/* ✅ มีข้อมูล => แสดง */
 sec.style.display = "block";
 openBtn.href = buildOpenUrl(raw);
 navBtn.href = buildNavUrl(raw);
-
-/* ✅ iframe แผนที่ (รองรับลิงก์สั้น maps.app.goo.gl) */
 frame.src = buildEmbedUrl(raw);
-
-/* ถ้าบางกรณี iframe error ให้ยังคงมีปุ่ม Navigate/Open ใช้งานได้ */
-frame.onerror = () => {
-frame.src = "";
-};
+frame.onerror = () => { frame.src = ""; };
 }
 
 /** จัดเรียงข้อมูล (เดิมของคุณ) */
