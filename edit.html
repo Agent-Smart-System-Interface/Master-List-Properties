@@ -2,672 +2,401 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>FULL PROPERTY EDITOR | MASTER SYSTEM</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>EDIT UNIT</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    body { font-family: 'Kanit', sans-serif; background:#f0f2f5; }
-    .tab-active { border-bottom:4px solid #1e293b; color:#1e293b; }
-    .input-card { background:white; padding:1.5rem; border-radius:1.5rem; box-shadow:0 4px 6px -1px rgba(0,0,0,.1); }
-    .field-label { font-size:.75rem; font-weight:700; color:#64748b; text-transform:uppercase; margin-bottom:.5rem; display:block; }
-    .field-input { width:100%; border:1px solid #e2e8f0; border-radius:.75rem; padding:.75rem; outline:none; transition:all .2s; }
-    .field-input:focus { border-color:#3b82f6; }
-    .field-input[disabled]{ background:#f8fafc; cursor:not-allowed; opacity:.9; }
-
-    .img-tile { position: relative; }
-    .img-x {
-      position: absolute;
-      top: 4px; right: 4px;
-      width: 18px; height: 18px;
-      border-radius: 999px;
-      background: rgba(15,23,42,.85);
-      color: #fff;
-      font-size: 12px;
-      line-height: 18px;
-      text-align: center;
-      cursor: pointer;
-      user-select: none;
-    }
-    .img-x:hover { background: rgba(239,68,68,.95); }
-
-    .pdfbar{
-      display:flex; gap:12px; align-items:center;
-      padding:14px 14px;
-      border:2px dashed #e2e8f0;
-      border-radius: 18px;
-      background:#f8fafc;
-    }
-    .pdficon{
-      width:46px;height:46px;border-radius:14px;
-      display:flex;align-items:center;justify-content:center;
-      background:#fee2e2;color:#991b1b;font-weight:900;
-      flex:0 0 auto;
-    }
-    .pdfmeta{flex:1; min-width:0;}
-    .pdfname{font-weight:900;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-
-    .pdflinkrow{display:flex; align-items:center; gap:8px; min-width:0;}
-    .pdflink{font-size:12px;color:#64748b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; min-width:0;}
-    .pdfdel{
-      width:22px;height:22px;border-radius:999px;
-      display:flex;align-items:center;justify-content:center;
-      background: rgba(15,23,42,.85);
-      color:#fff;
-      font-size:12px;
-      line-height:22px;
-      cursor:pointer;
-      user-select:none;
-      flex:0 0 auto;
-    }
-    .pdfdel:hover{ background: rgba(239,68,68,.95); }
-
-    .pdfbtn2{
-      padding:10px 14px;border-radius:14px;
-      font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:.08em;
-      background:#2563eb;color:#fff;
-      flex:0 0 auto;
-    }
+    body { font-family: 'Kanit', sans-serif; background:#f8fafc; }
   </style>
 </head>
 
 <body class="p-4 md:p-10 italic">
-  <div class="max-w-5xl mx-auto">
+  <div class="max-w-6xl mx-auto">
 
-    <div class="bg-slate-900 rounded-[2.5rem] p-6 sm:p-8 md:p-12 text-white flex justify-between items-center mb-8 shadow-2xl">
-      <div>
-        <p class="text-blue-400 font-bold uppercase tracking-widest text-xs mb-2">Master Database Editor</p>
-        <h1 id="displayId" class="text-3xl sm:text-4xl font-bold tracking-tighter italic">HP-XXXX</h1>
-      </div>
-      <button onclick="history.back()" class="bg-white/10 hover:bg-white/20 p-4 rounded-2xl transition-all" title="Close">✕</button>
-    </div>
-
-    <div class="flex gap-8 mb-6 border-b border-slate-200">
-      <button onclick="switchTab('photo')" id="btn-photo" class="pb-4 font-bold text-slate-400 tab-active">COVER &amp; GALLERY</button>
-      <button onclick="switchTab('info')" id="btn-info" class="pb-4 font-bold text-slate-400">PROPERTY DATA</button>
-    </div>
-
-    <div id="tab-photo" class="space-y-6">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="input-card">
-          <span class="field-label">Main Cover Thumbnail</span>
-          <div id="thumbPreview" class="h-48 bg-slate-50 rounded-2xl border-2 border-dashed flex items-center justify-center overflow-hidden mb-4">
-            <span class="text-4xl text-slate-200">🖼️</span>
-          </div>
-          <input type="file" id="file_thumb" class="hidden" accept="image/*" onchange="previewFile(this,'thumbPreview')">
-          <button onclick="document.getElementById('file_thumb').click()" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold uppercase text-xs">
-            Upload Cover
-          </button>
-        </div>
-
-        <div class="input-card">
-          <span class="field-label">Project Gallery Album</span>
-          <div id="galleryPreview" class="h-48 bg-slate-50 rounded-2xl border-2 border-dashed p-2 grid grid-cols-4 gap-2 overflow-y-auto mb-3"></div>
-          <div class="text-[11px] text-slate-500 font-bold mb-3">
-            แตะ ❌ ที่รูปเพื่อเลือก “ลบ” หรือ “เอาออกจากคิวอัปโหลด”
-          </div>
-          <input type="file" id="file_gallery" class="hidden" multiple accept="image/*" onchange="onPickGalleryFiles(this)">
-          <button onclick="document.getElementById('file_gallery').click()" class="w-full py-3 bg-purple-600 text-white rounded-xl font-bold uppercase text-xs">
-            Add Gallery Photos
-          </button>
-        </div>
+    <!-- Header -->
+    <div class="bg-slate-900 rounded-[2.2rem] px-6 py-6 md:px-10 md:py-7 text-white mb-6 shadow-2xl flex items-center justify-between">
+      <div class="min-w-0">
+        <div class="text-[11px] uppercase tracking-[0.35em] text-white/60 font-bold">Edit Unit</div>
+        <div id="title" class="text-xl md:text-2xl font-extrabold tracking-tight italic truncate">Loading...</div>
       </div>
 
-      <div class="input-card">
-        <span class="field-label">PDF DOCUMENTS (UPLOAD / REPLACE)</span><br>
+      <div class="flex items-center gap-3">
+        <a id="backBtn" href="dashboard.html"
+           class="w-14 h-14 rounded-2xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all active:scale-95"
+           aria-label="Back">
+          <i class="fa-solid fa-arrow-left text-xl"></i>
+        </a>
 
-        <div class="pdfbar mb-3">
-          <div class="pdficon">PDF</div>
-          <div class="pdfmeta">
-            <div class="pdfname">Sales Gallery Link</div>
-            <div class="pdflinkrow">
-              <div class="pdflink" id="salesPdfText">ยังไม่มีไฟล์</div>
-              <div class="pdfdel" title="ลบลิงก์" onclick="clearPdfLink('sales')">✕</div>
+        <a id="homeBtn" href="index.html"
+           class="w-14 h-14 rounded-2xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all active:scale-95"
+           aria-label="Home">
+          <i class="fa-solid fa-house text-xl"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Card -->
+    <div class="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden">
+      <div class="p-6 md:p-10">
+
+        <!-- Loading / Error -->
+        <div id="loading" class="bg-slate-50 border border-slate-100 rounded-[2rem] p-6 text-center text-slate-400 font-bold animate-pulse uppercase">
+          🔄 Loading unit detail...
+        </div>
+
+        <div id="errorBox" class="hidden bg-rose-50 border border-rose-100 rounded-[2rem] p-6 text-rose-700 font-bold">
+          ⚠️ <span id="errorText">Error</span>
+        </div>
+
+        <!-- Form -->
+        <div id="formWrap" class="hidden">
+
+          <!-- BASIC -->
+          <div class="grid md:grid-cols-3 gap-4 md:gap-6">
+            <div class="md:col-span-2">
+              <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">UNIT ID</div>
+              <input id="HP_ID" readonly
+                     class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 outline-none font-extrabold text-slate-900"
+                     value="">
+            </div>
+
+            <div>
+              <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">PROJECT</div>
+              <input id="_project" readonly
+                     class="w-full bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 outline-none font-extrabold text-slate-900"
+                     value="">
             </div>
           </div>
-          <button class="pdfbtn2" type="button" onclick="document.getElementById('file_sales_pdf').click()">Upload</button>
-          <input type="file" id="file_sales_pdf" class="hidden" accept="application/pdf" onchange="onPickPdf(this,'sales')">
-        </div>
 
-        <div class="pdfbar mb-3">
-          <div class="pdficon">PDF</div>
-          <div class="pdfmeta">
-            <div class="pdfname">Material PDF Link</div>
-            <div class="pdflinkrow">
-              <div class="pdflink" id="materialPdfText">ยังไม่มีไฟล์</div>
-              <div class="pdfdel" title="ลบลิงก์" onclick="clearPdfLink('material')">✕</div>
+          <div class="grid md:grid-cols-2 gap-4 md:gap-6 mt-6">
+            <div>
+              <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">PLOT</div>
+              <input id="Plot"
+                     class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 outline-none font-bold text-slate-900"
+                     placeholder="เช่น Z-01">
+            </div>
+
+            <div>
+              <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">STATUS</div>
+              <select id="Status"
+                      class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 outline-none font-bold text-slate-900">
+                <option value="">-</option>
+                <option value="Available">Available</option>
+                <option value="Under Construction">Under Construction</option>
+                <option value="Reserved">Reserved</option>
+                <option value="Sold">Sold</option>
+              </select>
             </div>
           </div>
-          <button class="pdfbtn2" type="button" onclick="document.getElementById('file_material_pdf').click()">Upload</button>
-          <input type="file" id="file_material_pdf" class="hidden" accept="application/pdf" onchange="onPickPdf(this,'material')">
-        </div>
 
-        <div class="pdfbar">
-          <div class="pdficon">PDF</div>
-          <div class="pdfmeta">
-            <div class="pdfname">Floor Plan Link</div>
-            <div class="pdflinkrow">
-              <div class="pdflink" id="floorplanPdfText">ยังไม่มีไฟล์</div>
-              <div class="pdfdel" title="ลบลิงก์" onclick="clearPdfLink('floorplan')">✕</div>
+          <!-- LOCATION -->
+          <div class="mt-10 border-t pt-8">
+            <div class="text-[12px] font-extrabold text-slate-500 uppercase tracking-widest mb-5">Location</div>
+
+            <div class="grid md:grid-cols-3 gap-4 md:gap-6">
+              <div>
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">DISTRICT</div>
+                <input id="District"
+                       class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 outline-none font-bold text-slate-900"
+                       placeholder="เช่น Cha-am / Hua Hin">
+              </div>
+
+              <div>
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">SUB-DISTRICT</div>
+                <input id="SubDistrict"
+                       class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 outline-none font-bold text-slate-900"
+                       placeholder="เช่น Cha-am">
+              </div>
+
+              <div>
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">ZONE</div>
+                <input id="Zone"
+                       class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 outline-none font-bold text-slate-900"
+                       placeholder="เช่น Cha-am">
+              </div>
+            </div>
+
+            <div class="mt-6">
+              <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">COMMISSION</div>
+              <input id="Commission"
+                     class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 outline-none font-bold text-slate-900"
+                     placeholder="เช่น 3% / 100,000">
             </div>
           </div>
-          <button class="pdfbtn2" type="button" onclick="document.getElementById('file_floorplan_pdf').click()">Upload</button>
-          <input type="file" id="file_floorplan_pdf" class="hidden" accept="application/pdf" onchange="onPickPdf(this,'floorplan')">
-        </div>
 
-        <div class="text-[11px] text-slate-500 font-bold mt-3">
-          * อัปโหลดไฟล์ใหม่ = ระบบลบไฟล์เก่าในโฟลเดอร์ของ HP_ID แล้วแทนที่ด้วยไฟล์ล่าสุด (แนะนำ PDF ไม่เกิน 6MB)
-        </div>
+          <!-- LINKS -->
+          <div class="mt-10 border-t pt-8">
+            <div class="text-[12px] font-extrabold text-slate-500 uppercase tracking-widest mb-5">External Links</div>
+
+            <div class="grid md:grid-cols-3 gap-4 md:gap-6">
+              <div>
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">FB LINK</div>
+                <input id="FB_Link"
+                       class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 outline-none font-bold text-slate-900"
+                       placeholder="https://facebook.com/...">
+              </div>
+
+              <div>
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">MAP LINK</div>
+                <input id="Map_Link"
+                       class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 outline-none font-bold text-slate-900"
+                       placeholder="https://maps.app.goo.gl/...">
+              </div>
+
+              <div>
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">VIRTUAL TOUR</div>
+                <input id="Virtual_Tour"
+                       class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 outline-none font-bold text-slate-900"
+                       placeholder="https://...">
+              </div>
+            </div>
+
+            <!-- ✅ FIX: SYSTEM STATUS EDITABLE FOR HQ -->
+            <div class="mt-6">
+              <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">
+                SYSTEM STATUS <span id="sysHint" class="text-slate-300">(HQ ONLY)</span>
+              </div>
+
+              <select id="System_Status"
+                      class="w-full bg-white border border-slate-200 rounded-2xl px-4 py-3 outline-none font-extrabold text-slate-900">
+                <option value="Offline">Offline</option>
+                <option value="Pending">Pending</option>
+                <option value="Live">Live</option>
+              </select>
+
+              <div class="text-[11px] text-slate-400 mt-2">
+                Offline = ไม่แสดงออนไลน์ | Pending = ยังไม่แสดงออนไลน์แต่แก้ไขข้อมูลได้ | Live = แสดงออนไลน์
+              </div>
+            </div>
+          </div>
+
+          <!-- ACTION -->
+          <div class="mt-10">
+            <button id="saveBtn"
+              class="w-full py-10 bg-slate-900 text-white rounded-[2.2rem] font-extrabold uppercase text-[12px] tracking-[0.35em]
+                     hover:bg-blue-600 transition-all shadow-2xl active:scale-95">
+              UPDATE MASTER DATABASE
+            </button>
+
+            <div id="msg" class="mt-4 text-center text-[12px] font-bold hidden"></div>
+          </div>
+
+        </div><!-- /formWrap -->
       </div>
     </div>
 
-    <div id="tab-info" class="hidden space-y-6">
-      <div class="input-card grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div><span class="field-label">Plot</span><input id="Plot" class="field-input"></div>
-        <div><span class="field-label">Type</span><input id="Type" class="field-input"></div>
-        <div><span class="field-label">Project Name</span><input id="Project_Name" class="field-input"></div>
-
-        <div><span class="field-label">Bedrooms</span><input type="number" id="Bedrooms" class="field-input"></div>
-        <div><span class="field-label">Bathrooms</span><input type="number" id="Bathrooms" class="field-input"></div>
-        <div><span class="field-label">Parking</span><input id="Parking" class="field-input"></div>
-
-        <div><span class="field-label">Extras</span><input id="Extras" class="field-input" placeholder="เช่น Built-in, Solar, etc."></div>
-        <div><span class="field-label">Electricity</span><input id="Electricity" class="field-input" placeholder="เช่น Government / 5-15 baht"></div>
-        <div></div>
-
-        <div><span class="field-label">Land (sq.w)</span><input id="Land_Area_sq_w" class="field-input"></div>
-        <div><span class="field-label">Land (sq.m)</span><input id="Land_Area_sq_m" class="field-input"></div>
-        <div><span class="field-label">Living (sq.m)</span><input id="Living_Area_sq_m" class="field-input"></div>
-
-        <div><span class="field-label">Pool Size</span><input id="Pool_Size" class="field-input"></div>
-        <div><span class="field-label">Pool Depth</span><input id="Pool_Depth" class="field-input"></div>
-
-        <div>
-          <span class="field-label">Furnishing</span>
-          <select id="Furnishing" class="field-input">
-            <option value="">-- Select Furnishing --</option>
-            <option value="Ready to Move">Ready to Move</option>
-            <option value="Fully Furnished">Fully Furnished</option>
-            <option value="Partially Furnished">Partially Furnished</option>
-            <option value="Unfurnished">Unfurnished</option>
-          </select>
-        </div>
-
-        <div class="col-span-full"><span class="field-label">Address</span><input id="Address" class="field-input"></div>
-
-        <div class="bg-blue-50 p-4 rounded-xl">
-          <span class="field-label text-blue-600">Price (THB)</span>
-          <input id="Price" class="field-input border-blue-200 font-bold">
-        </div>
-
-        <div><span class="field-label">Price/SQM</span><input id="Price_SQM" class="field-input"></div>
-
-        <div>
-          <span class="field-label">Status</span>
-          <select id="Status" class="field-input">
-            <option value="">-- Select Status --</option>
-            <option value="Available">Available</option>
-            <option value="Under Con">Under Con</option>
-            <option value="Reserved">Reserved</option>
-            <option value="Sold">Sold</option>
-          </select>
-        </div>
-
-        <div>
-          <span class="field-label">Badge</span>
-          <select id="Badge" class="field-input">
-            <option value="">-- Select Badge --</option>
-            <option value="NEW LISTING">NEW LISTING</option>
-            <option value="JUST ADDED">JUST ADDED</option>
-            <option value="COMING SOON">COMING SOON</option>
-            <option value="NEW PROJECT">NEW PROJECT</option>
-            <option value="HOT DEAL">HOT DEAL</option>
-            <option value="BEST SELLER">BEST SELLER</option>
-            <option value="LAST UNIT">LAST UNIT</option>
-            <option value="MOST VIEWED">MOST VIEWED</option>
-            <option value="LIMITED OFFER">LIMITED OFFER</option>
-            <option value="SPECIAL PRICE">SPECIAL PRICE</option>
-            <option value="PRICE REDUCED">PRICE REDUCED</option>
-            <option value="BEST VALUE">BEST VALUE</option>
-            <option value="INVESTMENT PICK">INVESTMENT PICK</option>
-            <option value="READY TO MOVE">READY TO MOVE</option>
-            <option value="FULLY FURNISHED">FULLY FURNISHED</option>
-            <option value="SEA VIEW">SEA VIEW</option>
-            <option value="POOL ACCESS">POOL ACCESS</option>
-            <option value="PREMIUM QUALITY">PREMIUM QUALITY</option>
-            <option value="QUIET ZONE">QUIET ZONE</option>
-          </select>
-        </div>
-
-        <div class="col-span-full"><span class="field-label">Description</span><textarea id="Description" rows="4" class="field-input"></textarea></div>
-
-        <div>
-          <span class="field-label">District</span>
-          <select id="District" class="field-input">
-            <option value="">-- Select District --</option>
-            <option value="Hua Hin">Hua Hin</option>
-            <option value="Cha-am">Cha-am</option>
-            <option value="Pranburi">Pranburi</option>
-          </select>
-        </div>
-
-        <div>
-          <span class="field-label">Sub-District</span>
-          <select id="SubDistrict" class="field-input" disabled>
-            <option value="">-- Select Sub-District --</option>
-          </select>
-        </div>
-
-        <div>
-          <span class="field-label">Zone</span>
-          <select id="Zone" class="field-input">
-            <option value="">-- Select Zone --</option>
-            <option value="Hua Hin">Hua Hin</option>
-            <option value="Pranburi">Pranburi</option>
-            <option value="Cha-am">Cha-am</option>
-            <option value="Beachside">Beachside</option>
-            <option value="Nature">Nature</option>
-            <option value="City">City</option>
-            <option value="Quiet">Quiet</option>
-          </select>
-        </div>
-
-        <div><span class="field-label">Commission</span><input id="Commission" class="field-input"></div>
-
-        <div class="col-span-full border-t pt-6"><span class="field-label">External Links</span></div>
-
-        <div><span class="field-label">FB Link</span><input id="FB_Link" class="field-input"></div>
-        <div><span class="field-label">Map Link</span><input id="Map_Link" class="field-input"></div>
-        <div><span class="field-label">Virtual Tour</span><input id="Virtual_Tour" class="field-input"></div>
-
-        <div class="col-span-full">
-          <span class="field-label">System Status (Read Only)</span>
-          <input id="System_Status" class="field-input font-bold bg-slate-50" disabled value="Pending">
-          <p class="text-xs text-slate-400 mt-2 italic">
-            Offline = ไม่แสดงออนไลน์ | Pending = ยังไม่แสดงออนไลน์แต่แก้ไขข้อมูลได้ | Online = ข้อมูลพร้อมแล้ว (กำหนดโดย Master ใหญ่)
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <button onclick="updateData()" id="saveBtn"
-      class="w-full mt-10 py-6 sm:py-8 bg-slate-900 text-white rounded-[2.5rem] font-bold uppercase tracking-[0.4em] sm:tracking-[0.5em] shadow-2xl hover:bg-blue-600 transition-all active:scale-95">
-      Update Master Database
-    </button>
-
-  </div>
-
-  <div id="successPopup" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-    <div class="bg-white rounded-[3rem] p-10 sm:p-12 text-center max-w-sm w-full shadow-2xl border-t-8 border-green-500">
-      <div class="w-24 h-24 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-inner">✓</div>
-      <h2 class="text-2xl font-bold mb-2">บันทึกสำเร็จ!</h2>
-      <p class="text-slate-400 text-sm mb-8 font-bold uppercase tracking-wider">
-        ข้อมูลและรูปภาพถูกซิงค์ไปยัง <br>Google Drive &amp; Sheets แล้ว
-      </p>
-      <button onclick="history.back()" class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-slate-800 transition-all">
-        กลับสู่หน้าหลัก
-      </button>
-    </div>
   </div>
 
   <script>
+    // ================================
+    // CONFIG
+    // ================================
     const API_URL = "https://script.google.com/macros/s/AKfycbxc76n6YKLUCCHZZR12c5K4_0k40gHa2ZzDMVZn29BElQlSO3X6O8B7dFIFi0bEukqJ/exec";
-    const urlParams = new URLSearchParams(location.search);
-    const HP_ID = urlParams.get("id");
-    const PROJECT = urlParams.get("project") || "HP00";
 
-    // ✅ token มาจาก dashboard ที่ส่งผ่าน query หรือจาก localStorage
-    const TOKEN =
-      (urlParams.get("token") || "").trim() ||
-      (localStorage.getItem("HP_AUTH_TOKEN") || "").trim();
+    const qs = new URLSearchParams(location.search);
+    const HP_ID_PARAM = (qs.get("id") || "").trim();
+    const PROJECT_ID = (qs.get("project") || "HP00").trim();
 
+    // token มาจาก query หรือ localStorage
+    const TOKEN = (qs.get("token") || localStorage.getItem("HP_AUTH_TOKEN") || "").trim();
+
+    // role มาจาก localStorage (จาก gateway)
+    const ROLE = (localStorage.getItem("HP_AUTH_ROLE") || "").trim(); // "HQ" | "PROJECT"
+
+    // ปุ่มกลับ/บ้าน
+    document.getElementById("backBtn").href = `dashboard.html?project=${encodeURIComponent(PROJECT_ID)}`;
+    document.getElementById("homeBtn").href = "index.html";
+
+    // ถ้าไม่มี token ให้เด้งกลับ gateway
     if (!TOKEN) {
-      location.href = `gateway.html?project=${encodeURIComponent(PROJECT)}`;
+      location.href = `gateway.html?project=${encodeURIComponent(PROJECT_ID)}`;
     }
 
-    let existingGallery = [];
-    let removedGallery = [];
-    let newGalleryQueue = [];
-
-    let pdfLinks = { sales:"", material:"", floorplan:"" };
-    const MAX_PDF_BYTES = 6 * 1024 * 1024;
-    let pdfAction = { sales:"keep", material:"keep", floorplan:"keep" };
-
-    const SUBDISTRICTS_BY_DISTRICT = {
-      "Hua Hin": ["Hua Hin","Nong Kae","Hin Lek Fai","Thap Tai","Huai Sat Yai","Bueng Nakhon","Nong Phlap"],
-      "Cha-am": ["Cha-am","Bang Kao","Na Yang","Khao Yai","Nong Sala","Huai Sai Nuea","Rai Mai Phatthana"],
-      "Pranburi": ["Pran Buri","Pak Nam Pran","Wang Phong","Nong Ta Taem","Nong Din Daeng","Khao Noi","Khao Chao"]
-    };
-
-    function switchTab(tab) {
-      document.getElementById("tab-photo").classList.toggle("hidden", tab !== "photo");
-      document.getElementById("tab-info").classList.toggle("hidden", tab !== "info");
-      document.getElementById("btn-photo").classList.toggle("tab-active", tab === "photo");
-      document.getElementById("btn-info").classList.toggle("tab-active", tab === "info");
+    // ================================
+    // UI HELPERS
+    // ================================
+    function showLoading(on){
+      const loading = document.getElementById("loading");
+      const formWrap = document.getElementById("formWrap");
+      const errorBox = document.getElementById("errorBox");
+      if (on){
+        loading.classList.remove("hidden");
+        formWrap.classList.add("hidden");
+        errorBox.classList.add("hidden");
+      } else {
+        loading.classList.add("hidden");
+      }
     }
 
-    function setSubDistrictOptions(selectedDistrict, selectedSubDistrict = "") {
-      const subSel = document.getElementById("SubDistrict");
-      const list = SUBDISTRICTS_BY_DISTRICT[selectedDistrict] || [];
-      subSel.innerHTML = `<option value="">-- Select Sub-District --</option>`;
+    function showError(msg){
+      const errorBox = document.getElementById("errorBox");
+      const errorText = document.getElementById("errorText");
+      errorText.textContent = msg || "Unknown error";
+      errorBox.classList.remove("hidden");
+      document.getElementById("formWrap").classList.add("hidden");
+    }
 
-      if (!selectedDistrict || list.length === 0) {
-        subSel.disabled = true;
-        subSel.value = "";
+    function showMsg(text, ok=true){
+      const m = document.getElementById("msg");
+      m.textContent = text;
+      m.classList.remove("hidden");
+      m.classList.toggle("text-emerald-700", !!ok);
+      m.classList.toggle("text-rose-600", !ok);
+    }
+
+    function setVal(id, v){
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.value = (v ?? "").toString();
+    }
+
+    // ================================
+    // ✅ HQ ONLY: enable/disable System_Status
+    // ================================
+    function applyRoleLock_(){
+      const sys = document.getElementById("System_Status");
+      const hint = document.getElementById("sysHint");
+
+      const isHQ = (ROLE === "HQ");
+      if (!isHQ){
+        sys.disabled = true;
+        sys.classList.add("bg-slate-50");
+        hint.textContent = "(READ ONLY)";
+        hint.classList.remove("text-slate-300");
+        hint.classList.add("text-slate-400");
+      }else{
+        sys.disabled = false;
+        sys.classList.remove("bg-slate-50");
+        hint.textContent = "(HQ ONLY)";
+        hint.classList.remove("text-slate-400");
+        hint.classList.add("text-slate-300");
+      }
+    }
+
+    // ================================
+    // LOAD DETAIL
+    // ================================
+    async function loadDetail(){
+      if (!HP_ID_PARAM){
+        showError("Missing id in URL");
         return;
       }
 
-      list.forEach(name => {
-        const opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name;
-        subSel.appendChild(opt);
-      });
+      showLoading(true);
 
-      subSel.disabled = false;
+      try{
+        // getUnitDetail ต้องส่ง token (ตาม GS ของคุณ)
+        const url =
+          `${API_URL}?mode=getUnitDetail` +
+          `&project=${encodeURIComponent(PROJECT_ID)}` +
+          `&hpId=${encodeURIComponent(HP_ID_PARAM)}` +
+          `&token=${encodeURIComponent(TOKEN)}` +
+          `&t=${Date.now()}`;
 
-      if (selectedSubDistrict) {
-        subSel.value = selectedSubDistrict;
-        if (subSel.value !== selectedSubDistrict) {
-          const custom = document.createElement("option");
-          custom.value = selectedSubDistrict;
-          custom.textContent = selectedSubDistrict + " (custom)";
-          subSel.appendChild(custom);
-          subSel.value = selectedSubDistrict;
-        }
-      }
-    }
-
-    function bindDistrictChange() {
-      const districtSel = document.getElementById("District");
-      districtSel.addEventListener("change", () => setSubDistrictOptions(districtSel.value, ""));
-    }
-
-    function previewFile(input, targetId) {
-      const file = input.files && input.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = e => document.getElementById(targetId).innerHTML =
-        `<img src="${e.target.result}" class="w-full h-full object-cover">`;
-      reader.readAsDataURL(file);
-    }
-
-    function renderGallery() {
-      const box = document.getElementById("galleryPreview");
-      const keptExisting = existingGallery.filter(u => !removedGallery.includes(u));
-      const tiles = [];
-
-      keptExisting.forEach((url) => {
-        tiles.push(`
-          <div class="img-tile">
-            <div class="img-x" onclick="removeExistingImage('${encodeURIComponent(url)}')" title="Remove">✕</div>
-            <img src="${url}" class="w-full h-12 object-cover rounded-lg">
-          </div>
-        `);
-      });
-
-      newGalleryQueue.forEach((it, idx) => {
-        tiles.push(`
-          <div class="img-tile">
-            <div class="img-x" onclick="removeNewQueuedImage(${idx})" title="Remove">✕</div>
-            <img src="${it.previewUrl}" class="w-full h-12 object-cover rounded-lg">
-          </div>
-        `);
-      });
-
-      box.innerHTML = tiles.length
-        ? tiles.join("")
-        : `<span class="text-4xl text-slate-200 col-span-4 self-center justify-self-center">🗂️</span>`;
-    }
-
-    window.removeExistingImage = function(encodedUrl) {
-      const url = decodeURIComponent(encodedUrl);
-      if (!removedGallery.includes(url)) removedGallery.push(url);
-      renderGallery();
-    }
-
-    window.removeNewQueuedImage = function(index) {
-      if (index < 0 || index >= newGalleryQueue.length) return;
-      try { URL.revokeObjectURL(newGalleryQueue[index].previewUrl); } catch(e){}
-      newGalleryQueue.splice(index, 1);
-      renderGallery();
-    }
-
-    window.onPickGalleryFiles = function(input) {
-      const files = Array.from(input.files || []);
-      if (!files.length) return;
-      files.forEach(f => {
-        const url = URL.createObjectURL(f);
-        newGalleryQueue.push({ file: f, previewUrl: url });
-      });
-      input.value = "";
-      renderGallery();
-    }
-
-    function setPdfText(key, text) {
-      const map = { sales: "salesPdfText", material: "materialPdfText", floorplan: "floorplanPdfText" };
-      const el = document.getElementById(map[key]);
-      if (el) el.textContent = text || "ยังไม่มีไฟล์";
-    }
-
-    window.clearPdfLink = function(key){
-      const mapFile = { sales:"file_sales_pdf", material:"file_material_pdf", floorplan:"file_floorplan_pdf" };
-      pdfLinks[key] = "";
-      pdfAction[key] = "clear";
-      setPdfText(key, "ยังไม่มีไฟล์");
-      const f = document.getElementById(mapFile[key]);
-      if (f) f.value = "";
-    }
-
-    window.onPickPdf = function(input, key) {
-      const f = input.files && input.files[0];
-      if (!f) return;
-
-      if (String(f.type).toLowerCase() !== "application/pdf") {
-        input.value = "";
-        return alert("กรุณาเลือกไฟล์ PDF เท่านั้น");
-      }
-
-      if (f.size > MAX_PDF_BYTES) {
-        input.value = "";
-        return alert(`ไฟล์ใหญ่เกินไป (${(f.size/1024/1024).toFixed(1)}MB)\nแนะนำไม่เกิน 6MB`);
-      }
-
-      pdfAction[key] = "replace";
-      setPdfText(key, "เลือกไฟล์ใหม่: " + f.name);
-    }
-
-    async function loadData() {
-      document.getElementById("displayId").innerText = HP_ID || "HP-XXXX";
-      if (!HP_ID || !PROJECT) return alert("Missing id/project in URL");
-
-      try {
-        // ✅ ต้องแนบ token
-        const res = await fetch(
-          `${API_URL}?mode=getUnitDetail&hpId=${encodeURIComponent(HP_ID)}&project=${encodeURIComponent(PROJECT)}&token=${encodeURIComponent(TOKEN)}&t=${Date.now()}`
-        );
+        const res = await fetch(url, { method:"GET" });
         const data = await res.json();
-        if (data && data.error) throw new Error(data.error);
 
-        Object.keys(data || {}).forEach(k => {
-          const el = document.getElementById(k);
-          if (el) el.value = (data[k] ?? "");
-        });
-
-        const fbEl = document.getElementById("FB_Link");
-        if (fbEl) fbEl.value = (data.FB_Link ?? "");
-
-        const districtVal = (data.District ?? "").toString().trim();
-        const subDistrictVal = (data.SubDistrict ?? "").toString().trim();
-        if (districtVal) {
-          document.getElementById("District").value = districtVal;
-          setSubDistrictOptions(districtVal, subDistrictVal);
-        } else {
-          setSubDistrictOptions("", "");
+        if (!res.ok || !data || data.error){
+          throw new Error((data && data.error) ? data.error : "Cannot load detail");
         }
 
-        const rawSys = (data.System_Status ?? "").toString().trim();
-        const mapSys = { "Live":"Online", "Online (Live)":"Online", "Online":"Online", "Pending":"Pending", "Offline":"Offline" };
-        const normalized = mapSys[rawSys] || (rawSys ? rawSys : "Pending");
-        document.getElementById("System_Status").value = normalized;
+        // title
+        document.getElementById("title").textContent = `${HP_ID_PARAM} · ${PROJECT_ID}`;
 
-        if (data.Thumbnail_Image) {
-          document.getElementById("thumbPreview").innerHTML = `<img src="${data.Thumbnail_Image}" class="w-full h-full object-cover">`;
-        }
+        // fill
+        setVal("HP_ID", data.HP_ID || HP_ID_PARAM);
+        setVal("_project", data._project || PROJECT_ID);
 
-        existingGallery = [];
-        removedGallery = [];
-        newGalleryQueue = [];
+        setVal("Plot", data.Plot);
+        setVal("Status", data.Status);
 
-        if (data.Image_List) {
-          existingGallery = String(data.Image_List).split(",").map(s => s.trim()).filter(Boolean);
-        }
-        renderGallery();
+        setVal("District", data.District);
+        setVal("SubDistrict", data.SubDistrict);
+        setVal("Zone", data.Zone);
+        setVal("Commission", data.Commission);
 
-        pdfLinks = {
-          sales: (data.Sales_Gallery || "").toString().trim(),
-          material: (data.Material_PDF || "").toString().trim(),
-          floorplan: (data.FloorPlan_PDF || "").toString().trim()
-        };
+        setVal("FB_Link", data.FB_Link);
+        setVal("Map_Link", data.Map_Link);
+        setVal("Virtual_Tour", data.Virtual_Tour);
 
-        pdfAction = { sales:"keep", material:"keep", floorplan:"keep" };
+        // ✅ System_Status (ถ้าไม่มี ให้ default Offline)
+        setVal("System_Status", (data.System_Status || "Offline"));
 
-        setPdfText("sales", pdfLinks.sales || "ยังไม่มีไฟล์");
-        setPdfText("material", pdfLinks.material || "ยังไม่มีไฟล์");
-        setPdfText("floorplan", pdfLinks.floorplan || "ยังไม่มีไฟล์");
+        // role lock
+        applyRoleLock_();
 
-      } catch (e) {
-        alert("Error loading data: " + e.message);
+        // show form
+        document.getElementById("formWrap").classList.remove("hidden");
+        showLoading(false);
+
+      }catch(err){
+        showLoading(false);
+        showError(err.message || "Load error");
       }
     }
 
-    const toBase64 = file => new Promise((resolve, reject) => {
-      try {
-        const reader = new FileReader();
-        reader.onload = () => resolve({ data: reader.result.split(",")[1], type: file.type });
-        reader.onerror = () => reject(new Error("File read error"));
-        reader.readAsDataURL(file);
-      } catch (e) { reject(e); }
-    });
-
-    async function updateData() {
+    // ================================
+    // SAVE
+    // ================================
+    async function save(){
       const btn = document.getElementById("saveBtn");
       btn.disabled = true;
-      const oldText = btn.innerText;
-      btn.innerText = "UPDATING DATABASE...";
+      const old = btn.textContent;
+      btn.textContent = "UPDATING...";
 
-      const keepGallery = existingGallery.filter(u => !removedGallery.includes(u));
-      const removeGallery = removedGallery.slice();
+      try{
+        const payload = {
+          mode: "updateUnit",
+          project: PROJECT_ID,
+          hpId: HP_ID_PARAM,
+          token: TOKEN,
 
-      const payload = {
-        mode: "updateUnit",
-        project: PROJECT,
-        hpId: HP_ID,
+          Plot: document.getElementById("Plot").value.trim(),
+          Status: document.getElementById("Status").value.trim(),
 
-        // ✅ ต้องส่ง token ไปด้วย
-        token: TOKEN,
+          District: document.getElementById("District").value.trim(),
+          SubDistrict: document.getElementById("SubDistrict").value.trim(),
+          Zone: document.getElementById("Zone").value.trim(),
+          Commission: document.getElementById("Commission").value.trim(),
 
-        Plot: document.getElementById("Plot").value,
-        Type: document.getElementById("Type").value,
-        Address: document.getElementById("Address").value,
-        Project_Name: document.getElementById("Project_Name").value,
-        Bedrooms: document.getElementById("Bedrooms").value,
-        Bathrooms: document.getElementById("Bathrooms").value,
+          FB_Link: document.getElementById("FB_Link").value.trim(),
+          Map_Link: document.getElementById("Map_Link").value.trim(),
+          Virtual_Tour: document.getElementById("Virtual_Tour").value.trim(),
 
-        Parking: document.getElementById("Parking").value,
-        Extras: document.getElementById("Extras").value,
-        Electricity: document.getElementById("Electricity").value,
+          // ✅ ส่ง System_Status ไปด้วย (GS จะรับเฉพาะ HQ เท่านั้น)
+          System_Status: document.getElementById("System_Status").value.trim()
+        };
 
-        Land_Area_sq_w: document.getElementById("Land_Area_sq_w").value,
-        Land_Area_sq_m: document.getElementById("Land_Area_sq_m").value,
-        Living_Area_sq_m: document.getElementById("Living_Area_sq_m").value,
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type":"application/json" },
+          body: JSON.stringify(payload)
+        });
 
-        Pool_Size: document.getElementById("Pool_Size").value,
-        Pool_Depth: document.getElementById("Pool_Depth").value,
-        Furnishing: document.getElementById("Furnishing").value,
+        const out = await res.json().catch(()=> ({}));
 
-        Status: document.getElementById("Status").value,
-        District: document.getElementById("District").value,
-        SubDistrict: document.getElementById("SubDistrict").value,
-        Zone: document.getElementById("Zone").value,
-
-        Price: document.getElementById("Price").value,
-        Price_SQM: document.getElementById("Price_SQM").value,
-        Badge: document.getElementById("Badge").value,
-        Description: document.getElementById("Description").value,
-
-        FB_Link: document.getElementById("FB_Link").value,
-
-        Map_Link: document.getElementById("Map_Link").value,
-        Virtual_Tour: document.getElementById("Virtual_Tour").value,
-        Commission: document.getElementById("Commission").value,
-
-        keepGallery,
-        removeGallery,
-
-        file_thumb: null,
-        files_gallery: [],
-
-        file_sales_pdf: null,
-        file_material_pdf: null,
-        file_floorplan_pdf: null,
-
-        pdfAction: { ...pdfAction },
-
-        Sales_Gallery: (pdfAction.sales === "clear") ? "" : undefined,
-        Material_PDF: (pdfAction.material === "clear") ? "" : undefined,
-        FloorPlan_PDF: (pdfAction.floorplan === "clear") ? "" : undefined
-      };
-
-      try {
-        const thumb = document.getElementById("file_thumb").files[0];
-        if (thumb) payload.file_thumb = await toBase64(thumb);
-
-        for (const it of (newGalleryQueue || [])) {
-          payload.files_gallery.push(await toBase64(it.file));
+        if (!res.ok || !out.ok){
+          throw new Error(out.error || "Update failed");
         }
 
-        const salesPdf = document.getElementById("file_sales_pdf").files[0];
-        if (salesPdf) payload.file_sales_pdf = await toBase64(salesPdf);
+        showMsg("✅ Updated successfully", true);
 
-        const materialPdf = document.getElementById("file_material_pdf").files[0];
-        if (materialPdf) payload.file_material_pdf = await toBase64(materialPdf);
-
-        const floorPdf = document.getElementById("file_floorplan_pdf").files[0];
-        if (floorPdf) payload.file_floorplan_pdf = await toBase64(floorPdf);
-
-        const res = await fetch(API_URL, { method:"POST", body: JSON.stringify(payload) });
-        const out = await res.json().catch(() => ({}));
-        if (!res.ok || out.error) throw new Error(out.error || "Save failed");
-
-        if (out.pdfLinks) {
-          pdfLinks = {
-            sales: out.pdfLinks.sales || "",
-            material: out.pdfLinks.material || "",
-            floorplan: out.pdfLinks.floorplan || ""
-          };
-          setPdfText("sales", pdfLinks.sales || "ยังไม่มีไฟล์");
-          setPdfText("material", pdfLinks.material || "ยังไม่มีไฟล์");
-          setPdfText("floorplan", pdfLinks.floorplan || "ยังไม่มีไฟล์");
-        } else {
-          if (pdfAction.sales === "clear") setPdfText("sales", "ยังไม่มีไฟล์");
-          if (pdfAction.material === "clear") setPdfText("material", "ยังไม่มีไฟล์");
-          if (pdfAction.floorplan === "clear") setPdfText("floorplan", "ยังไม่มีไฟล์");
-        }
-
-        document.getElementById("successPopup").classList.remove("hidden");
-      } catch (e) {
-        alert("Save Failed: " + e.message);
+      }catch(err){
+        showMsg("❌ " + (err.message || "Update error"), false);
+      }finally{
         btn.disabled = false;
-        btn.innerText = oldText;
+        btn.textContent = old;
       }
     }
 
-    window.onload = () => {
-      bindDistrictChange();
-      loadData();
-    };
+    document.getElementById("saveBtn").addEventListener("click", save);
+
+    // start
+    loadDetail();
   </script>
 </body>
 </html>
