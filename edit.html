@@ -300,7 +300,7 @@
 
   <div id="successPopup" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-6">
     <div class="bg-white rounded-[3rem] p-10 sm:p-12 text-center max-w-sm w-full shadow-2xl border-t-8 border-green-500">
-      <div class="w-24 h-24 bg-green-100 text-green-500 rounded-full flex items-center justify-content-center mx-auto mb-6 text-4xl shadow-inner">✓</div>
+      <div class="w-24 h-24 bg-green-100 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl shadow-inner">✓</div>
       <h2 class="text-2xl font-bold mb-2">บันทึกสำเร็จ!</h2>
       <p class="text-slate-400 text-sm mb-8 font-bold uppercase tracking-wider">
         ข้อมูลและรูปภาพถูกซิงค์ไปยัง <br>Google Drive &amp; Sheets แล้ว
@@ -312,26 +312,18 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbxc76n6YKLUCCHZZR12c5K4_0k40gHa2ZzDMVZn29BElQlSO3X6O8B7dFIFi0bEukqJ/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxvzszMpjb1Dy3nQDhh64oPYu1-CgL-RSdRe52Df_pejfqkhq-g70z96npgaSyNAw2T/exec";
     const urlParams = new URLSearchParams(location.search);
     const HP_ID = urlParams.get("id");
     const PROJECT = urlParams.get("project") || "HP00";
 
-    // ✅ AUTH
-    const TOKEN = (localStorage.getItem("HP_AUTH_TOKEN") || "").trim();
-    const ROLE = (localStorage.getItem("HP_AUTH_ROLE") || "").trim();
-    const AUTH_PROJECT = (localStorage.getItem("HP_AUTH_PROJECT") || "").trim();
-
-    function goLogin(){
-      location.href = `gateway.html?project=${encodeURIComponent(PROJECT)}`;
-    }
+    // ✅ token มาจาก dashboard ที่ส่งผ่าน query หรือจาก localStorage
+    const TOKEN =
+      (urlParams.get("token") || "").trim() ||
+      (localStorage.getItem("HP_AUTH_TOKEN") || "").trim();
 
     if (!TOKEN) {
-      goLogin();
-    } else {
-      if (ROLE !== "HQ" && AUTH_PROJECT && AUTH_PROJECT !== PROJECT) {
-        goLogin();
-      }
+      location.href = `gateway.html?project=${encodeURIComponent(PROJECT)}`;
     }
 
     let existingGallery = [];
@@ -340,8 +332,7 @@
 
     let pdfLinks = { sales:"", material:"", floorplan:"" };
     const MAX_PDF_BYTES = 6 * 1024 * 1024;
-
-    let pdfAction = { sales:"keep", material:"keep", floorplan:"keep" }; // keep | clear | replace
+    let pdfAction = { sales:"keep", material:"keep", floorplan:"keep" };
 
     const SUBDISTRICTS_BY_DISTRICT = {
       "Hua Hin": ["Hua Hin","Nong Kae","Hin Lek Fai","Thap Tai","Huai Sat Yai","Bueng Nakhon","Nong Phlap"],
@@ -492,14 +483,12 @@
       if (!HP_ID || !PROJECT) return alert("Missing id/project in URL");
 
       try {
-        // ✅ ต้องส่ง token เพื่ออ่าน detail
-        const res = await fetch(`${API_URL}?mode=getUnitDetail&hpId=${encodeURIComponent(HP_ID)}&project=${encodeURIComponent(PROJECT)}&token=${encodeURIComponent(TOKEN)}&t=${Date.now()}`);
+        // ✅ ต้องแนบ token
+        const res = await fetch(
+          `${API_URL}?mode=getUnitDetail&hpId=${encodeURIComponent(HP_ID)}&project=${encodeURIComponent(PROJECT)}&token=${encodeURIComponent(TOKEN)}&t=${Date.now()}`
+        );
         const data = await res.json();
-        if (data && data.error) {
-          // token หมดอายุ / ไม่ผ่าน auth
-          if (String(data.error).includes("unauthorized")) return goLogin();
-          throw new Error(data.error);
-        }
+        if (data && data.error) throw new Error(data.error);
 
         Object.keys(data || {}).forEach(k => {
           const el = document.getElementById(k);
@@ -576,7 +565,7 @@
         project: PROJECT,
         hpId: HP_ID,
 
-        // ✅ token ส่งไปที่ GS ทุกครั้ง
+        // ✅ ต้องส่ง token ไปด้วย
         token: TOKEN,
 
         Plot: document.getElementById("Plot").value,
@@ -609,6 +598,7 @@
         Description: document.getElementById("Description").value,
 
         FB_Link: document.getElementById("FB_Link").value,
+
         Map_Link: document.getElementById("Map_Link").value,
         Virtual_Tour: document.getElementById("Virtual_Tour").value,
         Commission: document.getElementById("Commission").value,
@@ -649,10 +639,7 @@
 
         const res = await fetch(API_URL, { method:"POST", body: JSON.stringify(payload) });
         const out = await res.json().catch(() => ({}));
-        if (!res.ok || out.error) {
-          if (String(out.error || "").includes("unauthorized")) return goLogin();
-          throw new Error(out.error || "Save failed");
-        }
+        if (!res.ok || out.error) throw new Error(out.error || "Save failed");
 
         if (out.pdfLinks) {
           pdfLinks = {
