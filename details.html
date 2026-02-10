@@ -801,14 +801,32 @@ const qs = new URLSearchParams(location.search);
 const hpId = qs.get("id") || qs.get("hpId") || "";
 const project = qs.get("project") || "HP00";
 
-/** ✅ NEW: TOKEN handling */
+/** ✅ TOKEN handling */
 const TOKEN_QS = (qs.get("token") || "").trim();
 const TOKEN_LS = (localStorage.getItem("HP_AUTH_TOKEN") || "").trim();
-const token = TOKEN_QS || TOKEN_LS;
+let token = TOKEN_QS || TOKEN_LS;
 
-/** ✅ NEW: ถ้ามี token ใน URL ให้เก็บลง localStorage เพื่อหน้าอื่นใช้ */
+/** ✅ ถ้ามี token ใน URL ให้เก็บลง localStorage เพื่อหน้าอื่นใช้ */
 if (TOKEN_QS) {
   localStorage.setItem("HP_AUTH_TOKEN", TOKEN_QS);
+}
+
+/** ✅ NEW: helper ไปหน้า gateway เพื่อ login แล้วกลับมา */
+function goGateway(reason){
+  try{
+    if (reason) console.warn("[AUTH]", reason);
+    const back = encodeURIComponent(location.pathname + location.search);
+    // ✅ ถ้าคุณใช้ชื่อหน้า login คนละชื่อ เปลี่ยนตรงนี้
+    location.href = `gateway.html?project=${encodeURIComponent(project)}&back=${back}`;
+  }catch(e){
+    location.href = `gateway.html?project=${encodeURIComponent(project)}`;
+  }
+}
+
+/** ✅ FIX: ถ้า token invalid ให้ลบทิ้ง */
+function clearToken(){
+  try{ localStorage.removeItem("HP_AUTH_TOKEN"); }catch(e){}
+  token = "";
 }
 
 /** ✅ FIX ONLY: ให้ไอคอน Home ลิงก์กลับ index พร้อม project + token */
@@ -841,8 +859,11 @@ function jsonp(url, timeoutMs = 20000){
       try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
     }
     window[cb] = (data) => { cleanup(); resolve(data); };
+
+    // ✅ IMPORTANT: กัน cache ของ JSONP
     const sep = url.includes("?") ? "&" : "?";
-    script.src = url + sep + "callback=" + encodeURIComponent(cb);
+    script.src = url + sep + "callback=" + encodeURIComponent(cb) + "&t=" + Date.now();
+
     script.onerror = () => { cleanup(); reject(new Error("jsonp_error")); };
     document.body.appendChild(script);
   });
@@ -859,7 +880,7 @@ function showError(msg, showLoginBtn = false){
 
   if (showLoginBtn){
     const btn = document.createElement("button");
-    btn.textContent = "กลับไปล็อกอิน";
+    btn.textContent = "ไปล็อกอินใหม่";
     btn.style.marginTop = "10px";
     btn.style.padding = "10px 12px";
     btn.style.borderRadius = "14px";
@@ -868,11 +889,7 @@ function showError(msg, showLoginBtn = false){
     btn.style.fontWeight = "900";
     btn.style.background = "rgba(15,23,42,.9)";
     btn.style.color = "#fff";
-    btn.onclick = () => {
-      // ✅ ถ้าคุณมี gateway.html ให้ปรับชื่อไฟล์ได้ที่นี่
-      // ถ้าไม่มี ให้กลับไปหน้า index แล้วให้ระบบ index พาไปล็อกอิน
-      location.href = `index.html?project=${encodeURIComponent(project)}`;
-    };
+    btn.onclick = () => goGateway("manual login");
     box.appendChild(btn);
   }
 }
@@ -918,7 +935,8 @@ function statusStyle(statusRaw){
 }
 
 document.getElementById("btnBack").addEventListener("click", () => {
-  history.length > 1 ? history.back() : (location.href = `index.html?project=${encodeURIComponent(project)}${token ? `&token=${encodeURIComponent(token)}` : ""}`);
+  const t = token ? `&token=${encodeURIComponent(token)}` : "";
+  history.length > 1 ? history.back() : (location.href = `index.html?project=${encodeURIComponent(project)}${t}`);
 });
 
 let images = [];
@@ -1185,13 +1203,18 @@ function renderOtherUnits(units){
 
 async function loadOtherUnits(){
   try{
+    // NOTE: ฝั่ง Apps Script ของคุณ getUnitList ไม่ require token (จากโค้ด GS ที่คุณส่ง)
+    // แต่ใส่ token ไปก็ไม่เป็นไร แค่เพิ่มความยาว URL
     const t = token ? `&token=${encodeURIComponent(token)}` : "";
     const url = `${SCRIPT_URL}?mode=getUnitList&project=${encodeURIComponent(project)}${t}`;
     const data = await jsonp(url);
+
     if(data && data.error){
-      // ถ้า token หมดอายุ จะมาตรงนี้
       if(String(data.error).toLowerCase().includes("unauthorized")){
-        showError("โหลดข้อมูลไม่สำเร็จ: unauthorized (token หมดอายุ/ไม่มี token)", true);
+        // ✅ ถ้าถูกบังคับ auth ในอนาคต ให้เด้งไป login
+        clearToken();
+        goGateway("unauthorized on getUnitList");
+        return;
       }
       document.getElementById("otherSection").style.display = "none";
       return;
@@ -1220,14 +1243,18 @@ async function loadOtherUnits(){
     return;
   }
 
-  // ✅ ถ้าไม่มี token ให้แจ้งชัดเจน (นี่คือเคสในรูปคุณ)
+  // ✅ ถ้าไม่มี token → เด้งไป gateway (แทนการค้างหน้า error)
   if(!token){
-    showError("โหลดข้อมูลไม่สำเร็จ: unauthorized: missing/expired token", true);
     hideLoader();
+    goGateway("missing token");
     return;
   }
 
-  const url = `${SCRIPT_URL}?mode=getUnitDetail&project=${encodeURIComponent(project)}&hpId=${encodeURIComponent(hpId)}&token=${encodeURIComponent(token)}`;
+  const url =
+    `${SCRIPT_URL}?mode=getUnitDetail` +
+    `&project=${encodeURIComponent(project)}` +
+    `&hpId=${encodeURIComponent(hpId)}` +
+    `&token=${encodeURIComponent(token)}`;
 
   let detail;
   try{
@@ -1239,15 +1266,18 @@ async function loadOtherUnits(){
   }
 
   if(detail && detail.error){
-    // ✅ สำคัญ: ตรงนี้คือจุดที่ขึ้น error unauthorized ของคุณ
     const errText = String(detail.error || "");
     if(errText.toLowerCase().includes("unauthorized")){
-      showError("โหลดข้อมูลไม่สำเร็จ: unauthorized: missing/expired token", true);
+      // ✅ สำคัญสุด: token หมดอายุ/ถูกล้าง → ลบทิ้ง แล้วไป login ใหม่
+      clearToken();
+      hideLoader();
+      goGateway("expired/invalid token");
+      return;
     }else{
-      showError("โหลดข้อมูลไม่สำเร็จ: " + errText);
+      showError("โหลดข้อมูลไม่สำเร็จ: " + errText, true);
+      hideLoader();
+      return;
     }
-    hideLoader();
-    return;
   }
 
   CURRENT_DETAIL = detail;
