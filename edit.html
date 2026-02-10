@@ -17,7 +17,6 @@
 <body class="p-4 md:p-10 italic">
   <div class="max-w-6xl mx-auto">
 
-    <!-- Header -->
     <div class="bg-slate-900 rounded-[2.2rem] px-6 py-6 md:px-10 md:py-7 text-white mb-6 shadow-2xl flex items-center justify-between">
       <div class="min-w-0">
         <div class="text-[11px] uppercase tracking-[0.35em] text-white/60 font-bold">Edit Unit</div>
@@ -39,11 +38,9 @@
       </div>
     </div>
 
-    <!-- Card -->
     <div class="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden">
       <div class="p-6 md:p-10">
 
-        <!-- Loading / Error -->
         <div id="loading" class="bg-slate-50 border border-slate-100 rounded-[2rem] p-6 text-center text-slate-400 font-bold animate-pulse uppercase">
           🔄 Loading unit detail...
         </div>
@@ -52,10 +49,8 @@
           ⚠️ <span id="errorText">Error</span>
         </div>
 
-        <!-- Form -->
         <div id="formWrap" class="hidden">
 
-          <!-- BASIC -->
           <div class="grid md:grid-cols-3 gap-4 md:gap-6">
             <div class="md:col-span-2">
               <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">UNIT ID</div>
@@ -93,7 +88,6 @@
             </div>
           </div>
 
-          <!-- LOCATION -->
           <div class="mt-10 border-t pt-8">
             <div class="text-[12px] font-extrabold text-slate-500 uppercase tracking-widest mb-5">Location</div>
 
@@ -128,7 +122,6 @@
             </div>
           </div>
 
-          <!-- LINKS -->
           <div class="mt-10 border-t pt-8">
             <div class="text-[12px] font-extrabold text-slate-500 uppercase tracking-widest mb-5">External Links</div>
 
@@ -155,7 +148,6 @@
               </div>
             </div>
 
-            <!-- ✅ FIX: SYSTEM STATUS EDITABLE FOR HQ -->
             <div class="mt-6">
               <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">
                 SYSTEM STATUS <span id="sysHint" class="text-slate-300">(HQ ONLY)</span>
@@ -174,7 +166,6 @@
             </div>
           </div>
 
-          <!-- ACTION -->
           <div class="mt-10">
             <button id="saveBtn"
               class="w-full py-10 bg-slate-900 text-white rounded-[2.2rem] font-extrabold uppercase text-[12px] tracking-[0.35em]
@@ -185,40 +176,27 @@
             <div id="msg" class="mt-4 text-center text-[12px] font-bold hidden"></div>
           </div>
 
-        </div><!-- /formWrap -->
+        </div>
       </div>
     </div>
 
   </div>
 
   <script>
-    // ================================
-    // CONFIG
-    // ================================
     const API_URL = "https://script.google.com/macros/s/AKfycbxc76n6YKLUCCHZZR12c5K4_0k40gHa2ZzDMVZn29BElQlSO3X6O8B7dFIFi0bEukqJ/exec";
 
     const qs = new URLSearchParams(location.search);
     const HP_ID_PARAM = (qs.get("id") || "").trim();
     const PROJECT_ID = (qs.get("project") || "HP00").trim();
 
-    // token มาจาก query หรือ localStorage
     const TOKEN = (qs.get("token") || localStorage.getItem("HP_AUTH_TOKEN") || "").trim();
+    const ROLE  = (localStorage.getItem("HP_AUTH_ROLE") || "").trim(); // "HQ" | "PROJECT"
 
-    // role มาจาก localStorage (จาก gateway)
-    const ROLE = (localStorage.getItem("HP_AUTH_ROLE") || "").trim(); // "HQ" | "PROJECT"
-
-    // ปุ่มกลับ/บ้าน
     document.getElementById("backBtn").href = `dashboard.html?project=${encodeURIComponent(PROJECT_ID)}`;
     document.getElementById("homeBtn").href = "index.html";
 
-    // ถ้าไม่มี token ให้เด้งกลับ gateway
-    if (!TOKEN) {
-      location.href = `gateway.html?project=${encodeURIComponent(PROJECT_ID)}`;
-    }
+    if (!TOKEN) location.href = `gateway.html?project=${encodeURIComponent(PROJECT_ID)}`;
 
-    // ================================
-    // UI HELPERS
-    // ================================
     function showLoading(on){
       const loading = document.getElementById("loading");
       const formWrap = document.getElementById("formWrap");
@@ -234,8 +212,7 @@
 
     function showError(msg){
       const errorBox = document.getElementById("errorBox");
-      const errorText = document.getElementById("errorText");
-      errorText.textContent = msg || "Unknown error";
+      document.getElementById("errorText").textContent = msg || "Unknown error";
       errorBox.classList.remove("hidden");
       document.getElementById("formWrap").classList.add("hidden");
     }
@@ -250,17 +227,12 @@
 
     function setVal(id, v){
       const el = document.getElementById(id);
-      if (!el) return;
-      el.value = (v ?? "").toString();
+      if (el) el.value = (v ?? "").toString();
     }
 
-    // ================================
-    // ✅ HQ ONLY: enable/disable System_Status
-    // ================================
     function applyRoleLock_(){
       const sys = document.getElementById("System_Status");
       const hint = document.getElementById("sysHint");
-
       const isHQ = (ROLE === "HQ");
       if (!isHQ){
         sys.disabled = true;
@@ -268,7 +240,7 @@
         hint.textContent = "(READ ONLY)";
         hint.classList.remove("text-slate-300");
         hint.classList.add("text-slate-400");
-      }else{
+      } else {
         sys.disabled = false;
         sys.classList.remove("bg-slate-50");
         hint.textContent = "(HQ ONLY)";
@@ -277,19 +249,11 @@
       }
     }
 
-    // ================================
-    // LOAD DETAIL
-    // ================================
     async function loadDetail(){
-      if (!HP_ID_PARAM){
-        showError("Missing id in URL");
-        return;
-      }
-
+      if (!HP_ID_PARAM) return showError("Missing id in URL");
       showLoading(true);
 
       try{
-        // getUnitDetail ต้องส่ง token (ตาม GS ของคุณ)
         const url =
           `${API_URL}?mode=getUnitDetail` +
           `&project=${encodeURIComponent(PROJECT_ID)}` +
@@ -297,17 +261,13 @@
           `&token=${encodeURIComponent(TOKEN)}` +
           `&t=${Date.now()}`;
 
-        const res = await fetch(url, { method:"GET" });
+        const res = await fetch(url);
         const data = await res.json();
 
-        if (!res.ok || !data || data.error){
-          throw new Error((data && data.error) ? data.error : "Cannot load detail");
-        }
+        if (!res.ok || !data || data.error) throw new Error(data.error || "Cannot load detail");
 
-        // title
         document.getElementById("title").textContent = `${HP_ID_PARAM} · ${PROJECT_ID}`;
 
-        // fill
         setVal("HP_ID", data.HP_ID || HP_ID_PARAM);
         setVal("_project", data._project || PROJECT_ID);
 
@@ -323,13 +283,10 @@
         setVal("Map_Link", data.Map_Link);
         setVal("Virtual_Tour", data.Virtual_Tour);
 
-        // ✅ System_Status (ถ้าไม่มี ให้ default Offline)
         setVal("System_Status", (data.System_Status || "Offline"));
 
-        // role lock
         applyRoleLock_();
 
-        // show form
         document.getElementById("formWrap").classList.remove("hidden");
         showLoading(false);
 
@@ -339,9 +296,7 @@
       }
     }
 
-    // ================================
-    // SAVE
-    // ================================
+    // ✅ FIX CORS: ห้ามใส่ headers Content-Type application/json
     async function save(){
       const btn = document.getElementById("saveBtn");
       btn.disabled = true;
@@ -367,21 +322,17 @@
           Map_Link: document.getElementById("Map_Link").value.trim(),
           Virtual_Tour: document.getElementById("Virtual_Tour").value.trim(),
 
-          // ✅ ส่ง System_Status ไปด้วย (GS จะรับเฉพาะ HQ เท่านั้น)
           System_Status: document.getElementById("System_Status").value.trim()
         };
 
-        const res = await fetch(API_URL, {
+        // ✅ no headers (avoid preflight)
+        const res = await fetch(API_URL + `?t=${Date.now()}`, {
           method: "POST",
-          headers: { "Content-Type":"application/json" },
           body: JSON.stringify(payload)
         });
 
         const out = await res.json().catch(()=> ({}));
-
-        if (!res.ok || !out.ok){
-          throw new Error(out.error || "Update failed");
-        }
+        if (!res.ok || !out.ok) throw new Error(out.error || "Update failed");
 
         showMsg("✅ Updated successfully", true);
 
@@ -395,7 +346,6 @@
 
     document.getElementById("saveBtn").addEventListener("click", save);
 
-    // start
     loadDetail();
   </script>
 </body>
