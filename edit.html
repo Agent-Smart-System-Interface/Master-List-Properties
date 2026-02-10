@@ -207,7 +207,6 @@
           <span class="field-label">Status</span>
           <select id="Status" class="field-input">
             <option value="">-- Select Status --</option>
-            <!-- ✅ ตรงกับในชีท -->
             <option value="Available">Available</option>
             <option value="Under Con">Under Con</option>
             <option value="Reserved">Reserved</option>
@@ -282,7 +281,6 @@
         <div><span class="field-label">Map Link</span><input id="Map_Link" class="field-input"></div>
         <div><span class="field-label">Virtual Tour</span><input id="Virtual_Tour" class="field-input"></div>
 
-        <!-- ✅ FIX: System Status ให้ HQ แก้ได้ / Project อ่านอย่างเดียว -->
         <div class="col-span-full">
           <span class="field-label">System Status <span id="sysHint" class="text-slate-300">(READ ONLY)</span></span>
           <select id="System_Status_Select" class="field-input font-bold bg-slate-50" disabled>
@@ -290,10 +288,7 @@
             <option value="Pending">Pending</option>
             <option value="Live">Live</option>
           </select>
-
-          <!-- ✅ คง id เดิมไว้ เพื่อไม่ให้ส่วนอื่นพัง (เป็น hidden mirror) -->
           <input id="System_Status" class="hidden" value="Pending">
-
           <p class="text-xs text-slate-400 mt-2 italic">
             Offline = ไม่แสดงออนไลน์ | Pending = ยังไม่แสดงออนไลน์แต่แก้ไขข้อมูลได้ | Live = ข้อมูลพร้อมแล้ว (กำหนดโดย Master/HQ)
           </p>
@@ -330,9 +325,8 @@
     const HP_ID = urlParams.get("id");
     const PROJECT = urlParams.get("project") || "HP00";
 
-    // ✅ AUTH (รองรับ token/role จาก gateway ที่เก็บใน localStorage)
     const TOKEN = (urlParams.get("token") || localStorage.getItem("HP_AUTH_TOKEN") || "").trim();
-    const ROLE  = (localStorage.getItem("HP_AUTH_ROLE") || "").trim(); // "HQ" | "PROJECT"
+    const ROLE  = (localStorage.getItem("HP_AUTH_ROLE") || "").trim();
 
     let existingGallery = [];
     let removedGallery = [];
@@ -341,7 +335,7 @@
     let pdfLinks = { sales:"", material:"", floorplan:"" };
     const MAX_PDF_BYTES = 6 * 1024 * 1024;
 
-    let pdfAction = { sales:"keep", material:"keep", floorplan:"keep" }; // keep | clear | replace
+    let pdfAction = { sales:"keep", material:"keep", floorplan:"keep" };
 
     const SUBDISTRICTS_BY_DISTRICT = {
       "Hua Hin": ["Hua Hin","Nong Kae","Hin Lek Fai","Thap Tai","Huai Sat Yai","Bueng Nakhon","Nong Phlap"],
@@ -349,9 +343,6 @@
       "Pranburi": ["Pran Buri","Pak Nam Pran","Wang Phong","Nong Ta Taem","Nong Din Daeng","Khao Noi","Khao Chao"]
     };
 
-    // ============================
-    // UI
-    // ============================
     function switchTab(tab) {
       document.getElementById("tab-photo").classList.toggle("hidden", tab !== "photo");
       document.getElementById("tab-info").classList.toggle("hidden", tab !== "info");
@@ -490,9 +481,6 @@
       setPdfText(key, "เลือกไฟล์ใหม่: " + f.name);
     }
 
-    // ============================
-    // JSONP (โหลด/ตรวจสอบหลัง save แบบ no-cors)
-    // ============================
     function jsonp_(paramsObj){
       return new Promise((resolve, reject) => {
         const cbName = "cb_" + Math.random().toString(16).slice(2);
@@ -521,9 +509,6 @@
       });
     }
 
-    // ============================
-    // HQ lock/unlock System_Status
-    // ============================
     function applyRoleLock_(){
       const isHQ = (ROLE === "HQ");
       const sel = document.getElementById("System_Status_Select");
@@ -544,16 +529,11 @@
       }
     }
 
-    // ============================
-    // LOAD DATA
-    // ============================
     async function loadData() {
       document.getElementById("displayId").innerText = HP_ID || "HP-XXXX";
       if (!HP_ID || !PROJECT) return alert("Missing id/project in URL");
 
       try {
-        // ✅ ใช้ JSONP เพื่อไม่ให้ติด CORS ตอนโหลด (รองรับได้ทั้งมี/ไม่มี callback ฝั่ง GS)
-        // ถ้าฝั่ง GS ยังไม่รองรับ JSONP ก็จะ error → fallback fetch เดิม
         let data = null;
         try{
           data = await jsonp_({
@@ -574,7 +554,6 @@
           if (el) el.value = (data[k] ?? "");
         });
 
-        // ✅ กัน FB_Link หาย
         const fbEl = document.getElementById("FB_Link");
         if (fbEl) fbEl.value = (data.FB_Link ?? "");
 
@@ -587,7 +566,6 @@
           setSubDistrictOptions("", "");
         }
 
-        // ✅ System_Status: ใช้ Live/Pending/Offline ตามชีท
         const rawSys = (data.System_Status ?? "").toString().trim();
         const sysVal = rawSys || "Pending";
         document.getElementById("System_Status").value = sysVal;
@@ -625,9 +603,6 @@
       }
     }
 
-    // ============================
-    // BASE64
-    // ============================
     const toBase64 = file => new Promise((resolve, reject) => {
       try {
         const reader = new FileReader();
@@ -637,12 +612,7 @@
       } catch (e) { reject(e); }
     });
 
-    // ============================
-    // SAVE (POST + fallback no-cors + verify)
-    // ============================
     async function verifyAfterSave_(){
-      // ✅ ตรวจสอบว่าค่าถูกอัปเดตจริง โดยโหลด detail อีกครั้ง
-      // ใช้ JSONP ก่อน ถ้าไม่ได้ค่อย fetch
       let data = null;
       try{
         data = await jsonp_({ mode:"getUnitDetail", hpId: HP_ID, project: PROJECT, token: TOKEN });
@@ -659,7 +629,6 @@
       const oldText = btn.innerText;
       btn.innerText = "UPDATING DATABASE...";
 
-      // sync mirror system status
       document.getElementById("System_Status").value = document.getElementById("System_Status_Select").value;
 
       const keepGallery = existingGallery.filter(u => !removedGallery.includes(u));
@@ -669,8 +638,6 @@
         mode: "updateUnit",
         project: PROJECT,
         hpId: HP_ID,
-
-        // ✅ token/role
         token: TOKEN,
 
         Plot: document.getElementById("Plot").value,
@@ -707,7 +674,6 @@
         Virtual_Tour: document.getElementById("Virtual_Tour").value,
         Commission: document.getElementById("Commission").value,
 
-        // ✅ HQ only (ถ้าฝั่ง GS มี rule จะ ignore อัตโนมัติ)
         System_Status: document.getElementById("System_Status").value,
 
         keepGallery,
@@ -744,30 +710,25 @@
         const floorPdf = document.getElementById("file_floorplan_pdf").files[0];
         if (floorPdf) payload.file_floorplan_pdf = await toBase64(floorPdf);
 
-        // ✅ Attempt #1: POST ปกติ (อ่านผลลัพธ์ได้)
         let out = null;
         try{
           const res = await fetch(API_URL, { method:"POST", body: JSON.stringify(payload) });
           out = await res.json().catch(() => ({}));
           if (!res.ok || out.error) throw new Error(out.error || "Save failed");
         }catch(err1){
-          // ✅ Attempt #2: POST แบบ no-cors ให้ยิงถึงแน่นอน (แต่ตอบกลับอ่านไม่ได้)
           try{
             await fetch(API_URL, { method:"POST", mode:"no-cors", body: JSON.stringify(payload) });
           }catch(_){}
 
-          // ✅ verify ว่าลงชีทจริง
           const after = await verifyAfterSave_();
           if (after && after.error) throw new Error(after.error);
 
-          // ตรวจจุดสำคัญ 2-3 ค่าให้มั่นใจ (Status + FB_Link + System_Status)
           const wantStatus = String(payload.Status || "").trim();
           const gotStatus = String(after.Status || "").trim();
           if (wantStatus && gotStatus && wantStatus !== gotStatus) {
             throw new Error("บันทึกไม่สำเร็จ (Status ยังไม่เปลี่ยนในชีท)");
           }
 
-          // ถ้าถึงจุดนี้ถือว่าบันทึกสำเร็จ
           out = { ok:true, pdfLinks: {
             sales: after.Sales_Gallery || "",
             material: after.Material_PDF || "",
@@ -775,7 +736,6 @@
           }};
         }
 
-        // อัปเดตข้อความ PDF ตามผลล่าสุด
         if (out && out.pdfLinks) {
           pdfLinks = {
             sales: out.pdfLinks.sales || "",
@@ -800,9 +760,6 @@
       }
     }
 
-    // ============================
-    // INIT
-    // ============================
     window.onload = () => {
       bindDistrictChange();
       loadData();
