@@ -723,10 +723,24 @@
           const after = await verifyAfterSave_();
           if (after && after.error) throw new Error(after.error);
 
+          // ✅ FIX: ตรวจสอบ Status + Map_Link + Virtual_Tour หลังบันทึก (กันหลอกว่าสำเร็จ)
           const wantStatus = String(payload.Status || "").trim();
-          const gotStatus = String(after.Status || "").trim();
+          const gotStatus  = String(after.Status || "").trim();
+
+          const wantMap = String(payload.Map_Link || "").trim();
+          const gotMap  = String(after.Map_Link || "").trim();
+
+          const wantVT = String(payload.Virtual_Tour || "").trim();
+          const gotVT  = String(after.Virtual_Tour || "").trim();
+
           if (wantStatus && gotStatus && wantStatus !== gotStatus) {
             throw new Error("บันทึกไม่สำเร็จ (Status ยังไม่เปลี่ยนในชีท)");
+          }
+          if (wantMap !== gotMap) {
+            throw new Error("บันทึกไม่สำเร็จ (Map_Link ยังไม่เปลี่ยนในชีท)");
+          }
+          if (wantVT !== gotVT) {
+            throw new Error("บันทึกไม่สำเร็จ (Virtual_Tour ยังไม่เปลี่ยนในชีท)");
           }
 
           out = { ok:true, pdfLinks: {
