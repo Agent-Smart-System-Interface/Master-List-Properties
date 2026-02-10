@@ -525,6 +525,8 @@ flex:0 0 auto;
 background: rgba(29,78,216,.10);
 }
 .fbVisitBtn.hidden{ display:none; }
+
+/* ====== MAP SECTION (คงของเดิม + เพิ่ม Note เฉพาะส่วนนี้) ====== */
 .mapSection{
 margin-top: 12px;
 display:none;
@@ -580,6 +582,19 @@ user-select:none;
 border-color: rgba(59,130,246,.45);
 color:#1d4ed8;
 }
+
+/* ✅ NEW (เฉพาะ Map): กล่องแจ้งเตือนเมื่อ embed ไม่ได้ */
+.mapNote{
+display:none;
+padding:10px 12px;
+border-top: 1px solid rgba(15,23,42,.08);
+background: rgba(15,23,42,.03);
+color: rgba(15,23,42,.75);
+font-weight:900;
+font-size:12px;
+line-height:1.4;
+}
+
 .mapFrame{
 width:100%;
 height: 320px;
@@ -590,7 +605,9 @@ background:#e8f0fb;
 @media (max-width:420px){
 .mapFrame{ height: 260px; }
 .mapBtn{ font-size:11px; padding:8px 9px; }
+.mapNote{ font-size:11px; }
 }
+
 .wrap{ padding-bottom: 92px; }
 .bottomDock{
 position:fixed;
@@ -748,6 +765,14 @@ pointer-events:none;
       <a class="mapBtn mapBtnPrimary" id="mapNavBtn" href="#" target="_blank" rel="noopener">Navigate</a>
     </div>
   </div>
+
+  <!-- ✅ NEW (เฉพาะ Map): ข้อความแจ้งเมื่อ embed ไม่ได้ -->
+  <div class="mapNote" id="mapNote">
+    ลิงก์แผนที่แบบ <b>maps.app.goo.gl</b> (short link) ไม่สามารถแสดงในกรอบแผนที่ (iframe) ได้ตามนโยบาย Google
+    แต่ปุ่ม <b>Open Map</b> และ <b>Navigate</b> ใช้งานได้ปกติ ✅
+    <br>ถ้าต้องการให้แผนที่แสดงในหน้านี้ ให้ใส่ลิงก์แบบ <b>Google Maps Embed</b> หรือพิกัด <b>lat,lng</b> แทน
+  </div>
+
   <iframe
     id="mapFrame"
     class="mapFrame"
@@ -869,8 +894,6 @@ function showError(msg, showLoginBtn = false){
     btn.style.background = "rgba(15,23,42,.9)";
     btn.style.color = "#fff";
     btn.onclick = () => {
-      // ✅ ถ้าคุณมี gateway.html ให้ปรับชื่อไฟล์ได้ที่นี่
-      // ถ้าไม่มี ให้กลับไปหน้า index แล้วให้ระบบ index พาไปล็อกอิน
       location.href = `index.html?project=${encodeURIComponent(project)}`;
     };
     box.appendChild(btn);
@@ -1015,26 +1038,102 @@ function pickMapLink(detail){
   }
   return "";
 }
+
+/** =========================
+* ✅ MAP SECTION (Standard Block)
+* - iframe ใช้ได้เฉพาะ "embed" หรือ "พิกัด/คำค้น"
+* - maps.app.goo.gl (short link) -> embed ไม่ได้ตาม policy
+* ========================= */
 function normalizeMapLink(link){
   const s = String(link || "").trim();
-  return s && s !== "-" ? s : "";
+  return (s && s !== "-") ? s : "";
+}
+function isShortMapLink(raw){
+  const s = String(raw||"").toLowerCase();
+  return s.includes("maps.app.goo.gl") || s.includes("goo.gl/maps");
+}
+function extractQueryFromUrl(urlStr){
+  try{
+    const u = new URL(urlStr);
+    // Google maps อาจใช้ q / query / destination
+    const q = u.searchParams.get("q") || u.searchParams.get("query") || u.searchParams.get("destination");
+    return (q || "").trim();
+  }catch(e){
+    return "";
+  }
+}
+function extractCoords(raw){
+  const s = String(raw||"").trim();
+
+  // รูปแบบ: "12.34,99.88"
+  const m0 = s.match(/(-?\d{1,3}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)/);
+  if(m0) return `${m0[1]},${m0[2]}`;
+
+  // รูปแบบใน URL: ".../@12.34,99.88,17z"
+  const m1 = s.match(/@(-?\d{1,3}\.\d+),\s*(-?\d{1,3}\.\d+)/);
+  if(m1) return `${m1[1]},${m1[2]}`;
+
+  // รูปแบบใน URL: "...?q=12.34,99.88"
+  const q = extractQueryFromUrl(s);
+  if(q){
+    const m2 = q.match(/(-?\d{1,3}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)/);
+    if(m2) return `${m2[1]},${m2[2]}`;
+  }
+  return "";
 }
 function buildEmbedUrl(link){
   const raw = normalizeMapLink(link);
   if(!raw) return "";
+
+  // ✅ กรณีเป็น embed อยู่แล้ว
   if (raw.includes("google.com/maps/embed")) return raw;
-  return `https://www.google.com/maps?q=${encodeURIComponent(raw)}&output=embed`;
+
+  // ❌ short link embed ไม่ได้
+  if (isShortMapLink(raw)) return "";
+
+  // ✅ ถ้ามีพิกัด -> embed ได้ชัวร์
+  const coords = extractCoords(raw);
+  if(coords){
+    return `https://www.google.com/maps?output=embed&q=${encodeURIComponent(coords)}`;
+  }
+
+  // ✅ ถ้าเป็น URL และมี q/query -> ใช้ q นั้นเป็นคำค้น embed
+  if(raw.startsWith("http")){
+    const q = extractQueryFromUrl(raw);
+    if(q){
+      return `https://www.google.com/maps?output=embed&q=${encodeURIComponent(q)}`;
+    }
+    // URL ทั่วไปที่ไม่ใช่ embed -> ไม่เดา pb เพื่อเลี่ยงแผนที่เพี้ยน (ให้ใช้ปุ่ม Open/Navigate)
+    return "";
+  }
+
+  // ✅ ถ้าเป็นข้อความ/ที่อยู่/Plus code -> embed ได้
+  return `https://www.google.com/maps?output=embed&q=${encodeURIComponent(raw)}`;
 }
 function buildOpenUrl(link){
   const raw = normalizeMapLink(link);
   if(!raw) return "";
-  if (raw.includes("google.com/maps")) return raw;
+  // เปิดลิงก์เดิมได้เลย (short link ก็ได้)
   if (raw.startsWith("http")) return raw;
   return `https://www.google.com/maps?q=${encodeURIComponent(raw)}`;
 }
 function buildNavUrl(link){
   const raw = normalizeMapLink(link);
   if(!raw) return "";
+
+  // ถ้าเป็น URL ของ Google Maps dir API อยู่แล้ว ก็ใช้ตรง ๆ
+  if(raw.includes("google.com/maps/dir/?api=1")) return raw;
+
+  // short link: ให้ Google handle ต่อ (ดีที่สุดสำหรับมือถือ)
+  if(isShortMapLink(raw)) return raw;
+
+  // มีพิกัด -> นำทางด้วย destination=lat,lng
+  const coords = extractCoords(raw);
+  if(coords){
+    return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(coords)}`;
+  }
+
+  // URL ทั่วไป/ข้อความ -> ส่งเป็น destination
   return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(raw)}`;
 }
 function setMapSection(link){
@@ -1042,7 +1141,8 @@ function setMapSection(link){
   const frame = document.getElementById("mapFrame");
   const openBtn = document.getElementById("mapOpenBtn");
   const navBtn = document.getElementById("mapNavBtn");
-  if(!sec || !frame || !openBtn || !navBtn) return;
+  const note = document.getElementById("mapNote");
+  if(!sec || !frame || !openBtn || !navBtn || !note) return;
 
   const raw = normalizeMapLink(link);
   if(!raw){
@@ -1050,13 +1150,30 @@ function setMapSection(link){
     frame.src = "";
     openBtn.href = "#";
     navBtn.href = "#";
+    note.style.display = "none";
     return;
   }
+
+  // แสดง section เสมอเมื่อมีลิงก์
   sec.style.display = "block";
+
+  // ปุ่ม 2 ตัวใช้งานได้เสมอ
   openBtn.href = buildOpenUrl(raw);
-  navBtn.href = buildNavUrl(raw);
-  frame.src = buildEmbedUrl(raw);
-  frame.onerror = () => { frame.src = ""; };
+  navBtn.href  = buildNavUrl(raw);
+
+  // iframe เฉพาะกรณี embed ได้
+  const embed = buildEmbedUrl(raw);
+  if(embed){
+    note.style.display = "none";
+    frame.style.display = "block";
+    frame.src = embed;
+    frame.onerror = () => { frame.src = ""; };
+  }else{
+    // short link หรือ URL ที่ไม่มี query/coords: แสดงโน้ต + ซ่อนไอเฟรม
+    frame.src = "";
+    frame.style.display = "none";
+    note.style.display = "block";
+  }
 }
 
 function renderInfo(detail){
@@ -1189,7 +1306,6 @@ async function loadOtherUnits(){
     const url = `${SCRIPT_URL}?mode=getUnitList&project=${encodeURIComponent(project)}${t}`;
     const data = await jsonp(url);
     if(data && data.error){
-      // ถ้า token หมดอายุ จะมาตรงนี้
       if(String(data.error).toLowerCase().includes("unauthorized")){
         showError("โหลดข้อมูลไม่สำเร็จ: unauthorized (token หมดอายุ/ไม่มี token)", true);
       }
@@ -1220,7 +1336,6 @@ async function loadOtherUnits(){
     return;
   }
 
-  // ✅ ถ้าไม่มี token ให้แจ้งชัดเจน (นี่คือเคสในรูปคุณ)
   if(!token){
     showError("โหลดข้อมูลไม่สำเร็จ: unauthorized: missing/expired token", true);
     hideLoader();
@@ -1239,7 +1354,6 @@ async function loadOtherUnits(){
   }
 
   if(detail && detail.error){
-    // ✅ สำคัญ: ตรงนี้คือจุดที่ขึ้น error unauthorized ของคุณ
     const errText = String(detail.error || "");
     if(errText.toLowerCase().includes("unauthorized")){
       showError("โหลดข้อมูลไม่สำเร็จ: unauthorized: missing/expired token", true);
@@ -1268,6 +1382,7 @@ async function loadOtherUnits(){
   renderMiniMeta(detail);
   renderDescription(detail);
 
+  // ✅ MAP (เวอร์ชันมาตรฐาน)
   setMapSection(pickMapLink(detail));
 
   const thumb = cleanDriveImage(detail.Thumbnail_Image || "");
