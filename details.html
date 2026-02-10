@@ -79,52 +79,55 @@ display:block;
 
 /* =========================================================
 ✅ FIX ONLY: ป้าย Plot (ซ้ายบน) + ตัวเลขจำนวนรูป (ขวาล่าง)
-ให้ "ขนาด/รูปแบบ" ตามภาพตัวอย่าง
+ให้ "ขนาด/ตำแหน่ง" เหมือนรูปตัวอย่าง (มือถือ) เป๊ะ
 ========================================================= */
 .tagTopLeft{
 position:absolute;
-left:24px;
-top:24px;
+/* ✅ ตำแหน่งตามภาพตัวอย่าง */
+left:42px;
+top:50px;
 
-padding:18px 34px;
-border-radius: 999px;
+/* ✅ ขนาดป้ายตามภาพตัวอย่าง */
+padding:34px 50px;
+border-radius:999px;
 
 background: rgba(255,255,255,.92);
-border: 0;
-box-shadow: none;
-backdrop-filter: blur(0);
-
-font-weight:1100;
-font-size:44px;
-line-height:1;
-
-color:#0f172a;
-
-white-space:nowrap;
-overflow:hidden;
-text-overflow:ellipsis;
-max-width: 78%;
-}
-
-.tagBottomRight{
-position:absolute;
-right:24px;
-bottom:24px;
-
-padding:0;
-border-radius:0;
-
-background: transparent;
 border:0;
 box-shadow:none;
 backdrop-filter:none;
 
 font-weight:1100;
-font-size:40px;
+font-size:56px;
 line-height:1;
+color:#0f172a;
 
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+max-width:78%;
+}
+
+.tagBottomRight{
+position:absolute;
+/* ✅ ตำแหน่งตามภาพตัวอย่าง */
+right:28px;
+bottom:28px;
+
+padding:0;
+border-radius:0;
+
+background:transparent;
+border:0;
+box-shadow:none;
+backdrop-filter:none;
+
+font-weight:1100;
+font-size:44px;
+line-height:1;
 color: rgba(255,255,255,1);
-text-shadow: 0 10px 18px rgba(0,0,0,.45);
+
+/* ✅ เงาเบาๆเหมือนในภาพ */
+text-shadow: 0 8px 16px rgba(0,0,0,.38);
 
 user-select:none;
 pointer-events:none;
@@ -197,7 +200,7 @@ text-overflow:ellipsis;
 @media (max-width:420px){
 .price{font-size:24px}
 .statusBelow{font-size:14px; padding:7px 10px;}
-/* ✅ ห้ามย่อ tagTopLeft / tagBottomRight (คงค่าตามภาพ) */
+/* ✅ คงขนาดป้ายตามภาพ (ไม่ย่อ) */
 .miniMeta{font-size:12px;}
 }
 /* ✅ Description box: เอาหัวข้อออก เหลือข้อความอย่างเดียว */
