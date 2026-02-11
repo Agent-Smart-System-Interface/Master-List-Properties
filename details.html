@@ -535,16 +535,17 @@ background: rgba(29,78,216,.10);
 }
 .fbVisitBtn.hidden{ display:none; }
 
-/* ✅ NEW: Quick Link buttons (Open Map + Virtual Tour) ให้เหมือนรูป */
+/* ✅ FIX ONLY: Quick Link buttons ให้เป็นแถบยาวเรียงลงมาเหมือน FB */
 .quickLinks{
 margin-top: 10px;
 display:flex;
-justify-content:center;
-gap:12px;
-flex-wrap:wrap;
+flex-direction:column;       /* ✅ เรียงลงมา */
+align-items:center;
+gap:10px;
 }
 .quickBtn{
-display:inline-flex;
+width:min(640px, 100%);      /* ✅ แถบยาวเหมือน FB */
+display:flex;
 align-items:center;
 justify-content:center;
 gap:10px;
@@ -559,7 +560,9 @@ box-shadow: 0 10px 22px rgba(0,0,0,.10);
 color: rgba(15,23,42,.92);
 user-select:none;
 cursor:pointer;
-min-width: 180px;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
 }
 .quickBtn:active{ transform: scale(.99); }
 .quickIcon{
@@ -580,7 +583,7 @@ background: rgba(29,78,216,.10);
 .quickBtn.hidden{ display:none; }
 
 @media (max-width:420px){
-  .quickBtn{ min-width: 150px; padding:11px 12px; border-radius:16px; font-size:12px; }
+  .quickBtn{ padding:11px 12px; border-radius:16px; font-size:12px; }
   .quickIcon{ width:24px; height:24px; border-radius:11px; }
 }
 
@@ -1077,14 +1080,19 @@ function pickFbLink(detail){
 function setFbVisitBar(link){
   const a = document.getElementById("fbVisitBtn");
   if(!a) return;
+
+  const wrap = a.closest(".fbVisitWrap");   // ✅ NEW: ซ่อนทั้งแถวเมื่อไม่มีข้อมูล
   const href = normalizeLink(link);
+
   if(!href){
     a.classList.add("hidden");
     a.setAttribute("href", "#");
+    if (wrap) wrap.style.display = "none";
     return;
   }
   a.classList.remove("hidden");
   a.setAttribute("href", href);
+  if (wrap) wrap.style.display = "flex";
 }
 
 /** ====== AE: Map_Link ====== */
@@ -1101,7 +1109,7 @@ function buildOpenMapUrl(link){
   const raw = String(link || "").trim();
   if(!raw) return "";
   if (raw.includes("google.com/maps")) return raw;
-  if (raw.startsWith("http")) return raw;
+  if (raw.startsWith("http")) return raw; // maps.app.goo.gl ก็เข้าเงื่อนไขนี้
   return `https://www.google.com/maps?q=${encodeURIComponent(raw)}`;
 }
 
@@ -1116,6 +1124,7 @@ function pickVirtualTour(detail){
   return "";
 }
 function setQuickLinks(mapLink, tourLink){
+  const wrap = document.getElementById("quickLinks"); // ✅ NEW: ซ่อนทั้งกล่องเมื่อไม่มีข้อมูล
   const mapBtn = document.getElementById("openMapBtn");
   const tourBtn = document.getElementById("virtualTourBtn");
 
@@ -1135,6 +1144,11 @@ function setQuickLinks(mapLink, tourLink){
   }else{
     tourBtn.classList.add("hidden");
     tourBtn.href = "#";
+  }
+
+  // ✅ NEW: ถ้าทั้ง Map + Tour ไม่มีค่า ให้ซ่อนทั้งกล่อง
+  if (wrap) {
+    wrap.style.display = (mapHref || tourHref) ? "flex" : "none";
   }
 }
 
@@ -1369,11 +1383,11 @@ async function loadOtherUnits(){
   renderDescription(detail);
 
   renderShareIcons(detail);
-  setFbVisitBar(pickFbLink(detail));
+  setFbVisitBar(pickFbLink(detail)); // ✅ ซ่อนทั้งแถวถ้าไม่มีค่า
 
   const mapLink = pickMapLink(detail);
   const tourLink = pickVirtualTour(detail);
-  setQuickLinks(mapLink, tourLink);
+  setQuickLinks(mapLink, tourLink); // ✅ แสดงเฉพาะปุ่มที่มีค่า + ซ่อนทั้งกล่องถ้าไม่มีทั้งคู่
 
   const thumb = cleanDriveImage(detail.Thumbnail_Image || "");
   const list = String(detail.Image_List || "")
