@@ -525,7 +525,7 @@
       const plotVal = $("plotSelect").value;
       const sortVal = $("sortSelect").value;
 
-      // ✅ สำคัญ: เริ่มจากรายการ Live เท่านั้น
+      // ✅ สำคัญ: เริ่มจากรายการ Live เท่านั้น (รองรับทั้ง sysStatus / System_Status)
       const liveOnly = all.filter(x => isLiveSysStatus(x.sysStatus));
 
       filtered = liveOnly.filter(x=>{
@@ -664,7 +664,7 @@
       try{
         const data = await fetchUnitList();
 
-        // ✅ สำคัญ: เก็บ sysStatus จาก API (ของเดิมไม่ได้เอามาใช้)
+        // ✅ สำคัญ: รองรับ key จาก GS ที่ส่งทั้ง sysStatus + System_Status
         all = data.map(x=>({
           id: x.id || "",
           plot: x.plot || "",
@@ -672,13 +672,13 @@
           thumbnail: x.thumbnail || "",
           bedrooms: x.bedrooms || "",
           bathrooms: x.bathrooms || "",
-          livingSqm: x.livingSqm || x.living_area_sq_m || "",
+          livingSqm: x.livingSqm || x.Living_Area_sq_m || x.living_area_sq_m || "",
           price: x.price || "",
           status: x.status || "",
-          sysStatus: x.sysStatus || x.system_status || ""   // ✅ NEW
+          sysStatus: x.sysStatus || x.System_Status || x.system_status || ""
         }));
 
-        // ✅ ทำชื่อโครงการจากรายการ Live เท่านั้น (กัน Pending/Offline ทำให้ชื่อเพี้ยน)
+        // ✅ ทำชื่อโครงการจากรายการ Live เท่านั้น
         const liveOnly = all.filter(x => isLiveSysStatus(x.sysStatus));
 
         $("masterVill").textContent = pickMasterVillName(liveOnly) || "Master Vill";
