@@ -39,6 +39,8 @@ border: 1px solid var(--line);
 width:44px; height:44px; border-radius:999px; background:rgba(255,255,255,.55);
 display:grid; place-items:center; font-weight:800;
 flex:0 0 auto;
+
+/* ✅ FIX ONLY: ทำให้คลิกได้แบบลิงก์ และไม่เปลี่ยนสไตล์เดิม */
 text-decoration:none;
 color: inherit;
 }
@@ -72,57 +74,128 @@ box-shadow: var(--shadow);
 overflow:hidden;
 }
 /* Gallery */
-.gallery{ position:relative; background:#dfe9f6; }
-.mainSlide{ width:100%; aspect-ratio: 16/10; object-fit:cover; display:block; }
+.gallery{
+position:relative;
+background:#dfe9f6;
+}
+.mainSlide{
+width:100%;
+aspect-ratio: 16/10;
+object-fit:cover;
+display:block;
+}
 .tagTopLeft{
-position:absolute; left:24px; top:24px;
-padding:16px 30px; border-radius:999px;
+position:absolute;
+left:24px;
+top:24px;
+padding:16px 30px;
+border-radius:999px;
 background: rgba(255,255,255,.92);
-border:0; box-shadow:none; backdrop-filter:none;
-font-weight:1100; font-size:42px; line-height:1; color:#0f172a;
-white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:78%;
+border:0;
+box-shadow:none;
+backdrop-filter:none;
+font-weight:1100;
+font-size:42px;
+line-height:1;
+color:#0f172a;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+max-width:78%;
 }
 .tagBottomRight{
-position:absolute; right:24px; bottom:22px;
-padding:0; border-radius:0; background:transparent;
-border:0; box-shadow:none; backdrop-filter:none;
-font-weight:1100; font-size:36px; line-height:1;
+position:absolute;
+right:24px;
+bottom:22px;
+padding:0;
+border-radius:0;
+background:transparent;
+border:0;
+box-shadow:none;
+backdrop-filter:none;
+font-weight:1100;
+font-size:36px;
+line-height:1;
 color: rgba(255,255,255,1);
 text-shadow: 0 8px 16px rgba(0,0,0,.38);
-user-select:none; pointer-events:none;
+user-select:none;
+pointer-events:none;
 }
 @media (max-width: 520px){
-  .tagTopLeft{ left:18px; top:18px; padding:6px 11px; font-size:17px; }
-  .tagBottomRight{ right:18px; bottom:18px; font-size:12px; text-shadow: 0 10px 18px rgba(0,0,0,.40); }
+  .tagTopLeft{
+    left:18px;
+    top:18px;
+    padding:6px 11px;
+    font-size:17px;
+  }
+  .tagBottomRight{
+    right:18px;
+    bottom:18px;
+    font-size:12px;
+    text-shadow: 0 10px 18px rgba(0,0,0,.40);
+  }
 }
 .thumbStrip{
 background: rgba(255,255,255,.78);
-padding:10px; display:flex; gap:10px; overflow:auto; scroll-snap-type: x mandatory;
+padding:10px;
+display:flex;
+gap:10px;
+overflow:auto;
+scroll-snap-type: x mandatory;
 }
 .thumb{
-width:92px; height:64px; flex:0 0 auto; border-radius: 16px;
-object-fit:cover; border:3px solid transparent; cursor:pointer;
-scroll-snap-align: start; background:#e8f0fb;
+width:92px; height:64px;
+flex:0 0 auto;
+border-radius: 16px;
+object-fit:cover;
+border:3px solid transparent;
+cursor:pointer;
+scroll-snap-align: start;
+background:#e8f0fb;
 }
 .thumb.active{border-color:#0f172a;}
 .content{padding:14px;}
-.headRow{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:nowrap;}
+.headRow{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+flex-wrap:nowrap;
+}
 .hp{display:none;}
-.price{font-size:28px; font-weight:1100; letter-spacing:.2px; white-space:nowrap; flex:1 1 auto; min-width:0;}
+.price{
+font-size:28px;
+font-weight:1100;
+letter-spacing:.2px;
+white-space:nowrap;
+flex:1 1 auto;
+min-width:0;
+}
 .statusBelow{
-display:inline-flex; align-items:center; justify-content:center;
-padding:8px 12px; border-radius: 12px;
-font-weight:1100; font-size:16px; line-height:1;
+display:inline-flex;
+align-items:center;
+justify-content:center;
+padding:8px 12px;
+border-radius: 12px;
+font-weight:1100;
+font-size:16px;
+line-height:1;
 background: rgba(255,255,255,.92);
 border: 2px solid rgba(16,185,129,.55);
 color: rgba(5,150,105,1);
 box-shadow: 0 10px 20px rgba(0,0,0,.10);
-white-space:nowrap; flex:0 0 auto;
+white-space:nowrap;
+flex:0 0 auto;
 }
 .miniMeta{
-margin-top:6px; font-size:13px; font-weight:900;
-color: rgba(15,23,42,.55); letter-spacing:.2px;
-white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+margin-top:6px;
+font-size:13px;
+font-weight:900;
+color: rgba(15,23,42,.55);
+letter-spacing:.2px;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
 }
 @media (max-width:420px){
 price{font-size:24px}
@@ -137,9 +210,26 @@ border-radius: 18px;
 box-shadow: 0 10px 22px rgba(0,0,0,.08);
 padding:12px 12px;
 }
-.descText{font-weight:950; color: rgba(15,23,42,.92); line-height:1.45; white-space:pre-wrap; word-break:break-word;}
-.gridInfo{margin-top:14px; display:grid; grid-template-columns: 1fr; gap:10px;}
-@media(min-width:900px){ .gridInfo{grid-template-columns: repeat(3, 1fr);} }
+.descText{
+font-weight:950;
+color: rgba(15,23,42,.92);
+line-height:1.45;
+white-space:pre-wrap;
+word-break:break-word;
+}
+.descEmpty{
+color: rgba(15,23,42,.55);
+font-weight:900;
+}
+.gridInfo{
+margin-top:14px;
+display:grid;
+grid-template-columns: 1fr;
+gap:10px;
+}
+@media(min-width:900px){
+.gridInfo{grid-template-columns: repeat(3, 1fr);}
+}
 .infoBox{
 background: rgba(15,23,42,.05);
 border:1px solid rgba(15,23,42,.06);
@@ -165,154 +255,387 @@ background: linear-gradient(90deg, rgba(255,255,255,.55), rgba(255,255,255,.25),
 background-size: 200% 100%;
 animation: shimmer 1.2s infinite linear;
 }
-@keyframes shimmer{0%{background-position: 200% 0;}100%{background-position: -200% 0;}}
+@keyframes shimmer{
+0%{background-position: 200% 0;}
+100%{background-position: -200% 0;}
+}
 .pageLoader{
-position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+position:fixed;
+inset:0;
+display:flex;
+align-items:center;
+justify-content:center;
 background: radial-gradient(ellipse at top, rgba(255,255,255,.25), rgba(255,255,255,0) 55%) , var(--bg);
 z-index:99999;
 }
 .loaderPanel{
-text-align:center; padding:18px 22px; border-radius: 26px;
-background: rgba(255,255,255,.18); border: 1px solid var(--line);
+text-align:center;
+padding:18px 22px;
+border-radius: 26px;
+background: rgba(255,255,255,.18);
+border: 1px solid var(--line);
 backdrop-filter: blur(10px);
 box-shadow: 0 18px 40px rgba(0,0,0,.16);
 max-width: 92vw;
 }
-.loaderEmojis{display:flex; gap:18px; justify-content:center; align-items:center; font-size:52px; line-height:1; filter: drop-shadow(0 10px 20px rgba(0,0,0,.18));}
-.loaderEmojis span{display:inline-block; animation: bounce 0.9s ease-in-out infinite;}
+.loaderEmojis{
+display:flex;
+gap:18px;
+justify-content:center;
+align-items:center;
+font-size:52px;
+line-height:1;
+filter: drop-shadow(0 10px 20px rgba(0,0,0,.18));
+}
+.loaderEmojis span{
+display:inline-block;
+animation: bounce 0.9s ease-in-out infinite;
+}
 .loaderEmojis span:nth-child(2){ animation-delay: .12s; }
 .loaderEmojis span:nth-child(3){ animation-delay: .24s; }
-@keyframes bounce{0%,100%{ transform: translateY(0); opacity:.95; }50%{ transform: translateY(-12px); opacity:1; }}
-.loaderText{margin-top:12px; font-weight:1100; letter-spacing:.6px; color: rgba(15,23,42,.92); text-shadow: 0 10px 22px rgba(0,0,0,.10); font-size:22px; white-space:nowrap;}
-@media (max-width:420px){.loaderEmojis{font-size:44px}.loaderText{font-size:18px}}
+@keyframes bounce{
+0%,100%{ transform: translateY(0); opacity:.95; }
+50%{ transform: translateY(-12px); opacity:1; }
+}
+.loaderText{
+margin-top:12px;
+font-weight:1100;
+letter-spacing:.6px;
+color: rgba(15,23,42,.92);
+text-shadow: 0 10px 22px rgba(0,0,0,.10);
+font-size:22px;
+white-space:nowrap;
+}
+@media (max-width:420px){
+.loaderEmojis{font-size:44px}
+.loaderText{font-size:18px}
+}
 .navArrow{
-position:absolute; top:50%; transform: translateY(-50%);
-width:54px; height:54px; border-radius: 999px;
+position:absolute;
+top:50%;
+transform: translateY(-50%);
+width:54px;
+height:54px;
+border-radius: 999px;
 border:1px solid rgba(255,255,255,.55);
 background: rgba(255,255,255,.22);
 backdrop-filter: blur(8px);
 box-shadow: 0 10px 22px rgba(0,0,0,.14);
-display:grid; place-items:center;
-cursor:pointer; user-select:none;
+display:grid;
+place-items:center;
+cursor:pointer;
+user-select:none;
 z-index:5;
 }
 .navArrow:active{ transform: translateY(-50%) scale(.98); }
-.navArrow svg{width:24px;height:24px;stroke: rgba(255,255,255,.95);opacity:.95;}
+.navArrow svg{
+width:24px;height:24px;
+stroke: rgba(255,255,255,.95);
+opacity:.95;
+}
 .navLeft{ left:14px; }
 .navRight{ right:14px; }
-@media (max-width:420px){.navArrow{ width:48px;height:48px; }.navArrow svg{ width:22px;height:22px; }}
-
+@media (max-width:420px){
+.navArrow{ width:48px;height:48px; }
+.navArrow svg{ width:22px;height:22px; }
+}
 .otherSection{
-margin-top:14px; padding:14px; border-radius: 18px;
+margin-top:14px;
+padding:14px;
+border-radius: 18px;
 background: rgba(255,255,255,.65);
 border: 1px solid rgba(255,255,255,.65);
 }
-.otherTitle{font-weight:1100; letter-spacing:.3px; color: rgba(15,23,42,.88); display:flex; align-items:center; justify-content:space-between; gap:10px;}
-.otherHint{font-weight:900; color: rgba(15,23,42,.55); font-size:12px; white-space:nowrap;}
-.otherGrid{margin-top:12px; display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap:12px;}
+.otherTitle{
+font-weight:1100;
+letter-spacing:.3px;
+color: rgba(15,23,42,.88);
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+}
+.otherHint{
+font-weight:900;
+color: rgba(15,23,42,.55);
+font-size:12px;
+white-space:nowrap;
+}
+.otherGrid{
+margin-top:12px;
+display:grid;
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap:12px;
+}
 .otherCard{
-border-radius: 18px; background: rgba(255,255,255,.92);
+border-radius: 18px;
+background: rgba(255,255,255,.92);
 border: 1px solid rgba(15,23,42,.06);
 box-shadow: 0 10px 22px rgba(0,0,0,.08);
-overflow:hidden; cursor:pointer; user-select:none;
+overflow:hidden;
+cursor:pointer;
+user-select:none;
 transition: transform .12s ease;
 }
 .otherCard:active{ transform: scale(.985); }
-.otherImg{width:100%; aspect-ratio: 16/10; object-fit:cover; display:block; background:#e8f0fb;}
-.otherBody{padding:10px 10px 12px; display:flex; flex-direction:column; gap:6px;}
-.otherTopRow{display:flex; align-items:flex-start; justify-content:space-between; gap:8px; flex-wrap:wrap;}
-.otherPlot{font-weight:1100; font-size:13px; color: rgba(15,23,42,.95); white-space:normal; overflow:visible; text-overflow:clip; flex:1 1 auto; min-width:0;}
-.otherStatus{padding:5px 8px; border-radius: 999px; font-weight:1100; font-size:11px; background: rgba(255,255,255,.92); border: 2px solid rgba(15,23,42,.15); color: rgba(15,23,42,.88); white-space:nowrap; flex:0 0 auto;}
-.otherPrice{font-weight:1100; font-size:16px; color: rgba(15,23,42,.92); white-space:nowrap;}
-.otherId{font-weight:600; font-size:11px; letter-spacing:-0.2px; color: rgba(15,23,42,.55); white-space:nowrap; overflow:hidden; text-overflow:clip;}
-@media (max-width: 420px) {.otherId { font-size: 9.5px; }}
+.otherImg{
+width:100%;
+aspect-ratio: 16/10;
+object-fit:cover;
+display:block;
+background:#e8f0fb;
+}
+.otherBody{
+padding:10px 10px 12px;
+display:flex;
+flex-direction:column;
+gap:6px;
+}
+.otherTopRow{
+display:flex;
+align-items:flex-start;
+justify-content:space-between;
+gap:8px;
+flex-wrap:wrap;
+}
+.otherPlot{
+font-weight:1100;
+font-size:13px;
+color: rgba(15,23,42,.95);
+white-space:normal;
+overflow:visible;
+text-overflow:clip;
+flex:1 1 auto;
+min-width:0;
+}
+.otherStatus{
+padding:5px 8px;
+border-radius: 999px;
+font-weight:1100;
+font-size:11px;
+background: rgba(255,255,255,.92);
+border: 2px solid rgba(15,23,42,.15);
+color: rgba(15,23,42,.88);
+white-space:nowrap;
+flex:0 0 auto;
+}
+.otherPrice{
+font-weight:1100;
+font-size:16px;
+color: rgba(15,23,42,.92);
+white-space:nowrap;
+}
+.otherId{
+font-weight:600;
+font-size:11px;
+letter-spacing:-0.2px;
+color: rgba(15,23,42,.55);
+white-space:nowrap;
+overflow:hidden;
+text-overflow:clip;
+}
+@media (max-width: 420px) {
+.otherId { font-size: 9.5px; }
+}
 
 /* ====== SHARE SECTION (ของเดิมคุณ) ====== */
-.shareSection{margin-top:14px; padding:14px; border-radius: 18px; background: rgba(255,255,255,.65); border: 1px solid rgba(255,255,255,.65);}
-.shareTopIcon{display:flex; justify-content:center; align-items:center; padding:8px 0 10px; opacity:.85;}
+.shareSection{
+margin-top:14px;
+padding:14px;
+border-radius: 18px;
+background: rgba(255,255,255,.65);
+border: 1px solid rgba(255,255,255,.65);
+}
+.shareTopIcon{
+display:flex;
+justify-content:center;
+align-items:center;
+padding:8px 0 10px;
+opacity:.85;
+}
 .shareRow{
-display:flex; gap:14px; justify-content:center; overflow:auto;
-padding:10px 8px 6px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+display:flex;
+gap:14px;
+justify-content:center;
+overflow:auto;
+padding:10px 8px 6px;
+scroll-snap-type: x mandatory;
+-webkit-overflow-scrolling: touch;
+
+/* ✅ เพิ่ม: ให้ดูเนียนเหมือนรูป (ซ่อน scrollbar) */
 scrollbar-width: none;
 }
 .shareRow::-webkit-scrollbar{ display:none; }
-.shareBtn{flex:0 0 auto; width:58px; scroll-snap-align:center; border:0; background:transparent; cursor:pointer; text-align:center; user-select:none;}
+
+.shareBtn{
+flex:0 0 auto;
+width:58px;
+scroll-snap-align:center;
+border:0;
+background:transparent;
+cursor:pointer;
+text-align:center;
+user-select:none;
+}
 .shareCircle{
-width:52px; height:52px; border-radius:999px;
+width:52px; height:52px;
+border-radius:999px;
 background: rgba(255,255,255,.9);
 border: 1px solid rgba(15,23,42,.08);
 box-shadow: 0 10px 22px rgba(0,0,0,.10);
-display:grid; place-items:center; margin:0 auto;
+display:grid;
+place-items:center;
+margin:0 auto;
 }
-.shareLbl{margin-top:6px; font-size:11px; font-weight:900; color: rgba(15,23,42,.65); white-space:nowrap;}
+.shareLbl{
+margin-top:6px;
+font-size:11px;
+font-weight:900;
+color: rgba(15,23,42,.65);
+white-space:nowrap;
+}
 .shareBtn:active .shareCircle{ transform: scale(.97); }
 #shareCanvas{ display:none; }
 
 /* ====== FB VISIT (ของเดิมคุณ) ====== */
-.fbVisitWrap{margin-top: 10px; display:flex; justify-content:center;}
+.fbVisitWrap{
+margin-top: 10px;
+display:flex;
+justify-content:center;
+}
 .fbVisitBtn{
 width:min(640px, 100%);
-display:flex; align-items:center; justify-content:center; gap:10px;
-padding: 12px 14px; border-radius: 18px; text-decoration:none;
-font-weight:1100; letter-spacing:.2px;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+padding: 12px 14px;
+border-radius: 18px;
+text-decoration:none;
+font-weight:1100;
+letter-spacing:.2px;
 background: rgba(255,255,255,.90);
 border: 2px solid rgba(59,130,246,.55);
 box-shadow: 0 10px 22px rgba(0,0,0,.10);
 color:#1d4ed8;
-user-select:none; cursor:pointer;
-white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+user-select:none;
+cursor:pointer;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
 }
 .fbVisitBtn:active{ transform: scale(.99); }
-.fbVisitIcon{width:28px; height:28px; border-radius: 12px; display:grid; place-items:center; flex:0 0 auto; background: rgba(29,78,216,.10);}
+.fbVisitIcon{
+width:28px; height:28px;
+border-radius: 12px;
+display:grid;
+place-items:center;
+flex:0 0 auto;
+background: rgba(29,78,216,.10);
+}
 .fbVisitBtn.hidden{ display:none; }
 
-/* Quick Link buttons */
-.quickLinks{margin-top: 10px; display:flex; justify-content:center; gap:12px; flex-wrap:wrap;}
+/* ✅ NEW: Quick Link buttons (Open Map + Virtual Tour) ให้เหมือนรูป */
+.quickLinks{
+margin-top: 10px;
+display:flex;
+justify-content:center;
+gap:12px;
+flex-wrap:wrap;
+}
 .quickBtn{
-display:inline-flex; align-items:center; justify-content:center; gap:10px;
-padding: 12px 14px; border-radius: 18px; text-decoration:none;
-font-weight:1100; letter-spacing:.2px;
+display:inline-flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+padding: 12px 14px;
+border-radius: 18px;
+text-decoration:none;
+font-weight:1100;
+letter-spacing:.2px;
 background: rgba(255,255,255,.90);
 border: 2px solid rgba(15,23,42,.12);
 box-shadow: 0 10px 22px rgba(0,0,0,.10);
 color: rgba(15,23,42,.92);
-user-select:none; cursor:pointer;
+user-select:none;
+cursor:pointer;
 min-width: 180px;
 }
 .quickBtn:active{ transform: scale(.99); }
-.quickIcon{width:28px; height:28px; border-radius: 12px; display:grid; place-items:center; flex:0 0 auto; background: rgba(15,23,42,.08);}
-.quickBtnPrimary{border-color: rgba(59,130,246,.45); color:#1d4ed8;}
-.quickBtnPrimary .quickIcon{background: rgba(29,78,216,.10);}
+.quickIcon{
+width:28px; height:28px;
+border-radius: 12px;
+display:grid;
+place-items:center;
+flex:0 0 auto;
+background: rgba(15,23,42,.08);
+}
+.quickBtnPrimary{
+border-color: rgba(59,130,246,.45);
+color:#1d4ed8;
+}
+.quickBtnPrimary .quickIcon{
+background: rgba(29,78,216,.10);
+}
 .quickBtn.hidden{ display:none; }
+
 @media (max-width:420px){
   .quickBtn{ min-width: 150px; padding:11px 12px; border-radius:16px; font-size:12px; }
   .quickIcon{ width:24px; height:24px; border-radius:11px; }
 }
 
-/* Bottom dock */
+/* ====== Bottom dock (ของเดิมคุณ) ====== */
 .wrap{ padding-bottom: 92px; }
 .bottomDock{
-position:fixed; left:0; right:0; bottom:0; z-index:9999;
+position:fixed;
+left:0; right:0; bottom:0;
+z-index:9999;
 padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
 background: rgba(255,255,255,.40);
 backdrop-filter: blur(14px);
 border-top: 1px solid rgba(255,255,255,.55);
 }
-.dockInner{max-width:1100px; margin:0 auto; display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:10px;}
+.dockInner{
+max-width:1100px;
+margin:0 auto;
+display:grid;
+grid-template-columns: repeat(3, minmax(0, 1fr));
+gap:10px;
+}
 .dockBtn{
-display:flex; align-items:center; justify-content:center; gap:8px;
-padding: 12px 10px; border-radius: 18px; text-decoration:none;
-font-weight: 1100; letter-spacing:.2px;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+padding: 12px 10px;
+border-radius: 18px;
+text-decoration:none;
+font-weight: 1100;
+letter-spacing:.2px;
 background: rgba(255,255,255,.78);
 border: 1px solid rgba(15,23,42,.10);
 box-shadow: 0 10px 22px rgba(0,0,0,.10);
 color: rgba(15,23,42,.92);
-user-select:none; cursor:pointer;
-white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+user-select:none;
+cursor:pointer;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
 }
 .dockBtn:active{ transform: scale(.99); }
-.dockIcon{width:26px; height:26px; border-radius: 12px; display:grid; place-items:center; font-size:14px; flex:0 0 auto; background: rgba(15,23,42,.08);}
-.dockBtn.disabled{opacity:.42; pointer-events:none;}
+.dockIcon{
+width:26px; height:26px;
+border-radius: 12px;
+display:grid;
+place-items:center;
+font-size:14px;
+flex:0 0 auto;
+background: rgba(15,23,42,.08);
+}
+.dockBtn.disabled{
+opacity:.42;
+pointer-events:none;
+}
 @media (max-width:420px){
 .dockBtn{ padding:11px 8px; border-radius:16px; font-size:12px; }
 .dockIcon{ width:24px; height:24px; border-radius:11px; }
@@ -384,6 +707,7 @@ white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 
       <div class="gridInfo" id="infoGrid"></div>
 
+      <!-- ====== SHARE / LINKS ====== -->
       <div class="shareSection" id="shareSection">
         <div class="shareTopIcon" aria-hidden="true" title="Share">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -434,6 +758,7 @@ white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 
         <canvas id="shareCanvas" width="1200" height="630"></canvas>
       </div>
+      <!-- ====== END SHARE / LINKS ====== -->
 
       <div class="otherSection" id="otherSection">
         <div class="otherTitle">
@@ -450,13 +775,16 @@ white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 <div class="bottomDock" id="bottomDock" aria-label="Downloads">
   <div class="dockInner">
     <a class="dockBtn disabled" id="dockSales" href="#" target="_blank" rel="noopener">
-      <span class="dockIcon">📄</span><span>Sales PDF</span>
+      <span class="dockIcon">📄</span>
+      <span>Sales PDF</span>
     </a>
     <a class="dockBtn disabled" id="dockMaterial" href="#" target="_blank" rel="noopener">
-      <span class="dockIcon">📄</span><span>Material PDF</span>
+      <span class="dockIcon">📄</span>
+      <span>Material PDF</span>
     </a>
     <a class="dockBtn disabled" id="dockFloorplan" href="#" target="_blank" rel="noopener">
-      <span class="dockIcon">📄</span><span>Floor Plan</span>
+      <span class="dockIcon">📄</span>
+      <span>Floor Plan</span>
     </a>
   </div>
 </div>
@@ -465,21 +793,54 @@ white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 /** =========================
 * CONFIG
 * ========================= */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxc76n6YKLUCCHZZR12c5K4_0k40gHa2ZzDMVZn29BElQlSO3X6O8B7dFIFi0bEukqJ/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyNPiuM1Rz70r6E38eRLQoQXIrNUTKsQsqVRLU2tOmwO9K9HfBBnO-7-I9fn6UlTZWk/exec";
 const qs = new URLSearchParams(location.search);
-const hpId = (qs.get("id") || qs.get("hpId") || "").trim();
-const project = (qs.get("project") || "HP00").trim();
+const hpId = qs.get("id") || qs.get("hpId") || "";
+const project = qs.get("project") || "HP00";
 
-/** ✅ Home link back to index (public) */
+/** ✅ TOKEN handling (ยังคงไว้สำหรับ Admin ที่เปิดมาด้วย token) */
+const TOKEN_QS = (qs.get("token") || "").trim();
+const TOKEN_LS = (localStorage.getItem("HP_AUTH_TOKEN") || "").trim();
+let token = TOKEN_QS || TOKEN_LS;
+
+/** ✅ ถ้ามี token ใน URL ให้เก็บลง localStorage เพื่อหน้าอื่นใช้ */
+if (TOKEN_QS) {
+  localStorage.setItem("HP_AUTH_TOKEN", TOKEN_QS);
+}
+
+/** ✅ helper ไปหน้า gateway เพื่อ login (ยังคงไว้ เผื่อ Admin) */
+function goGateway(reason){
+  try{
+    if (reason) console.warn("[AUTH]", reason);
+    const back = encodeURIComponent(location.pathname + location.search);
+    location.href = `gateway.html?project=${encodeURIComponent(project)}&back=${back}`;
+  }catch(e){
+    location.href = `gateway.html?project=${encodeURIComponent(project)}`;
+  }
+}
+
+function clearToken(){
+  try{ localStorage.removeItem("HP_AUTH_TOKEN"); }catch(e){}
+  token = "";
+}
+
+/** ✅ FIX ONLY: ให้ไอคอน Home ลิงก์กลับ index พร้อม project + token (ถ้ามี) */
 (function setHomeLink(){
   const a = document.getElementById("homeLink");
   if(!a) return;
-  a.href = `index.html?project=${encodeURIComponent(project)}`;
+  const t = token ? `&token=${encodeURIComponent(token)}` : "";
+  a.href = `index.html?project=${encodeURIComponent(project)}${t}`;
 })();
 
 /** Loader helpers */
-function showLoader(){ const el = document.getElementById("pageLoader"); if(el) el.style.display = "flex"; }
-function hideLoader(){ const el = document.getElementById("pageLoader"); if(el) el.style.display = "none"; }
+function showLoader(){
+  const el = document.getElementById("pageLoader");
+  if(el) el.style.display = "flex";
+}
+function hideLoader(){
+  const el = document.getElementById("pageLoader");
+  if(el) el.style.display = "none";
+}
 
 /** JSONP */
 function jsonp(url, timeoutMs = 20000){
@@ -496,16 +857,37 @@ function jsonp(url, timeoutMs = 20000){
 
     const sep = url.includes("?") ? "&" : "?";
     script.src = url + sep + "callback=" + encodeURIComponent(cb) + "&t=" + Date.now();
+
     script.onerror = () => { cleanup(); reject(new Error("jsonp_error")); };
     document.body.appendChild(script);
   });
 }
 
-function showError(msg){
+function showError(msg, showLoginBtn = false){
   const box = document.getElementById("errBox");
   box.style.display = "block";
-  box.textContent = msg;
+  box.innerHTML = "";
+
+  const p = document.createElement("div");
+  p.textContent = msg;
+  box.appendChild(p);
+
+  if (showLoginBtn){
+    const btn = document.createElement("button");
+    btn.textContent = "ไปล็อกอินใหม่";
+    btn.style.marginTop = "10px";
+    btn.style.padding = "10px 12px";
+    btn.style.borderRadius = "14px";
+    btn.style.border = "0";
+    btn.style.cursor = "pointer";
+    btn.style.fontWeight = "900";
+    btn.style.background = "rgba(15,23,42,.9)";
+    btn.style.color = "#fff";
+    btn.onclick = () => goGateway("manual login");
+    box.appendChild(btn);
+  }
 }
+
 function hideError(){
   const box = document.getElementById("errBox");
   box.style.display = "none";
@@ -521,6 +903,7 @@ function moneyTHB(x){
   const n = toNumber(x);
   return "฿" + n.toLocaleString("en-US");
 }
+
 function cleanDriveImage(url){
   const u = String(url || "").trim();
   if(!u) return "";
@@ -535,6 +918,7 @@ function cleanDriveImage(url){
   if (id) return "https://lh3.googleusercontent.com/d/" + id;
   return u;
 }
+
 function statusStyle(statusRaw){
   const s = String(statusRaw||"").trim().toLowerCase();
   if (s.includes("available")) return {border:"rgba(16,185,129,.65)", text:"rgba(5,150,105,1)"};
@@ -545,11 +929,13 @@ function statusStyle(statusRaw){
 }
 
 document.getElementById("btnBack").addEventListener("click", () => {
-  history.length > 1 ? history.back() : (location.href = `index.html?project=${encodeURIComponent(project)}`);
+  const t = token ? `&token=${encodeURIComponent(token)}` : "";
+  history.length > 1 ? history.back() : (location.href = `index.html?project=${encodeURIComponent(project)}${t}`);
 });
 
 let images = [];
 let idx = 0;
+let CURRENT_DETAIL = null;
 
 function setMain(i){
   idx = Math.max(0, Math.min(i, images.length-1));
@@ -559,6 +945,7 @@ function setMain(i){
   document.getElementById("tagCount").textContent = `${idx+1} / ${images.length || 0}`;
   document.querySelectorAll(".thumb").forEach((t, k)=> t.classList.toggle("active", k===idx));
 }
+
 function renderThumbs(){
   const strip = document.getElementById("thumbStrip");
   strip.innerHTML = "";
@@ -572,6 +959,7 @@ function renderThumbs(){
     strip.appendChild(im);
   });
 }
+
 function enableSwipe(){
   const gallery = document.getElementById("gallery");
   let startX = 0, dx = 0;
@@ -620,6 +1008,7 @@ function renderDescription(detail){
   }
   box.style.display = "block";
   el.textContent = desc;
+  el.classList.remove("descEmpty");
 }
 function renderMiniMeta(detail){
   const landM = fmtSqm(pick(detail, LAND_SQM_KEYS));
@@ -628,6 +1017,7 @@ function renderMiniMeta(detail){
   if(!el) return;
   el.textContent = `Land ${landM} · Living ${livingM}`;
 }
+
 function renderInfo(detail){
   const grid = document.getElementById("infoGrid");
   const items = [
@@ -656,6 +1046,7 @@ function renderInfo(detail){
     grid.appendChild(box);
   }
 }
+
 function normalizeLink(v){
   const s = String(v ?? "").trim();
   return s && s !== "-" ? s : "";
@@ -672,6 +1063,8 @@ function setDockLink(elId, link){
   el.classList.remove("disabled");
   el.setAttribute("href", href);
 }
+
+/** ====== AD: FB_Link ====== */
 function pickFbLink(detail){
   const keys = ["FB_Link","FBLink","FB_LINK","facebook","Facebook","FB"];
   for(const k of keys){
@@ -693,6 +1086,8 @@ function setFbVisitBar(link){
   a.classList.remove("hidden");
   a.setAttribute("href", href);
 }
+
+/** ====== AE: Map_Link ====== */
 function pickMapLink(detail){
   const keys = ["Map_Link","MapLink","GoogleMap","Google_Maps","Map","Location","Location_Link"];
   for(const k of keys){
@@ -709,6 +1104,8 @@ function buildOpenMapUrl(link){
   if (raw.startsWith("http")) return raw;
   return `https://www.google.com/maps?q=${encodeURIComponent(raw)}`;
 }
+
+/** ====== AF: Virtual_Tour ====== */
 function pickVirtualTour(detail){
   const keys = ["Virtual_Tour","VirtualTour","Virtual_TOUR","VirtualTour_Link","Virtual","Tour","VR_Link","Virtual_Link"];
   for(const k of keys){
@@ -741,19 +1138,24 @@ function setQuickLinks(mapLink, tourLink){
   }
 }
 
-/** SHARE icons */
+/** =========================
+* SHARE
+* ========================= */
 function getPublicShareUrl(){
   const u = new URL(location.href);
+  u.searchParams.delete("token");
   if (hpId) u.searchParams.set("id", hpId);
   if (project) u.searchParams.set("project", project);
   return u.toString();
 }
+
 function openPopup(url){
   const w = 640, h = 640;
   const left = (screen.width - w) / 2;
   const top = (screen.height - h) / 2;
   window.open(url, "_blank", `noopener,noreferrer,width=${w},height=${h},left=${left},top=${top}`);
 }
+
 async function copyToClipboard(text){
   try{
     await navigator.clipboard.writeText(text);
@@ -770,6 +1172,7 @@ async function copyToClipboard(text){
     return true;
   }
 }
+
 function renderShareIcons(detail){
   const row = document.getElementById("shareRow");
   if(!row) return;
@@ -782,7 +1185,9 @@ function renderShareIcons(detail){
 
   const ICONS = {
     fb: `<svg width="22" height="22" viewBox="0 0 24 24" fill="#1877F2" aria-hidden="true"><path d="M22 12.06C22 6.504 17.523 2 12 2S2 6.504 2 12.06C2 17.082 5.657 21.245 10.438 22v-7.03H7.898v-2.91h2.54V9.845c0-2.522 1.492-3.916 3.777-3.916 1.094 0 2.238.196 2.238.196v2.475h-1.26c-1.243 0-1.63.776-1.63 1.57v1.89h2.773l-.443 2.91h-2.33V22C18.343 21.245 22 17.082 22 12.06z"/></svg>`,
+    msg: `<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00C6FF"/><stop offset="1" stop-color="#A100FF"/></linearGradient></defs><path fill="url(#g)" d="M12 2C6.477 2 2 6.078 2 11.111c0 2.867 1.455 5.423 3.73 7.087V22l3.59-1.97c.84.23 1.727.36 2.68.36 5.523 0 10-4.078 10-9.279C22 6.078 17.523 2 12 2z"/><path fill="#fff" d="M6.9 14.6l3.9-4.1 2.6 2.2 3.7-2.2-3.9 4.1-2.6-2.2-3.7 2.2z"/></svg>`,
     wa: `<svg width="22" height="22" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true"><path d="M12.05 2C6.57 2 2.13 6.35 2.13 11.72c0 1.7.46 3.36 1.35 4.82L2 22l5.62-1.43c1.41.76 3.01 1.16 4.67 1.16 5.48 0 9.92-4.35 9.92-9.72S17.53 2 12.05 2zm0 17.76c-1.5 0-2.96-.42-4.22-1.2l-.3-.18-3.34.85.9-3.19-.2-.32a7.54 7.54 0 0 1-1.2-4c0-4.16 3.45-7.55 7.56-7.55 4.17 0 7.56 3.39 7.56 7.55 0 4.16-3.39 7.55-7.56 7.55z"/><path fill="#25D366" d="M9.23 7.98c-.17-.38-.35-.39-.51-.4l-.44-.01c-.15 0-.39.06-.6.28-.2.22-.78.76-.78 1.85 0 1.09.8 2.15.92 2.3.11.14 1.55 2.45 3.8 3.34 1.86.74 2.25.59 2.65.55.4-.04 1.29-.54 1.47-1.06.18-.52.18-.97.13-1.06-.05-.09-.2-.14-.42-.25-.22-.11-1.29-.66-1.49-.73-.2-.07-.35-.11-.5.11-.15.22-.58.73-.71.88-.13.15-.26.17-.48.06-.22-.11-.92-.35-1.76-1.12-.65-.58-1.1-1.3-1.23-1.52-.13-.22-.01-.34.1-.45.1-.1.22-.26.33-.39.11-.13.15-.22.22-.36.07-.15.04-.28-.01-.39-.06-.11-.5-1.25-.69-1.7z"/></svg>`,
+    tg: `<svg width="22" height="22" viewBox="0 0 24 24" fill="#2AABEE" aria-hidden="true"><path d="M9.7 15.6l-.4 5.6c.6 0 .9-.3 1.2-.6l2.9-2.8 6 4.4c1.1.6 1.9.3 2.2-1l4-18.7c.4-1.5-.5-2.1-1.6-1.7L1.6 10.3c-1.4.6-1.4 1.5-.2 1.9l5.7 1.8L20 6.1c.6-.4 1.1-.2.7.2"/></svg>`,
     line: `<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="#06C755" d="M19.2 4.6c-1.9-1.7-4.4-2.6-7.1-2.6C6.6 2 2.3 5.5 2.3 9.8c0 2.4 1.4 4.6 3.7 6.1l-.5 3c-.1.4.3.7.7.5l3.4-1.8c.9.2 1.9.3 2.9.3 5.5 0 9.8-3.5 9.8-7.8 0-2-1-3.9-2.8-5.5z"/><path fill="#fff" d="M8 10.3c0-.2.2-.4.4-.4h1.2c.2 0 .4.2.4.4s-.2.4-.4.4H8.4c-.2 0-.4-.2-.4-.4zm0-2.3c0-.2.2-.4.4-.4h4.8c.2 0 .4.2.4.4s-.2.4-.4.4H8.4c-.2 0-.4-.2-.4-.4zm0 4.6c0-.2.2-.4.4-.4h3.4c.2 0 .4.2.4.4s-.2.4-.4.4H8.4c-.2 0-.4-.2-.4-.4z"/></svg>`,
     link: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07L11.5 4.5"/><path d="M14 11a5 5 0 0 0-7.07 0L4.1 13.83a5 5 0 0 0 7.07 7.07L12.5 19.5"/></svg>`,
     mail: `<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="#EA4335" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/><path fill="#fff" d="M20 8l-8 5-8-5V6l8 5 8-5v2z"/></svg>`,
@@ -791,14 +1196,23 @@ function renderShareIcons(detail){
 
   const items = [
     {key:"fb",  label:"Facebook",   onClick: ()=> openPopup(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`)},
+    {key:"msg", label:"Messenger",  onClick: ()=> {
+      const scheme = `fb-messenger://share?link=${encodeURIComponent(url)}`;
+      const fallback = () => (navigator.share ? navigator.share({title, text, url}) : openPopup(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`));
+      try{ location.href = scheme; setTimeout(fallback, 900); }catch(e){ fallback(); }
+    }},
     {key:"wa",  label:"WhatsApp",   onClick: ()=> openPopup(`https://wa.me/?text=${encodeURIComponent(text + "\n" + url)}`)},
+    {key:"tg",  label:"Telegram",   onClick: ()=> openPopup(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`)},
     {key:"line",label:"LINE",       onClick: ()=> openPopup(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}`)},
     {key:"link",label:"Copy",       onClick: async()=> { await copyToClipboard(url); }},
-    {key:"mail",label:"Email",      onClick: ()=> { location.href = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(text + "\n\n" + url)}`; }},
-    {key:"more",label:"More",       onClick: ()=> { if(navigator.share){ navigator.share({ title, text, url }).catch(()=>{}); } else { copyToClipboard(url); } }},
+    {key:"mail",label:"Gmail",      onClick: ()=> { location.href = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(text + "\n\n" + url)}`; }},
+    {key:"more",label:"More",       onClick: ()=> {
+      if(navigator.share){ navigator.share({ title, text, url }).catch(()=>{}); }
+      else{ copyToClipboard(url); }
+    }},
   ];
 
-  row.innerHTML = items.map(it=>`
+  row.innerHTML = items.map((it)=>`
     <button class="shareBtn" type="button" data-k="${it.key}">
       <div class="shareCircle">${ICONS[it.key] || ""}</div>
       <div class="shareLbl">${it.label}</div>
@@ -814,13 +1228,24 @@ function renderShareIcons(detail){
   });
 }
 
-/** Other Plots */
-function getUnitId(u){ return String(u?.HP_ID || u?.id || u?.hpId || u?.Unit_ID || "").trim(); }
-function getPlot(u){ return String(u?.Plot || u?.plot || u?.Unit_Plot || u?.Plot_No || "").trim(); }
-function getThumb(u){ return cleanDriveImage(u?.Thumbnail_Image || u?.thumbnail || u?.thumb || u?.thumbUrl || ""); }
-function getStatus(u){ return String(u?.Status || u?.status || u?.unitStatus || "-").trim() || "-"; }
-function getPrice(u){ return u?.Price ?? u?.price ?? 0; }
-
+/** =========================
+* Other Plots
+* ========================= */
+function getUnitId(u){
+  return String(u?.HP_ID || u?.id || u?.hpId || u?.Unit_ID || "").trim();
+}
+function getPlot(u){
+  return String(u?.Plot || u?.plot || u?.Unit_Plot || u?.Plot_No || "").trim();
+}
+function getThumb(u){
+  return cleanDriveImage(u?.Thumbnail_Image || u?.thumbnail || u?.thumb || u?.thumbUrl || "");
+}
+function getStatus(u){
+  return String(u?.Status || u?.status || u?.unitStatus || "-").trim() || "-";
+}
+function getPrice(u){
+  return u?.Price ?? u?.price ?? 0;
+}
 function renderOtherUnits(units){
   const grid = document.getElementById("otherGrid");
   const section = document.getElementById("otherSection");
@@ -852,7 +1277,8 @@ function renderOtherUnits(units){
       </div>
     `;
     card.addEventListener("click", ()=>{
-      location.href = `details.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(project)}`;
+      const t = token ? `&token=${encodeURIComponent(token)}` : "";
+      location.href = `details.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(project)}${t}`;
     });
     grid.appendChild(card);
   }
@@ -860,11 +1286,8 @@ function renderOtherUnits(units){
 
 async function loadOtherUnits(){
   try{
-    /** ✅ FIX: เรียกโหมดจริงของ GAS (Public) */
-    const url =
-      `${SCRIPT_URL}?mode=getUnitList` +
-      `&project=${encodeURIComponent(project)}`;
-
+    // ✅ FIX: public call (ไม่แนบ token)
+    const url = `${SCRIPT_URL}?mode=getUnitList&project=${encodeURIComponent(project)}`;
     const data = await jsonp(url);
 
     if(!Array.isArray(data)){
@@ -886,17 +1309,22 @@ async function loadOtherUnits(){
   showLoader();
 
   if(!hpId){
-    showError("ลิงก์ไม่ถูกต้อง: ไม่มี id เช่น details.html?id=HP00-0001");
+    showError("ลิงก์ไม่ถูกต้อง: ไม่มี id เช่น details.html?id=HP-Z001");
     hideLoader();
     return;
   }
 
-  /** ✅ FIX: เรียกโหมดจริงของ GAS (Public) */
-  const url =
+  // ✅ FIX: ไม่บังคับ token สำหรับ Public
+
+  // ✅ FIX: build url (แนบ token เฉพาะถ้ามี)
+  let url =
     `${SCRIPT_URL}?mode=getUnitDetail` +
     `&project=${encodeURIComponent(project)}` +
-    `&id=${encodeURIComponent(hpId)}` +
     `&hpId=${encodeURIComponent(hpId)}`;
+
+  if (token) {
+    url += `&token=${encodeURIComponent(token)}`;
+  }
 
   let detail;
   try{
@@ -908,10 +1336,21 @@ async function loadOtherUnits(){
   }
 
   if(detail && detail.error){
-    showError("โหลดข้อมูลไม่สำเร็จ: " + String(detail.error || ""));
-    hideLoader();
-    return;
+    const errText = String(detail.error || "");
+    // ✅ ถ้าในอนาคตมีบางโหมดที่ยังต้อง auth ก็ยังคงให้ไป gateway ได้
+    if(errText.toLowerCase().includes("unauthorized")){
+      clearToken();
+      hideLoader();
+      goGateway("expired/invalid token");
+      return;
+    }else{
+      showError("โหลดข้อมูลไม่สำเร็จ: " + errText, true);
+      hideLoader();
+      return;
+    }
   }
+
+  CURRENT_DETAIL = detail;
 
   const plotText = String(detail.Plot || "-").trim() || "-";
   document.getElementById("pageTitle").textContent = `Detail Plot: ${plotText}`;
@@ -928,9 +1367,13 @@ async function loadOtherUnits(){
 
   renderMiniMeta(detail);
   renderDescription(detail);
+
   renderShareIcons(detail);
   setFbVisitBar(pickFbLink(detail));
-  setQuickLinks(pickMapLink(detail), pickVirtualTour(detail));
+
+  const mapLink = pickMapLink(detail);
+  const tourLink = pickVirtualTour(detail);
+  setQuickLinks(mapLink, tourLink);
 
   const thumb = cleanDriveImage(detail.Thumbnail_Image || "");
   const list = String(detail.Image_List || "")
@@ -938,6 +1381,7 @@ async function loadOtherUnits(){
     .filter(Boolean);
 
   images = (thumb ? [thumb, ...list.filter(x=>x!==thumb)] : list);
+
   if(!images.length){
     images = ["data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='800'><rect width='100%' height='100%' fill='#e6edf6'/><text x='50%' y='50%' text-anchor='middle' fill='#8aa0bb' font-size='40' font-family='Arial'>no image</text></svg>`) ];
   }
