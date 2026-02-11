@@ -121,6 +121,19 @@
     }
 
     // ================================
+    // ✅ NEW: PERMISSION GUARD FOR EDIT BUTTON (POINT #1)
+    // ================================
+    function isOffline_(sysStatus) {
+      const s = String(sysStatus || "").trim().toLowerCase();
+      return s === "offline" || s.includes("off");
+    }
+    function canProjectEdit_(sysStatus) {
+      // Project Admin แก้ไม่ได้ถ้า Offline เท่านั้น
+      if (String(ROLE).toUpperCase() !== "PROJECT") return true; // HQ หรืออื่นๆ ผ่าน
+      return !isOffline_(sysStatus);
+    }
+
+    // ================================
     // MASTER BAR (HQ only)
     // ================================
     function showAddMsg(msg){
@@ -297,9 +310,18 @@
       window.location.href = url;
     }
 
+    // ✅ NEW: click guard (PROJECT + Offline => block)
     document.addEventListener("click", (ev) => {
       const btn = ev.target.closest("[data-edit-id]");
       if (!btn) return;
+
+      // ถ้าถูกทำเป็น disabled ให้บล็อคทันที
+      if (btn.getAttribute("data-edit-disabled") === "1") {
+        ev.preventDefault();
+        ev.stopPropagation();
+        return;
+      }
+
       ev.preventDefault();
       const id = btn.getAttribute("data-edit-id") || "";
       goEditById(id);
@@ -323,6 +345,16 @@
         const sysStatus = u.sysStatus || "-";
         const thumb = pickThumb(u);
 
+        // ✅ NEW: disable edit for PROJECT when Offline
+        const allowEdit = canProjectEdit_(sysStatus);
+        const editAttrs = allowEdit
+          ? `data-edit-id="${escapeHtml(id)}" title="Edit"`
+          : `data-edit-disabled="1" title="Offline • Project Admin cannot edit"`;
+
+        const editClass = allowEdit
+          ? "p-2 text-orange-500 hover:scale-110 transition-all"
+          : "p-2 text-slate-300 cursor-not-allowed opacity-60";
+
         return `
           <tr class="hover:bg-slate-50 border-b">
             <td class="py-4 pl-8 text-left">
@@ -335,10 +367,9 @@
             <td>
               <button
                 type="button"
-                data-edit-id="${escapeHtml(id)}"
-                class="p-2 text-orange-500 hover:scale-110 transition-all"
+                ${editAttrs}
+                class="${editClass}"
                 aria-label="Edit"
-                title="Edit"
               >
                 <i class="fa-solid fa-pen-to-square"></i>
               </button>
@@ -363,6 +394,16 @@
         const sysStatus = u.sysStatus || "-";
         const thumb = pickThumb(u);
 
+        // ✅ NEW: disable edit for PROJECT when Offline
+        const allowEdit = canProjectEdit_(sysStatus);
+        const editAttrs = allowEdit
+          ? `data-edit-id="${escapeHtml(id)}" title="Edit"`
+          : `data-edit-disabled="1" title="Offline • Project Admin cannot edit"`;
+
+        const editClass = allowEdit
+          ? "w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center hover:bg-orange-100 transition-all active:scale-95 shrink-0"
+          : "w-12 h-12 rounded-2xl bg-slate-50 text-slate-300 flex items-center justify-center cursor-not-allowed opacity-60 shrink-0";
+
         return `
           <div class="bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-4">
             <div class="flex items-start justify-between gap-3">
@@ -384,12 +425,11 @@
 
               <button
                 type="button"
-                data-edit-id="${escapeHtml(id)}"
-                class="w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center hover:bg-orange-100 transition-all active:scale-95 shrink-0"
+                ${editAttrs}
+                class="${editClass}"
                 aria-label="Edit"
-                title="Edit"
               >
-                <i class="fa-solid fa-pen"></i>
+                <i class="fa-solid ${allowEdit ? "fa-pen" : "fa-lock"}"></i>
               </button>
             </div>
 
