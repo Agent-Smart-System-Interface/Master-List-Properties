@@ -422,10 +422,7 @@
      * CONFIG
      **********************************************************/
     const API_URL = "https://script.google.com/macros/s/AKfycbyNPiuM1Rz70r6E38eRLQoQXIrNUTKsQsqVRLU2tOmwO9K9HfBBnO-7-I9fn6UlTZWk/exec";
-    
-    // ✅ แก้ไข: เปลี่ยนค่าอ้างอิงจาก Project_0 เป็น HP00
     const PROJECT = "HP00";
-    
     const GATEWAY_URL = "https://agent-smart-system-interface.github.io/Master-List-Properties/gateway.html";
     const DETAILS_URL = "details.html?id=";
 
@@ -465,9 +462,14 @@
       return String(p||"").trim();
     }
 
-    // ✅ แก้ไข: เปลี่ยน Cache Key ให้ตรงกับโปรเจกต์ใหม่ HP00
-    const CACHE_KEY = `SP_UNITLIST_${PROJECT}_v1`;
-    
+    // ✅ สำคัญ: แสดงเฉพาะ Live เท่านั้น (กันหลุด Offline/Pending)
+    function isLiveSysStatus(v){
+      return String(v||"").trim().toLowerCase() === "live";
+    }
+
+    // ✅ bump cache version เพราะ logic เปลี่ยน
+    const CACHE_KEY = `SP_UNITLIST_${PROJECT}_v2_liveOnly`;
+
     function readCache(){
       try{
         const raw = sessionStorage.getItem(CACHE_KEY);
@@ -523,7 +525,10 @@
       const plotVal = $("plotSelect").value;
       const sortVal = $("sortSelect").value;
 
-      filtered = all.filter(x=>{
+      // ✅ สำคัญ: เริ่มจากรายการ Live เท่านั้น
+      const liveOnly = all.filter(x => isLiveSysStatus(x.sysStatus));
+
+      filtered = liveOnly.filter(x=>{
         if(plotVal === "__all__") return true;
         return normalizePlot(x.plot) === plotVal;
       });
@@ -599,7 +604,6 @@
         btn.textContent = "More Details";
         btn.addEventListener("click", ()=>{
           if(!item.id) return;
-          // ✅ แก้ไข: ส่งพารามิเตอร์ project=HP00 ไปยังหน้ารายละเอียดด้วย
           location.href = DETAILS_URL + encodeURIComponent(item.id) + `&project=${PROJECT}`;
         });
 
@@ -659,6 +663,8 @@
     async function loadAll(){
       try{
         const data = await fetchUnitList();
+
+        // ✅ สำคัญ: เก็บ sysStatus จาก API (ของเดิมไม่ได้เอามาใช้)
         all = data.map(x=>({
           id: x.id || "",
           plot: x.plot || "",
@@ -668,11 +674,18 @@
           bathrooms: x.bathrooms || "",
           livingSqm: x.livingSqm || x.living_area_sq_m || "",
           price: x.price || "",
-          status: x.status || ""
+          status: x.status || "",
+          sysStatus: x.sysStatus || x.system_status || ""   // ✅ NEW
         }));
 
-        $("masterVill").textContent = pickMasterVillName(all) || "Master Vill";
-        buildPlotOptions(all);
+        // ✅ ทำชื่อโครงการจากรายการ Live เท่านั้น (กัน Pending/Offline ทำให้ชื่อเพี้ยน)
+        const liveOnly = all.filter(x => isLiveSysStatus(x.sysStatus));
+
+        $("masterVill").textContent = pickMasterVillName(liveOnly) || "Master Vill";
+
+        // ✅ dropdown ต้องสร้างจากรายการ Live เท่านั้น
+        buildPlotOptions(liveOnly);
+
         applyFilters();
         showLoader(false);
       }catch(err){
@@ -700,4 +713,3 @@
   </script>
 </body>
 </html>
- 
