@@ -397,16 +397,16 @@ gap:6px;
    ========================= */
 .otherTopRow{
 display:flex;
-align-items:center;          /* ✅ ให้อยู่แนวเดียวกัน */
+align-items:center;
 justify-content:space-between;
-gap:6px;                    /* ✅ ชิดกันขึ้น */
-flex-wrap:nowrap;           /* ✅ ห้ามตกบรรทัด */
+gap:6px;
+flex-wrap:nowrap;
 }
 .otherPlot{
 font-weight:1100;
 font-size:13px;
 color: rgba(15,23,42,.95);
-white-space:nowrap;         /* ✅ บรรทัดเดียว */
+white-space:nowrap;
 overflow:hidden;
 text-overflow:ellipsis;
 flex:1 1 auto;
@@ -418,31 +418,29 @@ min-width:0;
 display:inline-flex;
 align-items:center;
 justify-content:center;
-padding:4px 7px;            /* ✅ เล็กลง */
+padding:4px 7px;
 border-radius: 999px;
 font-weight:1000;
-font-size:10.5px;           /* ✅ เล็กลง */
+font-size:10.5px;
 line-height:1;
 background: rgba(255,255,255,.92);
 border: 2px solid rgba(15,23,42,.15);
 color: rgba(15,23,42,.88);
-white-space:nowrap;         /* ✅ ไม่ตัดคำ */
+white-space:nowrap;
 flex:0 0 auto;
 }
 
 /* =========================
-   ✅ FIX จุดที่ 2 (Other Plots): เปลี่ยนจาก HP00-0010 เป็น Land xxxxx,Living xxxxx (ตัวบาง + ตัวเล็ก)
+   ✅ FIX จุดที่ 2 (Other Plots): เปลี่ยนจาก HP00-0010 เป็น Land xxxxx · Living xxxxx (ตัวบาง + ตัวเล็ก)
    ========================= */
-/* ✅ UPDATED: ทำให้ "อ่านได้เต็ม" + ตัวเล็กลง + ตัวบางลง + ไม่ตัดเป็น ... */
 .otherMeta{
-font-weight:400;              /* ✅ ตัวบาง */
-font-size:9px;                /* ✅ เล็กลงอีก */
-letter-spacing:0;             /* ✅ ไม่บีบระยะ */
+font-weight:400;
+font-size:10.5px;
+letter-spacing:.1px;
 color: rgba(15,23,42,.55);
-white-space:normal;           /* ✅ อนุญาตให้ขึ้นบรรทัดใหม่ */
-overflow:visible;             /* ✅ ไม่ตัด */
-text-overflow:unset;          /* ✅ ไม่ใส่ ... */
-line-height:1.2;              /* ✅ อ่านง่าย */
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
 }
 
 .otherPrice{
@@ -463,13 +461,10 @@ overflow:hidden;
 text-overflow:clip;
 }
 
-/* ✅ ปรับสำหรับมือถือให้แน่นขึ้นอีก */
 @media (max-width: 420px) {
   .otherPlot { font-size: 12px; }
   .otherStatus { font-size: 10px; padding:3px 6px; }
-  .otherMeta {
-    font-size:8.5px;          /* ✅ เล็กลงพิเศษสำหรับมือถือ */
-  }
+  .otherMeta { font-size: 10.5px; } /* ✅ คงขนาดตามปัจจุบันที่คุณต้องการ */
 }
 
 /* ====== SHARE SECTION (ของเดิมคุณ) ====== */
@@ -495,8 +490,6 @@ overflow:auto;
 padding:10px 8px 6px;
 scroll-snap-type: x mandatory;
 -webkit-overflow-scrolling: touch;
-
-/* ✅ เพิ่ม: ให้ดูเนียนเหมือนรูป (ซ่อน scrollbar) */
 scrollbar-width: none;
 }
 .shareRow::-webkit-scrollbar{ display:none; }
@@ -573,12 +566,12 @@ background: rgba(29,78,216,.10);
 .quickLinks{
 margin-top: 10px;
 display:flex;
-flex-direction:column;       /* ✅ เรียงลงมา */
+flex-direction:column;
 align-items:center;
 gap:10px;
 }
 .quickBtn{
-width:min(640px, 100%);      /* ✅ แถบยาวเหมือน FB */
+width:min(640px, 100%);
 display:flex;
 align-items:center;
 justify-content:center;
@@ -1031,8 +1024,16 @@ function fmtSqm(v){
   if (low.includes("sq") || low.includes("ตร.ม") || low.includes("m2") || low.includes("m²")) return s;
   return s + " sq.m";
 }
-const LAND_SQM_KEYS = ["Land_Area_sq_m","Land_Area_SQM","Land Area (sq.m)","Land Area (sqm)","Land Area sqm","Land Area sq.m"];
-const LIVING_SQM_KEYS = ["Living_Area_sq_m","Living_Area_SQM","Living Area (sq.m)","Living Area (sqm)","Living Area sqm","Living Area sq.m"];
+
+/** ✅ ใช้ชื่อหัวคอลัมน์ที่คุณยืนยันแบบเป๊ะ */
+const LAND_SQM_KEYS = [
+  "Land Area (sq.m)",
+  "Land_Area_sq_m","Land_Area_SQM","Land Area (sqm)","Land Area sqm","Land Area sq.m"
+];
+const LIVING_SQM_KEYS = [
+  "Living Area (sq.m)",
+  "Living_Area_sq_m","Living_Area_SQM","Living Area (sqm)","Living Area sqm","Living Area sq.m"
+];
 
 function renderDescription(detail){
   const desc = safeText(pick(detail, ["Description","description","Desc"]));
@@ -1047,6 +1048,7 @@ function renderDescription(detail){
   el.textContent = desc;
   el.classList.remove("descEmpty");
 }
+
 function renderMiniMeta(detail){
   const landM = fmtSqm(pick(detail, LAND_SQM_KEYS));
   const livingM = fmtSqm(pick(detail, LIVING_SQM_KEYS));
@@ -1294,11 +1296,52 @@ function getPrice(u){
   return u?.Price ?? u?.price ?? 0;
 }
 
-/* ✅ FIX จุดที่ 2: สร้างข้อความ Land xxxxx,Living xxxxx จากคอลัมน์ Land/Living */
-function getLandLivingMeta(u){
-  const land = safeText(pick(u, LAND_SQM_KEYS));
-  const living = safeText(pick(u, LIVING_SQM_KEYS));
-  return `Land ${land},Living ${living}`;
+/* ✅ แสดงแบบเดียวกับภาพที่ 1: "Land 480 sq.m · Living 300 sq.m" */
+function buildLandLivingText(landRaw, livingRaw){
+  const land = fmtSqm(landRaw);
+  const living = fmtSqm(livingRaw);
+  return `Land ${land} · Living ${living}`;
+}
+
+/* ✅ อ่าน Land/Living จาก object ที่ได้มา */
+function getLandLivingFromObj(obj){
+  const landVal = pick(obj, LAND_SQM_KEYS);
+  const livingVal = pick(obj, LIVING_SQM_KEYS);
+  return {
+    land: safeText(landVal),
+    living: safeText(livingVal),
+    text: buildLandLivingText(landVal, livingVal)
+  };
+}
+
+/* ✅ NEW: Fallback ดึงรายละเอียดรายยูนิต ถ้า getUnitList ไม่ส่ง Land/Living มา */
+const _LL_CACHE = new Map(); // id -> {land,living,text}
+async function hydrateLandLivingForCard(unitId, metaEl){
+  try{
+    if(!unitId || !metaEl) return;
+
+    if(_LL_CACHE.has(unitId)){
+      metaEl.textContent = _LL_CACHE.get(unitId).text;
+      return;
+    }
+
+    let url =
+      `${SCRIPT_URL}?mode=getUnitDetail` +
+      `&project=${encodeURIComponent(project)}` +
+      `&hpId=${encodeURIComponent(unitId)}`;
+    if(token) url += `&token=${encodeURIComponent(token)}`;
+
+    const detail = await jsonp(url, 20000);
+    if(!detail || detail.error) return;
+
+    const ll = getLandLivingFromObj(detail);
+    _LL_CACHE.set(unitId, ll);
+
+    // อัปเดตทันที
+    metaEl.textContent = ll.text;
+  }catch(e){
+    // เงียบไว้ เพื่อไม่ให้หน้าอื่นพัง
+  }
 }
 
 function renderOtherUnits(units){
@@ -1310,6 +1353,7 @@ function renderOtherUnits(units){
   }
   section.style.display = "block";
   grid.innerHTML = "";
+
   for(const u of units){
     const id = getUnitId(u);
     const plot = getPlot(u) || id || "-";
@@ -1318,7 +1362,8 @@ function renderOtherUnits(units){
     const price = moneyTHB(getPrice(u));
     const pill = statusStyle(st);
 
-    const meta = getLandLivingMeta(u);
+    // ลองอ่านจาก list ก่อน
+    const ll0 = getLandLivingFromObj(u);
 
     const card = document.createElement("div");
     card.className = "otherCard";
@@ -1330,9 +1375,17 @@ function renderOtherUnits(units){
           <div class="otherStatus" style="border-color:${pill.border}; color:${pill.text};">${st}</div>
         </div>
         <div class="otherPrice">${price}</div>
-        <div class="otherMeta">${meta}</div>
+        <div class="otherMeta" data-ll="1">${ll0.text}</div>
       </div>
     `;
+
+    const metaEl = card.querySelector(".otherMeta");
+
+    // ✅ ถ้าจาก list ยังเป็น "-" ให้ไปดึงจาก detail แล้วอัปเดต
+    if(metaEl && (ll0.land === "-" || ll0.living === "-" || ll0.text.includes("Land -") || ll0.text.includes("Living -"))){
+      hydrateLandLivingForCard(id, metaEl);
+    }
+
     card.addEventListener("click", ()=>{
       const t = token ? `&token=${encodeURIComponent(token)}` : "";
       location.href = `details.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(project)}${t}`;
