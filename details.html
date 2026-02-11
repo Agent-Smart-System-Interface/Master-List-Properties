@@ -40,7 +40,7 @@ width:44px; height:44px; border-radius:999px; background:rgba(255,255,255,.55);
 display:grid; place-items:center; font-weight:800;
 flex:0 0 auto;
 
-/* ✅ FIX ONLY: ทำให้คลิกได้แบบลิงก์ และไม่เปลี่ยนสไตล์เดิม */
+/* ✅ ทำให้คลิกได้แบบลิงก์ และไม่เปลี่ยนสไตล์เดิม */
 text-decoration:none;
 color: inherit;
 }
@@ -461,8 +461,6 @@ overflow:auto;
 padding:10px 8px 6px;
 scroll-snap-type: x mandatory;
 -webkit-overflow-scrolling: touch;
-
-/* ✅ เพิ่ม: ให้ดูเนียนเหมือนรูป (ซ่อน scrollbar) */
 scrollbar-width: none;
 }
 .shareRow::-webkit-scrollbar{ display:none; }
@@ -707,7 +705,7 @@ pointer-events:none;
 
       <div class="gridInfo" id="infoGrid"></div>
 
-      <!-- ====== SHARE / LINKS ====== -->
+      <!-- ====== SHARE / LINKS (กรอบแดง) ====== -->
       <div class="shareSection" id="shareSection">
         <div class="shareTopIcon" aria-hidden="true" title="Share">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -798,41 +796,26 @@ const qs = new URLSearchParams(location.search);
 const hpId = qs.get("id") || qs.get("hpId") || "";
 const project = qs.get("project") || "HP00";
 
-/** ✅ TOKEN handling (ยังคงไว้สำหรับ Admin ที่เปิดมาด้วย token) */
+/** ✅ TOKEN handling (optional สำหรับหน้า details) */
 const TOKEN_QS = (qs.get("token") || "").trim();
 const TOKEN_LS = (localStorage.getItem("HP_AUTH_TOKEN") || "").trim();
 let token = TOKEN_QS || TOKEN_LS;
 
-/** ✅ ถ้ามี token ใน URL ให้เก็บลง localStorage เพื่อหน้าอื่นใช้ */
-if (TOKEN_QS) {
-  localStorage.setItem("HP_AUTH_TOKEN", TOKEN_QS);
-}
-
-/** ✅ helper ไปหน้า gateway เพื่อ login (ยังคงไว้ เผื่อ Admin) */
-function goGateway(reason){
-  try{
-    if (reason) console.warn("[AUTH]", reason);
-    const back = encodeURIComponent(location.pathname + location.search);
-    location.href = `gateway.html?project=${encodeURIComponent(project)}&back=${back}`;
-  }catch(e){
-    location.href = `gateway.html?project=${encodeURIComponent(project)}`;
-  }
-}
+/** ถ้ามี token ใน URL ให้เก็บลง localStorage */
+if (TOKEN_QS) localStorage.setItem("HP_AUTH_TOKEN", TOKEN_QS);
 
 function clearToken(){
   try{ localStorage.removeItem("HP_AUTH_TOKEN"); }catch(e){}
   token = "";
 }
 
-/** ✅ FIX ONLY: ให้ไอคอน Home ลิงก์กลับ index พร้อม project + token (ถ้ามี) */
+/** ✅ Home link กลับ index แบบ Public (ไม่บังคับ token) */
 (function setHomeLink(){
   const a = document.getElementById("homeLink");
   if(!a) return;
-  const t = token ? `&token=${encodeURIComponent(token)}` : "";
-  a.href = `index.html?project=${encodeURIComponent(project)}${t}`;
+  a.href = `index.html?project=${encodeURIComponent(project)}`;
 })();
 
-/** Loader helpers */
 function showLoader(){
   const el = document.getElementById("pageLoader");
   if(el) el.style.display = "flex";
@@ -863,31 +846,11 @@ function jsonp(url, timeoutMs = 20000){
   });
 }
 
-function showError(msg, showLoginBtn = false){
+function showError(msg){
   const box = document.getElementById("errBox");
   box.style.display = "block";
-  box.innerHTML = "";
-
-  const p = document.createElement("div");
-  p.textContent = msg;
-  box.appendChild(p);
-
-  if (showLoginBtn){
-    const btn = document.createElement("button");
-    btn.textContent = "ไปล็อกอินใหม่";
-    btn.style.marginTop = "10px";
-    btn.style.padding = "10px 12px";
-    btn.style.borderRadius = "14px";
-    btn.style.border = "0";
-    btn.style.cursor = "pointer";
-    btn.style.fontWeight = "900";
-    btn.style.background = "rgba(15,23,42,.9)";
-    btn.style.color = "#fff";
-    btn.onclick = () => goGateway("manual login");
-    box.appendChild(btn);
-  }
+  box.textContent = msg;
 }
-
 function hideError(){
   const box = document.getElementById("errBox");
   box.style.display = "none";
@@ -929,8 +892,7 @@ function statusStyle(statusRaw){
 }
 
 document.getElementById("btnBack").addEventListener("click", () => {
-  const t = token ? `&token=${encodeURIComponent(token)}` : "";
-  history.length > 1 ? history.back() : (location.href = `index.html?project=${encodeURIComponent(project)}${t}`);
+  history.length > 1 ? history.back() : (location.href = `index.html?project=${encodeURIComponent(project)}`);
 });
 
 let images = [];
@@ -1139,7 +1101,7 @@ function setQuickLinks(mapLink, tourLink){
 }
 
 /** =========================
-* SHARE
+* SHARE (8 ICONS) - ใช้งานได้จริง
 * ========================= */
 function getPublicShareUrl(){
   const u = new URL(location.href);
@@ -1229,23 +1191,14 @@ function renderShareIcons(detail){
 }
 
 /** =========================
-* Other Plots
+* Other Plots (public)
 * ========================= */
-function getUnitId(u){
-  return String(u?.HP_ID || u?.id || u?.hpId || u?.Unit_ID || "").trim();
-}
-function getPlot(u){
-  return String(u?.Plot || u?.plot || u?.Unit_Plot || u?.Plot_No || "").trim();
-}
-function getThumb(u){
-  return cleanDriveImage(u?.Thumbnail_Image || u?.thumbnail || u?.thumb || u?.thumbUrl || "");
-}
-function getStatus(u){
-  return String(u?.Status || u?.status || u?.unitStatus || "-").trim() || "-";
-}
-function getPrice(u){
-  return u?.Price ?? u?.price ?? 0;
-}
+function getUnitId(u){ return String(u?.HP_ID || u?.id || u?.hpId || u?.Unit_ID || "").trim(); }
+function getPlot(u){ return String(u?.Plot || u?.plot || u?.Unit_Plot || u?.Plot_No || "").trim(); }
+function getThumb(u){ return cleanDriveImage(u?.Thumbnail_Image || u?.thumbnail || u?.thumb || u?.thumbUrl || ""); }
+function getStatus(u){ return String(u?.Status || u?.status || u?.unitStatus || "-").trim() || "-"; }
+function getPrice(u){ return u?.Price ?? u?.price ?? 0; }
+
 function renderOtherUnits(units){
   const grid = document.getElementById("otherGrid");
   const section = document.getElementById("otherSection");
@@ -1277,8 +1230,8 @@ function renderOtherUnits(units){
       </div>
     `;
     card.addEventListener("click", ()=>{
-      const t = token ? `&token=${encodeURIComponent(token)}` : "";
-      location.href = `details.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(project)}${t}`;
+      // ✅ Public: ไม่ส่ง token
+      location.href = `details.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(project)}`;
     });
     grid.appendChild(card);
   }
@@ -1286,7 +1239,6 @@ function renderOtherUnits(units){
 
 async function loadOtherUnits(){
   try{
-    // ✅ FIX: public call (ไม่แนบ token)
     const url = `${SCRIPT_URL}?mode=getUnitList&project=${encodeURIComponent(project)}`;
     const data = await jsonp(url);
 
@@ -1314,17 +1266,15 @@ async function loadOtherUnits(){
     return;
   }
 
-  // ✅ FIX: ไม่บังคับ token สำหรับ Public
+  // ✅ เลือก mode ตามสิทธิ์: มี token = แอดมิน / ไม่มี token = Public
+  const isAdmin = !!token;
+  const mode = isAdmin ? "getUnitDetail" : "getUnitDetailPublic";
 
-  // ✅ FIX: build url (แนบ token เฉพาะถ้ามี)
-  let url =
-    `${SCRIPT_URL}?mode=getUnitDetail` +
+  const url =
+    `${SCRIPT_URL}?mode=${encodeURIComponent(mode)}` +
     `&project=${encodeURIComponent(project)}` +
-    `&hpId=${encodeURIComponent(hpId)}`;
-
-  if (token) {
-    url += `&token=${encodeURIComponent(token)}`;
-  }
+    `&hpId=${encodeURIComponent(hpId)}` +
+    (isAdmin ? `&token=${encodeURIComponent(token)}` : "");
 
   let detail;
   try{
@@ -1335,16 +1285,30 @@ async function loadOtherUnits(){
     return;
   }
 
+  // ✅ ถ้า token หมดอายุ ให้ลบทิ้ง แล้ว fallback เป็น Public ทันที (ไม่เด้ง gateway)
   if(detail && detail.error){
     const errText = String(detail.error || "");
-    // ✅ ถ้าในอนาคตมีบางโหมดที่ยังต้อง auth ก็ยังคงให้ไป gateway ได้
     if(errText.toLowerCase().includes("unauthorized")){
       clearToken();
-      hideLoader();
-      goGateway("expired/invalid token");
-      return;
+      // fallback public
+      const url2 =
+        `${SCRIPT_URL}?mode=getUnitDetailPublic` +
+        `&project=${encodeURIComponent(project)}` +
+        `&hpId=${encodeURIComponent(hpId)}`;
+      try{
+        detail = await jsonp(url2);
+      }catch(e2){
+        showError("สิทธิ์หมดอายุ และโหลดแบบ Public ไม่สำเร็จ");
+        hideLoader();
+        return;
+      }
+      if(detail && detail.error){
+        showError("โหลดข้อมูลไม่สำเร็จ: " + String(detail.error || ""));
+        hideLoader();
+        return;
+      }
     }else{
-      showError("โหลดข้อมูลไม่สำเร็จ: " + errText, true);
+      showError("โหลดข้อมูลไม่สำเร็จ: " + errText);
       hideLoader();
       return;
     }
@@ -1367,14 +1331,14 @@ async function loadOtherUnits(){
 
   renderMiniMeta(detail);
   renderDescription(detail);
-
   renderShareIcons(detail);
-  setFbVisitBar(pickFbLink(detail));
 
+  setFbVisitBar(pickFbLink(detail));
   const mapLink = pickMapLink(detail);
   const tourLink = pickVirtualTour(detail);
   setQuickLinks(mapLink, tourLink);
 
+  // ===== ภาพบ้าน =====
   const thumb = cleanDriveImage(detail.Thumbnail_Image || "");
   const list = String(detail.Image_List || "")
     .split(",").map(s=>cleanDriveImage(s.trim()))
@@ -1400,6 +1364,8 @@ async function loadOtherUnits(){
   document.getElementById("btnNext").addEventListener("click", ()=> setMain(idx+1));
 
   renderInfo(detail);
+
+  // ✅ Other Plots public
   loadOtherUnits();
 
   setDockLink("dockSales", detail.Sales_Gallery);
