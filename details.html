@@ -744,7 +744,6 @@ function setQuickLinks(mapLink, tourLink){
 /** SHARE icons */
 function getPublicShareUrl(){
   const u = new URL(location.href);
-  // public share ไม่มี token อยู่แล้ว
   if (hpId) u.searchParams.set("id", hpId);
   if (project) u.searchParams.set("project", project);
   return u.toString();
@@ -861,8 +860,13 @@ function renderOtherUnits(units){
 
 async function loadOtherUnits(){
   try{
-    const url = `${SCRIPT_URL}?mode=getUnitList&project=${encodeURIComponent(project)}`;
+    /** ✅ FIX: ใช้ mode=public และย้ายคำสั่งไป action */
+    const url =
+      `${SCRIPT_URL}?mode=public&action=getUnitList` +
+      `&project=${encodeURIComponent(project)}`;
+
     const data = await jsonp(url);
+
     if(!Array.isArray(data)){
       document.getElementById("otherSection").style.display = "none";
       return;
@@ -887,11 +891,12 @@ async function loadOtherUnits(){
     return;
   }
 
-  // ✅ PUBLIC CALL (ไม่ใช้ token)
+  /** ✅ FIX: ใช้ mode=public และย้ายคำสั่งไป action */
   const url =
-    `${SCRIPT_URL}?mode=getUnitDetail` +
+    `${SCRIPT_URL}?mode=public&action=getUnitDetail` +
     `&project=${encodeURIComponent(project)}` +
-    `&id=${encodeURIComponent(hpId)}`;
+    `&id=${encodeURIComponent(hpId)}` +
+    `&hpId=${encodeURIComponent(hpId)}`;
 
   let detail;
   try{
