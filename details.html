@@ -860,9 +860,9 @@ function renderOtherUnits(units){
 
 async function loadOtherUnits(){
   try{
-    /** ✅ FIX: ใช้ mode=public และย้ายคำสั่งไป action */
+    /** ✅ FIX: เรียกโหมดจริงของ GAS (Public) */
     const url =
-      `${SCRIPT_URL}?mode=public&action=getUnitList` +
+      `${SCRIPT_URL}?mode=getUnitList` +
       `&project=${encodeURIComponent(project)}`;
 
     const data = await jsonp(url);
@@ -891,9 +891,9 @@ async function loadOtherUnits(){
     return;
   }
 
-  /** ✅ FIX: ใช้ mode=public และย้ายคำสั่งไป action */
+  /** ✅ FIX: เรียกโหมดจริงของ GAS (Public) */
   const url =
-    `${SCRIPT_URL}?mode=public&action=getUnitDetail` +
+    `${SCRIPT_URL}?mode=getUnitDetail` +
     `&project=${encodeURIComponent(project)}` +
     `&id=${encodeURIComponent(hpId)}` +
     `&hpId=${encodeURIComponent(hpId)}`;
