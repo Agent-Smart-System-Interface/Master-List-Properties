@@ -3,77 +3,471 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Project Dashboard</title>
+  <title>PROJECT DASHBOARD</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>body { font-family: 'Kanit', sans-serif; background: #f8fafc; }</style>
+
+  <style>
+    body { font-family: 'Kanit', sans-serif; background: #f8fafc; }
+  </style>
 </head>
+
 <body class="p-4 md:p-10 italic">
   <div class="max-w-6xl mx-auto">
-    <div class="bg-slate-900 rounded-[2.2rem] p-6 text-white mb-6 flex items-center justify-between">
-      <div id="projectTitle" class="text-xl font-bold italic">Loading Dashboard...</div>
-      <a href="index.html" class="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center hover:bg-white/20">
-        <i class="fa-solid fa-house"></i>
+
+    <div class="bg-slate-900 rounded-[2.2rem] px-6 py-6 md:px-10 md:py-7 text-white mb-6 shadow-2xl flex items-center justify-between">
+      <div id="projectTitle" class="text-xl md:text-2xl font-bold tracking-tight italic truncate">
+        Loading...
+      </div>
+
+      <a id="homeBtn" href="index.html"
+         class="w-14 h-14 md:w-14 md:h-14 rounded-2xl bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all active:scale-95"
+         aria-label="Home">
+        <i class="fa-solid fa-house text-xl"></i>
       </a>
     </div>
 
-    <div id="masterAddBar" class="hidden bg-white rounded-[2rem] p-6 mb-6 shadow-xl border border-slate-100">
-      <div class="flex flex-col md:flex-row gap-4">
-        <input id="addPlot" class="flex-1 p-3 border rounded-xl font-bold italic" placeholder="Plot เช่น Z-15">
-        <select id="addVisibility" class="p-3 border rounded-xl font-bold italic">
-          <option value="Offline">Offline</option>
-          <option value="Pending" selected>Pending</option>
-          <option value="Live">Live</option>
-        </select>
-        <button id="btnCreate" class="px-6 py-3 bg-slate-900 text-white rounded-xl font-bold italic hover:bg-blue-600">Create & Edit</button>
+    <!-- ✅ MASTER ADD UNIT BAR (HQ ONLY) -->
+    <div id="masterAddBar" class="hidden bg-white rounded-[2.2rem] shadow-2xl border border-slate-100 p-5 md:p-6 mb-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex items-center gap-4 min-w-0">
+          <div class="w-14 h-14 rounded-2xl bg-slate-900 text-white flex items-center justify-center shrink-0">
+            <i class="fa-solid fa-plus text-xl"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="font-extrabold text-slate-900 italic">Master Add Unit</div>
+            <div class="text-[11px] text-slate-400 font-bold uppercase tracking-widest">
+              Add new house row • auto run HP ID • then go to edit
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-4 w-full md:w-auto">
+          <input id="addPlot" class="px-4 py-3 rounded-2xl border border-slate-200 font-extrabold italic text-slate-900"
+                 placeholder="PLOT เช่น Z-15">
+
+          <select id="addStatus" class="px-4 py-3 rounded-2xl border border-slate-200 font-extrabold italic text-slate-900">
+            <option value="Available">Available</option>
+            <option value="Under Con">Under Con</option>
+            <option value="Reserved">Reserved</option>
+            <option value="Sold">Sold</option>
+          </select>
+
+          <select id="addVisibility" class="px-4 py-3 rounded-2xl border border-slate-200 font-extrabold italic text-slate-900">
+            <option value="Offline">Offline</option>
+            <option value="Pending" selected>Pending</option>
+            <option value="Live">Live</option>
+          </select>
+
+          <button id="btnCreateUnit"
+                  class="px-5 py-3 rounded-2xl bg-slate-900 text-white font-extrabold italic hover:bg-blue-600 transition-all active:scale-95">
+            <i class="fa-solid fa-bolt mr-2"></i>Create &amp; Edit
+          </button>
+        </div>
+      </div>
+
+      <div id="addBarMsg" class="hidden mt-4 text-sm font-bold text-rose-600 bg-rose-50 border border-rose-100 rounded-2xl px-4 py-3">
+        ❌ Unknown error
+      </div>
+
+      <div class="mt-3 text-[11px] text-slate-400 font-bold">
+        * ใช้ได้เฉพาะ Master/HQ (ถ้าไม่มีสิทธิ์ แถบนี้จะไม่แสดง)
       </div>
     </div>
 
-    <div id="tableWrap" class="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden">
+    <div id="loadingBlock" class="bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-8 text-center text-slate-300 font-bold animate-pulse uppercase">
+      🔄 Syncing database...
+    </div>
+
+    <div id="mobileList" class="hidden space-y-4"></div>
+
+    <div id="desktopTableWrap" class="hidden bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-100">
       <table class="w-full text-center">
-        <thead class="bg-slate-900 text-white text-xs uppercase">
+        <thead class="bg-slate-900 text-white text-[10px] uppercase">
           <tr>
-            <th class="py-6">ID</th>
-            <th>Plot</th>
+            <th class="py-6 pl-8 text-left">Cover</th>
+            <th class="text-left">Unit ID</th>
+            <th class="text-left">Plot</th>
             <th>Status</th>
             <th>Visibility</th>
             <th>Manage</th>
           </tr>
         </thead>
-        <tbody id="unitTableBody" class="text-sm"></tbody>
+        <tbody id="unitTableBody" class="text-xs"></tbody>
       </table>
     </div>
+
   </div>
 
   <script>
+    // ================================
+    // CONFIG
+    // ================================
     const API_URL = "https://script.google.com/macros/s/AKfycbyNPiuM1Rz70r6E38eRLQoQXIrNUTKsQsqVRLU2tOmwO9K9HfBBnO-7-I9fn6UlTZWk/exec";
-    const TOKEN = localStorage.getItem("HP_AUTH_TOKEN");
-    const ROLE = localStorage.getItem("HP_AUTH_ROLE");
-    const PROJECT = "HP00";
+    const urlParams = new URLSearchParams(window.location.search);
+    const PROJECT_ID = urlParams.get("project") || "HP00";
+    const HOME_URL = "index.html";
+    document.getElementById("homeBtn").href = HOME_URL;
 
-    if(!TOKEN) location.href = "gateway.html";
-    if(ROLE === "HQ") document.getElementById("masterAddBar").classList.remove("hidden");
+    // ✅ token/role จาก localStorage (มาจาก gateway)
+    const TOKEN = localStorage.getItem("HP_AUTH_TOKEN") || "";
+    const ROLE  = (localStorage.getItem("HP_AUTH_ROLE") || "").trim(); // "HQ" | "PROJECT"
+
+    // ถ้าไม่มี token ให้กลับไปหน้า gateway
+    if (!TOKEN) {
+      location.href = `gateway.html?project=${encodeURIComponent(PROJECT_ID)}`;
+    }
+
+    // ================================
+    // MASTER BAR (HQ only)
+    // ================================
+    function showAddMsg(msg){
+      const el = document.getElementById("addBarMsg");
+      el.textContent = "❌ " + (msg || "Error");
+      el.classList.remove("hidden");
+    }
+    function hideAddMsg(){
+      document.getElementById("addBarMsg").classList.add("hidden");
+    }
+
+    function initMasterAddBar_(){
+      const bar = document.getElementById("masterAddBar");
+      if (ROLE === "HQ") bar.classList.remove("hidden");
+      else bar.classList.add("hidden");
+
+      const btn = document.getElementById("btnCreateUnit");
+      btn.addEventListener("click", createUnitAndGoEdit_);
+    }
+
+    async function createUnitAndGoEdit_(){
+      hideAddMsg();
+
+      if (ROLE !== "HQ") {
+        return showAddMsg("forbidden: HQ only");
+      }
+
+      const plot = (document.getElementById("addPlot").value || "").trim();
+      const status = document.getElementById("addStatus").value || "Available";
+      const vis = document.getElementById("addVisibility").value || "Pending";
+
+      if (!plot) return showAddMsg("กรุณากรอก Plot ก่อน");
+
+      const btn = document.getElementById("btnCreateUnit");
+      const old = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i>Creating...';
+
+      try{
+        const payload = {
+          mode: "createUnit",
+          project: PROJECT_ID,
+          token: TOKEN,
+          Plot: plot,
+          Status: status,
+          System_Status: vis
+        };
+
+        const res = await fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+
+        const out = await res.json().catch(()=> ({}));
+        if (!res.ok || out.error) throw new Error(out.error || "Create failed");
+
+        const hpId = (out.hpId || "").trim();
+        if (!hpId) throw new Error("HP ID not returned");
+
+        // ไปหน้า edit ทันที
+        const url = `edit.html?id=${encodeURIComponent(hpId)}&project=${encodeURIComponent(PROJECT_ID)}&token=${encodeURIComponent(TOKEN)}`;
+        window.location.href = url;
+
+      }catch(err){
+        showAddMsg(err.message || String(err));
+        btn.disabled = false;
+        btn.innerHTML = old;
+      }
+    }
+
+    // ================================
+    // HELPERS
+    // ================================
+    function statusBadge(status) {
+      const raw = (status ?? "").toString().trim();
+      const s = raw.toLowerCase();
+
+      if (!raw || raw === "-") {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-100 text-slate-500">
+                  <span class="w-2 h-2 rounded-full bg-slate-300"></span> -
+                </span>`;
+      }
+      if (s.includes("available")) {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-emerald-50 text-emerald-700">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Available
+                </span>`;
+      }
+      if (s.includes("under") || s.includes("construct")) {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-sky-50 text-sky-700">
+                  <span class="w-2 h-2 rounded-full bg-sky-500"></span> Under Construction
+                </span>`;
+      }
+      if (s.includes("reserved")) {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-amber-50 text-amber-700">
+                  <span class="w-2 h-2 rounded-full bg-amber-500"></span> Reserved
+                </span>`;
+      }
+      if (s.includes("sold")) {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-rose-50 text-rose-700">
+                  <span class="w-2 h-2 rounded-full bg-rose-500"></span> Sold
+                </span>`;
+      }
+      return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-50 text-slate-700">
+                <span class="w-2 h-2 rounded-full bg-slate-400"></span> ${escapeHtml(raw)}
+              </span>`;
+    }
+
+    function visibilityBadge(v) {
+      const raw = (v ?? "").toString().trim();
+      const s = raw.toLowerCase();
+
+      if (!raw || raw === "-") {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-100 text-slate-500">
+                  <span class="w-2 h-2 rounded-full bg-slate-300"></span> -
+                </span>`;
+      }
+      if (s.includes("live") || s.includes("online")) {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-blue-50 text-blue-700">
+                  <span class="w-2 h-2 rounded-full bg-blue-500"></span> Live
+                </span>`;
+      }
+      if (s.includes("pending") || s.includes("review")) {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-amber-50 text-amber-700">
+                  <span class="w-2 h-2 rounded-full bg-amber-500"></span> Pending
+                </span>`;
+      }
+      if (s.includes("off") || s.includes("offline") || s.includes("hide")) {
+        return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-100 text-slate-600">
+                  <span class="w-2 h-2 rounded-full bg-slate-400"></span> Offline
+                </span>`;
+      }
+      return `<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full font-bold text-[11px] bg-slate-50 text-slate-700">
+                <span class="w-2 h-2 rounded-full bg-slate-400"></span> ${escapeHtml(raw)}
+              </span>`;
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function isMobile() {
+      return window.matchMedia("(max-width: 768px)").matches;
+    }
+
+    function pickThumb(u) {
+      return (u.Thumbnail_Image || u.thumbnail || u.thumb || u.thumbUrl || "").toString().trim();
+    }
+
+    function thumbTag(url, size = "mobile") {
+      const base = (size === "desktop")
+        ? "w-10 h-14 rounded-xl"
+        : "w-16 h-20 rounded-2xl";
+
+      if (!url) {
+        return `<div class="${base} bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-300 font-bold">🏠</div>`;
+      }
+      return `<img src="${url}" class="${base} object-cover border border-slate-200 shadow-sm" loading="lazy" decoding="async">`;
+    }
+
+    // ================================
+    // ✅ EDIT NAV
+    // ================================
+    function goEditById(id){
+      const hpId = (id || "").toString().trim();
+      if (!hpId || hpId === "-") return;
+
+      const url =
+        `edit.html?id=${encodeURIComponent(hpId)}&project=${encodeURIComponent(PROJECT_ID)}&token=${encodeURIComponent(TOKEN)}`;
+      window.location.href = url;
+    }
+
+    document.addEventListener("click", (ev) => {
+      const btn = ev.target.closest("[data-edit-id]");
+      if (!btn) return;
+      ev.preventDefault();
+      const id = btn.getAttribute("data-edit-id") || "";
+      goEditById(id);
+    });
+
+    // ================================
+    // RENDERERS
+    // ================================
+    function renderDesktop(units) {
+      const tbody = document.getElementById("unitTableBody");
+
+      if (!units || units.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="py-16 text-slate-400 font-bold">No data</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = units.map(u => {
+        const id = (u.id || "-").toString();
+        const plot = u.plot || "-";
+        const unitStatus = u.status || u.unitStatus || "-";
+        const sysStatus = u.sysStatus || "-";
+        const thumb = pickThumb(u);
+
+        return `
+          <tr class="hover:bg-slate-50 border-b">
+            <td class="py-4 pl-8 text-left">
+              ${thumbTag(thumb, "desktop")}
+            </td>
+            <td class="text-left font-bold text-slate-900 text-[11px]">${escapeHtml(id)}</td>
+            <td class="text-left font-extrabold text-slate-800 text-[15px]">${escapeHtml(plot)}</td>
+            <td>${statusBadge(unitStatus)}</td>
+            <td>${visibilityBadge(sysStatus)}</td>
+            <td>
+              <button
+                type="button"
+                data-edit-id="${escapeHtml(id)}"
+                class="p-2 text-orange-500 hover:scale-110 transition-all"
+                aria-label="Edit"
+                title="Edit"
+              >
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function renderMobile(units) {
+      const list = document.getElementById("mobileList");
+
+      if (!units || units.length === 0) {
+        list.innerHTML = `<div class="bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-8 text-center text-slate-400 font-bold">No data</div>`;
+        return;
+      }
+
+      list.innerHTML = units.map(u => {
+        const id = (u.id || "-").toString();
+        const plot = u.plot || "-";
+        const unitStatus = u.status || u.unitStatus || "-";
+        const sysStatus = u.sysStatus || "-";
+        const thumb = pickThumb(u);
+
+        return `
+          <div class="bg-white rounded-[2rem] shadow-2xl border border-slate-100 p-4">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex gap-4 min-w-0">
+                <div class="shrink-0">
+                  ${thumbTag(thumb, "mobile")}
+                </div>
+
+                <div class="min-w-0">
+                  <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Unit ID</div>
+                  <div class="text-[11px] font-bold text-slate-900 italic truncate">${escapeHtml(id)}</div>
+
+                  <div class="mt-2">
+                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Plot</div>
+                    <div class="text-[22px] font-extrabold text-slate-900 italic leading-tight">${escapeHtml(plot)}</div>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                data-edit-id="${escapeHtml(id)}"
+                class="w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center hover:bg-orange-100 transition-all active:scale-95 shrink-0"
+                aria-label="Edit"
+                title="Edit"
+              >
+                <i class="fa-solid fa-pen"></i>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mt-4">
+              <div class="bg-slate-50 rounded-2xl p-3">
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Visibility</div>
+                <div class="mt-2">${visibilityBadge(sysStatus)}</div>
+              </div>
+
+              <div class="bg-slate-50 rounded-2xl p-3">
+                <div class="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Status</div>
+                <div class="mt-2">${statusBadge(unitStatus)}</div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function showLoading(on) {
+      const lb = document.getElementById("loadingBlock");
+      if (on) {
+        lb.classList.remove("hidden");
+        lb.classList.add("animate-pulse");
+        lb.innerText = "🔄 Syncing database...";
+      } else {
+        lb.classList.add("hidden");
+      }
+    }
+
+    // ================================
+    // LOAD + SMART RESIZE
+    // ================================
+    let CACHE_UNITS = [];
+    let CURRENT_MOBILE = isMobile();
+
+    function renderByViewport() {
+      const nowMobile = isMobile();
+      document.getElementById("mobileList").classList.toggle("hidden", !nowMobile);
+      document.getElementById("desktopTableWrap").classList.toggle("hidden", nowMobile);
+
+      if (nowMobile) renderMobile(CACHE_UNITS);
+      else renderDesktop(CACHE_UNITS);
+
+      CURRENT_MOBILE = nowMobile;
+    }
 
     async function init() {
       try {
-        // ✅ แนบ Token เพื่อให้ Admin เห็นรายการ Offline
-        const res = await fetch(`${API_URL}?mode=getUnitList&project=${PROJECT}&token=${TOKEN}`);
+        initMasterAddBar_();
+
+        showLoading(true);
+
+        const res = await fetch(`${API_URL}?mode=getUnitList&project=${encodeURIComponent(PROJECT_ID)}&t=${Date.now()}`);
         const data = await res.json();
-        
-        document.getElementById("projectTitle").textContent = (data[0]?.projectName || PROJECT) + " Dashboard";
-        
-        const tbody = document.getElementById("unitTableBody");
-        tbody.innerHTML = data.map(u => `
-          <tr class="border-b hover:bg-slate-50">
-            <td class="py-4 font-bold">${u.id}</td>
-            <td class="font-extrabold text-slate-800">${u.plot}</td>
-            <td><span class="px-3 py-1 rounded-full bg-slate-100 text-[10px] font-bold">${u.status}</span></td>
-            <td><span class="px-3 py-1 rounded-full font-bold text-[10px] ${u.sysStatus==='Offline'?'bg-rose-50 text-rose-600':'bg-blue-50 text-blue-600'}">${u.sysStatus}</span></td>
-            <td><button onclick="location.href='edit.html?id=${u.id}'" class="text-orange-500 hover:scale-125 transition-all"><i class="fa-solid fa-pen-to-square"></i></button></td>
-          </tr>
-        `).join("");
-      } catch(e) { alert("Error loading dashboard"); }
+
+        let projectName = "";
+        if (Array.isArray(data) && data.length > 0) {
+          projectName = (data.find(x => x && x.projectName && String(x.projectName).trim() !== "")?.projectName) || "";
+        }
+        document.getElementById("projectTitle").innerText = projectName ? projectName : PROJECT_ID;
+
+        CACHE_UNITS = Array.isArray(data) ? data : [];
+        showLoading(false);
+        renderByViewport();
+
+      } catch (e) {
+        document.getElementById("projectTitle").innerText = PROJECT_ID;
+        const lb = document.getElementById("loadingBlock");
+        lb.classList.remove("animate-pulse");
+        lb.innerText = "⚠️ Connection Error";
+      }
     }
+
+    window.addEventListener("resize", () => {
+      const nowMobile = isMobile();
+      if (nowMobile !== CURRENT_MOBILE) renderByViewport();
+    });
 
     window.onload = init;
   </script>
