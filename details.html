@@ -1,715 +1,1491 @@
 <!doctype html>
 <html lang="th">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>smart properties system</title>
-  <style>
-    :root{
-      --bg:#9eb5cf;
-      --card:#ffffff;
-      --soft:#eef3f8;
-      --text:#0b1320;
-      --muted:#6b7a90;
-      --shadow:0 12px 30px rgba(0,0,0,.12);
-      --radius:22px;
-      --radius2:18px;
-      --line:rgba(255,255,255,.45);
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,"Noto Sans Thai",sans-serif;
-      background: radial-gradient(1200px 700px at 10% 10%, rgba(255,255,255,.26), transparent 60%),
-                  radial-gradient(1100px 700px at 90% 30%, rgba(255,255,255,.18), transparent 60%),
-                  linear-gradient(180deg, #8faac8, #a7bdd5 55%, #95b2cf);
-      color:var(--text);
-      min-height:100vh;
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>smart properties system · details</title>
+<link rel="preconnect" href="https://script.google.com">
+<link rel="preconnect" href="https://lh3.googleusercontent.com">
+<style>
+/* ====== (คง CSS เดิมทั้งหมดของคุณ) ====== */
+:root{
+--bg:#a8bdd6;
+--card:#ffffff;
+--text:#0f172a;
+--muted:#6b7c93;
+--radius:22px;
+--shadow: 0 12px 30px rgba(0,0,0,.12);
+--soft:#f3f6fb;
+--line:rgba(255,255,255,.45);
+}
+*{box-sizing:border-box}
+body{
+margin:0;
+font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans Thai", sans-serif;
+background: radial-gradient(ellipse at top, rgba(255,255,255,.25), rgba(255,255,255,0) 55%) , var(--bg);
+color:var(--text);
+}
+.wrap{max-width:1100px; margin:0 auto; padding:16px 14px 30px;}
+.topbar{
+display:flex; align-items:center; justify-content:space-between;
+padding:12px 12px;
+border-radius: 18px;
+background: rgba(255,255,255,.18);
+backdrop-filter: blur(10px);
+border: 1px solid var(--line);
+}
+.brand{display:flex; gap:12px; align-items:center;}
+.logo{
+width:44px; height:44px; border-radius:999px; background:rgba(255,255,255,.55);
+display:grid; place-items:center; font-weight:800;
+flex:0 0 auto;
 
-    /* ✅ แก้ไขตามคำสั่ง: ลดขนาด Front ลง ~15% ให้พอดีทั้งมือถือ/คอม */
-    .wrap{max-width:1000px;margin:0 auto;padding:12px 12px 38px}
+/* ✅ FIX ONLY: ทำให้คลิกได้แบบลิงก์ และไม่เปลี่ยนสไตล์เดิม */
+text-decoration:none;
+color: inherit;
+}
+.logo:active{ transform: scale(.99); }
+.logo svg{ width:22px; height:22px; display:block; }
 
-    .topbar{
-      background: rgba(255,255,255,.18);
-      border: 1px solid var(--line);
-      border-radius: 26px;
-      padding: 10px 10px;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      backdrop-filter: blur(8px);
-    }
-    .logo{
-      width:38px;height:38px;border-radius:999px;
-      background: rgba(255,255,255,.55);
-      display:grid;place-items:center;
-      font-weight:900;
-      letter-spacing:.5px;
-      font-size:14px;
-    }
-    .titlebox{flex:1;min-width:0}
-    .title{
-      font-size:16px;
-      font-weight:900;
-      line-height:1.1;
-      margin:0;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .subtitle{
-      margin-top:4px;
-      font-size:11px;
-      color:rgba(11,19,32,.7);
-      display:flex;
-      gap:8px;
-      align-items:center;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .chip{
-      display:inline-flex;align-items:center;gap:6px;
-      padding:5px 9px;
-      border-radius:999px;
-      background: rgba(255,255,255,.55);
-      border: 1px solid rgba(255,255,255,.45);
-      font-weight:700;
-      color:rgba(11,19,32,.75);
-      font-size:12px;
-    }
-    .iconbtn{
-      width:38px;height:38px;border-radius:999px;
-      border: 1px solid rgba(255,255,255,.55);
-      background: rgba(255,255,255,.55);
-      display:grid;place-items:center;
-      cursor:pointer;
-      user-select:none;
-      text-decoration:none;
-      color:inherit;
-    }
-    .iconbtn:active{transform:scale(.98)}
-    .iconbtn svg{width:18px;height:18px;opacity:.9}
+.titles{min-width:0}
+.titles h1{
+margin:0;
+font-size:20px;
+line-height:1.15;
+font-weight:1100;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+letter-spacing:.2px;
+}
+.titles .sub{display:none;}
+.backBtn{
+width:44px; height:44px; border-radius:999px;
+border:0; background: rgba(255,255,255,.55);
+cursor:pointer; font-size:18px; font-weight:900;
+flex:0 0 auto;
+}
+.card{
+margin-top:14px;
+background: rgba(255,255,255,.88);
+border:1px solid rgba(255,255,255,.65);
+border-radius: var(--radius);
+box-shadow: var(--shadow);
+overflow:hidden;
+}
+/* Gallery */
+.gallery{
+position:relative;
+background:#dfe9f6;
+}
+.mainSlide{
+width:100%;
+aspect-ratio: 16/10;
+object-fit:cover;
+display:block;
+}
+.tagTopLeft{
+position:absolute;
+left:24px;
+top:24px;
+padding:16px 30px;
+border-radius:999px;
+background: rgba(255,255,255,.92);
+border:0;
+box-shadow:none;
+backdrop-filter:none;
+font-weight:1100;
+font-size:42px;
+line-height:1;
+color:#0f172a;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+max-width:78%;
+}
+.tagBottomRight{
+position:absolute;
+right:24px;
+bottom:22px;
+padding:0;
+border-radius:0;
+background:transparent;
+border:0;
+box-shadow:none;
+backdrop-filter:none;
+font-weight:1100;
+font-size:36px;
+line-height:1;
+color: rgba(255,255,255,1);
+text-shadow: 0 8px 16px rgba(0,0,0,.38);
+user-select:none;
+pointer-events:none;
+}
+@media (max-width: 520px){
+  .tagTopLeft{
+    left:18px;
+    top:18px;
+    padding:6px 11px;
+    font-size:17px;
+  }
+  .tagBottomRight{
+    right:18px;
+    bottom:18px;
+    font-size:12px;
+    text-shadow: 0 10px 18px rgba(0,0,0,.40);
+  }
+}
+.thumbStrip{
+background: rgba(255,255,255,.78);
+padding:10px;
+display:flex;
+gap:10px;
+overflow:auto;
+scroll-snap-type: x mandatory;
+}
+.thumb{
+width:92px; height:64px;
+flex:0 0 auto;
+border-radius: 16px;
+object-fit:cover;
+border:3px solid transparent;
+cursor:pointer;
+scroll-snap-align: start;
+background:#e8f0fb;
+}
+.thumb.active{border-color:#0f172a;}
+.content{padding:14px;}
+.headRow{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+flex-wrap:nowrap;
+}
+.hp{display:none;}
+.price{
+font-size:28px;
+font-weight:1100;
+letter-spacing:.2px;
+white-space:nowrap;
+flex:1 1 auto;
+min-width:0;
+}
+.statusBelow{
+display:inline-flex;
+align-items:center;
+justify-content:center;
+padding:8px 12px;
+border-radius: 12px;
+font-weight:1100;
+font-size:16px;
+line-height:1;
+background: rgba(255,255,255,.92);
+border: 2px solid rgba(16,185,129,.55);
+color: rgba(5,150,105,1);
+box-shadow: 0 10px 20px rgba(0,0,0,.10);
+white-space:nowrap;
+flex:0 0 auto;
+}
+.miniMeta{
+margin-top:6px;
+font-size:13px;
+font-weight:900;
+color: rgba(15,23,42,.55);
+letter-spacing:.2px;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+@media (max-width:420px){
+price{font-size:24px}
+.statusBelow{font-size:14px; padding:7px 10px;}
+.miniMeta{font-size:12px;}
+}
+.descBox{
+margin-top:12px;
+background: rgba(255,255,255,.92);
+border: 2px solid rgba(59,130,246,.35);
+border-radius: 18px;
+box-shadow: 0 10px 22px rgba(0,0,0,.08);
+padding:12px 12px;
+}
+.descText{
+font-weight:950;
+color: rgba(15,23,42,.92);
+line-height:1.45;
+white-space:pre-wrap;
+word-break:break-word;
+}
+.descEmpty{
+color: rgba(15,23,42,.55);
+font-weight:900;
+}
+.gridInfo{
+margin-top:14px;
+display:grid;
+grid-template-columns: 1fr;
+gap:10px;
+}
+@media(min-width:900px){
+.gridInfo{grid-template-columns: repeat(3, 1fr);}
+}
+.infoBox{
+background: rgba(15,23,42,.05);
+border:1px solid rgba(15,23,42,.06);
+border-radius: 18px;
+padding:12px 12px;
+display:flex; justify-content:space-between; gap:10px;
+font-weight:1100;
+}
+.k{color:rgba(15,23,42,.55); font-weight:900;}
+.v{color:rgba(15,23,42,.95); font-weight:1100; text-align:right; white-space:pre-wrap;}
+.errorBox{
+margin-top:14px;
+padding:14px;
+border-radius: 18px;
+background: rgba(255,255,255,.7);
+border:1px solid rgba(255,255,255,.65);
+font-weight:1100;
+color:#8b1d1d;
+display:none;
+}
+.skeleton{
+background: linear-gradient(90deg, rgba(255,255,255,.55), rgba(255,255,255,.25), rgba(255,255,255,.55));
+background-size: 200% 100%;
+animation: shimmer 1.2s infinite linear;
+}
+@keyframes shimmer{
+0%{background-position: 200% 0;}
+100%{background-position: -200% 0;}
+}
+.pageLoader{
+position:fixed;
+inset:0;
+display:flex;
+align-items:center;
+justify-content:center;
+background: radial-gradient(ellipse at top, rgba(255,255,255,.25), rgba(255,255,255,0) 55%) , var(--bg);
+z-index:99999;
+}
+.loaderPanel{
+text-align:center;
+padding:18px 22px;
+border-radius: 26px;
+background: rgba(255,255,255,.18);
+border: 1px solid var(--line);
+backdrop-filter: blur(10px);
+box-shadow: 0 18px 40px rgba(0,0,0,.16);
+max-width: 92vw;
+}
+.loaderEmojis{
+display:flex;
+gap:18px;
+justify-content:center;
+align-items:center;
+font-size:52px;
+line-height:1;
+filter: drop-shadow(0 10px 20px rgba(0,0,0,.18));
+}
+.loaderEmojis span{
+display:inline-block;
+animation: bounce 0.9s ease-in-out infinite;
+}
+.loaderEmojis span:nth-child(2){ animation-delay: .12s; }
+.loaderEmojis span:nth-child(3){ animation-delay: .24s; }
+@keyframes bounce{
+0%,100%{ transform: translateY(0); opacity:.95; }
+50%{ transform: translateY(-12px); opacity:1; }
+}
+.loaderText{
+margin-top:12px;
+font-weight:1100;
+letter-spacing:.6px;
+color: rgba(15,23,42,.92);
+text-shadow: 0 10px 22px rgba(0,0,0,.10);
+font-size:22px;
+white-space:nowrap;
+}
+@media (max-width:420px){
+.loaderEmojis{font-size:44px}
+.loaderText{font-size:18px}
+}
+.navArrow{
+position:absolute;
+top:50%;
+transform: translateY(-50%);
+width:54px;
+height:54px;
+border-radius: 999px;
+border:1px solid rgba(255,255,255,.55);
+background: rgba(255,255,255,.22);
+backdrop-filter: blur(8px);
+box-shadow: 0 10px 22px rgba(0,0,0,.14);
+display:grid;
+place-items:center;
+cursor:pointer;
+user-select:none;
+z-index:5;
+}
+.navArrow:active{ transform: translateY(-50%) scale(.98); }
+.navArrow svg{
+width:24px;height:24px;
+stroke: rgba(255,255,255,.95);
+opacity:.95;
+}
+.navLeft{ left:14px; }
+.navRight{ right:14px; }
+@media (max-width:420px){
+.navArrow{ width:48px;height:48px; }
+.navArrow svg{ width:22px;height:22px; }
+}
+.otherSection{
+margin-top:14px;
+padding:14px;
+border-radius: 18px;
+background: rgba(255,255,255,.65);
+border: 1px solid rgba(255,255,255,.65);
+}
+.otherTitle{
+font-weight:1100;
+letter-spacing:.3px;
+color: rgba(15,23,42,.88);
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:10px;
+}
+.otherHint{
+font-weight:900;
+color: rgba(15,23,42,.55);
+font-size:12px;
+white-space:nowrap;
+}
+.otherGrid{
+margin-top:12px;
+display:grid;
+grid-template-columns: repeat(2, minmax(0, 1fr));
+gap:12px;
+}
+.otherCard{
+border-radius: 18px;
+background: rgba(255,255,255,.92);
+border: 1px solid rgba(15,23,42,.06);
+box-shadow: 0 10px 22px rgba(0,0,0,.08);
+overflow:hidden;
+cursor:pointer;
+user-select:none;
+transition: transform .12s ease;
+}
+.otherCard:active{ transform: scale(.985); }
+.otherImg{
+width:100%;
+aspect-ratio: 16/10;
+object-fit:cover;
+display:block;
+background:#e8f0fb;
+}
+.otherBody{
+padding:10px 10px 12px;
+display:flex;
+flex-direction:column;
+gap:6px;
+}
 
-    /* controls */
-    .controls{
-      margin-top:10px;
-      display:flex;
-      justify-content:center;
-    }
-    .controlsInner{
-      width:100%;
-      max-width:731px;
-      display:flex;
-      gap:8px;
-      align-items:center;
-      justify-content:center;
-      flex-wrap:nowrap;
-    }
-    .selectWrap{
-      flex:1 1 0;
-      min-width: 0;
-      max-width: none;
-      position:relative;
-    }
-    .select{
-      width:100%;
-      appearance:none;
-      -webkit-appearance:none;
-      border:1px solid rgba(255,255,255,.55);
-      background: rgba(255,255,255,.45);
-      border-radius: 16px;
-      padding: 10px 40px 10px 12px;
-      font-weight:900;
-      color:rgba(11,19,32,.85);
-      outline:none;
-      box-shadow: 0 10px 22px rgba(0,0,0,.08);
-      font-size:14px;
-      line-height:1.2;
-    }
-    .selectWrap:after{
-      content:"";
-      position:absolute;
-      right:12px; top:50%;
-      width:0;height:0;
-      border-left:6px solid transparent;
-      border-right:6px solid transparent;
-      border-top:8px solid rgba(11,19,32,.7);
-      transform: translateY(-20%);
-      pointer-events:none;
-    }
+/* =========================
+   ✅ FIX จุดที่ 1 (Other Plots): ให้ Z-08 + Under Con อยู่บรรทัดเดียวกัน ชิดกัน และไม่ตัดคำ
+   ========================= */
+.otherTopRow{
+display:flex;
+align-items:center;          /* ✅ ให้อยู่แนวเดียวกัน */
+justify-content:space-between;
+gap:6px;                    /* ✅ ชิดกันขึ้น */
+flex-wrap:nowrap;           /* ✅ ห้ามตกบรรทัด */
+}
+.otherPlot{
+font-weight:1100;
+font-size:13px;
+color: rgba(15,23,42,.95);
+white-space:nowrap;         /* ✅ บรรทัดเดียว */
+overflow:hidden;
+text-overflow:ellipsis;
+flex:1 1 auto;
+min-width:0;
+}
 
-    /* grid */
-    .grid{
-      margin-top:10px;
-      display:grid;
-      gap:12px;
-      grid-template-columns: 1fr;
-    }
-    @media (min-width: 880px){
-      .grid{grid-template-columns: repeat(3, minmax(0, 1fr));}
-    }
+/* ✅ ป้าย Under Con/Available/Reserved ให้เล็กลง และไม่ตัดคำ */
+.otherStatus{
+display:inline-flex;
+align-items:center;
+justify-content:center;
+padding:4px 7px;            /* ✅ เล็กลง */
+border-radius: 999px;
+font-weight:1000;
+font-size:10.5px;           /* ✅ เล็กลง */
+line-height:1;
+background: rgba(255,255,255,.92);
+border: 2px solid rgba(15,23,42,.15);
+color: rgba(15,23,42,.88);
+white-space:nowrap;         /* ✅ ไม่ตัดคำ */
+flex:0 0 auto;
+}
 
-    .card{
-      background: rgba(255,255,255,.92);
-      border: 1px solid rgba(255,255,255,.75);
-      border-radius: var(--radius);
-      overflow:hidden;
-      box-shadow: var(--shadow);
-    }
-    .cover{
-      position:relative;
-      aspect-ratio: 16/10;
-      background:#e9eef5;
-      overflow:hidden;
-    }
-    .cover img{
-      width:100%;height:100%;
-      object-fit:cover;
-      display:block;
-      transform: translateZ(0);
-    }
-    .cover .skeleton{
-      position:absolute;inset:0;
-      background: linear-gradient(90deg, #e9eef5 0%, #f4f7fb 40%, #e9eef5 80%);
-      background-size: 200% 100%;
-      animation: shimmer 1.2s linear infinite;
-    }
-    @keyframes shimmer{0%{background-position:0 0}100%{background-position:200% 0}}
+/* =========================
+   ✅ FIX จุดที่ 2 (Other Plots): แสดง Land/Living "คนละแถว" เพื่อให้ไม่ตัดคำ (ตามคำสั่งใหม่)
+   ========================= */
+.otherMeta{
+font-weight:400;            /* ✅ ตัวบาง */
+font-size:10.5px;           /* ✅ ขนาดตามปัจจุบัน */
+letter-spacing:.1px;
+color: rgba(15,23,42,.55);
 
-    .badgeStatus{
-      position:absolute;
-      top:10px; right:10px;
-      padding:8px 12px;
-      border-radius: 999px;
-      font-weight:1000;
-      font-size:12px;
-      letter-spacing:.2px;
-      box-shadow: 0 10px 20px rgba(0,0,0,.10);
-      border: 1px solid rgba(255,255,255,.7);
-      backdrop-filter: blur(6px);
-      max-width: 75%;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
+/* ✅ เปลี่ยนจาก one-line ellipsis -> 2 lines */
+white-space:normal;
+overflow:visible;
+text-overflow:clip;
 
-    .body{padding:10px 12px 12px}
-    .row1{
-      display:flex;
-      align-items:flex-end;
-      justify-content:space-between;
-      gap:8px;
-    }
-    .plotLine{
-      font-weight:1000;
-      color: rgba(11,19,32,.75);
-      letter-spacing:.2px;
-      font-size:14px;
-    }
-    .price{
-      font-size:17px;
-      font-weight:1000;
-      white-space:nowrap;
-    }
+display:flex;
+flex-direction:column;
+gap:2px;
+line-height:1.15;
+}
+.otherMeta .mLine{
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
 
-    .meta{
-      margin-top:8px;
-      display:flex;
-      gap:8px;
-      flex-wrap:nowrap;
-    }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:8px 8px;
-      border-radius: 999px;
-      background: rgba(11,19,32,.04);
-      border: 1px solid rgba(11,19,32,.08);
-      font-weight:900;
-      color: rgba(11,19,32,.78);
-      min-width: 0;
-      flex: 1 1 0;
-      justify-content:center;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      font-size:14px;
-    }
-    .pill .ico{
-      font-size:16px;
-      line-height:1;
-      opacity:.95;
-      flex:0 0 auto;
-    }
-    .pill .lbl{
-      font-weight:1000;
-      letter-spacing:.2px;
-    }
+.otherPrice{
+font-weight:1100;
+font-size:16px;
+color: rgba(15,23,42,.92);
+white-space:nowrap;
+}
 
-    .btn{
-      margin-top:10px;
-      width:100%;
-      border:none;
-      border-radius: 16px;
-      padding:12px 12px;
-      font-size:15px;
-      font-weight:1000;
-      background: #c6f0d8;
-      color: rgba(11,19,32,.86);
-      cursor:pointer;
-    }
-    .btn:active{transform:scale(.99)}
+/* (คง .otherId เดิมไว้ได้ แต่จะไม่ใช้แล้ว) */
+.otherId{
+font-weight:600;
+font-size:11px;
+letter-spacing:-0.2px;
+color: rgba(15,23,42,.55);
+white-space:nowrap;
+overflow:hidden;
+text-overflow:clip;
+}
 
-    .empty{
-      margin-top:12px;
-      background: rgba(255,255,255,.55);
-      border: 1px solid rgba(255,255,255,.55);
-      border-radius: 16px;
-      padding: 12px;
-      text-align:center;
-      color: rgba(11,19,32,.75);
-      font-weight:900;
-      font-size:13px;
-    }
+/* ✅ ปรับสำหรับมือถือให้แน่นขึ้นอีก */
+@media (max-width: 420px) {
+  .otherPlot { font-size: 12px; }
+  .otherStatus { font-size: 10px; padding:3px 6px; }
+  .otherMeta { font-size: 10.5px; }
+}
 
-    /* toast */
-    .toast{
-      position:fixed;
-      left:50%;
-      bottom:18px;
-      transform:translateX(-50%);
-      background: rgba(11,19,32,.88);
-      color:#fff;
-      padding:10px 14px;
-      border-radius: 999px;
-      font-weight:800;
-      font-size:13px;
-      opacity:0;
-      pointer-events:none;
-      transition: opacity .2s ease, transform .2s ease;
-      z-index:9999;
-      max-width: 94vw;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .toast.show{opacity:1; transform:translateX(-50%) translateY(-6px);}
+/* ====== SHARE SECTION (ของเดิมคุณ) ====== */
+.shareSection{
+margin-top:14px;
+padding:14px;
+border-radius: 18px;
+background: rgba(255,255,255,.65);
+border: 1px solid rgba(255,255,255,.65);
+}
+.shareTopIcon{
+display:flex;
+justify-content:center;
+align-items:center;
+padding:8px 0 10px;
+opacity:.85;
+}
+.shareRow{
+display:flex;
+gap:14px;
+justify-content:center;
+overflow:auto;
+padding:10px 8px 6px;
+scroll-snap-type: x mandatory;
+-webkit-overflow-scrolling: touch;
 
-    /* Loading overlay */
-    .loader{
-      position:fixed;
-      inset:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      z-index:10000;
-      background: radial-gradient(1200px 700px at 10% 10%, rgba(255,255,255,.26), transparent 60%),
-                  radial-gradient(1100px 700px at 90% 30%, rgba(255,255,255,.18), transparent 60%),
-                  linear-gradient(180deg, #8faac8, #a7bdd5 55%, #95b2cf);
-    }
-    .loaderCard{
-      width:min(92vw, 520px);
-      padding:28px 18px;
-      border-radius:28px;
-      border:1px solid rgba(255,255,255,.5);
-      background: rgba(255,255,255,.16);
-      backdrop-filter: blur(10px);
-      text-align:center;
-    }
-    .loaderIcons{
-      display:flex;
-      gap:16px;
-      justify-content:center;
-      align-items:center;
-      margin-bottom:14px;
-      font-size:42px;
-    }
-    .wiggle{
-      display:inline-block;
-      animation: wiggle 1.05s ease-in-out infinite;
-      transform-origin: 50% 80%;
-      filter: drop-shadow(0 10px 16px rgba(0,0,0,.14));
-    }
-    .wiggle:nth-child(2){ animation-delay:.12s; }
-    .wiggle:nth-child(3){ animation-delay:.24s; }
-    @keyframes wiggle{
-      0%   { transform: translateY(0) rotate(0deg) scale(1); }
-      35%  { transform: translateY(-8px) rotate(-5deg) scale(1.02); }
-      70%  { transform: translateY(0) rotate(5deg) scale(1); }
-      100% { transform: translateY(0) rotate(0deg) scale(1); }
-    }
-    .loaderText{
-      font-weight:1000;
-      letter-spacing:1px;
-      font-size:22px;
-      color: rgba(255,255,255,.92);
-      text-shadow: 0 10px 18px rgba(0,0,0,.20);
-    }
-    .loaderSub{
-      margin-top:8px;
-      font-weight:800;
-      font-size:14px;
-      color: rgba(255,255,255,.85);
-      opacity:.95;
-    }
-    .loader.hide{
-      opacity:0;
-      pointer-events:none;
-      transition: opacity .22s ease;
-    }
-  </style>
+/* ✅ เพิ่ม: ให้ดูเนียนเหมือนรูป (ซ่อน scrollbar) */
+scrollbar-width: none;
+}
+.shareRow::-webkit-scrollbar{ display:none; }
+
+.shareBtn{
+flex:0 0 auto;
+width:58px;
+scroll-snap-align:center;
+border:0;
+background:transparent;
+cursor:pointer;
+text-align:center;
+user-select:none;
+}
+.shareCircle{
+width:52px; height:52px;
+border-radius:999px;
+background: rgba(255,255,255,.9);
+border: 1px solid rgba(15,23,42,.08);
+box-shadow: 0 10px 22px rgba(0,0,0,.10);
+display:grid;
+place-items:center;
+margin:0 auto;
+}
+.shareLbl{
+margin-top:6px;
+font-size:11px;
+font-weight:900;
+color: rgba(15,23,42,.65);
+white-space:nowrap;
+}
+.shareBtn:active .shareCircle{ transform: scale(.97); }
+#shareCanvas{ display:none; }
+
+/* ====== FB VISIT (ของเดิมคุณ) ====== */
+.fbVisitWrap{
+margin-top: 10px;
+display:flex;
+justify-content:center;
+}
+.fbVisitBtn{
+width:min(640px, 100%);
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+padding: 12px 14px;
+border-radius: 18px;
+text-decoration:none;
+font-weight:1100;
+letter-spacing:.2px;
+background: rgba(255,255,255,.90);
+border: 2px solid rgba(59,130,246,.55);
+box-shadow: 0 10px 22px rgba(0,0,0,.10);
+color:#1d4ed8;
+user-select:none;
+cursor:pointer;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+.fbVisitBtn:active{ transform: scale(.99); }
+.fbVisitIcon{
+width:28px; height:28px;
+border-radius: 12px;
+display:grid;
+place-items:center;
+flex:0 0 auto;
+background: rgba(29,78,216,.10);
+}
+.fbVisitBtn.hidden{ display:none; }
+
+/* ✅ FIX ONLY: Quick Link buttons ให้เป็นแถบยาวเรียงลงมาเหมือน FB */
+.quickLinks{
+margin-top: 10px;
+display:flex;
+flex-direction:column;       /* ✅ เรียงลงมา */
+align-items:center;
+gap:10px;
+}
+.quickBtn{
+width:min(640px, 100%);      /* ✅ แถบยาวเหมือน FB */
+display:flex;
+align-items:center;
+justify-content:center;
+gap:10px;
+padding: 12px 14px;
+border-radius: 18px;
+text-decoration:none;
+font-weight:1100;
+letter-spacing:.2px;
+background: rgba(255,255,255,.90);
+border: 2px solid rgba(15,23,42,.12);
+box-shadow: 0 10px 22px rgba(0,0,0,.10);
+color: rgba(15,23,42,.92);
+user-select:none;
+cursor:pointer;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+.quickBtn:active{ transform: scale(.99); }
+.quickIcon{
+width:28px; height:28px;
+border-radius: 12px;
+display:grid;
+place-items:center;
+flex:0 0 auto;
+background: rgba(15,23,42,.08);
+}
+.quickBtnPrimary{
+border-color: rgba(59,130,246,.45);
+color:#1d4ed8;
+}
+.quickBtnPrimary .quickIcon{
+background: rgba(29,78,216,.10);
+}
+.quickBtn.hidden{ display:none; }
+
+@media (max-width:420px){
+  .quickBtn{ padding:11px 12px; border-radius:16px; font-size:12px; }
+  .quickIcon{ width:24px; height:24px; border-radius:11px; }
+}
+
+/* ====== Bottom dock (ของเดิมคุณ) ====== */
+.wrap{ padding-bottom: 92px; }
+.bottomDock{
+position:fixed;
+left:0; right:0; bottom:0;
+z-index:9999;
+padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
+background: rgba(255,255,255,.40);
+backdrop-filter: blur(14px);
+border-top: 1px solid rgba(255,255,255,.55);
+}
+.dockInner{
+max-width:1100px;
+margin:0 auto;
+display:grid;
+grid-template-columns: repeat(3, minmax(0, 1fr));
+gap:10px;
+}
+.dockBtn{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+padding: 12px 10px;
+border-radius: 18px;
+text-decoration:none;
+font-weight: 1100;
+letter-spacing:.2px;
+background: rgba(255,255,255,.78);
+border: 1px solid rgba(15,23,42,.10);
+box-shadow: 0 10px 22px rgba(0,0,0,.10);
+color: rgba(15,23,42,.92);
+user-select:none;
+cursor:pointer;
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+}
+.dockBtn:active{ transform: scale(.99); }
+.dockIcon{
+width:26px; height:26px;
+border-radius: 12px;
+display:grid;
+place-items:center;
+font-size:14px;
+flex:0 0 auto;
+background: rgba(15,23,42,.08);
+}
+.dockBtn.disabled{
+opacity:.42;
+pointer-events:none;
+}
+@media (max-width:420px){
+.dockBtn{ padding:11px 8px; border-radius:16px; font-size:12px; }
+.dockIcon{ width:24px; height:24px; border-radius:11px; }
+}
+</style>
 </head>
-
 <body>
-  <div class="loader" id="loader" aria-live="polite">
-    <div class="loaderCard">
-      <div class="loaderIcons" aria-hidden="true">
-        <span class="wiggle">🐚</span>
-        <span class="wiggle">🌊</span>
-        <span class="wiggle">🌴</span>
-      </div>
-      <div class="loaderText">Smart Properties System</div>
-      <div class="loaderSub">Syncing database...</div>
+<div class="pageLoader" id="pageLoader" aria-label="loading">
+  <div class="loaderPanel">
+    <div class="loaderEmojis" aria-hidden="true">
+      <span>🏠</span><span>✨</span><span>🌴</span>
     </div>
+    <div class="loaderText">Smart Properties System</div>
   </div>
+</div>
 
-  <div class="wrap">
-    <div class="topbar">
-      <div class="logo">HP</div>
-      <div class="titlebox">
-        <p class="title" id="masterVill">Master Vill</p>
-        <div class="subtitle">
-          <span class="chip" id="countChip">0 items</span>
-        </div>
-      </div>
-      <a class="iconbtn" id="gatewayBtn" href="#" aria-label="Gateway">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-             stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21a8 8 0 0 0-16 0"></path>
-          <circle cx="12" cy="7" r="4"></circle>
+<div class="wrap">
+  <div class="topbar">
+    <div class="brand">
+      <a class="logo" id="homeLink" href="index.html" aria-label="Home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.92)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 10.5L12 3l9 7.5"></path>
+          <path d="M5 10v10a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V10"></path>
         </svg>
       </a>
-    </div>
 
-    <div class="controls">
-      <div class="controlsInner">
-        <div class="selectWrap">
-          <select class="select" id="plotSelect">
-            <option value="__all__">Select Plot</option>
-          </select>
-        </div>
-        <div class="selectWrap">
-          <select class="select" id="sortSelect">
-            <option value="__all__">Select Price</option>
-            <option value="price_desc">Price High → Low</option>
-            <option value="price_asc">Price Low → High</option>
-          </select>
-        </div>
+      <div class="titles">
+        <h1 id="pageTitle">Detail Plot: -</h1>
+        <div class="sub" id="subTitle">Details · ...</div>
+      </div>
+    </div>
+    <button class="backBtn" id="btnBack">←</button>
+  </div>
+
+  <div class="errorBox" id="errBox"></div>
+
+  <div class="card" id="mainCard">
+    <div class="gallery" id="gallery">
+      <img class="mainSlide skeleton" id="mainImg" alt="main" />
+      <div class="tagTopLeft" id="tagPlot">-</div>
+      <div class="tagBottomRight" id="tagCount">0 / 0</div>
+
+      <div class="navArrow navLeft" id="btnPrev" aria-label="previous">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"></path>
+        </svg>
+      </div>
+      <div class="navArrow navRight" id="btnNext" aria-label="next">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 6l6 6-6 6"></path>
+        </svg>
       </div>
     </div>
 
-    <div id="grid" class="grid"></div>
-    <div id="empty" class="empty" style="display:none;">ไม่พบรายการที่ตรงกับเงื่อนไข</div>
+    <div class="thumbStrip" id="thumbStrip"></div>
+
+    <div class="content">
+      <div class="headRow">
+        <div class="hp" id="hpText">...</div>
+        <div class="price" id="priceText">฿0</div>
+        <div class="statusBelow" id="statusBelow">-</div>
+      </div>
+
+      <div class="miniMeta" id="miniMeta">Land - · Living -</div>
+
+      <div class="descBox" id="descBox">
+        <div class="descText" id="descText">-</div>
+      </div>
+
+      <div class="gridInfo" id="infoGrid"></div>
+
+      <!-- ====== SHARE / LINKS ====== -->
+      <div class="shareSection" id="shareSection">
+        <div class="shareTopIcon" aria-hidden="true" title="Share">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="18" cy="5" r="2"></circle>
+            <circle cx="6" cy="12" r="2"></circle>
+            <circle cx="18" cy="19" r="2"></circle>
+            <path d="M8 12l8-7"></path>
+            <path d="M8 12l8 7"></path>
+          </svg>
+        </div>
+
+        <div class="shareRow" id="shareRow"></div>
+
+        <div class="fbVisitWrap">
+          <a id="fbVisitBtn" class="fbVisitBtn hidden" href="#" target="_blank" rel="noopener">
+            <span class="fbVisitIcon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2">
+                <path d="M22 12.06C22 6.504 17.523 2 12 2S2 6.504 2 12.06C2 17.082 5.657 21.245 10.438 22v-7.03H7.898v-2.91h2.54V9.845c0-2.522 1.492-3.916 3.777-3.916 1.094 0 2.238.196 2.238.196v2.475h-1.26c-1.243 0-1.63.776-1.63 1.57v1.89h2.773l-.443 2.91h-2.33V22C18.343 21.245 22 17.082 22 12.06z"/>
+              </svg>
+            </span>
+            <span id="fbVisitText">Visit our Facebook Page</span>
+          </a>
+        </div>
+
+        <div class="quickLinks" id="quickLinks">
+          <a id="openMapBtn" class="quickBtn hidden" href="#" target="_blank" rel="noopener">
+            <span class="quickIcon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 20l-5 2V6l5-2 6 2 5-2v16l-5 2-6-2z"></path>
+                <path d="M9 4v16"></path>
+                <path d="M15 6v16"></path>
+              </svg>
+            </span>
+            <span>Open Map</span>
+          </a>
+
+          <a id="virtualTourBtn" class="quickBtn quickBtnPrimary hidden" href="#" target="_blank" rel="noopener">
+            <span class="quickIcon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 10l9-7 9 7"></path>
+                <path d="M5 10v10h14V10"></path>
+                <path d="M10 20v-6h4v6"></path>
+              </svg>
+            </span>
+            <span>Virtual Tour</span>
+          </a>
+        </div>
+
+        <canvas id="shareCanvas" width="1200" height="630"></canvas>
+      </div>
+      <!-- ====== END SHARE / LINKS ====== -->
+
+      <div class="otherSection" id="otherSection">
+        <div class="otherTitle">
+          <div>Other Plots</div>
+          <div class="otherHint">Tap to view details</div>
+        </div>
+        <div class="otherGrid" id="otherGrid"></div>
+      </div>
+
+    </div>
   </div>
+</div>
 
-  <div class="toast" id="toast"></div>
+<div class="bottomDock" id="bottomDock" aria-label="Downloads">
+  <div class="dockInner">
+    <a class="dockBtn disabled" id="dockSales" href="#" target="_blank" rel="noopener">
+      <span class="dockIcon">📄</span>
+      <span>Sales PDF</span>
+    </a>
+    <a class="dockBtn disabled" id="dockMaterial" href="#" target="_blank" rel="noopener">
+      <span class="dockIcon">📄</span>
+      <span>Material PDF</span>
+    </a>
+    <a class="dockBtn disabled" id="dockFloorplan" href="#" target="_blank" rel="noopener">
+      <span class="dockIcon">📄</span>
+      <span>Floor Plan</span>
+    </a>
+  </div>
+</div>
 
-  <script>
-    /**********************************************************
-     * CONFIG
-     **********************************************************/
-    const API_URL = "https://script.google.com/macros/s/AKfycbyNPiuM1Rz70r6E38eRLQoQXIrNUTKsQsqVRLU2tOmwO9K9HfBBnO-7-I9fn6UlTZWk/exec";
-    const PROJECT = "HP00";
-    const GATEWAY_URL = "https://agent-smart-system-interface.github.io/Master-List-Properties/gateway.html";
-    const DETAILS_URL = "details.html?id=";
+<script>
+/** =========================
+* CONFIG
+* ========================= */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyNPiuM1Rz70r6E38eRLQoQXIrNUTKsQsqVRLU2tOmwO9K9HfBBnO-7-I9fn6UlTZWk/exec";
+const qs = new URLSearchParams(location.search);
+const hpId = qs.get("id") || qs.get("hpId") || "";
+const project = qs.get("project") || "HP00";
 
-    const $ = (id)=>document.getElementById(id);
+/** ✅ TOKEN handling (ยังคงไว้สำหรับ Admin ที่เปิดมาด้วย token) */
+const TOKEN_QS = (qs.get("token") || "").trim();
+const TOKEN_LS = (localStorage.getItem("HP_AUTH_TOKEN") || "").trim();
+let token = TOKEN_QS || TOKEN_LS;
 
-    function showLoader(on){
-      const el = $("loader");
-      if(!el) return;
-      if(on) el.classList.remove("hide");
-      else el.classList.add("hide");
+/** ✅ ถ้ามี token ใน URL ให้เก็บลง localStorage เพื่อหน้าอื่นใช้ */
+if (TOKEN_QS) {
+  localStorage.setItem("HP_AUTH_TOKEN", TOKEN_QS);
+}
+
+/** ✅ helper ไปหน้า gateway เพื่อ login (ยังคงไว้ เผื่อ Admin) */
+function goGateway(reason){
+  try{
+    if (reason) console.warn("[AUTH]", reason);
+    const back = encodeURIComponent(location.pathname + location.search);
+    location.href = `gateway.html?project=${encodeURIComponent(project)}&back=${back}`;
+  }catch(e){
+    location.href = `gateway.html?project=${encodeURIComponent(project)}`;
+  }
+}
+
+function clearToken(){
+  try{ localStorage.removeItem("HP_AUTH_TOKEN"); }catch(e){}
+  token = "";
+}
+
+/** ✅ FIX ONLY: ให้ไอคอน Home ลิงก์กลับ index พร้อม project + token (ถ้ามี) */
+(function setHomeLink(){
+  const a = document.getElementById("homeLink");
+  if(!a) return;
+  const t = token ? `&token=${encodeURIComponent(token)}` : "";
+  a.href = `index.html?project=${encodeURIComponent(project)}${t}`;
+})();
+
+/** Loader helpers */
+function showLoader(){
+  const el = document.getElementById("pageLoader");
+  if(el) el.style.display = "flex";
+}
+function hideLoader(){
+  const el = document.getElementById("pageLoader");
+  if(el) el.style.display = "none";
+}
+
+/** JSONP */
+function jsonp(url, timeoutMs = 20000){
+  return new Promise((resolve, reject) => {
+    const cb = "cb_" + Math.random().toString(36).slice(2);
+    const script = document.createElement("script");
+    const timer = setTimeout(() => { cleanup(); reject(new Error("timeout")); }, timeoutMs);
+    function cleanup(){
+      clearTimeout(timer);
+      if (script.parentNode) script.parentNode.removeChild(script);
+      try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
+    }
+    window[cb] = (data) => { cleanup(); resolve(data); };
+
+    const sep = url.includes("?") ? "&" : "?";
+    script.src = url + sep + "callback=" + encodeURIComponent(cb) + "&t=" + Date.now();
+
+    script.onerror = () => { cleanup(); reject(new Error("jsonp_error")); };
+    document.body.appendChild(script);
+  });
+}
+
+function showError(msg, showLoginBtn = false){
+  const box = document.getElementById("errBox");
+  box.style.display = "block";
+  box.innerHTML = "";
+
+  const p = document.createElement("div");
+  p.textContent = msg;
+  box.appendChild(p);
+
+  if (showLoginBtn){
+    const btn = document.createElement("button");
+    btn.textContent = "ไปล็อกอินใหม่";
+    btn.style.marginTop = "10px";
+    btn.style.padding = "10px 12px";
+    btn.style.borderRadius = "14px";
+    btn.style.border = "0";
+    btn.style.cursor = "pointer";
+    btn.style.fontWeight = "900";
+    btn.style.background = "rgba(15,23,42,.9)";
+    btn.style.color = "#fff";
+    btn.onclick = () => goGateway("manual login");
+    box.appendChild(btn);
+  }
+}
+
+function hideError(){
+  const box = document.getElementById("errBox");
+  box.style.display = "none";
+  box.textContent = "";
+}
+
+function toNumber(x){
+  const s = String(x ?? "").replace(/,/g,"").trim();
+  const n = Number(s);
+  return Number.isFinite(n) ? n : 0;
+}
+function moneyTHB(x){
+  const n = toNumber(x);
+  return "฿" + n.toLocaleString("en-US");
+}
+
+function cleanDriveImage(url){
+  const u = String(url || "").trim();
+  if(!u) return "";
+  if (u.includes("lh3.googleusercontent.com/d/")) return u;
+  let id = "";
+  const m1 = u.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (m1) id = m1[1];
+  const m2 = u.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (!id && m2) id = m2[1];
+  const m3 = u.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (!id && m3) id = m3[1];
+  if (id) return "https://lh3.googleusercontent.com/d/" + id;
+  return u;
+}
+
+function statusStyle(statusRaw){
+  const s = String(statusRaw||"").trim().toLowerCase();
+  if (s.includes("available")) return {border:"rgba(16,185,129,.65)", text:"rgba(5,150,105,1)"};
+  if (s.includes("under")) return {border:"rgba(14,165,233,.55)", text:"rgba(2,132,199,1)"};
+  if (s.includes("reserved")) return {border:"rgba(245,158,11,.55)", text:"rgba(180,83,9,1)"};
+  if (s.includes("sold")) return {border:"rgba(244,63,94,.55)", text:"rgba(190,18,60,1)"};
+  return {border:"rgba(15,23,42,.25)", text:"rgba(15,23,42,.92)"};
+}
+
+document.getElementById("btnBack").addEventListener("click", () => {
+  const t = token ? `&token=${encodeURIComponent(token)}` : "";
+  history.length > 1 ? history.back() : (location.href = `index.html?project=${encodeURIComponent(project)}${t}`);
+});
+
+let images = [];
+let idx = 0;
+let CURRENT_DETAIL = null;
+
+function setMain(i){
+  idx = Math.max(0, Math.min(i, images.length-1));
+  const mainImg = document.getElementById("mainImg");
+  mainImg.classList.remove("skeleton");
+  mainImg.src = images[idx] || mainImg.src;
+  document.getElementById("tagCount").textContent = `${idx+1} / ${images.length || 0}`;
+  document.querySelectorAll(".thumb").forEach((t, k)=> t.classList.toggle("active", k===idx));
+}
+
+function renderThumbs(){
+  const strip = document.getElementById("thumbStrip");
+  strip.innerHTML = "";
+  images.forEach((src, i)=>{
+    const im = document.createElement("img");
+    im.className = "thumb" + (i===idx ? " active": "");
+    im.src = src;
+    im.loading = "lazy";
+    im.decoding = "async";
+    im.addEventListener("click", ()=>setMain(i));
+    strip.appendChild(im);
+  });
+}
+
+function enableSwipe(){
+  const gallery = document.getElementById("gallery");
+  let startX = 0, dx = 0;
+  gallery.addEventListener("touchstart", (e)=>{
+    startX = e.touches[0].clientX;
+    dx = 0;
+  }, {passive:true});
+  gallery.addEventListener("touchmove", (e)=>{
+    dx = e.touches[0].clientX - startX;
+  }, {passive:true});
+  gallery.addEventListener("touchend", ()=>{
+    if(Math.abs(dx) < 35) return;
+    if(dx < 0) setMain(idx+1);
+    else setMain(idx-1);
+  });
+}
+
+function safeText(v){
+  const s = String(v ?? "").trim();
+  return s === "" ? "-" : s;
+}
+function pick(obj, keys){
+  for (const k of keys){
+    if (obj && obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== "") return obj[k];
+  }
+  return "";
+}
+function fmtSqm(v){
+  const s = safeText(v);
+  if(s === "-") return "-";
+  const low = s.toLowerCase();
+  if (low.includes("sq") || low.includes("ตร.ม") || low.includes("m2") || low.includes("m²")) return s;
+  return s + " sq.m";
+}
+const LAND_SQM_KEYS = ["Land_Area_sq_m","Land_Area_SQM","Land Area (sq.m)","Land Area (sqm)","Land Area sqm","Land Area sq.m"];
+const LIVING_SQM_KEYS = ["Living_Area_sq_m","Living_Area_SQM","Living Area (sq.m)","Living Area (sqm)","Living Area sqm","Living Area sq.m"];
+
+function renderDescription(detail){
+  const desc = safeText(pick(detail, ["Description","description","Desc"]));
+  const box = document.getElementById("descBox");
+  const el = document.getElementById("descText");
+  if(!box || !el) return;
+  if(desc === "-" ){
+    box.style.display = "none";
+    return;
+  }
+  box.style.display = "block";
+  el.textContent = desc;
+  el.classList.remove("descEmpty");
+}
+function renderMiniMeta(detail){
+  const landM = fmtSqm(pick(detail, LAND_SQM_KEYS));
+  const livingM = fmtSqm(pick(detail, LIVING_SQM_KEYS));
+  const el = document.getElementById("miniMeta");
+  if(!el) return;
+  el.textContent = `Land ${landM} · Living ${livingM}`;
+}
+
+function renderInfo(detail){
+  const grid = document.getElementById("infoGrid");
+  const items = [
+    ["Project_Name", safeText(pick(detail, ["Project_Name","ProjectName","Project"]))],
+    ["District", safeText(pick(detail, ["District","district"]))],
+    ["SubDistrict", safeText(pick(detail, ["SubDistrict","Sub_District","subdistrict"]))],
+    ["Badge", safeText(pick(detail, ["Badge","badge"]))],
+    ["Bedrooms", safeText(pick(detail, ["Bedrooms","Bedroom","beds"]))],
+    ["Bathrooms", safeText(pick(detail, ["Bathrooms","Bathroom","baths"]))],
+    ["Land Area (sq.m)", safeText(pick(detail, LAND_SQM_KEYS))],
+    ["Living Area (sq.m)", safeText(pick(detail, LIVING_SQM_KEYS))],
+    ["Pool Size", safeText(pick(detail, ["Pool_Size","PoolSize"]))],
+    ["Pool Depth", safeText(pick(detail, ["Pool_Depth","PoolDepth"]))],
+    ["Furnishing", safeText(pick(detail, ["Furnishing","furnishing"]))],
+    ["Price_SQM", safeText(pick(detail, ["Price_SQM","PriceSQM"]))],
+    ["Status", safeText(pick(detail, ["Status","status"]))],
+    ["Parking", safeText(pick(detail, ["Parking","parking"]))],
+    ["Extras", safeText(pick(detail, ["Extras","extras"]))],
+    ["Electricity", safeText(pick(detail, ["Electricity","electricity"]))],
+  ];
+  grid.innerHTML = "";
+  for(const [k,v] of items){
+    const box = document.createElement("div");
+    box.className = "infoBox";
+    box.innerHTML = `<div class="k">${k}</div><div class="v">${v}</div>`;
+    grid.appendChild(box);
+  }
+}
+
+function normalizeLink(v){
+  const s = String(v ?? "").trim();
+  return s && s !== "-" ? s : "";
+}
+function setDockLink(elId, link){
+  const el = document.getElementById(elId);
+  if(!el) return;
+  const href = normalizeLink(link);
+  if(!href){
+    el.classList.add("disabled");
+    el.setAttribute("href", "#");
+    return;
+  }
+  el.classList.remove("disabled");
+  el.setAttribute("href", href);
+}
+
+/** ====== AD: FB_Link ====== */
+function pickFbLink(detail){
+  const keys = ["FB_Link","FBLink","FB_LINK","facebook","Facebook","FB"];
+  for(const k of keys){
+    const v = detail ? detail[k] : "";
+    const s = String(v ?? "").trim();
+    if(s && s !== "-") return s;
+  }
+  return "";
+}
+function setFbVisitBar(link){
+  const a = document.getElementById("fbVisitBtn");
+  if(!a) return;
+
+  const wrap = a.closest(".fbVisitWrap");
+  const href = normalizeLink(link);
+
+  if(!href){
+    a.classList.add("hidden");
+    a.setAttribute("href", "#");
+    if (wrap) wrap.style.display = "none";
+    return;
+  }
+  a.classList.remove("hidden");
+  a.setAttribute("href", href);
+  if (wrap) wrap.style.display = "flex";
+}
+
+/** ====== AE: Map_Link ====== */
+function pickMapLink(detail){
+  const keys = ["Map_Link","MapLink","GoogleMap","Google_Maps","Map","Location","Location_Link"];
+  for(const k of keys){
+    const v = detail ? detail[k] : "";
+    const s = String(v ?? "").trim();
+    if(s && s !== "-") return s;
+  }
+  return "";
+}
+function buildOpenMapUrl(link){
+  const raw = String(link || "").trim();
+  if(!raw) return "";
+  if (raw.includes("google.com/maps")) return raw;
+  if (raw.startsWith("http")) return raw;
+  return `https://www.google.com/maps?q=${encodeURIComponent(raw)}`;
+}
+
+/** ====== AF: Virtual_Tour ====== */
+function pickVirtualTour(detail){
+  const keys = ["Virtual_Tour","VirtualTour","Virtual_TOUR","VirtualTour_Link","Virtual","Tour","VR_Link","Virtual_Link"];
+  for(const k of keys){
+    const v = detail ? detail[k] : "";
+    const s = String(v ?? "").trim();
+    if(s && s !== "-") return s;
+  }
+  return "";
+}
+function setQuickLinks(mapLink, tourLink){
+  const wrap = document.getElementById("quickLinks");
+  const mapBtn = document.getElementById("openMapBtn");
+  const tourBtn = document.getElementById("virtualTourBtn");
+
+  const mapHref = normalizeLink(mapLink);
+  if(mapHref){
+    mapBtn.classList.remove("hidden");
+    mapBtn.href = buildOpenMapUrl(mapHref);
+  }else{
+    mapBtn.classList.add("hidden");
+    mapBtn.href = "#";
+  }
+
+  const tourHref = normalizeLink(tourLink);
+  if(tourHref){
+    tourBtn.classList.remove("hidden");
+    tourBtn.href = tourHref;
+  }else{
+    tourBtn.classList.add("hidden");
+    tourBtn.href = "#";
+  }
+
+  if (wrap) {
+    wrap.style.display = (mapHref || tourHref) ? "flex" : "none";
+  }
+}
+
+/** =========================
+* SHARE
+* ========================= */
+function getPublicShareUrl(){
+  const u = new URL(location.href);
+  u.searchParams.delete("token");
+  if (hpId) u.searchParams.set("id", hpId);
+  if (project) u.searchParams.set("project", project);
+  return u.toString();
+}
+
+function openPopup(url){
+  const w = 640, h = 640;
+  const left = (screen.width - w) / 2;
+  const top = (screen.height - h) / 2;
+  window.open(url, "_blank", `noopener,noreferrer,width=${w},height=${h},left=${left},top=${top}`);
+}
+
+async function copyToClipboard(text){
+  try{
+    await navigator.clipboard.writeText(text);
+    return true;
+  }catch(e){
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position="fixed";
+    ta.style.left="-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    try{ document.execCommand("copy"); }catch(err){}
+    document.body.removeChild(ta);
+    return true;
+  }
+}
+
+function renderShareIcons(detail){
+  const row = document.getElementById("shareRow");
+  if(!row) return;
+
+  const url = getPublicShareUrl();
+  const plot = String(detail?.Plot || hpId || "Property").trim() || "Property";
+  const price = moneyTHB(detail?.Price || 0);
+  const title = `Plot ${plot} · ${price}`;
+  const text = `Check this property: ${title}`;
+
+  const ICONS = {
+    fb: `<svg width="22" height="22" viewBox="0 0 24 24" fill="#1877F2" aria-hidden="true"><path d="M22 12.06C22 6.504 17.523 2 12 2S2 6.504 2 12.06C2 17.082 5.657 21.245 10.438 22v-7.03H7.898v-2.91h2.54V9.845c0-2.522 1.492-3.916 3.777-3.916 1.094 0 2.238.196 2.238.196v2.475h-1.26c-1.243 0-1.63.776-1.63 1.57v1.89h2.773l-.443 2.91h-2.33V22C18.343 21.245 22 17.082 22 12.06z"/></svg>`,
+    msg: `<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00C6FF"/><stop offset="1" stop-color="#A100FF"/></linearGradient></defs><path fill="url(#g)" d="M12 2C6.477 2 2 6.078 2 11.111c0 2.867 1.455 5.423 3.73 7.087V22l3.59-1.97c.84.23 1.727.36 2.68.36 5.523 0 10-4.078 10-9.279C22 6.078 17.523 2 12 2z"/><path fill="#fff" d="M6.9 14.6l3.9-4.1 2.6 2.2 3.7-2.2-3.9 4.1-2.6-2.2-3.7 2.2z"/></svg>`,
+    wa: `<svg width="22" height="22" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true"><path d="M12.05 2C6.57 2 2.13 6.35 2.13 11.72c0 1.7.46 3.36 1.35 4.82L2 22l5.62-1.43c1.41.76 3.01 1.16 4.67 1.16 5.48 0 9.92-4.35 9.92-9.72S17.53 2 12.05 2zm0 17.76c-1.5 0-2.96-.42-4.22-1.2l-.3-.18-3.34.85.9-3.19-.2-.32a7.54 7.54 0 0 1-1.2-4c0-4.16 3.45-7.55 7.56-7.55 4.17 0 7.56 3.39 7.56 7.55 0 4.16-3.39 7.55-7.56 7.55z"/><path fill="#25D366" d="M9.23 7.98c-.17-.38-.35-.39-.51-.4l-.44-.01c-.15 0-.39.06-.6.28-.2.22-.78.76-.78 1.85 0 1.09.8 2.15.92 2.3.11.14 1.55 2.45 3.8 3.34 1.86.74 2.25.59 2.65.55.4-.04 1.29-.54 1.47-1.06.18-.52.18-.97.13-1.06-.05-.09-.2-.14-.42-.25-.22-.11-1.29-.66-1.49-.73-.2-.07-.35-.11-.5.11-.15.22-.58.73-.71.88-.13.15-.26.17-.48.06-.22-.11-.92-.35-1.76-1.12-.65-.58-1.1-1.3-1.23-1.52-.13-.22-.01-.34.1-.45.1-.1.22-.26.33-.39.11-.13.15-.22.22-.36.07-.15.04-.28-.01-.39-.06-.11-.5-1.25-.69-1.7z"/></svg>`,
+    tg: `<svg width="22" height="22" viewBox="0 0 24 24" fill="#2AABEE" aria-hidden="true"><path d="M9.7 15.6l-.4 5.6c.6 0 .9-.3 1.2-.6l2.9-2.8 6 4.4c1.1.6 1.9.3 2.2-1l4-18.7c.4-1.5-.5-2.1-1.6-1.7L1.6 10.3c-1.4.6-1.4 1.5-.2 1.9l5.7 1.8L20 6.1c.6-.4 1.1-.2.7.2"/></svg>`,
+    line: `<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="#06C755" d="M19.2 4.6c-1.9-1.7-4.4-2.6-7.1-2.6C6.6 2 2.3 5.5 2.3 9.8c0 2.4 1.4 4.6 3.7 6.1l-.5 3c-.1.4.3.7.7.5l3.4-1.8c.9.2 1.9.3 2.9.3 5.5 0 9.8-3.5 9.8-7.8 0-2-1-3.9-2.8-5.5z"/><path fill="#fff" d="M8 10.3c0-.2.2-.4.4-.4h1.2c.2 0 .4.2.4.4s-.2.4-.4.4H8.4c-.2 0-.4-.2-.4-.4zm0-2.3c0-.2.2-.4.4-.4h4.8c.2 0 .4.2.4.4s-.2.4-.4.4H8.4c-.2 0-.4-.2-.4-.4zm0 4.6c0-.2.2-.4.4-.4h3.4c.2 0 .4.2.4.4s-.2.4-.4.4H8.4c-.2 0-.4-.2-.4-.4z"/></svg>`,
+    link: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07L11.5 4.5"/><path d="M14 11a5 5 0 0 0-7.07 0L4.1 13.83a5 5 0 0 0 7.07 7.07L12.5 19.5"/></svg>`,
+    mail: `<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="#EA4335" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/><path fill="#fff" d="M20 8l-8 5-8-5V6l8 5 8-5v2z"/></svg>`,
+    more: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>`,
+  };
+
+  const items = [
+    {key:"fb",  label:"Facebook",   onClick: ()=> openPopup(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`)},
+    {key:"msg", label:"Messenger",  onClick: ()=> {
+      const scheme = `fb-messenger://share?link=${encodeURIComponent(url)}`;
+      const fallback = () => (navigator.share ? navigator.share({title, text, url}) : openPopup(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`));
+      try{ location.href = scheme; setTimeout(fallback, 900); }catch(e){ fallback(); }
+    }},
+    {key:"wa",  label:"WhatsApp",   onClick: ()=> openPopup(`https://wa.me/?text=${encodeURIComponent(text + "\n" + url)}`)},
+    {key:"tg",  label:"Telegram",   onClick: ()=> openPopup(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`)},
+    {key:"line",label:"LINE",       onClick: ()=> openPopup(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}`)},
+    {key:"link",label:"Copy",       onClick: async()=> { await copyToClipboard(url); }},
+    {key:"mail",label:"Gmail",      onClick: ()=> { location.href = `mailto:?subject=${encodeURIComponent(title)}&body=${encodeURIComponent(text + "\n\n" + url)}`; }},
+    {key:"more",label:"More",       onClick: ()=> {
+      if(navigator.share){ navigator.share({ title, text, url }).catch(()=>{}); }
+      else{ copyToClipboard(url); }
+    }},
+  ];
+
+  row.innerHTML = items.map((it)=>`
+    <button class="shareBtn" type="button" data-k="${it.key}">
+      <div class="shareCircle">${ICONS[it.key] || ""}</div>
+      <div class="shareLbl">${it.label}</div>
+    </button>
+  `).join("");
+
+  row.querySelectorAll(".shareBtn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const k = btn.getAttribute("data-k");
+      const it = items.find(x=>x.key===k);
+      if(it && it.onClick) it.onClick();
+    });
+  });
+}
+
+/** =========================
+* Other Plots
+* ========================= */
+function getUnitId(u){
+  return String(u?.HP_ID || u?.id || u?.hpId || u?.Unit_ID || "").trim();
+}
+function getPlot(u){
+  return String(u?.Plot || u?.plot || u?.Unit_Plot || u?.Plot_No || "").trim();
+}
+function getThumb(u){
+  return cleanDriveImage(u?.Thumbnail_Image || u?.thumbnail || u?.thumb || u?.thumbUrl || "");
+}
+function getStatus(u){
+  return String(u?.Status || u?.status || u?.unitStatus || "-").trim() || "-";
+}
+function getPrice(u){
+  return u?.Price ?? u?.price ?? 0;
+}
+
+/* ✅ NEW: ดึง System_Status เพื่อใช้กรอง Offline / Pending */
+function getSystemStatus(u){
+  const keys = ["System_Status","SystemStatus","system_status","SYS_Status","Sys_Status","SYSTEM_STATUS"];
+  const v = pick(u, keys);
+  return String(v || "").trim();
+}
+function isHiddenBySystemStatus(u){
+  const ss = getSystemStatus(u).toLowerCase();
+  return ss.includes("offline") || ss.includes("pending");
+}
+
+/* ✅ FIX: meta เป็น 2 แถว (Land / Living) */
+function getLandLivingLines(u){
+  const land = safeText(pick(u, LAND_SQM_KEYS));
+  const living = safeText(pick(u, LIVING_SQM_KEYS));
+  return {
+    landLine: `Land ${land} sq.m`,
+    livingLine: `Living ${living} sq.m`
+  };
+}
+
+function renderOtherUnits(units){
+  const grid = document.getElementById("otherGrid");
+  const section = document.getElementById("otherSection");
+  if(!Array.isArray(units) || units.length === 0){
+    section.style.display = "none";
+    return;
+  }
+  section.style.display = "block";
+  grid.innerHTML = "";
+  for(const u of units){
+    const id = getUnitId(u);
+    const plot = getPlot(u) || id || "-";
+    const thumb = getThumb(u);
+    const st = getStatus(u);
+    const price = moneyTHB(getPrice(u));
+    const pill = statusStyle(st);
+
+    const lines = getLandLivingLines(u);
+
+    const card = document.createElement("div");
+    card.className = "otherCard";
+    card.innerHTML = `
+      <img class="otherImg" src="${thumb || "data:image/svg+xml;charset=utf-8," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='800'><rect width='100%' height='100%' fill='#e6edf6'/><text x='50%' y='50%' text-anchor='middle' fill='#8aa0bb' font-size='40' font-family='Arial'>no image</text></svg>")}" alt="thumb" loading="lazy" decoding="async">
+      <div class="otherBody">
+        <div class="otherTopRow">
+          <div class="otherPlot">${plot}</div>
+          <div class="otherStatus" style="border-color:${pill.border}; color:${pill.text};">${st}</div>
+        </div>
+        <div class="otherPrice">${price}</div>
+        <div class="otherMeta">
+          <div class="mLine">${lines.landLine}</div>
+          <div class="mLine">${lines.livingLine}</div>
+        </div>
+      </div>
+    `;
+    card.addEventListener("click", ()=>{
+      const t = token ? `&token=${encodeURIComponent(token)}` : "";
+      location.href = `details.html?id=${encodeURIComponent(id)}&project=${encodeURIComponent(project)}${t}`;
+    });
+    grid.appendChild(card);
+  }
+}
+
+async function loadOtherUnits(){
+  try{
+    const url = `${SCRIPT_URL}?mode=getUnitList&project=${encodeURIComponent(project)}`;
+    const data = await jsonp(url);
+
+    if(!Array.isArray(data)){
+      document.getElementById("otherSection").style.display = "none";
+      return;
     }
 
-    function toast(msg){
-      const el = $("toast");
-      el.textContent = msg;
-      el.classList.add("show");
-      clearTimeout(toast._t);
-      toast._t = setTimeout(()=>el.classList.remove("show"), 2200);
+    const filtered = data
+      .filter(u => getUnitId(u) && getUnitId(u) !== String(hpId).trim())
+      .filter(u => !isHiddenBySystemStatus(u))   /* ✅ FIX: ซ่อน Offline + Pending */
+      .slice(0, 10);
+
+    renderOtherUnits(filtered);
+  }catch(e){
+    document.getElementById("otherSection").style.display = "none";
+  }
+}
+
+/** LOAD */
+(async function init(){
+  hideError();
+  showLoader();
+
+  if(!hpId){
+    showError("ลิงก์ไม่ถูกต้อง: ไม่มี id เช่น details.html?id=HP-Z001");
+    hideLoader();
+    return;
+  }
+
+  let url =
+    `${SCRIPT_URL}?mode=getUnitDetail` +
+    `&project=${encodeURIComponent(project)}` +
+    `&hpId=${encodeURIComponent(hpId)}`;
+
+  if (token) {
+    url += `&token=${encodeURIComponent(token)}`;
+  }
+
+  let detail;
+  try{
+    detail = await jsonp(url);
+  }catch(err){
+    showError("โหลดข้อมูลไม่สำเร็จ (ตรวจ Deploy Apps Script ให้เป็น Anyone และใช้ /exec)");
+    hideLoader();
+    return;
+  }
+
+  if(detail && detail.error){
+    const errText = String(detail.error || "");
+    if(errText.toLowerCase().includes("unauthorized")){
+      clearToken();
+      hideLoader();
+      goGateway("expired/invalid token");
+      return;
+    }else{
+      showError("โหลดข้อมูลไม่สำเร็จ: " + errText, true);
+      hideLoader();
+      return;
     }
+  }
 
-    function fmtPrice(v){
-      const n = Number(String(v||"").replace(/,/g,""));
-      if (!isFinite(n) || n<=0) return "฿0";
-      return "฿" + n.toLocaleString("en-US");
-    }
+  CURRENT_DETAIL = detail;
 
-    function statusStyle(statusRaw){
-      const s = String(statusRaw||"").trim().toLowerCase();
-      if (s.includes("available")) return {bg:"rgba(192,255,222,.92)", fg:"rgba(0,90,55,1)"};
-      if (s.includes("under"))     return {bg:"rgba(255,240,195,.92)", fg:"rgba(120,70,0,1)"};
-      if (s.includes("reserved"))  return {bg:"rgba(213,232,255,.92)", fg:"rgba(0,60,120,1)"};
-      if (s.includes("sold"))      return {bg:"rgba(255,208,208,.92)", fg:"rgba(130,0,0,1)"};
-      return {bg:"rgba(255,255,255,.75)", fg:"rgba(11,19,32,.80)"};
-    }
+  const plotText = String(detail.Plot || "-").trim() || "-";
+  document.getElementById("pageTitle").textContent = `Detail Plot: ${plotText}`;
+  document.getElementById("tagPlot").textContent = plotText;
 
-    function normalizePlot(p){
-      return String(p||"").trim();
-    }
+  document.getElementById("priceText").textContent = moneyTHB(detail.Price || 0);
 
-    // ✅ สำคัญ: แสดงเฉพาะ Live เท่านั้น (กันหลุด Offline/Pending)
-    function isLiveSysStatus(v){
-      return String(v||"").trim().toLowerCase() === "live";
-    }
+  const stText = String(detail.Status || "Available").trim() || "Available";
+  const stEl = document.getElementById("statusBelow");
+  stEl.textContent = stText;
+  const st = statusStyle(stText);
+  stEl.style.borderColor = st.border;
+  stEl.style.color = st.text;
 
-    // ✅ bump cache version เพราะ logic เปลี่ยน
-    const CACHE_KEY = `SP_UNITLIST_${PROJECT}_v2_liveOnly`;
+  renderMiniMeta(detail);
+  renderDescription(detail);
 
-    function readCache(){
-      try{
-        const raw = sessionStorage.getItem(CACHE_KEY);
-        if(!raw) return null;
-        const obj = JSON.parse(raw);
-        if(!obj || !Array.isArray(obj.data)) return null;
-        if(Date.now() - obj.ts > 3*60*1000) return null;
-        return obj.data;
-      }catch(_){ return null; }
-    }
-    function writeCache(data){
-      try{
-        sessionStorage.setItem(CACHE_KEY, JSON.stringify({ts:Date.now(), data}));
-      }catch(_){}
-    }
+  renderShareIcons(detail);
+  setFbVisitBar(pickFbLink(detail));
 
-    async function fetchUnitList(){
-      const cached = readCache();
-      if (cached) return cached;
+  const mapLink = pickMapLink(detail);
+  const tourLink = pickVirtualTour(detail);
+  setQuickLinks(mapLink, tourLink);
 
-      const url = new URL(API_URL);
-      url.searchParams.set("mode", "getUnitList");
-      url.searchParams.set("project", PROJECT);
+  const thumb = cleanDriveImage(detail.Thumbnail_Image || "");
+  const list = String(detail.Image_List || "")
+    .split(",").map(s=>cleanDriveImage(s.trim()))
+    .filter(Boolean);
 
-      const res = await fetch(url.toString(), { cache: "no-store" });
-      const data = await res.json();
-      if (!Array.isArray(data)) throw new Error(data?.error || "API invalid");
-      writeCache(data);
-      return data;
-    }
+  images = (thumb ? [thumb, ...list.filter(x=>x!==thumb)] : list);
 
-    let all = [];
-    let filtered = [];
+  if(!images.length){
+    images = ["data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='800'><rect width='100%' height='100%' fill='#e6edf6'/><text x='50%' y='50%' text-anchor='middle' fill='#8aa0bb' font-size='40' font-family='Arial'>no image</text></svg>`) ];
+  }
 
-    function escapeHtml(s){
-      return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-    }
+  const mainImg = document.getElementById("mainImg");
+  mainImg.onload = () => { hideLoader(); };
+  mainImg.onerror = () => { hideLoader(); };
+  mainImg.src = images[0];
+  mainImg.classList.remove("skeleton");
 
-    function buildPlotOptions(list){
-      const set = new Set();
-      list.forEach(x=>{
-        const p = normalizePlot(x.plot);
-        if(p) set.add(p);
-      });
-      const plots = Array.from(set).sort((a,b)=>a.localeCompare(b, "en"));
-      const sel = $("plotSelect");
-      sel.innerHTML =
-        `<option value="__all__">Select Plot</option>` +
-        plots.map(p=>`<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
-    }
+  renderThumbs();
+  setMain(0);
+  enableSwipe();
 
-    function applyFilters(){
-      const plotVal = $("plotSelect").value;
-      const sortVal = $("sortSelect").value;
+  document.getElementById("btnPrev").addEventListener("click", ()=> setMain(idx-1));
+  document.getElementById("btnNext").addEventListener("click", ()=> setMain(idx+1));
 
-      // ✅ สำคัญ: เริ่มจากรายการ Live เท่านั้น
-      const liveOnly = all.filter(x => isLiveSysStatus(x.sysStatus));
+  renderInfo(detail);
+  loadOtherUnits();
 
-      filtered = liveOnly.filter(x=>{
-        if(plotVal === "__all__") return true;
-        return normalizePlot(x.plot) === plotVal;
-      });
-
-      filtered.sort((a,b)=>{
-        const pa = Number(String(a.price||"").replace(/,/g,"")) || 0;
-        const pb = Number(String(b.price||"").replace(/,/g,"")) || 0;
-        if(sortVal === "price_asc") return pa - pb;
-        return pb - pa;
-      });
-
-      renderGrid();
-    }
-
-    function renderGrid(){
-      const grid = $("grid");
-      grid.innerHTML = "";
-      $("empty").style.display = filtered.length ? "none" : "block";
-      $("countChip").textContent = `${filtered.length} items`;
-
-      filtered.forEach(item=>{
-        const card = document.createElement("div");
-        card.className = "card";
-
-        const cover = document.createElement("div");
-        cover.className = "cover";
-
-        const sk = document.createElement("div");
-        sk.className = "skeleton";
-        cover.appendChild(sk);
-
-        const img = document.createElement("img");
-        img.alt = "image";
-        img.loading = "lazy";
-        img.decoding = "async";
-        img.referrerPolicy = "no-referrer";
-        img.dataset.src = String(item.thumbnail||"").trim() || "";
-        cover.appendChild(img);
-
-        const st = document.createElement("div");
-        st.className = "badgeStatus";
-        const style = statusStyle(item.status);
-        st.style.background = style.bg;
-        st.style.color = style.fg;
-        st.textContent = String(item.status||"").trim() || "—";
-        cover.appendChild(st);
-
-        const body = document.createElement("div");
-        body.className = "body";
-
-        const row1 = document.createElement("div");
-        row1.className = "row1";
-
-        const plotLine = document.createElement("div");
-        plotLine.className = "plotLine";
-        plotLine.textContent = normalizePlot(item.plot) ? `PLOT : ${normalizePlot(item.plot)}` : "PLOT : -";
-
-        const price = document.createElement("div");
-        price.className = "price";
-        price.textContent = fmtPrice(item.price);
-
-        row1.appendChild(plotLine);
-        row1.appendChild(price);
-
-        const meta = document.createElement("div");
-        meta.className = "meta";
-        meta.appendChild(pillIcon("bed", item.bedrooms || "-", "Beds"));
-        meta.appendChild(pillIcon("bath", item.bathrooms || "-", "Baths"));
-        meta.appendChild(pillIcon("area", item.livingSqm || "-", "m²"));
-
-        const btn = document.createElement("button");
-        btn.className = "btn";
-        btn.textContent = "More Details";
-        btn.addEventListener("click", ()=>{
-          if(!item.id) return;
-          location.href = DETAILS_URL + encodeURIComponent(item.id) + `&project=${PROJECT}`;
-        });
-
-        body.appendChild(row1);
-        body.appendChild(meta);
-        body.appendChild(btn);
-
-        card.appendChild(cover);
-        card.appendChild(body);
-        grid.appendChild(card);
-      });
-
-      setupLazyImages();
-    }
-
-    function pillIcon(type, val, unitLabel){
-      const el = document.createElement("div");
-      el.className = "pill";
-      let ico = "📐";
-      let label = unitLabel || "";
-      if(type==="bed"){ ico = "🛏️"; }
-      if(type==="bath"){ ico = "🚿"; }
-      el.innerHTML = `<span class="ico">${ico}</span><span class="lbl">${escapeHtml(val)}${label ? " " + escapeHtml(label) : ""}</span>`;
-      return el;
-    }
-
-    function setupLazyImages(){
-      const imgs = Array.from(document.querySelectorAll("img[data-src]"));
-      const io = new IntersectionObserver((entries)=>{
-        entries.forEach(ent=>{
-          if(!ent.isIntersecting) return;
-          const img = ent.target;
-          io.unobserve(img);
-          const src = img.dataset.src;
-          const sk = img.parentElement?.querySelector(".skeleton");
-          if(!src){
-            if(sk) sk.remove();
-            img.style.display = "none";
-            return;
-          }
-          img.onload = ()=>{ if(sk) sk.remove(); };
-          img.onerror = ()=>{ if(sk) sk.remove(); };
-          img.src = src;
-        });
-      }, { rootMargin: "220px 0px" });
-      imgs.forEach(img=>io.observe(img));
-    }
-
-    (function init(){
-      $("gatewayBtn").href = GATEWAY_URL;
-      showLoader(true);
-      loadAll();
-      $("plotSelect").addEventListener("change", applyFilters);
-      $("sortSelect").addEventListener("change", applyFilters);
-    })();
-
-    async function loadAll(){
-      try{
-        const data = await fetchUnitList();
-
-        // ✅ สำคัญ: เก็บ sysStatus จาก API (ของเดิมไม่ได้เอามาใช้)
-        all = data.map(x=>({
-          id: x.id || "",
-          plot: x.plot || "",
-          projectName: x.projectName || x.project_name || "",
-          thumbnail: x.thumbnail || "",
-          bedrooms: x.bedrooms || "",
-          bathrooms: x.bathrooms || "",
-          livingSqm: x.livingSqm || x.living_area_sq_m || "",
-          price: x.price || "",
-          status: x.status || "",
-          sysStatus: x.sysStatus || x.system_status || ""   // ✅ NEW
-        }));
-
-        // ✅ ทำชื่อโครงการจากรายการ Live เท่านั้น (กัน Pending/Offline ทำให้ชื่อเพี้ยน)
-        const liveOnly = all.filter(x => isLiveSysStatus(x.sysStatus));
-
-        $("masterVill").textContent = pickMasterVillName(liveOnly) || "Master Vill";
-
-        // ✅ dropdown ต้องสร้างจากรายการ Live เท่านั้น
-        buildPlotOptions(liveOnly);
-
-        applyFilters();
-        showLoader(false);
-      }catch(err){
-        console.error(err);
-        $("countChip").textContent = "โหลดไม่สำเร็จ";
-        toast("โหลดข้อมูลไม่สำเร็จ");
-        $("empty").style.display = "block";
-        showLoader(false);
-      }
-    }
-
-    function pickMasterVillName(list){
-      const freq = new Map();
-      list.forEach(x=>{
-        const n = String(x.projectName||"").trim();
-        if(!n) return;
-        freq.set(n, (freq.get(n)||0)+1);
-      });
-      let best = "", bestN = 0;
-      for(const [k,v] of freq.entries()){
-        if(v>bestN){ best=k; bestN=v; }
-      }
-      return best;
-    }
-  </script>
+  setDockLink("dockSales", detail.Sales_Gallery);
+  setDockLink("dockMaterial", detail.Material_PDF);
+  setDockLink("dockFloorplan", detail.FloorPlan_PDF);
+})();
+</script>
 </body>
 </html>
