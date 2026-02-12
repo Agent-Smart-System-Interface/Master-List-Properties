@@ -1032,8 +1032,14 @@ function fmtSqm(v){
   if (low.includes("sq") || low.includes("ตร.ม") || low.includes("m2") || low.includes("m²")) return s;
   return s + " sq.m";
 }
+
+/* ✅ key sets */
 const LAND_SQM_KEYS = ["Land_Area_sq_m","Land_Area_SQM","Land Area (sq.m)","Land Area (sqm)","Land Area sqm","Land Area sq.m"];
 const LIVING_SQM_KEYS = ["Living_Area_sq_m","Living_Area_SQM","Living Area (sq.m)","Living Area (sqm)","Living Area sqm","Living Area sq.m"];
+
+/* ✅ NEW: Land Area (sq.w) + Zone */
+const LAND_SQW_KEYS = ["Land_Area_sq_w","Land_Area_SQW","Land Area (sq.w)","Land Area (sqw)","Land Area sq.w","Land Area sqw"];
+const ZONE_KEYS = ["Zone","zone","ZONE"];
 
 function renderDescription(detail){
   const desc = safeText(pick(detail, ["Description","description","Desc"]));
@@ -1056,15 +1062,18 @@ function renderMiniMeta(detail){
   el.textContent = `Land ${landM} · Living ${livingM}`;
 }
 
+/* ✅ FIX HERE: เพิ่ม Land Area (sq.w) + Zone เข้า grid */
 function renderInfo(detail){
   const grid = document.getElementById("infoGrid");
   const items = [
     ["Project_Name", safeText(pick(detail, ["Project_Name","ProjectName","Project"]))],
     ["District", safeText(pick(detail, ["District","district"]))],
     ["SubDistrict", safeText(pick(detail, ["SubDistrict","Sub_District","subdistrict"]))],
+    ["Zone", safeText(pick(detail, ZONE_KEYS))],                       /* ✅ NEW */
     ["Badge", safeText(pick(detail, ["Badge","badge"]))],
     ["Bedrooms", safeText(pick(detail, ["Bedrooms","Bedroom","beds"]))],
     ["Bathrooms", safeText(pick(detail, ["Bathrooms","Bathroom","baths"]))],
+    ["Land Area (sq.w)", safeText(pick(detail, LAND_SQW_KEYS))],       /* ✅ NEW */
     ["Land Area (sq.m)", safeText(pick(detail, LAND_SQM_KEYS))],
     ["Living Area (sq.m)", safeText(pick(detail, LIVING_SQM_KEYS))],
     ["Pool Size", safeText(pick(detail, ["Pool_Size","PoolSize"]))],
@@ -1371,7 +1380,7 @@ async function loadOtherUnits(){
 
     const filtered = data
       .filter(u => getUnitId(u) && getUnitId(u) !== String(hpId).trim())
-      .filter(u => !isHiddenBySystemStatus(u))   /* ✅ FIX: ซ่อน Offline + Pending */
+      .filter(u => !isHiddenBySystemStatus(u))
       .slice(0, 10);
 
     renderOtherUnits(filtered);
@@ -1478,6 +1487,8 @@ async function loadOtherUnits(){
   setDockLink("dockSales", detail.Sales_Gallery);
   setDockLink("dockMaterial", detail.Material_PDF);
   setDockLink("dockFloorplan", detail.FloorPlan_PDF);
+
+  hideLoader();
 })();
 </script>
 </body>
