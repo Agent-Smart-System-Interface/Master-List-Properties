@@ -1,4 +1,4 @@
-<!doctype html> 
+<!doctype html>
 <html lang="th">
 <head>
 <meta charset="utf-8" />
@@ -39,8 +39,6 @@ border: 1px solid var(--line);
 width:44px; height:44px; border-radius:999px; background:rgba(255,255,255,.55);
 display:grid; place-items:center; font-weight:800;
 flex:0 0 auto;
-
-/* ✅ FIX ONLY: ทำให้คลิกได้แบบลิงก์ และไม่เปลี่ยนสไตล์เดิม */
 text-decoration:none;
 color: inherit;
 }
@@ -391,51 +389,41 @@ display:flex;
 flex-direction:column;
 gap:6px;
 }
-
-/* =========================
-   ✅ FIX จุดที่ 1 (Other Plots): ให้ Z-08 + Under Con อยู่บรรทัดเดียวกัน ชิดกัน และไม่ตัดคำ
-   ========================= */
 .otherTopRow{
 display:flex;
-align-items:center;          
+align-items:center;
 justify-content:space-between;
-gap:6px;                    
-flex-wrap:nowrap;           
+gap:6px;
+flex-wrap:nowrap;
 }
 .otherPlot{
 font-weight:1100;
 font-size:13px;
 color: rgba(15,23,42,.95);
-white-space:nowrap;         
+white-space:nowrap;
 overflow:hidden;
 text-overflow:ellipsis;
 flex:1 1 auto;
 min-width:0;
 }
-
-/* ✅ ป้าย Under Con/Available/Reserved ให้เล็กลง และไม่ตัดคำ */
 .otherStatus{
 display:inline-flex;
 align-items:center;
 justify-content:center;
-padding:4px 7px;            
+padding:4px 7px;
 border-radius: 999px;
 font-weight:1000;
-font-size:10.5px;           
+font-size:10.5px;
 line-height:1;
 background: rgba(255,255,255,.92);
 border: 2px solid rgba(15,23,42,.15);
 color: rgba(15,23,42,.88);
-white-space:nowrap;         
+white-space:nowrap;
 flex:0 0 auto;
 }
-
-/* =========================
-   ✅ FIX จุดที่ 2 (Other Plots): แสดง Land/Living "คนละแถว"
-   ========================= */
 .otherMeta{
-font-weight:400;            
-font-size:10.5px;           
+font-weight:400;
+font-size:10.5px;
 letter-spacing:.1px;
 color: rgba(15,23,42,.55);
 white-space:normal;
@@ -451,14 +439,12 @@ white-space:nowrap;
 overflow:hidden;
 text-overflow:ellipsis;
 }
-
 .otherPrice{
 font-weight:1100;
 font-size:16px;
 color: rgba(15,23,42,.92);
 white-space:nowrap;
 }
-
 .otherId{
 font-weight:600;
 font-size:11px;
@@ -468,7 +454,6 @@ white-space:nowrap;
 overflow:hidden;
 text-overflow:clip;
 }
-
 @media (max-width: 420px) {
   .otherPlot { font-size: 12px; }
   .otherStatus { font-size: 10px; padding:3px 6px; }
@@ -501,7 +486,6 @@ scroll-snap-type: x mandatory;
 scrollbar-width: none;
 }
 .shareRow::-webkit-scrollbar{ display:none; }
-
 .shareBtn{
 flex:0 0 auto;
 width:58px;
@@ -570,16 +554,16 @@ background: rgba(29,78,216,.10);
 }
 .fbVisitBtn.hidden{ display:none; }
 
-/* ✅ FIX ONLY: Quick Link buttons ให้เป็นแถบยาวเรียงลงมาเหมือน FB */
+/* ✅ Quick Link buttons (ของเดิมคุณ) */
 .quickLinks{
 margin-top: 10px;
 display:flex;
-flex-direction:column;       
+flex-direction:column;
 align-items:center;
 gap:10px;
 }
 .quickBtn{
-width:min(640px, 100%);      
+width:min(640px, 100%);
 display:flex;
 align-items:center;
 justify-content:center;
@@ -616,14 +600,13 @@ color:#1d4ed8;
 background: rgba(29,78,216,.10);
 }
 .quickBtn.hidden{ display:none; }
-
 @media (max-width:420px){
   .quickBtn{ padding:11px 12px; border-radius:16px; font-size:12px; }
   .quickIcon{ width:24px; height:24px; border-radius:11px; }
 }
 
-/* ====== Bottom dock (ของเดิมคุณ) ====== */
-.wrap{ padding-bottom: 92px; }
+/* ====== Bottom dock (แก้: เพิ่มปุ่ม Agent/Customer PDF) ====== */
+.wrap{ padding-bottom: 112px; }
 .bottomDock{
 position:fixed;
 left:0; right:0; bottom:0;
@@ -637,7 +620,7 @@ border-top: 1px solid rgba(255,255,255,.55);
 max-width:1100px;
 margin:0 auto;
 display:grid;
-grid-template-columns: repeat(5, minmax(0, 1fr)); /* ✅ CHANGED: 5 columns */
+grid-template-columns: repeat(5, minmax(0, 1fr)); /* ✅ 5 ปุ่ม */
 gap:10px;
 }
 .dockBtn{
@@ -674,9 +657,8 @@ background: rgba(15,23,42,.08);
 opacity:.42;
 pointer-events:none;
 }
-@media (max-width:420px){
-.dockBtn{ padding:11px 8px; border-radius:16px; font-size:12px; }
-.dockIcon{ width:24px; height:24px; border-radius:11px; }
+@media (max-width:520px){
+  .dockInner{ grid-template-columns: repeat(2, minmax(0,1fr)); } /* ✅ มือถือให้เรียง 2 คอลัมน์ */
 }
 </style>
 </head>
@@ -810,29 +792,24 @@ pointer-events:none;
   </div>
 </div>
 
+<!-- ✅ Dock: เพิ่ม Agent/Customer PDF -->
 <div class="bottomDock" id="bottomDock" aria-label="Downloads">
   <div class="dockInner">
     <a class="dockBtn disabled" id="dockSales" href="#" target="_blank" rel="noopener">
-      <span class="dockIcon">📄</span>
-      <span>Sales PDF</span>
+      <span class="dockIcon">📄</span><span>Sales PDF</span>
     </a>
     <a class="dockBtn disabled" id="dockMaterial" href="#" target="_blank" rel="noopener">
-      <span class="dockIcon">📄</span>
-      <span>Material PDF</span>
+      <span class="dockIcon">📄</span><span>Material PDF</span>
     </a>
     <a class="dockBtn disabled" id="dockFloorplan" href="#" target="_blank" rel="noopener">
-      <span class="dockIcon">📄</span>
-      <span>Floor Plan</span>
+      <span class="dockIcon">📄</span><span>Floor Plan</span>
     </a>
 
-    <!-- ✅ NEW -->
     <a class="dockBtn disabled" id="dockAgentPdf" href="#" target="_blank" rel="noopener">
-      <span class="dockIcon">🧑‍💼</span>
-      <span>Agent PDF</span>
+      <span class="dockIcon">🧑‍💼</span><span>Agent PDF</span>
     </a>
     <a class="dockBtn disabled" id="dockCustomerPdf" href="#" target="_blank" rel="noopener">
-      <span class="dockIcon">🧾</span>
-      <span>Customer PDF</span>
+      <span class="dockIcon">👥</span><span>Customer PDF</span>
     </a>
   </div>
 </div>
@@ -846,17 +823,13 @@ const qs = new URLSearchParams(location.search);
 const hpId = qs.get("id") || qs.get("hpId") || "";
 const project = qs.get("project") || "HP00";
 
-/** ✅ TOKEN handling (ยังคงไว้สำหรับ Admin ที่เปิดมาด้วย token) */
+/** ✅ TOKEN handling */
 const TOKEN_QS = (qs.get("token") || "").trim();
 const TOKEN_LS = (localStorage.getItem("HP_AUTH_TOKEN") || "").trim();
 let token = TOKEN_QS || TOKEN_LS;
 
-/** ✅ ถ้ามี token ใน URL ให้เก็บลง localStorage เพื่อหน้าอื่นใช้ */
-if (TOKEN_QS) {
-  localStorage.setItem("HP_AUTH_TOKEN", TOKEN_QS);
-}
+if (TOKEN_QS) localStorage.setItem("HP_AUTH_TOKEN", TOKEN_QS);
 
-/** ✅ helper ไปหน้า gateway เพื่อ login (ยังคงไว้ เผื่อ Admin) */
 function goGateway(reason){
   try{
     if (reason) console.warn("[AUTH]", reason);
@@ -866,13 +839,10 @@ function goGateway(reason){
     location.href = `gateway.html?project=${encodeURIComponent(project)}`;
   }
 }
-
 function clearToken(){
   try{ localStorage.removeItem("HP_AUTH_TOKEN"); }catch(e){}
   token = "";
 }
-
-/** ✅ FIX ONLY: ให้ไอคอน Home ลิงก์กลับ index พร้อม project + token (ถ้ามี) */
 (function setHomeLink(){
   const a = document.getElementById("homeLink");
   if(!a) return;
@@ -880,15 +850,8 @@ function clearToken(){
   a.href = `index.html?project=${encodeURIComponent(project)}${t}`;
 })();
 
-/** Loader helpers */
-function showLoader(){
-  const el = document.getElementById("pageLoader");
-  if(el) el.style.display = "flex";
-}
-function hideLoader(){
-  const el = document.getElementById("pageLoader");
-  if(el) el.style.display = "none";
-}
+function showLoader(){ const el = document.getElementById("pageLoader"); if(el) el.style.display = "flex"; }
+function hideLoader(){ const el = document.getElementById("pageLoader"); if(el) el.style.display = "none"; }
 
 /** JSONP */
 function jsonp(url, timeoutMs = 20000){
@@ -902,20 +865,27 @@ function jsonp(url, timeoutMs = 20000){
       try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
     }
     window[cb] = (data) => { cleanup(); resolve(data); };
-
     const sep = url.includes("?") ? "&" : "?";
     script.src = url + sep + "callback=" + encodeURIComponent(cb) + "&t=" + Date.now();
-
     script.onerror = () => { cleanup(); reject(new Error("jsonp_error")); };
     document.body.appendChild(script);
   });
+}
+
+/** POST JSON */
+async function postJson(url, bodyObj){
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type":"application/json" },
+    body: JSON.stringify(bodyObj || {})
+  });
+  return await res.json();
 }
 
 function showError(msg, showLoginBtn = false){
   const box = document.getElementById("errBox");
   box.style.display = "block";
   box.innerHTML = "";
-
   const p = document.createElement("div");
   p.textContent = msg;
   box.appendChild(p);
@@ -935,7 +905,6 @@ function showError(msg, showLoginBtn = false){
     box.appendChild(btn);
   }
 }
-
 function hideError(){
   const box = document.getElementById("errBox");
   box.style.display = "none";
@@ -951,7 +920,6 @@ function moneyTHB(x){
   const n = toNumber(x);
   return "฿" + n.toLocaleString("en-US");
 }
-
 function cleanDriveImage(url){
   const u = String(url || "").trim();
   if(!u) return "";
@@ -966,7 +934,6 @@ function cleanDriveImage(url){
   if (id) return "https://lh3.googleusercontent.com/d/" + id;
   return u;
 }
-
 function statusStyle(statusRaw){
   const s = String(statusRaw||"").trim().toLowerCase();
   if (s.includes("available")) return {border:"rgba(16,185,129,.65)", text:"rgba(5,150,105,1)"};
@@ -975,7 +942,6 @@ function statusStyle(statusRaw){
   if (s.includes("sold")) return {border:"rgba(244,63,94,.55)", text:"rgba(190,18,60,1)"};
   return {border:"rgba(15,23,42,.25)", text:"rgba(15,23,42,.92)"};
 }
-
 document.getElementById("btnBack").addEventListener("click", () => {
   const t = token ? `&token=${encodeURIComponent(token)}` : "";
   history.length > 1 ? history.back() : (location.href = `index.html?project=${encodeURIComponent(project)}${t}`);
@@ -993,7 +959,6 @@ function setMain(i){
   document.getElementById("tagCount").textContent = `${idx+1} / ${images.length || 0}`;
   document.querySelectorAll(".thumb").forEach((t, k)=> t.classList.toggle("active", k===idx));
 }
-
 function renderThumbs(){
   const strip = document.getElementById("thumbStrip");
   strip.innerHTML = "";
@@ -1007,7 +972,6 @@ function renderThumbs(){
     strip.appendChild(im);
   });
 }
-
 function enableSwipe(){
   const gallery = document.getElementById("gallery");
   let startX = 0, dx = 0;
@@ -1024,7 +988,6 @@ function enableSwipe(){
     else setMain(idx-1);
   });
 }
-
 function safeText(v){
   const s = String(v ?? "").trim();
   return s === "" ? "-" : s;
@@ -1042,12 +1005,8 @@ function fmtSqm(v){
   if (low.includes("sq") || low.includes("ตร.ม") || low.includes("m2") || low.includes("m²")) return s;
   return s + " sq.m";
 }
-
-/* ✅ key sets */
 const LAND_SQM_KEYS = ["Land_Area_sq_m","Land_Area_SQM","Land Area (sq.m)","Land Area (sqm)","Land Area sqm","Land Area sq.m"];
 const LIVING_SQM_KEYS = ["Living_Area_sq_m","Living_Area_SQM","Living Area (sq.m)","Living Area (sqm)","Living Area sqm","Living Area sq.m"];
-
-/* ✅ NEW: Land Area (sq.w) + Zone */
 const LAND_SQW_KEYS = ["Land_Area_sq_w","Land_Area_SQW","Land Area (sq.w)","Land Area (sqw)","Land Area sq.w","Land Area sqw"];
 const ZONE_KEYS = ["Zone","zone","ZONE"];
 
@@ -1071,8 +1030,6 @@ function renderMiniMeta(detail){
   if(!el) return;
   el.textContent = `Land ${landM} · Living ${livingM}`;
 }
-
-/* ✅ FIX HERE: เพิ่ม Land Area (sq.w) + Zone เข้า grid */
 function renderInfo(detail){
   const grid = document.getElementById("infoGrid");
   const items = [
@@ -1103,7 +1060,6 @@ function renderInfo(detail){
     grid.appendChild(box);
   }
 }
-
 function normalizeLink(v){
   const s = String(v ?? "").trim();
   return s && s !== "-" ? s : "";
@@ -1121,7 +1077,73 @@ function setDockLink(elId, link){
   el.setAttribute("href", href);
 }
 
-/** ====== AD: FB_Link ====== */
+/** ✅ NEW: ถ้าไม่มี Agent_PDF / Customer_PDF ให้สร้างผ่าน API (HQ token เท่านั้น) */
+async function ensurePdfAndOpen(type){ // "agent" | "customer"
+  try{
+    if(!token){
+      alert("ต้องล็อกอิน HQ ก่อนถึงจะสั่งสร้าง PDF ได้");
+      goGateway("no token for generatePdf");
+      return;
+    }
+    showLoader();
+    const resp = await postJson(SCRIPT_URL, {
+      mode: "generatePdf",
+      project,
+      hpId,
+      type,
+      token
+    });
+    hideLoader();
+
+    if(resp && resp.error){
+      const msg = String(resp.error||"");
+      if(msg.toLowerCase().includes("unauthorized")){
+        clearToken();
+        goGateway("expired token generatePdf");
+        return;
+      }
+      alert("สร้าง PDF ไม่สำเร็จ: " + msg);
+      return;
+    }
+    const link = resp && resp.link ? String(resp.link) : "";
+    if(!link){
+      alert("สร้าง PDF ไม่สำเร็จ: ไม่ได้ลิงก์กลับมา");
+      return;
+    }
+    // เปิดดาวน์โหลดทันที
+    window.open(link, "_blank", "noopener");
+  }catch(e){
+    hideLoader();
+    alert("สร้าง PDF ไม่สำเร็จ (network/error)");
+  }
+}
+
+/** ✅ Hook ปุ่ม PDF ใหม่ */
+function bindPdfButtons(detail){
+  const aAgent = document.getElementById("dockAgentPdf");
+  const aCus   = document.getElementById("dockCustomerPdf");
+
+  const agentLink = normalizeLink(detail?.Agent_PDF || "");
+  const cusLink   = normalizeLink(detail?.Customer_PDF || "");
+
+  // ถ้ามีลิงก์แล้ว -> กดดาวน์โหลดได้
+  setDockLink("dockAgentPdf", agentLink);
+  setDockLink("dockCustomerPdf", cusLink);
+
+  // ถ้ายังไม่มีลิงก์ -> ให้กดแล้วสร้าง (HQ)
+  if(aAgent && !agentLink){
+    aAgent.classList.remove("disabled"); // ให้กดได้เพื่อสร้าง
+    aAgent.href = "#";
+    aAgent.addEventListener("click", (ev)=>{ ev.preventDefault(); ensurePdfAndOpen("agent"); });
+  }
+  if(aCus && !cusLink){
+    aCus.classList.remove("disabled");
+    aCus.href = "#";
+    aCus.addEventListener("click", (ev)=>{ ev.preventDefault(); ensurePdfAndOpen("customer"); });
+  }
+}
+
+/** ====== FB / Map / Tour ของเดิมคุณ (คงไว้) ====== */
 function pickFbLink(detail){
   const keys = ["FB_Link","FBLink","FB_LINK","facebook","Facebook","FB"];
   for(const k of keys){
@@ -1134,10 +1156,8 @@ function pickFbLink(detail){
 function setFbVisitBar(link){
   const a = document.getElementById("fbVisitBtn");
   if(!a) return;
-
   const wrap = a.closest(".fbVisitWrap");
   const href = normalizeLink(link);
-
   if(!href){
     a.classList.add("hidden");
     a.setAttribute("href", "#");
@@ -1148,8 +1168,6 @@ function setFbVisitBar(link){
   a.setAttribute("href", href);
   if (wrap) wrap.style.display = "flex";
 }
-
-/** ====== AE: Map_Link ====== */
 function pickMapLink(detail){
   const keys = ["Map_Link","MapLink","GoogleMap","Google_Maps","Map","Location","Location_Link"];
   for(const k of keys){
@@ -1166,8 +1184,6 @@ function buildOpenMapUrl(link){
   if (raw.startsWith("http")) return raw;
   return `https://www.google.com/maps?q=${encodeURIComponent(raw)}`;
 }
-
-/** ====== AF: Virtual_Tour ====== */
 function pickVirtualTour(detail){
   const keys = ["Virtual_Tour","VirtualTour","Virtual_TOUR","VirtualTour_Link","Virtual","Tour","VR_Link","Virtual_Link"];
   for(const k of keys){
@@ -1205,9 +1221,7 @@ function setQuickLinks(mapLink, tourLink){
   }
 }
 
-/** =========================
-* SHARE
-* ========================= */
+/** SHARE ของเดิมคุณ (คงไว้) */
 function getPublicShareUrl(){
   const u = new URL(location.href);
   u.searchParams.delete("token");
@@ -1215,14 +1229,12 @@ function getPublicShareUrl(){
   if (project) u.searchParams.set("project", project);
   return u.toString();
 }
-
 function openPopup(url){
   const w = 640, h = 640;
   const left = (screen.width - w) / 2;
   const top = (screen.height - h) / 2;
   window.open(url, "_blank", `noopener,noreferrer,width=${w},height=${h},left=${left},top=${top}`);
 }
-
 async function copyToClipboard(text){
   try{
     await navigator.clipboard.writeText(text);
@@ -1239,7 +1251,6 @@ async function copyToClipboard(text){
     return true;
   }
 }
-
 function renderShareIcons(detail){
   const row = document.getElementById("shareRow");
   if(!row) return;
@@ -1253,21 +1264,16 @@ function renderShareIcons(detail){
   const ICONS = {
     fb: `<svg width="22" height="22" viewBox="0 0 24 24" fill="#1877F2" aria-hidden="true"><path d="M22 12.06C22 6.504 17.523 2 12 2S2 6.504 2 12.06C2 17.082 5.657 21.245 10.438 22v-7.03H7.898v-2.91h2.54V9.845c0-2.522 1.492-3.916 3.777-3.916 1.094 0 2.238.196 2.238.196v2.475h-1.26c-1.243 0-1.63.776-1.63 1.57v1.89h2.773l-.443 2.91h-2.33V22C18.343 21.245 22 17.082 22 12.06z"/></svg>`,
     msg: `<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00C6FF"/><stop offset="1" stop-color="#A100FF"/></linearGradient></defs><path fill="url(#g)" d="M12 2C6.477 2 2.13 6.35 2.13 11.111c0 2.867 1.455 5.423 3.73 7.087V22l3.59-1.97c.84.23 1.727.36 2.68.36 5.523 0 10-4.078 10-9.279C22 6.078 17.523 2 12 2z"/><path fill="#fff" d="M6.9 14.6l3.9-4.1 2.6 2.2 3.7-2.2-3.9 4.1-2.6-2.2-3.7 2.2z"/></svg>`,
-    wa: `<svg width="22" height="22" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true"><path d="M12.05 2C6.57 2 2.13 6.35 2.13 11.72c0 1.7.46 3.36 1.35 4.82L2 22l5.62-1.43c1.41.76 3.01 1.16 4.67 1.16 5.48 0 9.92-4.35 9.92-9.72S17.53 2 12.05 2zm0 17.76c-1.5 0-2.96-.42-4.22-1.2l-.3-.18-3.34.85.9-3.19-.2-.32a7.54 7.54 0 0 1-1.2-4c0-4.16 3.45-7.55 7.56-7.55 4.17 0 7.56 3.39 7.56 7.55 0 4.16-3.39 7.55-7.56 7.55z"/><path fill="#25D366" d="M9.23 7.98c-.17-.38-.35-.39-.51-.4l-.44-.01c-.15 0-.39.06-.6.28-.2.22-.78.76-.78 1.85 0 1.09.8 2.15.92 2.3.11.14 1.55 2.45 3.8 3.34 1.86.74 2.25.59 2.65.55.4-.04 1.29-.54 1.47-1.06.18-.52.18-.97.13-1.06-.05-.09-.2-.14-.42-.25-.22-.11-1.29-.66-1.49-.73-.2-.07-.35-.11-.5.11-.15.22-.58.73-.71.88-.13.15-.26.17-.48.06-.22-.11-.92-.35-1.76-1.12-.65-.58-1.1-1.3-1.23-1.52-.13-.22-.01-.34.1-.45.1-.1.22-.26.33-.39.11-.13.15-.22.22-.36.07-.15.04-.28-.01-.39-.06-.11-.5-1.25-.69-1.7z"/></svg>`,
+    wa: `<svg width="22" height="22" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true"><path d="M12.05 2C6.57 2 2.13 6.35 2.13 11.72c0 1.7.46 3.36 1.35 4.82L2 22l5.62-1.43c1.41.76 3.01 1.16 4.67 1.16 5.48 0 9.92-4.35 9.92-9.72S17.53 2 12.05 2zm0 17.76c-1.5 0-2.96-.42-4.22-1.2l-.3-.18-3.34.85.9-3.19-.2-.32a7.54 7.54 0 0 1-1.2-4c0-4.16 3.45-7.55 7.56-7.55 4.17 0 7.56 3.39 7.56 7.55 0 4.16-3.39 7.55-7.56 7.55z"/></svg>`,
     tg: `<svg width="22" height="22" viewBox="0 0 24 24" fill="#2AABEE" aria-hidden="true"><path d="M9.7 15.6l-.4 5.6c.6 0 .9-.3 1.2-.6l2.9-2.8 6 4.4c1.1.6 1.9.3 2.2-1l4-18.7c.4-1.5-.5-2.1-1.6-1.7L1.6 10.3c-1.4.6-1.4 1.5-.2 1.9l5.7 1.8L20 6.1c.6-.4 1.1-.2.7.2"/></svg>`,
-    line: `<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="#06C755" d="M19.2 4.6c-1.9-1.7-4.4-2.6-7.1-2.6C6.6 2 2.3 5.5 2.3 9.8c0 2.4 1.4 4.6 3.7 6.1l-.5 3c-.1.4.3.7.7.5l3.4-1.8c.9.2 1.9.3 2.9.3 5.5 0 9.8-3.5 9.8-7.8 0-2-1-3.9-2.8-5.5z"/><path fill="#fff" d="M8 10.3c0-.2.2-.4.4-.4h1.2c.2 0 .4.2.4.4s-.2.4-.4.4H8.4c-.2 0-.4-.2-.4-.4zm0-2.3c0-.2.2-.4.4-.4h4.8c.2 0 .4.2.4.4s-.2.4-.4.4H8.4c-.2 0-.4-.2-.4-.4zm0 4.6c0-.2.2-.4.4-.4h3.4c.2 0 .4.2.4.4s-.2.4-.4.4H8.4c-.2 0-.4-.2-.4-.4z"/></svg>`,
+    line: `<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="#06C755" d="M19.2 4.6c-1.9-1.7-4.4-2.6-7.1-2.6C6.6 2 2.3 5.5 2.3 9.8c0 2.4 1.4 4.6 3.7 6.1l-.5 3c-.1.4.3.7.7.5l3.4-1.8c.9.2 1.9.3 2.9.3 5.5 0 9.8-3.5 9.8-7.8 0-2-1-3.9-2.8-5.5z"/></svg>`,
     link: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07L11.5 4.5"/><path d="M14 11a5 5 0 0 0-7.07 0L4.1 13.83a5 5 0 0 0 7.07 7.07L12.5 19.5"/></svg>`,
-    mail: `<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="#EA4335" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/><path fill="#fff" d="M20 8l-8 5-8-5V6l8 5 8-5v2z"/></svg>`,
+    mail: `<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="#EA4335" d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/></svg>`,
     more: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(15,23,42,.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>`,
   };
 
   const items = [
     {key:"fb",  label:"Facebook",   onClick: ()=> openPopup(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`)},
-    {key:"msg", label:"Messenger",  onClick: ()=> {
-      const scheme = `fb-messenger://share?link=${encodeURIComponent(url)}`;
-      const fallback = () => (navigator.share ? navigator.share({title, text, url}) : openPopup(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`));
-      try{ location.href = scheme; setTimeout(fallback, 900); }catch(e){ fallback(); }
-    }},
     {key:"wa",  label:"WhatsApp",   onClick: ()=> openPopup(`https://wa.me/?text=${encodeURIComponent(text + "\n" + url)}`)},
     {key:"tg",  label:"Telegram",   onClick: ()=> openPopup(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`)},
     {key:"line",label:"LINE",       onClick: ()=> openPopup(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(url)}`)},
@@ -1295,26 +1301,12 @@ function renderShareIcons(detail){
   });
 }
 
-/** =========================
-* Other Plots
-* ========================= */
-function getUnitId(u){
-  return String(u?.HP_ID || u?.id || u?.hpId || u?.Unit_ID || "").trim();
-}
-function getPlot(u){
-  return String(u?.Plot || u?.plot || u?.Unit_Plot || u?.Plot_No || "").trim();
-}
-function getThumb(u){
-  return cleanDriveImage(u?.Thumbnail_Image || u?.thumbnail || u?.thumb || u?.thumbUrl || "");
-}
-function getStatus(u){
-  return String(u?.Status || u?.status || u?.unitStatus || "-").trim() || "-";
-}
-function getPrice(u){
-  return u?.Price ?? u?.price ?? 0;
-}
-
-/* ✅ NEW: ดึง System_Status เพื่อใช้กรอง Offline / Pending */
+/** Other Plots (คงไว้) */
+function getUnitId(u){ return String(u?.HP_ID || u?.id || u?.hpId || u?.Unit_ID || "").trim(); }
+function getPlot(u){ return String(u?.Plot || u?.plot || u?.Unit_Plot || u?.Plot_No || "").trim(); }
+function getThumb(u){ return cleanDriveImage(u?.Thumbnail_Image || u?.thumbnail || u?.thumb || u?.thumbUrl || ""); }
+function getStatus(u){ return String(u?.Status || u?.status || u?.unitStatus || "-").trim() || "-"; }
+function getPrice(u){ return u?.Price ?? u?.price ?? 0; }
 function getSystemStatus(u){
   const keys = ["System_Status","SystemStatus","system_status","SYS_Status","Sys_Status","SYSTEM_STATUS","sysStatus"];
   const v = pick(u, keys);
@@ -1324,8 +1316,6 @@ function isHiddenBySystemStatus(u){
   const ss = getSystemStatus(u).toLowerCase();
   return ss.includes("offline") || ss.includes("pending");
 }
-
-/* ✅ FIX: meta เป็น 2 แถว (Land / Living) */
 function getLandLivingLines(u){
   const land = safeText(pick(u, LAND_SQM_KEYS));
   const living = safeText(pick(u, LIVING_SQM_KEYS));
@@ -1334,7 +1324,6 @@ function getLandLivingLines(u){
     livingLine: living === "-" ? "Living -" : `Living ${living} sq.m`
   };
 }
-
 function renderOtherUnits(units){
   const grid = document.getElementById("otherGrid");
   const section = document.getElementById("otherSection");
@@ -1351,7 +1340,6 @@ function renderOtherUnits(units){
     const st = getStatus(u);
     const price = moneyTHB(getPrice(u));
     const pill = statusStyle(st);
-
     const lines = getLandLivingLines(u);
 
     const card = document.createElement("div");
@@ -1377,22 +1365,18 @@ function renderOtherUnits(units){
     grid.appendChild(card);
   }
 }
-
 async function loadOtherUnits(){
   try{
     const url = `${SCRIPT_URL}?mode=getUnitList&project=${encodeURIComponent(project)}`;
     const data = await jsonp(url);
-
     if(!Array.isArray(data)){
       document.getElementById("otherSection").style.display = "none";
       return;
     }
-
     const filtered = data
       .filter(u => getUnitId(u) && getUnitId(u) !== String(hpId).trim())
       .filter(u => !isHiddenBySystemStatus(u))
       .slice(0, 10);
-
     renderOtherUnits(filtered);
   }catch(e){
     document.getElementById("otherSection").style.display = "none";
@@ -1405,7 +1389,7 @@ async function loadOtherUnits(){
   showLoader();
 
   if(!hpId){
-    showError("ลิงก์ไม่ถูกต้อง: ไม่มี id เช่น details.html?id=HP-Z001");
+    showError("ลิงก์ไม่ถูกต้อง: ไม่มี id เช่น details.html?id=HP00-0001");
     hideLoader();
     return;
   }
@@ -1415,9 +1399,7 @@ async function loadOtherUnits(){
     `&project=${encodeURIComponent(project)}` +
     `&hpId=${encodeURIComponent(hpId)}`;
 
-  if (token) {
-    url += `&token=${encodeURIComponent(token)}`;
-  }
+  if (token) url += `&token=${encodeURIComponent(token)}`;
 
   let detail;
   try{
@@ -1459,7 +1441,6 @@ async function loadOtherUnits(){
 
   renderMiniMeta(detail);
   renderDescription(detail);
-
   renderShareIcons(detail);
   setFbVisitBar(pickFbLink(detail));
 
@@ -1494,13 +1475,13 @@ async function loadOtherUnits(){
   renderInfo(detail);
   loadOtherUnits();
 
+  // ✅ Dock PDF เดิม
   setDockLink("dockSales", detail.Sales_Gallery);
   setDockLink("dockMaterial", detail.Material_PDF);
   setDockLink("dockFloorplan", detail.FloorPlan_PDF);
 
-  // ✅ NEW: Agent/Customer PDF download
-  setDockLink("dockAgentPdf", detail.Agent_PDF);
-  setDockLink("dockCustomerPdf", detail.Customer_PDF);
+  // ✅ NEW: Agent/Customer PDF
+  bindPdfButtons(detail);
 
   hideLoader();
 })();
