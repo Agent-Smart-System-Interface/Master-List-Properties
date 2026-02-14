@@ -60,7 +60,7 @@ letter-spacing:.2px;
 width:44px; height:44px; border-radius:999px;
 border:0; background: rgba(255,255,255,.55);
 cursor:pointer; font-size:18px; font-weight:900;
-flex:0 0 auto;
+flex:0  0 auto;
 }
 .card{
 margin-top:14px;
@@ -612,7 +612,6 @@ border-top: 1px solid rgba(255,255,255,.55);
 .dockInner{
 max-width:1100px;
 margin:0 auto;
-/* ✅ FIX: เดิม 3 ช่อง → เพิ่มเป็น 5 ช่อง */
 display:grid;
 grid-template-columns: repeat(5, minmax(0, 1fr));
 gap:10px;
@@ -787,7 +786,6 @@ pointer-events:none;
   </div>
 </div>
 
-<!-- ✅ FIX: เพิ่ม 2 ปุ่ม Agent/Customer PDF -->
 <div class="bottomDock" id="bottomDock" aria-label="Downloads">
   <div class="dockInner">
     <a class="dockBtn disabled" id="dockSales" href="#" target="_blank" rel="noopener">
@@ -823,17 +821,13 @@ const qs = new URLSearchParams(location.search);
 const hpId = qs.get("id") || qs.get("hpId") || "";
 const project = qs.get("project") || "HP00";
 
-/** ✅ TOKEN handling (ยังคงไว้สำหรับ Admin ที่เปิดมาด้วย token) */
+/** ✅ TOKEN handling */
 const TOKEN_QS = (qs.get("token") || "").trim();
 const TOKEN_LS = (localStorage.getItem("HP_AUTH_TOKEN") || "").trim();
 let token = TOKEN_QS || TOKEN_LS;
 
-/** ✅ ถ้ามี token ใน URL ให้เก็บลง localStorage เพื่อหน้าอื่นใช้ */
-if (TOKEN_QS) {
-  localStorage.setItem("HP_AUTH_TOKEN", TOKEN_QS);
-}
+if (TOKEN_QS) localStorage.setItem("HP_AUTH_TOKEN", TOKEN_QS);
 
-/** ✅ helper ไปหน้า gateway เพื่อ login (ยังคงไว้ เผื่อ Admin) */
 function goGateway(reason){
   try{
     if (reason) console.warn("[AUTH]", reason);
@@ -843,13 +837,11 @@ function goGateway(reason){
     location.href = `gateway.html?project=${encodeURIComponent(project)}`;
   }
 }
-
 function clearToken(){
   try{ localStorage.removeItem("HP_AUTH_TOKEN"); }catch(e){}
   token = "";
 }
 
-/** ✅ ให้ไอคอน Home ลิงก์กลับ index พร้อม project + token (ถ้ามี) */
 (function setHomeLink(){
   const a = document.getElementById("homeLink");
   if(!a) return;
@@ -857,15 +849,8 @@ function clearToken(){
   a.href = `index.html?project=${encodeURIComponent(project)}${t}`;
 })();
 
-/** Loader helpers */
-function showLoader(){
-  const el = document.getElementById("pageLoader");
-  if(el) el.style.display = "flex";
-}
-function hideLoader(){
-  const el = document.getElementById("pageLoader");
-  if(el) el.style.display = "none";
-}
+function showLoader(){ const el = document.getElementById("pageLoader"); if(el) el.style.display = "flex"; }
+function hideLoader(){ const el = document.getElementById("pageLoader"); if(el) el.style.display = "none"; }
 
 /** JSONP */
 function jsonp(url, timeoutMs = 20000){
@@ -882,7 +867,6 @@ function jsonp(url, timeoutMs = 20000){
 
     const sep = url.includes("?") ? "&" : "?";
     script.src = url + sep + "callback=" + encodeURIComponent(cb) + "&t=" + Date.now();
-
     script.onerror = () => { cleanup(); reject(new Error("jsonp_error")); };
     document.body.appendChild(script);
   });
@@ -892,7 +876,6 @@ function showError(msg, showLoginBtn = false){
   const box = document.getElementById("errBox");
   box.style.display = "block";
   box.innerHTML = "";
-
   const p = document.createElement("div");
   p.textContent = msg;
   box.appendChild(p);
@@ -912,7 +895,6 @@ function showError(msg, showLoginBtn = false){
     box.appendChild(btn);
   }
 }
-
 function hideError(){
   const box = document.getElementById("errBox");
   box.style.display = "none";
@@ -1020,9 +1002,32 @@ function fmtSqm(v){
   return s + " sq.m";
 }
 
-const LAND_SQM_KEYS = ["Land_Area_sq_m","Land_Area_SQM","Land Area (sq.m)","Land Area (sqm)","Land Area sqm","Land Area sq.m"];
-const LIVING_SQM_KEYS = ["Living_Area_sq_m","Living_Area_SQM","Living Area (sq.m)","Living Area (sqm)","Living Area sqm","Living Area sq.m"];
-const LAND_SQW_KEYS = ["Land_Area_sq_w","Land_Area_SQW","Land Area (sq.w)","Land Area (sqw)","Land Area sq.w","Land Area sqw"];
+/** =========================================================
+ * ✅ NEW COLUMN KEYS (รองรับทั้งชื่อใหม่ + ชื่อเดิม)
+ * ========================================================= */
+const LAND_SQW_KEYS = [
+  "Land_Area_sq_w", "land_area_sq_w", "Land_Area_SQW",
+  "Land Area (sq.w)", "Land Area (sqw)", "Land Area sq.w", "Land Area sqw"
+];
+
+const LAND_SQM_KEYS = [
+  "Land_Area_sq_m", "land_area_sq_m", "Land_Area_SQM",
+  "Land Area (sq.m)", "Land Area (sqm)", "Land Area sqm", "Land Area sq.m"
+];
+
+const LIVING_SQM_KEYS = [
+  "Living_Area_sq_m", "living_area_sq_m", "Living_Area_SQM",
+  "Living Area (sq.m)", "Living Area (sqm)", "Living Area sqm", "Living Area sq.m"
+];
+
+const POOL_SIZE_KEYS = [
+  "Pool_Size","pool_size","PoolSize","POOL_SIZE","Pool Size"
+];
+
+const POOL_DEPTH_KEYS = [
+  "Pool_Depth","pool_depth","PoolDepth","POOL_DEPTH","Pool Depth"
+];
+
 const ZONE_KEYS = ["Zone","zone","ZONE"];
 
 function renderDescription(detail){
@@ -1038,6 +1043,7 @@ function renderDescription(detail){
   el.textContent = desc;
   el.classList.remove("descEmpty");
 }
+
 function renderMiniMeta(detail){
   const landM = fmtSqm(pick(detail, LAND_SQM_KEYS));
   const livingM = fmtSqm(pick(detail, LIVING_SQM_KEYS));
@@ -1048,6 +1054,8 @@ function renderMiniMeta(detail){
 
 function renderInfo(detail){
   const grid = document.getElementById("infoGrid");
+
+  // ✅ แสดง “ชื่อคอลัมน์ใหม่” เป็น label
   const items = [
     ["Project_Name", safeText(pick(detail, ["Project_Name","ProjectName","Project"]))],
     ["District", safeText(pick(detail, ["District","district"]))],
@@ -1056,11 +1064,14 @@ function renderInfo(detail){
     ["Badge", safeText(pick(detail, ["Badge","badge"]))],
     ["Bedrooms", safeText(pick(detail, ["Bedrooms","Bedroom","beds"]))],
     ["Bathrooms", safeText(pick(detail, ["Bathrooms","Bathroom","baths"]))],
-    ["Land Area (sq.w)", safeText(pick(detail, LAND_SQW_KEYS))],
-    ["Land Area (sq.m)", safeText(pick(detail, LAND_SQM_KEYS))],
-    ["Living Area (sq.m)", safeText(pick(detail, LIVING_SQM_KEYS))],
-    ["Pool Size", safeText(pick(detail, ["Pool_Size","PoolSize"]))],
-    ["Pool Depth", safeText(pick(detail, ["Pool_Depth","PoolDepth"]))],
+
+    ["Land_Area_sq_w", safeText(pick(detail, LAND_SQW_KEYS))],
+    ["Land_Area_sq_m", safeText(pick(detail, LAND_SQM_KEYS))],
+    ["Living_Area_sq_m", safeText(pick(detail, LIVING_SQM_KEYS))],
+
+    ["Pool_Size", safeText(pick(detail, POOL_SIZE_KEYS))],
+    ["Pool_Depth", safeText(pick(detail, POOL_DEPTH_KEYS))],
+
     ["Furnishing", safeText(pick(detail, ["Furnishing","furnishing"]))],
     ["Price_SQM", safeText(pick(detail, ["Price_SQM","PriceSQM"]))],
     ["Status", safeText(pick(detail, ["Status","status"]))],
@@ -1068,6 +1079,7 @@ function renderInfo(detail){
     ["Extras", safeText(pick(detail, ["Extras","extras"]))],
     ["Electricity", safeText(pick(detail, ["Electricity","electricity"]))],
   ];
+
   grid.innerHTML = "";
   for(const [k,v] of items){
     const box = document.createElement("div");
@@ -1103,7 +1115,7 @@ async function ensurePdfAndOpen(type){
     let url = `${SCRIPT_URL}?mode=generatePdf&project=${encodeURIComponent(project)}&hpId=${encodeURIComponent(hpId)}&type=${encodeURIComponent(type)}`;
     if (token) url += `&token=${encodeURIComponent(token)}`;
 
-    const res = await jsonp(url, 60000); // สร้าง PDF อาจใช้เวลานานขึ้น
+    const res = await jsonp(url, 60000);
 
     if (res && res.error){
       const msg = String(res.error || "");
@@ -1125,7 +1137,6 @@ async function ensurePdfAndOpen(type){
       return;
     }
 
-    // เปิดดาวน์โหลดทันที
     window.open(link, "_blank", "noopener,noreferrer");
     hideLoader();
   }catch(e){
@@ -1213,13 +1224,11 @@ function setQuickLinks(mapLink, tourLink){
     tourBtn.href = "#";
   }
 
-  if (wrap) {
-    wrap.style.display = (mapHref || tourHref) ? "flex" : "none";
-  }
+  if (wrap) wrap.style.display = (mapHref || tourHref) ? "flex" : "none";
 }
 
 /** =========================
-* SHARE (ของเดิมคุณ - ตัดทอนเพื่อประหยัดพื้นที่ในคำตอบนี้)
+* SHARE (คงเดิม)
 * ========================= */
 function getPublicShareUrl(){
   const u = new URL(location.href);
@@ -1252,7 +1261,6 @@ function renderShareIcons(detail){
   const plot = String(detail?.Plot || hpId || "Property").trim() || "Property";
   const price = moneyTHB(detail?.Price || 0);
   const title = `Plot ${plot} · ${price}`;
-  const text = `Check this property: ${title}`;
 
   const items = [
     {label:"Facebook", onClick: ()=> openPopup(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`)},
@@ -1276,7 +1284,7 @@ function renderShareIcons(detail){
 }
 
 /** =========================
-* Other Plots (ของเดิมคุณ - คงหลักการเดิม)
+* Other Plots
 * ========================= */
 function getUnitId(u){ return String(u?.HP_ID || u?.id || u?.hpId || u?.Unit_ID || "").trim(); }
 function getPlot(u){ return String(u?.Plot || u?.plot || u?.Unit_Plot || u?.Plot_No || "").trim(); }
@@ -1450,12 +1458,12 @@ async function loadOtherUnits(){
   renderInfo(detail);
   loadOtherUnits();
 
-  // ✅ ของเดิม 3 ปุ่ม
   setDockLink("dockSales", detail.Sales_Gallery);
   setDockLink("dockMaterial", detail.Material_PDF);
-  setDockLink("dockFloorplan", detail.FloorPlan_PDF);
 
-  // ✅ NEW: ถ้ามีลิงก์แล้ว ให้เปิดลิงก์นั้น / ถ้าไม่มีก็ generate
+  // ✅ รองรับทั้ง FloorPlan_PDF (เดิม) และ FloorPlan_PDF (ของคุณใน GS เป็น COL_FLOORPLAN_PDF)
+  setDockLink("dockFloorplan", detail.FloorPlan_PDF || detail.FloorPlan_PDF);
+
   const customerBtn = document.getElementById("dockCustomerPDF");
   const agentBtn = document.getElementById("dockAgentPDF");
 
@@ -1481,7 +1489,7 @@ async function loadOtherUnits(){
     agentBtn.classList.remove("disabled");
     agentBtn.addEventListener("click", (ev)=>{
       ev.preventDefault();
-      ensurePdfAndOpen("agent"); // ต้องมี token (login) ตามฝั่ง GS
+      ensurePdfAndOpen("agent");
     });
   }
 
