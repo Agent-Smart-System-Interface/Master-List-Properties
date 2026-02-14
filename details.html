@@ -989,12 +989,43 @@ function safeText(v){
   const s = String(v ?? "").trim();
   return s === "" ? "-" : s;
 }
+
+/** =========================================================
+ * ✅ FIX: pick() ให้จับคีย์แบบหลวม ๆ (เผื่อชื่อคีย์ต่างรูปแบบ)
+ * ========================================================= */
+function _normKey_(k){
+  return String(k ?? "")
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "")
+    .replace(/[^a-z0-9ก-๙]+/g, "");
+}
+function _ensureKeyMap_(obj){
+  if(!obj || typeof obj !== "object") return null;
+  if(obj.__KEYMAP__) return obj.__KEYMAP__;
+  const map = {};
+  for(const k of Object.keys(obj)){
+    map[_normKey_(k)] = k;
+  }
+  Object.defineProperty(obj, "__KEYMAP__", { value: map, enumerable: false });
+  return map;
+}
 function pick(obj, keys){
+  if(!obj) return "";
+  // 1) exact match
   for (const k of keys){
-    if (obj && obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== "") return obj[k];
+    if (obj[k] !== undefined && obj[k] !== null && String(obj[k]).trim() !== "") return obj[k];
+  }
+  // 2) loose match by normalized key
+  const km = _ensureKeyMap_(obj);
+  if(!km) return "";
+  for (const k of keys){
+    const real = km[_normKey_(k)];
+    if(real && obj[real] !== undefined && obj[real] !== null && String(obj[real]).trim() !== "") return obj[real];
   }
   return "";
 }
+
 function fmtSqm(v){
   const s = safeText(v);
   if(s === "-") return "-";
@@ -1056,7 +1087,6 @@ function renderMiniMeta(detail){
 function renderInfo(detail){
   const grid = document.getElementById("infoGrid");
 
-  // ✅ แสดง “ชื่อคอลัมน์ใหม่” เป็น label
   const items = [
     ["Project_Name", safeText(pick(detail, ["Project_Name","ProjectName","Project"]))],
     ["District", safeText(pick(detail, ["District","district"]))],
@@ -1301,14 +1331,17 @@ function isHiddenBySystemStatus(u){
   const ss = getSystemStatus(u).toLowerCase();
   return ss.includes("offline") || ss.includes("pending");
 }
+
+/** ✅ FIX: ใช้ fmtSqm + pick แบบหลวม เพื่อให้ Other Plots แสดง Land/Living ได้ */
 function getLandLivingLines(u){
-  const land = safeText(pick(u, LAND_SQM_KEYS));
-  const living = safeText(pick(u, LIVING_SQM_KEYS));
+  const land = fmtSqm(pick(u, LAND_SQM_KEYS));
+  const living = fmtSqm(pick(u, LIVING_SQM_KEYS));
   return {
-    landLine: land === "-" ? "Land -" : `Land ${land} sq.m`,
-    livingLine: living === "-" ? "Living -" : `Living ${living} sq.m`
+    landLine: land === "-" ? "Land -" : `Land ${land}`,
+    livingLine: living === "-" ? "Living -" : `Living ${living}`
   };
 }
+
 function renderOtherUnits(units){
   const grid = document.getElementById("otherGrid");
   const section = document.getElementById("otherSection");
@@ -1350,6 +1383,7 @@ function renderOtherUnits(units){
     grid.appendChild(card);
   }
 }
+
 async function loadOtherUnits(){
   try{
     const url = `${SCRIPT_URL}?mode=getUnitList&project=${encodeURIComponent(project)}`;
