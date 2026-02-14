@@ -27,7 +27,6 @@
       min-height:100vh;
     }
 
-    /* ✅ แก้ไขตามคำสั่ง: ลดขนาด Front ลง ~15% ให้พอดีทั้งมือถือ/คอม */
     .wrap{max-width:1000px;margin:0 auto;padding:12px 12px 38px}
 
     .topbar{
@@ -92,12 +91,7 @@
     .iconbtn:active{transform:scale(.98)}
     .iconbtn svg{width:18px;height:18px;opacity:.9}
 
-    /* controls */
-    .controls{
-      margin-top:10px;
-      display:flex;
-      justify-content:center;
-    }
+    .controls{ margin-top:10px; display:flex; justify-content:center; }
     .controlsInner{
       width:100%;
       max-width:731px;
@@ -107,12 +101,7 @@
       justify-content:center;
       flex-wrap:nowrap;
     }
-    .selectWrap{
-      flex:1 1 0;
-      min-width: 0;
-      max-width: none;
-      position:relative;
-    }
+    .selectWrap{ flex:1 1 0; min-width:0; position:relative; }
     .select{
       width:100%;
       appearance:none;
@@ -140,7 +129,6 @@
       pointer-events:none;
     }
 
-    /* grid */
     .grid{
       margin-top:10px;
       display:grid;
@@ -275,7 +263,6 @@
       font-size:13px;
     }
 
-    /* toast */
     .toast{
       position:fixed;
       left:50%;
@@ -298,7 +285,6 @@
     }
     .toast.show{opacity:1; transform:translateX(-50%) translateY(-6px);}
 
-    /* Loading overlay */
     .loader{
       position:fixed;
       inset:0;
@@ -422,7 +408,11 @@
      * CONFIG
      **********************************************************/
     const API_URL = "https://script.google.com/macros/s/AKfycbwmEVNQndYILa9zYyAsGgp6nH2r3y0Bb_sJ6FcXaU7rONCJQ_8L_Tu3BYm_nqNenmER/exec";
-    const PROJECT = "HP00";
+
+    // ✅ อ่าน project จาก URL ก่อน ถ้าไม่มีค่อย fallback HP00
+    const qs = new URLSearchParams(location.search);
+    const PROJECT = (qs.get("project") || localStorage.getItem("HP_AUTH_PROJECT") || "HP00").trim() || "HP00";
+
     const GATEWAY_URL = "https://agent-smart-system-interface.github.io/Master-List-Properties/gateway.html";
     const DETAILS_URL = "details.html?id=";
 
@@ -458,17 +448,15 @@
       return {bg:"rgba(255,255,255,.75)", fg:"rgba(11,19,32,.80)"};
     }
 
-    function normalizePlot(p){
-      return String(p||"").trim();
-    }
+    function normalizePlot(p){ return String(p||"").trim(); }
 
-    // ✅ สำคัญ: แสดงเฉพาะ Live เท่านั้น (กันหลุด Offline/Pending)
+    // ✅ แสดงเฉพาะ Live เท่านั้น
     function isLiveSysStatus(v){
       return String(v||"").trim().toLowerCase() === "live";
     }
 
-    // ✅ bump cache version เพราะ logic เปลี่ยน
-    const CACHE_KEY = `SP_UNITLIST_${PROJECT}_v2_liveOnly`;
+    // ✅ cache key แยกตาม project ชัด ๆ
+    const CACHE_KEY = `SP_UNITLIST_${PROJECT}_v3_liveOnly_jsonp`;
 
     function readCache(){
       try{
@@ -486,17 +474,36 @@
       }catch(_){}
     }
 
+    // ✅ JSONP helper (กัน CORS 100%)
+    function jsonp(url, timeoutMs = 15000){
+      return new Promise((resolve, reject)=>{
+        const cb = "cb_" + Math.random().toString(36).slice(2);
+        const script = document.createElement("script");
+        const timer = setTimeout(()=>{ cleanup(); reject(new Error("timeout")); }, timeoutMs);
+
+        function cleanup(){
+          clearTimeout(timer);
+          if (script.parentNode) script.parentNode.removeChild(script);
+          try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
+        }
+        window[cb] = (data)=>{ cleanup(); resolve(data); };
+        const sep = url.includes("?") ? "&" : "?";
+        script.src = url + sep + "callback=" + encodeURIComponent(cb) + "&t=" + Date.now();
+        script.onerror = ()=>{ cleanup(); reject(new Error("jsonp_error")); };
+        document.body.appendChild(script);
+      });
+    }
+
     async function fetchUnitList(){
       const cached = readCache();
       if (cached) return cached;
 
-      const url = new URL(API_URL);
-      url.searchParams.set("mode", "getUnitList");
-      url.searchParams.set("project", PROJECT);
+      const url = `${API_URL}?mode=getUnitList&project=${encodeURIComponent(PROJECT)}`;
+      const data = await jsonp(url, 20000);
 
-      const res = await fetch(url.toString(), { cache: "no-store" });
-      const data = await res.json();
-      if (!Array.isArray(data)) throw new Error(data?.error || "API invalid");
+      if (!Array.isArray(data)) {
+        throw new Error((data && data.error) ? data.error : "API invalid");
+      }
       writeCache(data);
       return data;
     }
@@ -525,7 +532,6 @@
       const plotVal = $("plotSelect").value;
       const sortVal = $("sortSelect").value;
 
-      // ✅ สำคัญ: เริ่มจากรายการ Live เท่านั้น (รองรับทั้ง sysStatus / System_Status)
       const liveOnly = all.filter(x => isLiveSysStatus(x.sysStatus));
 
       filtered = liveOnly.filter(x=>{
@@ -604,7 +610,7 @@
         btn.textContent = "More Details";
         btn.addEventListener("click", ()=>{
           if(!item.id) return;
-          location.href = DETAILS_URL + encodeURIComponent(item.id) + `&project=${PROJECT}`;
+          location.href = DETAILS_URL + encodeURIComponent(item.id) + `&project=${encodeURIComponent(PROJECT)}`;
         });
 
         body.appendChild(row1);
@@ -652,51 +658,6 @@
       imgs.forEach(img=>io.observe(img));
     }
 
-    (function init(){
-      $("gatewayBtn").href = GATEWAY_URL;
-      showLoader(true);
-      loadAll();
-      $("plotSelect").addEventListener("change", applyFilters);
-      $("sortSelect").addEventListener("change", applyFilters);
-    })();
-
-    async function loadAll(){
-      try{
-        const data = await fetchUnitList();
-
-        // ✅ สำคัญ: รองรับ key จาก GS ที่ส่งทั้ง sysStatus + System_Status
-        all = data.map(x=>({
-          id: x.id || "",
-          plot: x.plot || "",
-          projectName: x.projectName || x.project_name || "",
-          thumbnail: x.thumbnail || "",
-          bedrooms: x.bedrooms || "",
-          bathrooms: x.bathrooms || "",
-          livingSqm: x.livingSqm || x.Living_Area_sq_m || x.living_area_sq_m || "",
-          price: x.price || "",
-          status: x.status || "",
-          sysStatus: x.sysStatus || x.System_Status || x.system_status || ""
-        }));
-
-        // ✅ ทำชื่อโครงการจากรายการ Live เท่านั้น
-        const liveOnly = all.filter(x => isLiveSysStatus(x.sysStatus));
-
-        $("masterVill").textContent = pickMasterVillName(liveOnly) || "Master Vill";
-
-        // ✅ dropdown ต้องสร้างจากรายการ Live เท่านั้น
-        buildPlotOptions(liveOnly);
-
-        applyFilters();
-        showLoader(false);
-      }catch(err){
-        console.error(err);
-        $("countChip").textContent = "โหลดไม่สำเร็จ";
-        toast("โหลดข้อมูลไม่สำเร็จ");
-        $("empty").style.display = "block";
-        showLoader(false);
-      }
-    }
-
     function pickMasterVillName(list){
       const freq = new Map();
       list.forEach(x=>{
@@ -709,6 +670,50 @@
         if(v>bestN){ best=k; bestN=v; }
       }
       return best;
+    }
+
+    (function init(){
+      // ✅ gateway ส่ง project + back
+      const back = encodeURIComponent(location.pathname + location.search);
+      $("gatewayBtn").href = `${GATEWAY_URL}?project=${encodeURIComponent(PROJECT)}&back=${back}`;
+
+      showLoader(true);
+      loadAll();
+      $("plotSelect").addEventListener("change", applyFilters);
+      $("sortSelect").addEventListener("change", applyFilters);
+    })();
+
+    async function loadAll(){
+      try{
+        const data = await fetchUnitList();
+
+        // ✅ รองรับ key หลายแบบ
+        all = data.map(x=>({
+          id: x.id || x.HP_ID || "",
+          plot: x.plot || x.Plot || "",
+          projectName: x.projectName || x.Project_Name || x.project_name || "",
+          thumbnail: x.thumbnail || x.Thumbnail_Image || "",
+          bedrooms: x.bedrooms || x.Bedrooms || "",
+          bathrooms: x.bathrooms || x.Bathrooms || "",
+          livingSqm: x.livingSqm || x.Living_Area_sq_m || x.living_area_sq_m || "",
+          price: x.price || x.Price || "",
+          status: x.status || x.Status || "",
+          sysStatus: x.sysStatus || x.System_Status || x.system_status || ""
+        }));
+
+        const liveOnly = all.filter(x => isLiveSysStatus(x.sysStatus));
+
+        $("masterVill").textContent = pickMasterVillName(liveOnly) || "Master Vill";
+        buildPlotOptions(liveOnly);
+        applyFilters();
+        showLoader(false);
+      }catch(err){
+        console.error(err);
+        $("countChip").textContent = "โหลดไม่สำเร็จ";
+        toast("โหลดข้อมูลไม่สำเร็จ");
+        $("empty").style.display = "block";
+        showLoader(false);
+      }
     }
   </script>
 </body>
