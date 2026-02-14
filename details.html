@@ -195,7 +195,8 @@ overflow:hidden;
 text-overflow:ellipsis;
 }
 @media (max-width:420px){
-price{font-size:24px}
+/* ✅ FIX: เดิมพิมพ์ price{...} ทำให้ไม่ติดสไตล์ ต้องเป็น .price */
+.price{font-size:24px}
 .statusBelow{font-size:14px; padding:7px 10px;}
 .miniMeta{font-size:12px;}
 }
@@ -1461,8 +1462,14 @@ async function loadOtherUnits(){
   setDockLink("dockSales", detail.Sales_Gallery);
   setDockLink("dockMaterial", detail.Material_PDF);
 
-  // ✅ รองรับทั้ง FloorPlan_PDF (เดิม) และ FloorPlan_PDF (ของคุณใน GS เป็น COL_FLOORPLAN_PDF)
-  setDockLink("dockFloorplan", detail.FloorPlan_PDF || detail.FloorPlan_PDF);
+  // ✅ FIX: รองรับหลายชื่อคีย์ของ FloorPlan (กันกรณีชื่อคอลัมน์/คีย์ไม่ตรง)
+  setDockLink("dockFloorplan",
+    detail.FloorPlan_PDF ||
+    detail.Floorplan_PDF ||
+    detail.FloorPlanPDF ||
+    detail.Floor_Plan_PDF ||
+    ""
+  );
 
   const customerBtn = document.getElementById("dockCustomerPDF");
   const agentBtn = document.getElementById("dockAgentPDF");
